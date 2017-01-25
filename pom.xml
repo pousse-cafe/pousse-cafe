@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pousse-cafe</groupId>
+  <artifactId>pousse-cafe</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <name>Pousse-Café Framework</name>
+  <description>Pousse-Café is a framework assisting in writing DDD-based applications</description>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <license.licenseName>apache_v2</license.licenseName>
+    <license.organizationName>Pousse-Café</license.organizationName>
+    <license.inceptionYear>2017</license.inceptionYear>
+
+    <slf4j.version>1.7.22</slf4j.version>
+    <junit.version>4.12</junit.version>
+    <hamcrest.version>1.3</hamcrest.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.12</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
