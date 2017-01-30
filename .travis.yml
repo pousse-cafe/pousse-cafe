@@ -1,1 +1,5 @@
 language: java
+
+after_success:
+- wget -O settings.xml https://raw.githubusercontent.com/pousse-cafe/pousse-cafe-deploy/master/snapshot_release_settings.xml
+- mvn deploy --settings settings.xml
