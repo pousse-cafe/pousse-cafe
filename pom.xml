@@ -106,6 +106,14 @@
     </profile>
   </profiles>
 
+  <repositories>
+    <repository>
+        <id>ossrh</id>
+        <name>Sonatype repository</name>
+        <url>https://oss.sonatype.org/content/groups/public/</url>
+    </repository>
+  </repositories>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
