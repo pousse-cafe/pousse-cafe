@@ -1,3 +1,5 @@
+[](https://travis-ci.org/pousse-cafe/pousse-cafe.svg?branch=master)
+
 # Introduction
 
 Pousse-Café is a framework assisting you in writing applications following Domain Driven Design methodology. While DDD
