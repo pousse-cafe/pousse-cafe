@@ -24,7 +24,7 @@ echo "Archetype POM fixing..."
 echo "	Updating description"
 xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -u "/n:project/n:description" -v "$DESCRIPTION" pom.xml
 echo "	Adding properties empty element"
-xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -i "/n:project/n:build" -t elem -n properties pom.xml
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -i "/n:project/n:build" -t elem -n properties -v "" pom.xml
 echo "	Adding source encoding"
 xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -s "/n:project/n:properties" -t elem -n "project.build.sourceEncoding" -v "UTF-8" pom.xml
 
