@@ -1,4 +1,4 @@
-[](https://travis-ci.org/pousse-cafe/pousse-cafe.svg?branch=master)
+![Travis build status](https://travis-ci.org/pousse-cafe/pousse-cafe.svg?branch=master)
 
 # Introduction
 
