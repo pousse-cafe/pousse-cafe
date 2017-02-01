@@ -1,26 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.pousse-cafe-framework</groupId>
     <artifactId>pousse-cafe</artifactId>
     <version>0.0.2-SNAPSHOT</version>
   </parent>
-  
+
   <artifactId>pousse-cafe-simple-app</artifactId>
   <name>Pousse-Café - Simple App</name>
   <url>https://github.com/pousse-cafe/pousse-cafe-simple-app</url>
 
   <dependencies>
     <dependency>
-        <groupId>org.pousse-cafe-framework</groupId>
-        <artifactId>pousse-cafe-core</artifactId>
-        <version>${project.version}</version>
+      <groupId>org.pousse-cafe-framework</groupId>
+      <artifactId>pousse-cafe-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.pousse-cafe-framework</groupId>
-        <artifactId>pousse-cafe-test</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
+      <groupId>org.pousse-cafe-framework</groupId>
+      <artifactId>pousse-cafe-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -29,4 +30,42 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>exec-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>1.5.0</version>
+        <executions>
+          <execution>
+            <id>install-archetype</id>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${basedir}/scripts/archetype_mvn.sh</executable>
+              <arguments>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>deploy-archetype</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${basedir}/scripts/archetype_mvn.sh</executable>
+              <arguments>
+                <argument>deploy</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
