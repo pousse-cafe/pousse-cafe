@@ -68,4 +68,36 @@
       </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+        <id>ci-deploy</id>
+        <build>
+        <plugins>
+          <plugin>
+            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <version>1.5.0</version>
+            <executions>
+              <execution>
+                <id>deploy-archetype</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>${basedir}/scripts/archetype_mvn.sh</executable>
+                  <arguments>
+                    <argument>deploy</argument>
+                    <argument>--settings</argument>
+                    <argument>${basedir}/../settings.xml</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
