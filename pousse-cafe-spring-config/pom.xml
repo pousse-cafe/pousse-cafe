@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>pousse-cafe-spring-config</artifactId>
-  <name>Pousse Café - Spring Config</name>
+  <name>Pousse-Café - Spring Config</name>
 
   <properties>
     <spring.version>4.3.4.RELEASE</spring.version>

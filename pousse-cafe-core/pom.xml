@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>pousse-cafe-core</artifactId>
-  <name>Pousse-Café Framework - Core</name>
+  <name>Pousse-Café - Core</name>
 
   <properties>
     <aspectj.version>1.8.10</aspectj.version>

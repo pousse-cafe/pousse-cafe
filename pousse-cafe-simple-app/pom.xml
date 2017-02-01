@@ -7,6 +7,7 @@
   </parent>
   
   <artifactId>pousse-cafe-simple-app</artifactId>
+  <name>Pousse-Café - Simple App</name>
   <url>https://github.com/pousse-cafe/pousse-cafe-simple-app</url>
 
   <dependencies>

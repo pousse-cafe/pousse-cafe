@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>pousse-cafe-test</artifactId>
-  <name>Pousse Café - Test</name>
+  <name>Pousse-Café - Test</name>
 
   <dependencies>
     <dependency>
