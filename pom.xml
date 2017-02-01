@@ -24,8 +24,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/pousse-cafe/pousse-cafe.git</connection>
-    <developerConnection>scm:git:ssh://github.com:pousse-cafe/pousse-cafe.git</developerConnection>
+    <connection>scm:git:https://github.com/pousse-cafe/pousse-cafe.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/pousse-cafe/pousse-cafe.git</developerConnection>
     <url>http://github.com/pousse-cafe/pousse-cafe/tree/master</url>
   </scm>
 
@@ -50,6 +50,19 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>1.12</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.9.5</version>
+        <configuration>
+          <connectionType>developerConnection</connectionType>
+          <tag>v${project.version}</tag>
+        </configuration>
       </plugin>
     </plugins>
   </build>
