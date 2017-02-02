@@ -13,6 +13,7 @@ import poussecafe.consequence.CommandHandlingResult;
 import poussecafe.consequence.CommandProcessor;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.domain.ProductRepository;
+import poussecafe.sample.workflow.CreateProduct;
 
 @Path("/")
 public class RestResource {

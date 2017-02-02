@@ -1,4 +1,4 @@
-package poussecafe.sample.app;
+package poussecafe.sample.workflow;
 
 import poussecafe.consequence.Command;
 import poussecafe.sample.domain.OrderDescription;

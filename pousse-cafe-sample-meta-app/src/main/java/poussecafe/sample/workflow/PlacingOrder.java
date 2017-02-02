@@ -1,4 +1,4 @@
-package poussecafe.sample.app;
+package poussecafe.sample.workflow;
 
 import poussecafe.consequence.CommandListener;
 import poussecafe.consequence.DomainEventListener;
