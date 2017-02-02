@@ -7,8 +7,8 @@
     <version>0.0.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>pousse-cafe-sample-domain</artifactId>
-  <name>Pousse-Café - Sample App Domain</name>
+  <artifactId>pousse-cafe-sample-meta-app</artifactId>
+  <name>Pousse-Café - Sample Meta Application</name>
 
   <dependencies>
     <dependency>

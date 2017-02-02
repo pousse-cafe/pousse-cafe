@@ -5,7 +5,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import poussecafe.configuration.ActiveStorableConfiguration;
 import poussecafe.configuration.AggregateConfiguration;
-import poussecafe.configuration.ApplicationConfiguration;
+import poussecafe.configuration.MetaApplicationConfiguration;
 import poussecafe.configuration.ProcessManagerConfiguration;
 import poussecafe.consequence.ConsequenceEmitter;
 import poussecafe.consequence.ConsequenceReceiver;
@@ -14,7 +14,7 @@ import poussecafe.service.Workflow;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 
-public abstract class SpringApplicationConfiguration extends ApplicationConfiguration {
+public abstract class SpringMetaApplicationConfiguration extends MetaApplicationConfiguration {
 
     @Autowired(required = false)
     private Set<AggregateConfiguration<?, ?, ?, ?, ?>> aggregateConfigurations;

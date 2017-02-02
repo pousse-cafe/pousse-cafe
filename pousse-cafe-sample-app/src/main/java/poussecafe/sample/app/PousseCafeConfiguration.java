@@ -4,11 +4,11 @@ import org.springframework.context.annotation.Configuration;
 import poussecafe.configuration.ConsequenceJournalEntryConfiguration;
 import poussecafe.configuration.InMemoryConsequenceJournalEntryConfiguration;
 import poussecafe.configuration.StorageConfiguration;
-import poussecafe.spring.SpringApplicationConfiguration;
+import poussecafe.spring.SpringMetaApplicationConfiguration;
 import poussecafe.storage.TransactionLessStorage;
 
 @Configuration
-public class PousseCafeConfiguration extends SpringApplicationConfiguration {
+public class PousseCafeConfiguration extends SpringMetaApplicationConfiguration {
 
     @Override
     public StorageConfiguration storageConfiguration() {

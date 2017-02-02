@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import poussecafe.configuration.ApplicationContext;
+import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.consequence.CommandProcessor;
 
 @Configuration
@@ -15,8 +15,8 @@ public class AppConfiguration {
     private PousseCafeConfiguration pousseCafeConfiguration;
 
     @Bean
-    public ApplicationContext pousseCafeApplicationContext() {
-        return new ApplicationContext(pousseCafeConfiguration);
+    public MetaApplicationContext pousseCafeApplicationContext() {
+        return new MetaApplicationContext(pousseCafeConfiguration);
     }
 
     @Bean

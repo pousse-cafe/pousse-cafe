@@ -15,7 +15,7 @@ import poussecafe.util.IdGenerator;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
-public abstract class ApplicationConfiguration {
+public abstract class MetaApplicationConfiguration {
 
     private Singleton<IdGenerator> idGenerator;
 
@@ -37,7 +37,7 @@ public abstract class ApplicationConfiguration {
 
     private Singleton<Set<InMemoryConsequenceQueue>> defaultConsequenceQueues;
 
-    public ApplicationConfiguration() {
+    public MetaApplicationConfiguration() {
         idGenerator = new Singleton<>(this::idGenerator);
         sourceSelector = new Singleton<>(this::sourceSelectorSupplier);
         storageConfiguration = new Singleton<>(this::storageConfiguration);

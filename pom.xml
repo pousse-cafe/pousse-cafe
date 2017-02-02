@@ -141,8 +141,8 @@
   <modules>
     <module>pousse-cafe-core</module>
     <module>pousse-cafe-test</module>
-    <module>pousse-cafe-simple-app</module>
-    <module>pousse-cafe-sample-domain</module>
+    <module>pousse-cafe-simple-meta-app</module>
+    <module>pousse-cafe-sample-meta-app</module>
     <module>pousse-cafe-spring-config</module>
     <module>pousse-cafe-sample-app</module>
   </modules>

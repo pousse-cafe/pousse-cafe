@@ -21,11 +21,11 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ApplicationContextTest {
+public class MetaApplicationContextTest {
 
-    private ApplicationConfiguration configuration;
+    private MetaApplicationConfiguration configuration;
 
-    private ApplicationContext context;
+    private MetaApplicationContext context;
 
     @Test
     public void storableServicesConfiguration() {
@@ -35,7 +35,7 @@ public class ApplicationContextTest {
     }
 
     private void givenApplicationConfiguration() {
-        configuration = new ApplicationConfiguration() {
+        configuration = new MetaApplicationConfiguration() {
 
             @Override
             protected StorageConfiguration storageConfiguration() {
@@ -77,7 +77,7 @@ public class ApplicationContextTest {
     }
 
     private void whenCreatingContext() {
-        context = new ApplicationContext(configuration);
+        context = new MetaApplicationContext(configuration);
     }
 
     private void thenStorableServicesAreConfigured() {

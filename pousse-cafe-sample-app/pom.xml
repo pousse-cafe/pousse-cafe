@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
-      <artifactId>pousse-cafe-sample-domain</artifactId>
+      <artifactId>pousse-cafe-sample-meta-app</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

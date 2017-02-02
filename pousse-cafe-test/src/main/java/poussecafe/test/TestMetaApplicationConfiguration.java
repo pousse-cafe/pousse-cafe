@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.configuration.ActiveStorableConfiguration;
-import poussecafe.configuration.ApplicationConfiguration;
+import poussecafe.configuration.MetaApplicationConfiguration;
 import poussecafe.configuration.ConsequenceJournalEntryConfiguration;
 import poussecafe.configuration.InMemoryConsequenceJournalEntryConfiguration;
 import poussecafe.configuration.StorageConfiguration;
@@ -12,7 +12,7 @@ import poussecafe.journal.PollingPeriod;
 import poussecafe.service.Workflow;
 import poussecafe.storage.TransactionLessStorage;
 
-public class TestApplicationConfiguration extends ApplicationConfiguration {
+public class TestMetaApplicationConfiguration extends MetaApplicationConfiguration {
 
     private Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> aggregateConfigurations;
 
@@ -20,7 +20,7 @@ public class TestApplicationConfiguration extends ApplicationConfiguration {
 
     private Set<Workflow> workflows;
 
-    public TestApplicationConfiguration() {
+    public TestMetaApplicationConfiguration() {
         aggregateConfigurations = new HashSet<>();
         processManagerConfigurations = new HashSet<>();
         workflows = new HashSet<>();

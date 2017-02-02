@@ -1,7 +1,7 @@
 package poussecafe.test;
 
 import java.time.Duration;
-import poussecafe.configuration.ApplicationContext;
+import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.consequence.Command;
 import poussecafe.consequence.CommandHandlingResult;
 import poussecafe.storable.Storable;
@@ -12,21 +12,21 @@ import static org.junit.Assert.assertTrue;
 
 public class WorkflowTest {
 
-    protected TestApplicationConfiguration configuration;
+    protected TestMetaApplicationConfiguration configuration;
 
-    private ApplicationContext context;
+    private MetaApplicationContext context;
 
     protected void givenContext() {
-        configuration = new TestApplicationConfiguration();
+        configuration = new TestMetaApplicationConfiguration();
         registerActors();
-        context = new ApplicationContext(configuration);
+        context = new MetaApplicationContext(configuration);
     }
 
     protected void registerActors() {
 
     }
 
-    protected ApplicationContext context() {
+    protected MetaApplicationContext context() {
         return context;
     }
 

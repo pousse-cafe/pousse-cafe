@@ -7,9 +7,9 @@
     <version>0.0.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>pousse-cafe-simple-app</artifactId>
+  <artifactId>pousse-cafe-simple-meta-app</artifactId>
   <name>Pousse-Café - Simple App</name>
-  <url>https://github.com/pousse-cafe/pousse-cafe-simple-app</url>
+  <url>https://github.com/pousse-cafe/pousse-cafe-simple-meta-app</url>
 
   <dependencies>
     <dependency>

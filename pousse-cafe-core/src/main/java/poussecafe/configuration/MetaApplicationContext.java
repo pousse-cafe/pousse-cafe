@@ -16,9 +16,9 @@ import poussecafe.storable.ActiveStorableRepository;
 import poussecafe.storage.ConsequenceEmissionPolicy;
 import poussecafe.storage.TransactionRunner;
 
-public class ApplicationContext {
+public class MetaApplicationContext {
 
-    private ApplicationConfiguration configuration;
+    private MetaApplicationConfiguration configuration;
 
     private Injector injector;
 
@@ -40,7 +40,7 @@ public class ApplicationContext {
 
     private CommandProcessor commandProcessor;
 
-    public ApplicationContext(ApplicationConfiguration configuration) {
+    public MetaApplicationContext(MetaApplicationConfiguration configuration) {
         this.configuration = configuration;
 
         StorageConfiguration storageConfiguration = configuration.getStorageConfiguration().get();
