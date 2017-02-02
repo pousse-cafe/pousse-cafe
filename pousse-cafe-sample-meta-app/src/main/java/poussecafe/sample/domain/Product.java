@@ -2,15 +2,14 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateData;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.sample.domain.Product.ProductData;
+import poussecafe.sample.domain.Product.Data;
 
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.greaterThan;
-import static poussecafe.check.Predicates.lessThan;
 import static poussecafe.domain.DomainSpecification.value;
 
-public class Product extends AggregateRoot<ProductKey, ProductData> {
+public class Product extends AggregateRoot<ProductKey, Data> {
 
     void setTotalUnits(int units) {
         getData().setTotalUnits(units);
@@ -36,15 +35,15 @@ public class Product extends AggregateRoot<ProductKey, ProductData> {
 
     public void placeOrder(OrderDescription description) {
         int unitsAvailable = getData().getAvailableUnits();
-        checkThat(value(description.units).verifies(lessThan(unitsAvailable).or(equalTo(unitsAvailable))).because(
-                "Cannot order more than available: " + unitsAvailable + " available, " + description.units
-                + " ordered"));
-
-        getData().setAvailableUnits(unitsAvailable - description.units);
-        getUnitOfConsequence().addConsequence(new OrderPlaced(getData().getKey(), description));
+        if (description.units > unitsAvailable) {
+            getUnitOfConsequence().addConsequence(new OrderRejected(getData().getKey(), description));
+        } else {
+            getData().setAvailableUnits(unitsAvailable - description.units);
+            getUnitOfConsequence().addConsequence(new OrderPlaced(getData().getKey(), description));
+        }
     }
 
-    public static interface ProductData extends AggregateData<ProductKey> {
+    public static interface Data extends AggregateData<ProductKey> {
 
         void setTotalUnits(int units);
 

@@ -1,9 +1,8 @@
 package workflow;
 
+import configuration.MyAggregateConfiguration;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
-import domain.MyFactory;
-import domain.MyRepository;
 import org.junit.Test;
 import poussecafe.test.TestConfigurationBuilder;
 import poussecafe.test.WorkflowTest;
@@ -30,9 +29,7 @@ public class MyWorkflowTest extends WorkflowTest {
     protected void registerActors() {
         // First, let's register Domain components
         configuration.registerAggregateConfiguration(new TestConfigurationBuilder()
-                .withStorable(MyAggregate.class)
-                .withFactory(MyFactory.class)
-                .withRepository(MyRepository.class)
+                .withConfiguration(new MyAggregateConfiguration())
                 .withData(MyAggregate.Data.class)
                 .build());
 
@@ -63,7 +60,7 @@ public class MyWorkflowTest extends WorkflowTest {
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = getEventually(MyAggregate.class, key);
+        MyAggregate aggregate = find(MyAggregate.class, key);
         assertThat(aggregate.getX(), equalTo(x));
     }
 }

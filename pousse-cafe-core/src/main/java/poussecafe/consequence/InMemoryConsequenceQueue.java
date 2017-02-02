@@ -38,4 +38,11 @@ public class InMemoryConsequenceQueue extends ConsequenceReceiver implements Con
         return getSource();
     }
 
+    public void waitUntilEmpty()
+            throws InterruptedException {
+        while (queue.peek() != null) {
+            Thread.sleep(10);
+        }
+    }
+
 }

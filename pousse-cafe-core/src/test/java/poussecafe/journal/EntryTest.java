@@ -2,7 +2,7 @@ package poussecafe.journal;
 
 import org.junit.Test;
 import poussecafe.consequence.Consequence;
-import poussecafe.data.memory.InMemoryStorableDataFactory;
+import poussecafe.data.memory.InMemoryDataFactory;
 import poussecafe.domain.DomainException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -27,7 +27,7 @@ public class EntryTest {
     private void givenEntry() {
         givenConsequence();
         EntryFactory entryFactory = new EntryFactory();
-        entryFactory.setStorableDataFactory(new InMemoryStorableDataFactory<>(Entry.Data.class));
+        entryFactory.setStorableDataFactory(new InMemoryDataFactory<>(Entry.Data.class));
         entry = entryFactory.buildEntryForEmittedConsequence(new EntryKey(consequence.getId(), "listenerId"),
                 consequence);
     }

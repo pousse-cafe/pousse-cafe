@@ -1,11 +1,11 @@
 package poussecafe.domain;
 
-import poussecafe.data.memory.InMemoryStorableDataFactory;
+import poussecafe.data.memory.InMemoryDataFactory;
 
 public class SimpleAggregateFactory extends Factory<SimpleAggregateKey, SimpleAggregate, SimpleAggregate.Data> {
 
     public SimpleAggregateFactory() {
-        setStorableDataFactory(new InMemoryStorableDataFactory<>(SimpleAggregate.Data.class));
+        setStorableDataFactory(new InMemoryDataFactory<>(SimpleAggregate.Data.class));
     }
 
     @Override

@@ -4,10 +4,13 @@ public class OrderKey {
 
     private ProductKey productKey;
 
+    private CustomerKey customerKey;
+
     private String reference;
 
-    public OrderKey(ProductKey productKey, String reference) {
+    public OrderKey(ProductKey productKey, CustomerKey customerKey, String reference) {
         setProductKey(productKey);
+        setCustomerKey(customerKey);
         setReference(reference);
     }
 
@@ -15,15 +18,23 @@ public class OrderKey {
         return productKey;
     }
 
-    public void setProductKey(ProductKey productKey) {
+    private void setProductKey(ProductKey productKey) {
         this.productKey = productKey;
+    }
+
+    public CustomerKey getCustomerKey() {
+        return customerKey;
+    }
+
+    private void setCustomerKey(CustomerKey customerKey) {
+        this.customerKey = customerKey;
     }
 
     public String getReference() {
         return reference;
     }
 
-    public void setReference(String reference) {
+    private void setReference(String reference) {
         this.reference = reference;
     }
 
@@ -31,6 +42,7 @@ public class OrderKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((customerKey == null) ? 0 : customerKey.hashCode());
         result = prime * result + ((productKey == null) ? 0 : productKey.hashCode());
         result = prime * result + ((reference == null) ? 0 : reference.hashCode());
         return result;
@@ -48,6 +60,13 @@ public class OrderKey {
             return false;
         }
         OrderKey other = (OrderKey) obj;
+        if (customerKey == null) {
+            if (other.customerKey != null) {
+                return false;
+            }
+        } else if (!customerKey.equals(other.customerKey)) {
+            return false;
+        }
         if (productKey == null) {
             if (other.productKey != null) {
                 return false;
@@ -67,6 +86,7 @@ public class OrderKey {
 
     @Override
     public String toString() {
-        return "OrderKey [productKey=" + productKey + ", reference=" + reference + "]";
+        return "OrderKey [productKey=" + productKey + ", customerKey=" + customerKey + ", reference=" + reference + "]";
     }
+
 }

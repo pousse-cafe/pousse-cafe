@@ -1,6 +1,6 @@
 package poussecafe.storable;
 
-import poussecafe.data.memory.InMemoryStorableDataFactory;
+import poussecafe.data.memory.InMemoryDataFactory;
 
 public class SimpleStorableFactoryTest extends
 ActiveStorableFactoryTest<SimpleStorableKey, SimpleStorable.Data, SimpleStorable, SimpleStorableFactory> {
@@ -12,7 +12,7 @@ ActiveStorableFactoryTest<SimpleStorableKey, SimpleStorable.Data, SimpleStorable
 
     @Override
     protected SimpleStorableFactory factory() {
-        return new SimpleStorableFactory(new InMemoryStorableDataFactory<>(SimpleStorable.Data.class));
+        return new SimpleStorableFactory(new InMemoryDataFactory<>(SimpleStorable.Data.class));
     }
 
 }

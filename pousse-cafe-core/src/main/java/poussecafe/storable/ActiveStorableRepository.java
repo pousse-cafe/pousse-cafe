@@ -28,6 +28,11 @@ extends StorableRepository<A, K, D> {
     protected void addData(A storable) {
         UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
         super.addData(storable);
+        considerUnitEmissionAfterAdd(storable, unitOfConsequence);
+    }
+
+    protected void considerUnitEmissionAfterAdd(A storable,
+            UnitOfConsequence unitOfConsequence) {
         consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
     }
 
@@ -35,6 +40,23 @@ extends StorableRepository<A, K, D> {
     protected void updateData(A storable) {
         UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
         super.updateData(storable);
+        considerUnitEmissionAfterUpdate(storable, unitOfConsequence);
+    }
+
+    protected void considerUnitEmissionAfterUpdate(A storable,
+            UnitOfConsequence unitOfConsequence) {
+        consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
+    }
+
+    @Override
+    protected void deleteData(A storable) {
+        UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
+        super.deleteData(storable);
+        considerUnitEmissionAfterDelete(storable, unitOfConsequence);
+    }
+
+    protected void considerUnitEmissionAfterDelete(A storable,
+            UnitOfConsequence unitOfConsequence) {
         consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
     }
 

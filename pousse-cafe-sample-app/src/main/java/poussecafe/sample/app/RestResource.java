@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import poussecafe.consequence.CommandHandlingResult;
 import poussecafe.consequence.CommandProcessor;
+import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.sample.workflow.CreateProduct;
 
 @Path("/")
 public class RestResource {

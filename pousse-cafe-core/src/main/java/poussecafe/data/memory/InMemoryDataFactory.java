@@ -6,11 +6,11 @@ import poussecafe.storable.StorableDataFactory;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class InMemoryStorableDataFactory<D extends StorableData<?>> implements StorableDataFactory<D> {
+public class InMemoryDataFactory<D extends StorableData<?>> implements StorableDataFactory<D> {
 
     private Class<D> dataClass;
 
-    public InMemoryStorableDataFactory(Class<D> dataClass) {
+    public InMemoryDataFactory(Class<D> dataClass) {
         setDataClass(dataClass);
     }
 

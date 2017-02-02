@@ -5,7 +5,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 
-public abstract class AggregateConfiguration<K, A extends AggregateRoot<K, D>, D extends AggregateData<K>, F extends Factory<K, A, D>, R extends Repository<A, K, D>>
+public class AggregateConfiguration<K, A extends AggregateRoot<K, D>, D extends AggregateData<K>, F extends Factory<K, A, D>, R extends Repository<A, K, D>>
 extends ActiveStorableConfiguration<K, A, D, F, R> {
 
     public AggregateConfiguration(Class<A> storableClass, StorableServiceFactory<F, R> serviceFactory) {

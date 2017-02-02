@@ -9,7 +9,7 @@ import poussecafe.storage.ConsequenceEmissionPolicy;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class ActiveStorableConfiguration<K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>>
+public class ActiveStorableConfiguration<K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>>
 extends StorableConfiguration<K, A, D, F, R> {
 
     private ConsequenceEmissionPolicy consequenceEmissionPolicy;

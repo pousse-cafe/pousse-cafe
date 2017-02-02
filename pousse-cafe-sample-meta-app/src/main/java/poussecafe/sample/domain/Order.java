@@ -1,48 +1,33 @@
 package poussecafe.sample.domain;
 
-import java.util.Objects;
 import poussecafe.domain.AggregateData;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.sample.domain.Order.OrderData;
+import poussecafe.sample.domain.Order.Data;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.greaterThan;
 
-public class Order extends AggregateRoot<OrderKey, OrderData> {
-
-    void setProductKey(ProductKey productKey) {
-        checkThat(value(productKey).notNull().because("Product key cannot be null"));
-        getData().setProductKey(productKey);
-    }
+public class Order extends AggregateRoot<OrderKey, Data> {
 
     void setUnits(int units) {
-        checkThat(value(units).verifies(greaterThan(0)).because("Ordered units cannot be lower than 0"));
+        checkThat(value(units).verifies(greaterThan(0)).because("More than 0 units have to be ordered"));
         getData().setUnits(units);
     }
 
-    public void setPayment(PaymentKey paymentKey) {
-        checkThat(value(paymentKey).notNull().because("Payment cannot be null"));
-        checkThat(value(getData().getPaymentKey()).verifies(Objects::isNull)
-                .because("Order has already a payment"));
-
-        getData().setPaymentKey(paymentKey);
+    public void settle() {
         addDomainEvent(new OrderSettled(getData().getKey()));
     }
 
-    public static interface OrderData extends AggregateData<OrderKey> {
+    public void send() {
+        addDomainEvent(new OrderReadyForShipping(getData().getKey()));
+    }
 
-        void setProductKey(ProductKey productKey);
-
-        ProductKey getProductKey();
+    public static interface Data extends AggregateData<OrderKey> {
 
         void setUnits(int units);
 
         int getUnits();
-
-        void setPaymentKey(PaymentKey paymentKey);
-
-        PaymentKey getPaymentKey();
     }
 
 }

@@ -4,10 +4,12 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.configuration.ActiveStorableConfiguration;
-import poussecafe.configuration.MetaApplicationConfiguration;
 import poussecafe.configuration.ConsequenceJournalEntryConfiguration;
 import poussecafe.configuration.InMemoryConsequenceJournalEntryConfiguration;
+import poussecafe.configuration.MetaApplicationConfiguration;
 import poussecafe.configuration.StorageConfiguration;
+import poussecafe.consequence.ConsequenceReceiver;
+import poussecafe.consequence.InMemoryConsequenceQueue;
 import poussecafe.journal.PollingPeriod;
 import poussecafe.service.Workflow;
 import poussecafe.storage.TransactionLessStorage;
@@ -66,5 +68,13 @@ public class TestMetaApplicationConfiguration extends MetaApplicationConfigurati
     @Override
     public PollingPeriod getCommandWatcherPollingPeriod() {
         return PollingPeriod.withPeriod(Duration.ofMillis(10));
+    }
+
+    public void waitUntilAllConsequenceQueuesEmpty()
+            throws InterruptedException {
+        for (ConsequenceReceiver consequenceReceiver : getConsequenceReceivers().get()) {
+            InMemoryConsequenceQueue queue = (InMemoryConsequenceQueue) consequenceReceiver;
+            queue.waitUntilEmpty();
+        }
     }
 }

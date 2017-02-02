@@ -2,41 +2,25 @@ package poussecafe.sample.workflow;
 
 import poussecafe.consequence.CommandListener;
 import poussecafe.consequence.DomainEventListener;
+import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderFactory;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.OrderPlaced;
 import poussecafe.sample.domain.OrderRepository;
+import poussecafe.sample.domain.OrderSettled;
 import poussecafe.sample.domain.Product;
-import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductRepository;
 import poussecafe.service.Workflow;
 
-public class PlacingOrder extends Workflow {
-
-    private ProductFactory productFactory;
+public class OrderManagement extends Workflow {
 
     private ProductRepository productRepository;
 
     private OrderFactory orderFactory;
 
     private OrderRepository orderRepository;
-
-    @CommandListener
-    public void createProduct(CreateProduct command) {
-        Product product = productFactory.buildProductWithNoStock(command.getProductKey());
-        runInTransaction(() -> productRepository.add(product));
-    }
-
-    @CommandListener
-    public void addUnits(AddUnits command) {
-        runInTransaction(() -> {
-            Product product = productRepository.get(command.getProductKey());
-            product.addUnits(command.getUnits());
-            productRepository.update(product);
-        });
-    }
 
     @CommandListener
     public void placeOrder(PlaceOrder command) {
@@ -50,13 +34,18 @@ public class PlacingOrder extends Workflow {
     @DomainEventListener
     public void createOrder(OrderPlaced event) {
         OrderDescription description = event.getOrderDescription();
-        OrderKey key = new OrderKey(event.getProductKey(), description.reference);
-        Order order = orderFactory.buildPlacedOrder(key, event.getProductKey(), description.units);
+        OrderKey key = new OrderKey(event.getProductKey(), description.customerKey, description.reference);
+        Order order = orderFactory.buildPlacedOrder(key, description.units);
         runInTransaction(() -> orderRepository.add(order));
     }
 
-    public void setProductFactory(ProductFactory productFactory) {
-        this.productFactory = productFactory;
+    @DomainEventListener
+    public void sendOrder(OrderSettled event) {
+        runInTransaction(() -> {
+            Order order = orderRepository.get(event.getOrderKey());
+            order.send();
+            orderRepository.update(order);
+        });
     }
 
     public void setProductRepository(ProductRepository productRepository) {

@@ -39,23 +39,16 @@ public class WorkflowTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Storable<K, D>, K, D extends StorableData<K>> T getEventually(Class<T> storableClass,
+    protected <T extends Storable<K, D>, K, D extends StorableData<K>> T find(Class<T> storableClass,
             K key) {
+        try {
+            configuration.waitUntilAllConsequenceQueuesEmpty();
+        } catch (InterruptedException e) {
+            return null;
+        }
         StorableRepository<Storable<K, D>, K, D> repository = (StorableRepository<Storable<K, D>, K, D>) context
                 .getStorableServices(storableClass)
                 .getRepository();
-        T order = null;
-        for (int i = 0; i < 10; ++i) {
-            order = (T) repository.find(key);
-            if (order != null) {
-                break;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return order;
+        return (T) repository.find(key);
     }
 }
