@@ -15,5 +15,4 @@ modules:
 - Test: Tools helping in writing powerful and Domain-centric unit tests
 - Simple App: A template project used to generate related Maven archetype
 - Sample App Domain: A sample domain implementation show-casing Pousse-Café's features
-- Spring Config: Tools allowing an easy integration of Pousse-Café with Spring
 - Sample App: A sample Spring Boot app show-casing the integration of Sample App Domain in an actual application
