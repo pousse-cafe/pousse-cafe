@@ -1,23 +1,16 @@
 package poussecafe.sample;
 
 import org.junit.Test;
-import poussecafe.sample.command.AddUnits;
-import poussecafe.sample.command.CreateCustomer;
-import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.command.PlaceOrder;
-import poussecafe.sample.configuration.CustomerConfiguration;
 import poussecafe.sample.configuration.OrderConfiguration;
 import poussecafe.sample.configuration.ProductConfiguration;
-import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.sample.workflow.CustomerCreation;
 import poussecafe.sample.workflow.OrderManagement;
-import poussecafe.sample.workflow.ProductManagement;
 import poussecafe.test.MetaApplicationTest;
 import poussecafe.test.TestConfigurationBuilder;
 
@@ -25,7 +18,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class PlacingOrderTest extends MetaApplicationTest {
+public class OrderManagementTest extends MetaApplicationTest {
 
     private CustomerKey customerKey;
 
@@ -36,11 +29,6 @@ public class PlacingOrderTest extends MetaApplicationTest {
     @Override
     protected void registerComponents() {
         configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new CustomerConfiguration())
-                .withData(Customer.Data.class)
-                .build());
-
-        configuration.registerAggregate(new TestConfigurationBuilder()
                 .withConfiguration(new ProductConfiguration())
                 .withData(Product.Data.class)
                 .build());
@@ -50,29 +38,27 @@ public class PlacingOrderTest extends MetaApplicationTest {
                 .withData(Order.Data.class)
                 .build());
 
-        configuration.registerWorkflow(new ProductManagement());
-        configuration.registerWorkflow(new CustomerCreation());
         configuration.registerWorkflow(new OrderManagement());
     }
 
     @Test
     public void placingOrderCreatesOrder() {
         givenCustomer();
-        givenProductWithUnits(10);
+        givenProductWithUnits(true);
         whenPlacingOrder();
         thenOrderCreated();
     }
 
     private void givenCustomer() {
         customerKey = new CustomerKey("customer-id");
-        processAndAssertSuccess(new CreateCustomer(customerKey));
     }
 
-    private void givenProductWithUnits(int units) {
+    private void givenProductWithUnits(boolean withUnits) {
         productKey = new ProductKey("product-1");
-        processAndAssertSuccess(new CreateProduct(productKey));
-        if (units > 0) {
-            processAndAssertSuccess(new AddUnits(productKey, units));
+        if (withUnits) {
+            loadDataFile("/data/placingOrderProductWithUnits.json");
+        } else {
+            loadDataFile("/data/placingOrderProductWithoutUnits.json");
         }
     }
 
@@ -95,7 +81,7 @@ public class PlacingOrderTest extends MetaApplicationTest {
     @Test
     public void placingOrderWithNotEnoughUnitsDoesNotCreatesOrder() {
         givenCustomer();
-        givenProductWithUnits(0);
+        givenProductWithUnits(false);
         whenPlacingOrder();
         thenNoOrderCreated();
     }

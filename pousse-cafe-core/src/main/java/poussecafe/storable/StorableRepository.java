@@ -97,4 +97,8 @@ public abstract class StorableRepository<A extends Storable<K, D>, K, D extends 
         this.storableDataFactory = storableDataFactory;
     }
 
+    public StorableDataAccess<K, D> getDataAccess() {
+        return dataAccess;
+    }
+
 }

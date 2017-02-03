@@ -1,0 +1,12 @@
+{
+    "poussecafe.sample.domain.Product": [
+        {
+            "key": {
+                "id": "product-1",
+                "_class": "poussecafe.sample.domain.ProductKey"
+            },
+            "totalUnits": 10,
+            "availableUnits": 10
+        }
+    ]
+}

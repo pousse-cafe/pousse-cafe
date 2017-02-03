@@ -1,11 +1,22 @@
 package poussecafe.test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Map.Entry;
 import org.junit.Before;
 import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.consequence.Command;
 import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.data.memory.InMemoryDataAccess;
 import poussecafe.domain.DomainEvent;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.storable.Storable;
 import poussecafe.storable.StorableData;
 import poussecafe.storable.StorableRepository;
@@ -57,8 +68,34 @@ public abstract class MetaApplicationTest {
         }
     }
 
+    @SuppressWarnings("rawtypes")
+    private StorableRepository getRepository(Class storableClass) {
+        return context.getStorableServices(storableClass).getRepository();
+    }
+
     protected void addDomainEvent(DomainEvent event) {
         context.getConsequenceRouter().routeConsequence(event);
         waitUntilAllConsequenceQueuesEmpty();
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected void loadDataFile(String path) {
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(getClass().getResource(path).toURI())),
+                    Charset.forName("UTF-8"));
+            Gson gson = new GsonBuilder().create();
+            JsonObject root = gson.fromJson(json, JsonObject.class);
+            for (Entry<String, JsonElement> entry : root.entrySet()) {
+                Class<?> storableClass = Class.forName(entry.getKey());
+                StorableRepository repository = getRepository(storableClass);
+                InMemoryDataAccess dataAccess = (InMemoryDataAccess) repository.getDataAccess();
+                JsonArray dataArray = (JsonArray) entry.getValue();
+                dataArray.forEach(element -> {
+                    dataAccess.addRawData(element);
+                });
+            }
+        } catch (Exception e) {
+            throw new PousseCafeException("Unable to load data file", e);
+        }
     }
 }
