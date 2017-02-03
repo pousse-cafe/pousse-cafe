@@ -36,11 +36,6 @@
 
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
-      <artifactId>pousse-cafe-spring-config</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pousse-cafe-framework</groupId>
       <artifactId>pousse-cafe-sample-meta-app</artifactId>
       <version>${project.version}</version>
     </dependency>

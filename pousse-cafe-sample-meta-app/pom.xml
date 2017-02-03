@@ -16,6 +16,7 @@
       <artifactId>pousse-cafe-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
       <artifactId>pousse-cafe-test</artifactId>
@@ -28,7 +29,6 @@
       <version>${hamcrest.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>

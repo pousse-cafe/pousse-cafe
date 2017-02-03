@@ -41,4 +41,16 @@ public class Messaging extends Workflow {
     public void createMessage(OrderReadyForShipping event) {
         createMessageWithContent(event.getOrderKey().getCustomerKey(), event);
     }
+
+    public void setFactory(MessageFactory factory) {
+        this.factory = factory;
+    }
+
+    public void setRepository(MessageRepository repository) {
+        this.repository = repository;
+    }
+
+    public void setContentChooser(ContentChooser contentChooser) {
+        this.contentChooser = contentChooser;
+    }
 }

@@ -1,7 +1,12 @@
 package poussecafe.process;
 
-import poussecafe.util.UuidKey;
+import java.util.UUID;
+import poussecafe.util.StringKey;
 
-public class SimpleProcessManagerKey extends UuidKey {
+public class SimpleProcessManagerKey extends StringKey {
+
+    public SimpleProcessManagerKey() {
+        super(UUID.randomUUID().toString());
+    }
 
 }

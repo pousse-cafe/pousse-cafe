@@ -18,6 +18,10 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
         getData().setContentType(type);
     }
 
+    public ContentType getContentType() {
+        return getData().getContentType();
+    }
+
     public interface Data extends AggregateData<MessageKey> {
 
         void setCustomerKey(CustomerKey customerKey);

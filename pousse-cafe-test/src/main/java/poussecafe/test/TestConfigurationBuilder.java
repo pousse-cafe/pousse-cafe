@@ -7,6 +7,7 @@ import poussecafe.storable.ActiveStorable;
 import poussecafe.storable.ActiveStorableFactory;
 import poussecafe.storable.ActiveStorableRepository;
 import poussecafe.storable.StorableData;
+import poussecafe.storable.StorableDataAccess;
 
 @SuppressWarnings("rawtypes")
 public class TestConfigurationBuilder {
@@ -14,6 +15,8 @@ public class TestConfigurationBuilder {
     private ActiveStorableConfiguration configuration;
 
     private Class dataClass;
+
+    private StorableDataAccess dataAccess;
 
     public TestConfigurationBuilder withConfiguration(ActiveStorableConfiguration<?, ?, ?, ?, ?> configuration) {
         this.configuration = configuration;
@@ -25,9 +28,18 @@ public class TestConfigurationBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder withDataAccess(StorableDataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public <K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>> ActiveStorableConfiguration<K, A, D, F, R> build() {
-        configuration.setDataAccess(new InMemoryDataAccess<>(dataClass));
+        if (dataAccess == null) {
+            configuration.setDataAccess(new InMemoryDataAccess<>(dataClass));
+        } else {
+            configuration.setDataAccess(dataAccess);
+        }
         configuration.setDataFactory(new InMemoryDataFactory<>(dataClass));
         return configuration;
     }

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.consequence.CommandProcessor;
+import poussecafe.sample.domain.Product;
+import poussecafe.sample.domain.ProductRepository;
 
 @Configuration
 @ComponentScan(basePackages = { "poussecafe.sample" })
@@ -22,5 +24,10 @@ public class AppConfiguration {
     @Bean
     public CommandProcessor commandProcessor() {
         return pousseCafeApplicationContext().getCommandProcessor();
+    }
+
+    @Bean
+    public ProductRepository productRepository() {
+        return (ProductRepository) pousseCafeApplicationContext().getStorableServices(Product.class).getRepository();
     }
 }

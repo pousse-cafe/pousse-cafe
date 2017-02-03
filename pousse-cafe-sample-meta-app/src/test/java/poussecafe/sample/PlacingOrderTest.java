@@ -1,4 +1,4 @@
-package poussecafe.sample.app;
+package poussecafe.sample;
 
 import org.junit.Test;
 import poussecafe.sample.command.AddUnits;
@@ -18,20 +18,14 @@ import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.CustomerCreation;
 import poussecafe.sample.workflow.OrderManagement;
 import poussecafe.sample.workflow.ProductManagement;
+import poussecafe.test.MetaApplicationTest;
 import poussecafe.test.TestConfigurationBuilder;
-import poussecafe.test.WorkflowTest;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class PlacingOrderTest extends WorkflowTest {
-
-    private CustomerCreation customerCreation;
-
-    private ProductManagement productManagement;
-
-    private OrderManagement orderManagement;
+public class PlacingOrderTest extends MetaApplicationTest {
 
     private CustomerKey customerKey;
 
@@ -40,36 +34,29 @@ public class PlacingOrderTest extends WorkflowTest {
     private OrderDescription description;
 
     @Override
-    protected void registerActors() {
-        configuration.registerAggregateConfiguration(
-                new TestConfigurationBuilder()
+    protected void registerComponents() {
+        configuration.registerAggregate(new TestConfigurationBuilder()
                 .withConfiguration(new CustomerConfiguration())
                 .withData(Customer.Data.class)
                 .build());
 
-        configuration.registerAggregateConfiguration(new TestConfigurationBuilder()
+        configuration.registerAggregate(new TestConfigurationBuilder()
                 .withConfiguration(new ProductConfiguration())
                 .withData(Product.Data.class)
                 .build());
 
-        configuration.registerAggregateConfiguration(new TestConfigurationBuilder()
+        configuration.registerAggregate(new TestConfigurationBuilder()
                 .withConfiguration(new OrderConfiguration())
                 .withData(Order.Data.class)
                 .build());
 
-        productManagement = new ProductManagement();
-        configuration.registerWorkflow(productManagement);
-
-        customerCreation = new CustomerCreation();
-        configuration.registerWorkflow(customerCreation);
-
-        orderManagement = new OrderManagement();
-        configuration.registerWorkflow(orderManagement);
+        configuration.registerWorkflow(new ProductManagement());
+        configuration.registerWorkflow(new CustomerCreation());
+        configuration.registerWorkflow(new OrderManagement());
     }
 
     @Test
     public void placingOrderCreatesOrder() {
-        givenContext();
         givenCustomer();
         givenProductWithUnits(10);
         whenPlacingOrder();
@@ -77,7 +64,7 @@ public class PlacingOrderTest extends WorkflowTest {
     }
 
     private void givenCustomer() {
-        customerKey = new CustomerKey();
+        customerKey = new CustomerKey("customer-id");
         processAndAssertSuccess(new CreateCustomer(customerKey));
     }
 
@@ -107,7 +94,6 @@ public class PlacingOrderTest extends WorkflowTest {
 
     @Test
     public void placingOrderWithNotEnoughUnitsDoesNotCreatesOrder() {
-        givenContext();
         givenCustomer();
         givenProductWithUnits(0);
         whenPlacingOrder();

@@ -1,30 +1,31 @@
 package poussecafe.test;
 
 import java.time.Duration;
+import org.junit.Before;
 import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.consequence.Command;
 import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.domain.DomainEvent;
 import poussecafe.storable.Storable;
 import poussecafe.storable.StorableData;
 import poussecafe.storable.StorableRepository;
 
 import static org.junit.Assert.assertTrue;
 
-public class WorkflowTest {
+public abstract class MetaApplicationTest {
 
     protected TestMetaApplicationConfiguration configuration;
 
     private MetaApplicationContext context;
 
-    protected void givenContext() {
+    @Before
+    public void configureContext() {
         configuration = new TestMetaApplicationConfiguration();
-        registerActors();
+        registerComponents();
         context = new MetaApplicationContext(configuration);
     }
 
-    protected void registerActors() {
-
-    }
+    protected abstract void registerComponents();
 
     protected MetaApplicationContext context() {
         return context;
@@ -41,14 +42,23 @@ public class WorkflowTest {
     @SuppressWarnings("unchecked")
     protected <T extends Storable<K, D>, K, D extends StorableData<K>> T find(Class<T> storableClass,
             K key) {
-        try {
-            configuration.waitUntilAllConsequenceQueuesEmpty();
-        } catch (InterruptedException e) {
-            return null;
-        }
+        waitUntilAllConsequenceQueuesEmpty();
         StorableRepository<Storable<K, D>, K, D> repository = (StorableRepository<Storable<K, D>, K, D>) context
                 .getStorableServices(storableClass)
                 .getRepository();
         return (T) repository.find(key);
+    }
+
+    protected void waitUntilAllConsequenceQueuesEmpty() {
+        try {
+            configuration.waitUntilAllConsequenceQueuesEmpty();
+        } catch (InterruptedException e) {
+            return;
+        }
+    }
+
+    protected void addDomainEvent(DomainEvent event) {
+        context.getConsequenceRouter().routeConsequence(event);
+        waitUntilAllConsequenceQueuesEmpty();
     }
 }

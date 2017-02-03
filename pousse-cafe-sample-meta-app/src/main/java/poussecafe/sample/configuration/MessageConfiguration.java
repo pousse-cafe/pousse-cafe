@@ -6,7 +6,7 @@ import poussecafe.sample.domain.MessageFactory;
 import poussecafe.sample.domain.MessageKey;
 import poussecafe.sample.domain.MessageRepository;
 
-public abstract class MessageConfiguration
+public class MessageConfiguration
 extends AggregateConfiguration<MessageKey, Message, Message.Data, MessageFactory, MessageRepository> {
 
     public MessageConfiguration() {

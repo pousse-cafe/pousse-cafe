@@ -16,6 +16,7 @@ import poussecafe.storable.ActiveStorableRepository;
 import poussecafe.storage.ConsequenceEmissionPolicy;
 import poussecafe.storage.TransactionRunner;
 
+@SuppressWarnings("rawtypes")
 public class MetaApplicationContext {
 
     private MetaApplicationConfiguration configuration;
@@ -43,7 +44,7 @@ public class MetaApplicationContext {
     public MetaApplicationContext(MetaApplicationConfiguration configuration) {
         this.configuration = configuration;
 
-        StorageConfiguration storageConfiguration = configuration.getStorageConfiguration().get();
+        StorageConfiguration storageConfiguration = configuration.getStorageConfiguration();
         consequenceEmissionPolicy = storageConfiguration.getConsequenceEmissionPolicy().get();
         transactionRunner = storageConfiguration.getTransactionRunner().get();
 
@@ -53,7 +54,7 @@ public class MetaApplicationContext {
         consequenceJournal = new ConsequenceJournal();
 
         injector = new Injector();
-        injector.registerInjectableService(configuration.getIdGenerator().get());
+        injector.registerInjectableService(configuration.getIdGenerator());
 
         configureContext();
         injector.injectDependencies();
@@ -62,6 +63,7 @@ public class MetaApplicationContext {
 
     private void configureContext() {
         configureAggregateServices();
+        configureServices();
         configureProcessManagerServices();
         configureWorkflows();
         configureConsequenceEmitters();
@@ -74,13 +76,11 @@ public class MetaApplicationContext {
     }
 
     protected void configureAggregateServices() {
-        Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> configurations = configuration
-                .getAggregateConfigurations()
-                .get();
+        Set<ActiveStorableConfiguration> configurations = configuration.getAggregateConfigurations();
         configureStorableServices(configurations);
     }
 
-    protected void configureStorableServices(Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> configurations) {
+    protected void configureStorableServices(Set<ActiveStorableConfiguration> configurations) {
         for (ActiveStorableConfiguration<?, ?, ?, ?, ?> storableConfiguration : configurations) {
             storableConfiguration.setConsequenceEmissionPolicy(consequenceEmissionPolicy);
             Class<?> storableClass = storableConfiguration.getStorableClass();
@@ -91,13 +91,20 @@ public class MetaApplicationContext {
 
             injector.registerInjectableService(repository);
             injector.registerInjectableService(factory);
+            injector.addInjectionCandidate(factory);
+        }
+    }
+
+    protected void configureServices() {
+        for (Object service : configuration.getServices()) {
+            injector.registerInjectableService(service);
+            injector.addInjectionCandidate(service);
         }
     }
 
     protected void configureProcessManagerServices() {
-        Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> configurations = configuration
-                .getProcessManagerConfigurations()
-                .get();
+        Set<ActiveStorableConfiguration> configurations = configuration
+                .getProcessManagerConfigurations();
         configureStorableServices(configurations);
     }
 
@@ -106,14 +113,14 @@ public class MetaApplicationContext {
         workflowExplorer.setConsequenceListenerRegistry(consequenceListenerRegistry);
         workflowExplorer.setTransactionRunner(transactionRunner);
 
-        for (Workflow workflow : configuration.getWorkflows().get()) {
+        for (Workflow workflow : configuration.getWorkflows()) {
             workflowExplorer.configureWorkflow(workflow);
             injector.addInjectionCandidate(workflow);
         }
     }
 
     private void configureConsequenceEmitters() {
-        for (ConsequenceEmitter emitter : configuration.getConsequenceEmitters().get()) {
+        for (ConsequenceEmitter emitter : configuration.getConsequenceEmitters()) {
             consequenceEmitterRegistry.registerEmitter(emitter.getDestinationSource(), emitter);
         }
     }
@@ -121,7 +128,7 @@ public class MetaApplicationContext {
     private void configureConsequenceRouter() {
         consequenceRouter = new ConsequenceRouter();
         consequenceRouter.setConsequenceEmitterRegistry(consequenceEmitterRegistry);
-        consequenceRouter.setSourceSelector(configuration.getSourceSelector().get());
+        consequenceRouter.setSourceSelector(configuration.getSourceSelector());
     }
 
     protected void configureConsequenceEmissionPolicy() {
@@ -130,15 +137,14 @@ public class MetaApplicationContext {
 
     private void configureConsequenceJournal() {
         ConsequenceJournalEntryConfiguration entryConfiguration = configuration
-                .getConsequenceJournalEntryConfiguration()
-                .get();
+                .getConsequenceJournalEntryConfiguration();
         consequenceJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
         consequenceJournal.setEntryRepository(entryConfiguration.getConfiguredRepository().get());
         consequenceJournal.setTransactionRunner(transactionRunner);
     }
 
     private void configureConsequenceReceivers() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers().get()) {
+        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
             receiver.setConsequenceJournal(consequenceJournal);
             receiver.setListenerRegistry(consequenceListenerRegistry);
         }
@@ -156,7 +162,7 @@ public class MetaApplicationContext {
     }
 
     private void startConsequenceHandling() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers().get()) {
+        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
             receiver.startReceiving();
         }
         commandWatcher.startWatching();
@@ -172,5 +178,9 @@ public class MetaApplicationContext {
 
     public CommandProcessor getCommandProcessor() {
         return commandProcessor;
+    }
+
+    public ConsequenceRouter getConsequenceRouter() {
+        return consequenceRouter;
     }
 }

@@ -1,6 +1,5 @@
 package poussecafe.configuration;
 
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
 import poussecafe.consequence.CommandProcessor;
@@ -10,11 +9,8 @@ import poussecafe.consequence.ConsequenceReceiver;
 import poussecafe.consequence.Source;
 import poussecafe.domain.SimpleAggregate;
 import poussecafe.process.SimpleProcessManager;
-import poussecafe.service.Workflow;
-import poussecafe.storage.TransactionLessStorage;
 import poussecafe.util.FieldAccessor;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -35,45 +31,10 @@ public class MetaApplicationContextTest {
     }
 
     private void givenApplicationConfiguration() {
-        configuration = new MetaApplicationConfiguration() {
-
-            @Override
-            protected StorageConfiguration storageConfiguration() {
-                return new TransactionLessStorage();
-            }
-
-            @Override
-            protected Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> processManagerConfigurations() {
-                return new HashSet<>(asList(processManagerConfiguration()));
-            }
-
-            @Override
-            protected Set<Workflow> workflows() {
-                return new HashSet<>(asList(workflow()));
-            }
-
-            @Override
-            protected ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration() {
-                return new InMemoryConsequenceJournalEntryConfiguration();
-            }
-
-            @Override
-            protected Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> aggregateConfigurations() {
-                return new HashSet<>(asList(aggregateConfiguration()));
-            }
-        };
-    }
-
-    protected SimpleAggregateConfiguration aggregateConfiguration() {
-        return new SimpleAggregateConfiguration();
-    }
-
-    protected Workflow workflow() {
-        return new DummyWorkflow();
-    }
-
-    private SimpleProcessManagerConfiguration processManagerConfiguration() {
-        return new SimpleProcessManagerConfiguration();
+        configuration = new MetaApplicationConfiguration();
+        configuration.registerAggregate(new SimpleAggregateConfiguration());
+        configuration.registerWorkflow(new DummyWorkflow());
+        configuration.registerProcessManagerConfiguration(new SimpleProcessManagerConfiguration());
     }
 
     private void whenCreatingContext() {
@@ -137,7 +98,7 @@ public class MetaApplicationContextTest {
     }
 
     private void thenConsequenceReceiversAreStarted() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers().get()) {
+        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
             assertTrue(receiver.isStarted());
         }
     }

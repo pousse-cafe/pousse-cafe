@@ -4,8 +4,8 @@ import configuration.MyAggregateConfiguration;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
 import org.junit.Test;
+import poussecafe.test.MetaApplicationTest;
 import poussecafe.test.TestConfigurationBuilder;
-import poussecafe.test.WorkflowTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
  * not need any additional code to be written). Commands and Domain Events are processed asynchronously and routed to
  * Workflow instances exactly as they will be in a production environment.
  */
-public class MyWorkflowTest extends WorkflowTest {
+public class MyWorkflowTest extends MetaApplicationTest {
 
     private MyAggregateKey key;
 
@@ -26,9 +26,9 @@ public class MyWorkflowTest extends WorkflowTest {
      * The context will be configured with provided actors (Domain Components and Work Flows).
      */
     @Override
-    protected void registerActors() {
+    protected void registerComponents() {
         // First, let's register Domain components
-        configuration.registerAggregateConfiguration(new TestConfigurationBuilder()
+        configuration.registerAggregate(new TestConfigurationBuilder()
                 .withConfiguration(new MyAggregateConfiguration())
                 .withData(MyAggregate.Data.class)
                 .build());
@@ -43,7 +43,6 @@ public class MyWorkflowTest extends WorkflowTest {
      */
     @Test
     public void myCommandUpdatesAggregate() {
-        givenContext(); // It's here that all components are initialized
         givenAvailableAggregate(); // Let's create an aggregate to execute a command against
         whenProcessingCommand(); // Now, let's to the actual execution of the command
         thenAggregateUpdated(); // Finally, let's check that the aggregate was properly updated

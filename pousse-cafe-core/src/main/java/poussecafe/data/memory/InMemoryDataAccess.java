@@ -3,7 +3,9 @@ package poussecafe.data.memory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import poussecafe.storable.StorableData;
 import poussecafe.storable.StorableDataAccess;
@@ -14,12 +16,12 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
 
     private Class<D> dataType;
 
-    private Gson json;
+    private Gson gson;
 
     public InMemoryDataAccess(Class<D> dataType) {
         storage = new HashMap<>();
         this.dataType = dataType;
-        json = new GsonBuilder()
+        gson = new GsonBuilder()
                 .registerTypeAdapter(dataType,
                         (InstanceCreator<D>) type -> InMemoryDataUtils.newDataImplementation(dataType))
                 .registerTypeAdapter(dataType, new InMemoryDataJsonSerializer<>())
@@ -29,7 +31,16 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
 
     @Override
     public synchronized D findData(K key) {
-        return json.fromJson(storage.get(key), dataType);
+        String json = storage.get(key);
+        if (json == null) {
+            return null;
+        } else {
+            return deserialize(json);
+        }
+    }
+
+    private D deserialize(String json) {
+        return gson.fromJson(json, dataType);
     }
 
     @Override
@@ -37,7 +48,7 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
         if (storage.containsKey(data.getKey())) {
             throw new InMemoryDataException("Duplicate key");
         }
-        storage.put(data.getKey(), json.toJson(data, dataType));
+        storage.put(data.getKey(), gson.toJson(data, dataType));
     }
 
     @Override
@@ -45,12 +56,22 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
         if (!storage.containsKey(data.getKey())) {
             throw new InMemoryDataException("No entry with key " + data.getKey());
         }
-        storage.put(data.getKey(), json.toJson(data, dataType));
+        storage.put(data.getKey(), gson.toJson(data, dataType));
     }
 
     @Override
     public synchronized void deleteData(K key) {
         storage.remove(key);
+    }
+
+    public List<D> findByJSONPath(JSONPathSpecification specification) {
+        List<D> found = new ArrayList<>();
+        for (String json : storage.values()) {
+            if (specification.matches(json)) {
+                found.add(deserialize(json));
+            }
+        }
+        return found;
     }
 
 }

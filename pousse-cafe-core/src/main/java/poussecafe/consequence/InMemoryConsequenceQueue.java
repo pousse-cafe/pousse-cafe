@@ -1,19 +1,26 @@
 package poussecafe.consequence;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 public class InMemoryConsequenceQueue extends ConsequenceReceiver implements ConsequenceEmitter {
 
-    private LinkedBlockingQueue<Consequence> queue;
+    private Queue<Consequence> queue;
+
+    private Semaphore available = new Semaphore(0);
+
+    private Semaphore mutex = new Semaphore(1);
 
     public InMemoryConsequenceQueue(Source source) {
         super(source);
-        queue = new LinkedBlockingQueue<>();
+        queue = new LinkedList<>();
     }
 
     @Override
     public void emitConsequence(Consequence consequence) {
         queue.add(consequence);
+        available.release();
     }
 
     @Override
@@ -21,8 +28,12 @@ public class InMemoryConsequenceQueue extends ConsequenceReceiver implements Con
         Thread t = new Thread(() -> {
             try {
                 while (true) {
-                    Consequence consequence = queue.take();
+                    available.acquire();
+                    mutex.acquire();
+                    Consequence consequence = queue.peek();
                     onConsequence(consequence);
+                    queue.poll();
+                    mutex.release();
                 }
             } catch (InterruptedException e) {
                 return;
@@ -40,9 +51,12 @@ public class InMemoryConsequenceQueue extends ConsequenceReceiver implements Con
 
     public void waitUntilEmpty()
             throws InterruptedException {
-        while (queue.peek() != null) {
-            Thread.sleep(10);
-        }
+        boolean consequencesQueued;
+        do {
+            mutex.acquire();
+            consequencesQueued = !queue.isEmpty();
+            mutex.release();
+        } while (consequencesQueued);
     }
 
 }

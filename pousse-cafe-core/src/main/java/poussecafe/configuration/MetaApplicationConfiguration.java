@@ -10,44 +10,48 @@ import poussecafe.consequence.Source;
 import poussecafe.consequence.SourceSelector;
 import poussecafe.journal.PollingPeriod;
 import poussecafe.service.Workflow;
+import poussecafe.storage.TransactionLessStorage;
 import poussecafe.util.IdGenerator;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
 
-public abstract class MetaApplicationConfiguration {
+public class MetaApplicationConfiguration {
 
-    private Singleton<IdGenerator> idGenerator;
+    private IdGenerator idGenerator;
 
-    private Singleton<SourceSelector> sourceSelector;
+    private SourceSelector sourceSelector;
 
-    private Singleton<StorageConfiguration> storageConfiguration;
+    private StorageConfiguration storageConfiguration;
 
-    private Singleton<ConsequenceJournalEntryConfiguration> consequenceJournalEntryConfiguration;
+    private ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration;
 
-    private Singleton<Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>>> aggregateConfigurations;
+    @SuppressWarnings("rawtypes")
+    private Set<ActiveStorableConfiguration> aggregateConfigurations;
 
-    private Singleton<Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>>> processManagerConfigurations;
+    @SuppressWarnings("rawtypes")
+    private Set<ActiveStorableConfiguration> processManagerConfigurations;
 
-    private Singleton<Set<Workflow>> workflows;
+    private Set<Workflow> workflows;
 
-    private Singleton<Set<ConsequenceEmitter>> consequenceEmitters;
+    private Set<Object> services;
 
-    private Singleton<Set<ConsequenceReceiver>> consequenceReceivers;
+    private Set<ConsequenceEmitter> consequenceEmitters;
 
-    private Singleton<Set<InMemoryConsequenceQueue>> defaultConsequenceQueues;
+    private Set<ConsequenceReceiver> consequenceReceivers;
 
     public MetaApplicationConfiguration() {
-        idGenerator = new Singleton<>(this::idGenerator);
-        sourceSelector = new Singleton<>(this::sourceSelectorSupplier);
-        storageConfiguration = new Singleton<>(this::storageConfiguration);
-        consequenceJournalEntryConfiguration = new Singleton<>(this::consequenceJournalEntryConfiguration);
-        aggregateConfigurations = new Singleton<>(this::aggregateConfigurations);
-        processManagerConfigurations = new Singleton<>(this::processManagerConfigurations);
-        workflows = new Singleton<>(this::workflows);
-        consequenceEmitters = new Singleton<>(this::consequenceEmitters);
-        consequenceReceivers = new Singleton<>(this::consequenceReceivers);
-        defaultConsequenceQueues = new Singleton<>(this::defaultConsequenceQueues);
+        idGenerator = new IdGenerator();
+        sourceSelector = new DefaultSourceSelector();
+        storageConfiguration = new TransactionLessStorage();
+        consequenceJournalEntryConfiguration = new InMemoryConsequenceJournalEntryConfiguration();
+        aggregateConfigurations = new HashSet<>();
+        processManagerConfigurations = new HashSet<>();
+        workflows = new HashSet<>();
+        services = new HashSet<>();
+
+        Set<InMemoryConsequenceQueue> defaultConsequenceQueues = defaultConsequenceQueues();
+        consequenceEmitters = new HashSet<>(defaultConsequenceQueues);
+        consequenceReceivers = new HashSet<>(defaultConsequenceQueues);
     }
 
     protected IdGenerator idGenerator() {
@@ -58,68 +62,84 @@ public abstract class MetaApplicationConfiguration {
         return new DefaultSourceSelector();
     }
 
-    protected abstract StorageConfiguration storageConfiguration();
-
-    protected abstract ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration();
-
-    protected abstract Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> aggregateConfigurations();
-
-    protected abstract Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>> processManagerConfigurations();
-
-    protected abstract Set<Workflow> workflows();
-
-    protected Set<ConsequenceEmitter> consequenceEmitters() {
-        return defaultConsequenceQueues.get().stream().map(queue -> (ConsequenceEmitter) queue).collect(toSet());
-    }
-
-    protected Set<ConsequenceReceiver> consequenceReceivers() {
-        return defaultConsequenceQueues.get().stream().map(queue -> (ConsequenceReceiver) queue).collect(toSet());
-    }
-
     private Set<InMemoryConsequenceQueue> defaultConsequenceQueues() {
         InMemoryConsequenceQueue commandQueue = new InMemoryConsequenceQueue(Source.DEFAULT_COMMAND_SOURCE);
         InMemoryConsequenceQueue eventQueue = new InMemoryConsequenceQueue(Source.DEFAULT_DOMAIN_EVENT_SOURCE);
         return new HashSet<>(asList(commandQueue, eventQueue));
     }
 
-    public Singleton<IdGenerator> getIdGenerator() {
+    @SuppressWarnings("rawtypes")
+    public void registerAggregate(ActiveStorableConfiguration configuration) {
+        aggregateConfigurations.add(configuration);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void registerProcessManagerConfiguration(ActiveStorableConfiguration configuration) {
+        processManagerConfigurations.add(configuration);
+    }
+
+    public void registerWorkflow(Workflow service) {
+        workflows.add(service);
+    }
+
+    public void registerService(Object service) {
+        services.add(service);
+    }
+
+    public void replaceEmitters(Set<ConsequenceEmitter> emitters) {
+        consequenceEmitters.clear();
+        consequenceEmitters.addAll(emitters);
+    }
+
+    public void replaceReceivers(Set<ConsequenceReceiver> receivers) {
+        consequenceReceivers.clear();
+        consequenceReceivers.addAll(receivers);
+    }
+
+    public IdGenerator getIdGenerator() {
         return idGenerator;
     }
 
-    public Singleton<SourceSelector> getSourceSelector() {
+    public SourceSelector getSourceSelector() {
         return sourceSelector;
     }
 
-    public Singleton<StorageConfiguration> getStorageConfiguration() {
+    public StorageConfiguration getStorageConfiguration() {
         return storageConfiguration;
     }
 
-    public Singleton<ConsequenceJournalEntryConfiguration> getConsequenceJournalEntryConfiguration() {
+    public ConsequenceJournalEntryConfiguration getConsequenceJournalEntryConfiguration() {
         return consequenceJournalEntryConfiguration;
     }
 
-    public Singleton<Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>>> getAggregateConfigurations() {
+    @SuppressWarnings("rawtypes")
+    public Set<ActiveStorableConfiguration> getAggregateConfigurations() {
         return aggregateConfigurations;
     }
 
-    public Singleton<Set<ActiveStorableConfiguration<?, ?, ?, ?, ?>>> getProcessManagerConfigurations() {
+    @SuppressWarnings("rawtypes")
+    public Set<ActiveStorableConfiguration> getProcessManagerConfigurations() {
         return processManagerConfigurations;
     }
 
-    public Singleton<Set<Workflow>> getWorkflows() {
+    public Set<Workflow> getWorkflows() {
         return workflows;
     }
 
-    public Singleton<Set<ConsequenceEmitter>> getConsequenceEmitters() {
+    public Set<ConsequenceEmitter> getConsequenceEmitters() {
         return consequenceEmitters;
     }
 
-    public Singleton<Set<ConsequenceReceiver>> getConsequenceReceivers() {
+    public Set<ConsequenceReceiver> getConsequenceReceivers() {
         return consequenceReceivers;
     }
 
     public PollingPeriod getCommandWatcherPollingPeriod() {
         return PollingPeriod.DEFAULT_POLLING_PERIOD;
+    }
+
+    public Set<Object> getServices() {
+        return services;
     }
 
 }

@@ -1,3 +1,5 @@
+![Maven status](https://maven-badges.herokuapp.com/maven-central/org.pousse-cafe-framework/pousse-cafe-core/badge.svg)
+
 # Introduction
 
 Pousse-Café is a framework assisting you in writing applications following Domain Driven Design methodology. While DDD

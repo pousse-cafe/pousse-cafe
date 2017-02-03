@@ -1,23 +1,53 @@
 package poussecafe.sample.app;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import poussecafe.configuration.ConsequenceJournalEntryConfiguration;
-import poussecafe.configuration.InMemoryConsequenceJournalEntryConfiguration;
-import poussecafe.configuration.StorageConfiguration;
-import poussecafe.spring.SpringMetaApplicationConfiguration;
-import poussecafe.storage.TransactionLessStorage;
+import poussecafe.sample.configuration.CustomerConfiguration;
+import poussecafe.sample.configuration.MessageConfiguration;
+import poussecafe.sample.configuration.OrderConfiguration;
+import poussecafe.sample.configuration.ProductConfiguration;
+import poussecafe.sample.configuration.SampleAppConfiguration;
 
 @Configuration
-public class PousseCafeConfiguration extends SpringMetaApplicationConfiguration {
+public class PousseCafeConfiguration extends SampleAppConfiguration implements InitializingBean {
+
+    @Autowired
+    private CustomerConfiguration customerConfiguration;
+
+    @Autowired
+    private MessageConfiguration messageConfiguration;
+
+    @Autowired
+    private OrderConfiguration orderConfiguration;
+
+    @Autowired
+    private ProductConfiguration productConfiguration;
 
     @Override
-    public StorageConfiguration storageConfiguration() {
-        return new TransactionLessStorage();
+    public void afterPropertiesSet()
+            throws Exception {
+        registerComponents();
     }
 
     @Override
-    protected ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration() {
-        return new InMemoryConsequenceJournalEntryConfiguration();
+    protected CustomerConfiguration customerConfiguration() {
+        return customerConfiguration;
+    }
+
+    @Override
+    protected MessageConfiguration messageConfiguration() {
+        return messageConfiguration;
+    }
+
+    @Override
+    protected OrderConfiguration orderConfiguration() {
+        return orderConfiguration;
+    }
+
+    @Override
+    protected ProductConfiguration productConfiguration() {
+        return productConfiguration;
     }
 
 }
