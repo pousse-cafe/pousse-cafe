@@ -7,7 +7,7 @@ jdk:
 - oraclejdk8
 after_success:
 - wget -O settings.xml https://raw.githubusercontent.com/pousse-cafe/pousse-cafe-deploy/master/snapshot_release_settings.xml
-- ./can_auto_deploy.sh && mvn deploy --settings settings.xml -Pci-deploy
+- ./can_auto_deploy.sh && mvn deploy --settings settings.xml
 env:
   global:
   - secure: hC6gKhcKEQpq/8p7o44eXZ8jzcYbXuYMr93NAdA//InSn4A12OQioVaGsbbz3BDstDlhNlJBp11wAHSWLpYeq4ajHIpL7QgDUILb3F4urgTNnHOFyC3zix/1N/QB/QJR6eCmAZsQd7UtgwBOkM/0Men5jwbKNAMRpJ+EqIIcDZ4Xj3/efRDG9hznyXiym1w3CcOhvdSaSDhlV+03UgBrOzzDw2Kfoaw1n6nQQEM8T2nm9o2gLmSB1EDwpRZX0iVNWdUUnnRBf8Wl0y75Ji3/29hOMhOcCPGBnJNkJY4Dg2imZNQHIPwjNfAtbl0Ezv/zwn+GHosOcMFRj14oiXEz3DfcpUcfk1LrhPt1TuNJNEhznYdgm750ydJwrTR/jWpttHdOyRnb+XIjxVpBdXHN0+wiMMLZbkN3ArvUjl1MX7ya2L4q06yLILOK6ZjDHGIwt/sUq5VMCxkwChUMAUpAnUU7yTEdJP3SKkqz+jRwogzETl/2mDVBlTCKmtsBONtHxbDVAIAF9GeL7Rxy4I4LzxkmuPAZtTz0CXJoBVzT31DqQxjQ7mGzFeHVZcO3W2VBweag5cBtCZWF8+Uv9OzpZhs8mDisGe6oip9kvP1TfviYaiIQfmy8YrzNoY0GJAxSS67z03hPyFNEC34stM2ORANBQa5+QcmdXBkBIs6pThk=
