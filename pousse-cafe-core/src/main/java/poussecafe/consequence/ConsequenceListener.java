@@ -2,6 +2,7 @@ package poussecafe.consequence;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -49,16 +50,12 @@ public class ConsequenceListener {
         this.listenerId = listenerId;
     }
 
-    public void consume(Consequence consequence) {
+    public ProcessManagerKey consume(Consequence consequence) {
         try {
-            method.invoke(target, consequence);
+            return (ProcessManagerKey) method.invoke(target, consequence);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throwInvokeError(e);
+            throw new ConsequenceConsumptionException("Unable to invoke listener", e);
         }
-    }
-
-    private void throwInvokeError(Exception e) {
-        throw new ConsequenceConsumptionException("Unable to invoke listener", e);
     }
 
     @Override

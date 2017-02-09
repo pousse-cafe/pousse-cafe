@@ -16,7 +16,7 @@ public class OrderRejected extends DomainEvent {
         setDescription(description);
     }
 
-    public ProductKey getKey() {
+    public ProductKey getProductKey() {
         return key;
     }
 

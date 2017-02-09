@@ -3,6 +3,7 @@ package poussecafe.journal;
 import java.util.List;
 import java.util.ListIterator;
 import poussecafe.consequence.Consequence;
+import poussecafe.process.ProcessManagerKey;
 import poussecafe.storable.Storable;
 import poussecafe.storable.StorableData;
 
@@ -19,6 +20,10 @@ public class Entry extends Storable<EntryKey, Entry.Data> {
 
     public void logSuccess() {
         getLogsWithNoSuccessDetected().add(EntryLog.successLog());
+    }
+
+    public void logSuccess(ProcessManagerKey createdProcessManagerKey) {
+        getLogsWithNoSuccessDetected().add(EntryLog.successLog(createdProcessManagerKey));
     }
 
     private List<EntryLog> getLogsWithNoSuccessDetected() {
@@ -55,6 +60,10 @@ public class Entry extends Storable<EntryKey, Entry.Data> {
             }
         }
         return null;
+    }
+
+    public EntryLog getSuccessLog() {
+        return getLogs().stream().filter(log -> log.getType() == EntryLogType.SUCCESS).findFirst().orElse(null);
     }
 
     public static interface Data extends StorableData<EntryKey> {

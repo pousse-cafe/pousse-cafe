@@ -1,7 +1,7 @@
 package poussecafe.sample;
 
 import org.junit.Test;
-import poussecafe.sample.command.PlaceOrder;
+import poussecafe.sample.command.StartOrderPlacementProcess;
 import poussecafe.sample.configuration.OrderConfiguration;
 import poussecafe.sample.configuration.ProductConfiguration;
 import poussecafe.sample.domain.CustomerKey;
@@ -10,7 +10,7 @@ import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.sample.workflow.OrderManagement;
+import poussecafe.sample.workflow.OrderPlacement;
 import poussecafe.test.MetaApplicationTest;
 import poussecafe.test.TestConfigurationBuilder;
 
@@ -38,7 +38,7 @@ public class OrderManagementTest extends MetaApplicationTest {
                 .withData(Order.Data.class)
                 .build());
 
-        configuration.registerWorkflow(new OrderManagement());
+        configuration.registerWorkflow(new OrderPlacement());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class OrderManagementTest extends MetaApplicationTest {
         description.customerKey = customerKey;
         description.reference = "ref";
         description.units = 1;
-        processAndAssertSuccess(new PlaceOrder(productKey, description));
+        processAndWait(new StartOrderPlacementProcess(productKey, description));
     }
 
     private void thenOrderCreated() {

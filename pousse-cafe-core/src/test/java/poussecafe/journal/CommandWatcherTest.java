@@ -107,6 +107,9 @@ public class CommandWatcherTest {
             EntryLog log = mock(EntryLog.class);
             when(log.getDescription()).thenReturn("description");
             when(entry.getLastFailureLog()).thenReturn(log);
+        } else {
+            EntryLog log = mock(EntryLog.class);
+            when(entry.getSuccessLog()).thenReturn(log);
         }
     }
 

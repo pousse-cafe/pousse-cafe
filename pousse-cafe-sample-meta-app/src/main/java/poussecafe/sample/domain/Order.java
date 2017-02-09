@@ -19,7 +19,7 @@ public class Order extends AggregateRoot<OrderKey, Data> {
         addDomainEvent(new OrderSettled(getData().getKey()));
     }
 
-    public void send() {
+    public void ship() {
         addDomainEvent(new OrderReadyForShipping(getData().getKey()));
     }
 

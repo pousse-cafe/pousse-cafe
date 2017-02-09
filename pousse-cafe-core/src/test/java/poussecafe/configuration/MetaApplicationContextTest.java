@@ -8,7 +8,6 @@ import poussecafe.consequence.ConsequenceListenerRoutingKey;
 import poussecafe.consequence.ConsequenceReceiver;
 import poussecafe.consequence.Source;
 import poussecafe.domain.SimpleAggregate;
-import poussecafe.process.SimpleProcessManager;
 import poussecafe.util.FieldAccessor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,7 +33,6 @@ public class MetaApplicationContextTest {
         configuration = new MetaApplicationConfiguration();
         configuration.registerAggregate(new SimpleAggregateConfiguration());
         configuration.registerWorkflow(new DummyWorkflow());
-        configuration.registerProcessManagerConfiguration(new SimpleProcessManagerConfiguration());
     }
 
     private void whenCreatingContext() {
@@ -46,11 +44,6 @@ public class MetaApplicationContextTest {
 
         services = context.getStorableServices(SimpleAggregate.class);
         assertThat(services.getStorableClass(), equalTo(SimpleAggregate.class));
-        assertThat(services.getFactory(), notNullValue());
-        assertThat(services.getRepository(), notNullValue());
-
-        services = context.getStorableServices(SimpleProcessManager.class);
-        assertThat(services.getStorableClass(), equalTo(SimpleProcessManager.class));
         assertThat(services.getFactory(), notNullValue());
         assertThat(services.getRepository(), notNullValue());
     }

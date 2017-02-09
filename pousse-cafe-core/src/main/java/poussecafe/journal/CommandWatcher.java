@@ -8,6 +8,8 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.process.ProcessManager;
+import poussecafe.process.ProcessManagerRepository;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -21,6 +23,8 @@ public class CommandWatcher {
     private List<PollingRequest> requests;
 
     private Timer timer;
+
+    private ProcessManagerRepository processManagerRepository;
 
     private CommandWatcher(PollingPeriod pollingPeriod) {
         setPollingPeriod(pollingPeriod);
@@ -58,17 +62,55 @@ public class CommandWatcher {
         Iterator<PollingRequest> iterator = requests.iterator();
         while (iterator.hasNext()) {
             PollingRequest request = iterator.next();
-            Entry journalEntry = consequenceJournal.findCommandEntry(request.getConsequenceId());
-            if (journalEntry != null) {
-                if (journalEntry.hasLogWithType(EntryLogType.SUCCESS)) {
-                    request.completeWithSuccess();
-                    iterator.remove();
-                } else if (journalEntry.hasLogWithType(EntryLogType.FAILURE)) {
-                    request.completeWithFailure(journalEntry.getLastFailureLog().getDescription());
-                    iterator.remove();
-                }
+            if (request.hasProcessManagerKey()) {
+                handlePendingRequestWithProcessManager(iterator, request);
+            } else {
+                handlePendingRequest(iterator, request);
             }
         }
+    }
+
+    private void handlePendingRequestWithProcessManager(Iterator<PollingRequest> iterator,
+            PollingRequest request) {
+        ProcessManager processManager = processManagerRepository.get(request.getProcessManagerKey());
+        if (processManager.isInFinalState()) {
+            request.completeWithSuccess();
+            iterator.remove();
+        } else if (processManager.isInErrorState()) {
+            request.completeWithFailure(processManager.getErrorState().getErrorDescription());
+            iterator.remove();
+        }
+    }
+
+    private void handlePendingRequest(Iterator<PollingRequest> iterator,
+            PollingRequest request) {
+        Entry journalEntry = consequenceJournal.findCommandEntry(request.getConsequenceId());
+        if (journalEntry != null) {
+            if (journalEntry.hasLogWithType(EntryLogType.SUCCESS)) {
+                handlePendingRequestIfSuccessfulHandling(iterator, request, journalEntry.getSuccessLog());
+            } else if (journalEntry.hasLogWithType(EntryLogType.FAILURE)) {
+                handlePendingRequestIfFailedHandling(iterator, request, journalEntry.getLastFailureLog());
+            }
+        }
+    }
+
+    private void handlePendingRequestIfSuccessfulHandling(Iterator<PollingRequest> iterator,
+            PollingRequest request,
+            EntryLog log) {
+        if(!log.hasCreatedProcessManagerKey()) {
+            request.completeWithSuccess();
+            iterator.remove();
+        } else {
+            request.setProcessManagerKey(log.getCreatedProcessManagerKey());
+            handlePendingRequestWithProcessManager(iterator, request);
+        }
+    }
+
+    private void handlePendingRequestIfFailedHandling(Iterator<PollingRequest> iterator,
+            PollingRequest request,
+            EntryLog log) {
+        request.completeWithFailure(log.getDescription());
+        iterator.remove();
     }
 
     public synchronized Future<CommandHandlingResult> watchCommand(String commandId) {
@@ -80,6 +122,11 @@ public class CommandWatcher {
     public void setConsequenceJournal(ConsequenceJournal consequenceJournal) {
         checkThat(value(consequenceJournal).notNull().because("Consequence journal cannot be null"));
         this.consequenceJournal = consequenceJournal;
+    }
+
+    public void setProcessManagerRepository(ProcessManagerRepository processManagerRepository) {
+        checkThat(value(processManagerRepository).notNull().because("Process manager repository cannot be null"));
+        this.processManagerRepository = processManagerRepository;
     }
 
 }

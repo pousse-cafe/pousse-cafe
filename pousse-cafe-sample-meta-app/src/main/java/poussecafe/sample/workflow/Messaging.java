@@ -10,6 +10,7 @@ import poussecafe.sample.domain.MessageRepository;
 import poussecafe.sample.domain.OrderCreated;
 import poussecafe.sample.domain.OrderReadyForShipping;
 import poussecafe.sample.domain.OrderRejected;
+import poussecafe.sample.domain.OrderSettled;
 import poussecafe.service.Workflow;
 
 public class Messaging extends Workflow {
@@ -34,6 +35,11 @@ public class Messaging extends Workflow {
 
     @DomainEventListener
     public void createMessage(OrderCreated event) {
+        createMessageWithContent(event.getOrderKey().getCustomerKey(), event);
+    }
+
+    @DomainEventListener
+    public void createMessage(OrderSettled event) {
         createMessageWithContent(event.getOrderKey().getCustomerKey(), event);
     }
 

@@ -82,17 +82,21 @@ public class MetaApplicationContext {
 
     protected void configureStorableServices(Set<ActiveStorableConfiguration> configurations) {
         for (ActiveStorableConfiguration<?, ?, ?, ?, ?> storableConfiguration : configurations) {
-            storableConfiguration.setConsequenceEmissionPolicy(consequenceEmissionPolicy);
-            Class<?> storableClass = storableConfiguration.getStorableClass();
-            ActiveStorableRepository<?, ?, ?> repository = storableConfiguration.getConfiguredRepository().get();
-            ActiveStorableFactory<?, ?, ?> factory = storableConfiguration.getConfiguredFactory().get();
-
-            storableRegistry.registerServices(new StorableServices(storableClass, repository, factory));
-
-            injector.registerInjectableService(repository);
-            injector.registerInjectableService(factory);
-            injector.addInjectionCandidate(factory);
+            configureStorableService(storableConfiguration);
         }
+    }
+
+    private void configureStorableService(ActiveStorableConfiguration<?, ?, ?, ?, ?> storableConfiguration) {
+        storableConfiguration.setConsequenceEmissionPolicy(consequenceEmissionPolicy);
+        Class<?> storableClass = storableConfiguration.getStorableClass();
+        ActiveStorableRepository<?, ?, ?> repository = storableConfiguration.getConfiguredRepository().get();
+        ActiveStorableFactory<?, ?, ?> factory = storableConfiguration.getConfiguredFactory().get();
+
+        storableRegistry.registerServices(new StorableServices(storableClass, repository, factory));
+
+        injector.registerInjectableService(repository);
+        injector.registerInjectableService(factory);
+        injector.addInjectionCandidate(factory);
     }
 
     protected void configureServices() {
@@ -103,9 +107,7 @@ public class MetaApplicationContext {
     }
 
     protected void configureProcessManagerServices() {
-        Set<ActiveStorableConfiguration> configurations = configuration
-                .getProcessManagerConfigurations();
-        configureStorableServices(configurations);
+        configureStorableService(configuration.getProcessManagerConfiguration());
     }
 
     protected void configureWorkflows() {
@@ -153,6 +155,7 @@ public class MetaApplicationContext {
     private void configureCommandWatcher() {
         commandWatcher = CommandWatcher.withPollingPeriod(configuration.getCommandWatcherPollingPeriod());
         commandWatcher.setConsequenceJournal(consequenceJournal);
+        commandWatcher.setProcessManagerRepository(configuration.getProcessManagerConfiguration().repository().get());
     }
 
     private void configureCommandProcessor() {

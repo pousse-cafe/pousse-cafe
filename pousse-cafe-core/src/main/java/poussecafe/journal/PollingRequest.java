@@ -2,6 +2,7 @@ package poussecafe.journal;
 
 import java.util.concurrent.CompletableFuture;
 import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -13,6 +14,8 @@ public class PollingRequest {
     private String consequenceId;
 
     private CompletableFuture<CommandHandlingResult> completable;
+
+    private ProcessManagerKey processManagerKey;
 
     public PollingRequest(String consequenceId, CompletableFuture<CommandHandlingResult> completable) {
         setConsequenceId(consequenceId);
@@ -37,6 +40,14 @@ public class PollingRequest {
         completable = future;
     }
 
+    public ProcessManagerKey getProcessManagerKey() {
+        return processManagerKey;
+    }
+
+    public void setProcessManagerKey(ProcessManagerKey processManagerKey) {
+        this.processManagerKey = processManagerKey;
+    }
+
     public void completeWithSuccess() {
         completable.complete(CommandHandlingResult.success());
     }
@@ -44,4 +55,9 @@ public class PollingRequest {
     public void completeWithFailure(String description) {
         completable.complete(CommandHandlingResult.failure(description));
     }
+
+    public boolean hasProcessManagerKey() {
+        return processManagerKey != null;
+    }
+
 }

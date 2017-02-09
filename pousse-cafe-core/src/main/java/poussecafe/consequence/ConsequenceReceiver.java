@@ -1,6 +1,8 @@
 package poussecafe.consequence;
 
 import poussecafe.journal.ConsequenceJournal;
+import poussecafe.journal.SuccessfulConsumption;
+import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -39,8 +41,9 @@ public abstract class ConsequenceReceiver {
     private void consumeConsequence(Consequence receivedConsequence,
             ConsequenceListener listener) {
         try {
-            listener.consume(receivedConsequence);
-            consequenceJournal.logSuccessfulConsumption(listener.getListenerId(), receivedConsequence);
+            ProcessManagerKey createdProcessManagerKey = listener.consume(receivedConsequence);
+            consequenceJournal.logSuccessfulConsumption(listener.getListenerId(),
+                    new SuccessfulConsumption(receivedConsequence, createdProcessManagerKey));
         } catch (Exception e) {
             consequenceJournal.logFailedConsumption(listener.getListenerId(), receivedConsequence, e);
         }

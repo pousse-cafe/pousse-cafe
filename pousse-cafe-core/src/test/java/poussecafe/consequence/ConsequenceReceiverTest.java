@@ -3,6 +3,7 @@ package poussecafe.consequence;
 import org.junit.Test;
 import poussecafe.configuration.TestCommand;
 import poussecafe.journal.ConsequenceJournal;
+import poussecafe.journal.SuccessfulConsumption;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -63,7 +64,8 @@ public abstract class ConsequenceReceiverTest {
     }
 
     private void thenJournalUpdatedWithSuccess() {
-        verify(consequenceJournal).logSuccessfulConsumption(listener.getListenerId(), consequence);
+        verify(consequenceJournal).logSuccessfulConsumption(listener.getListenerId(),
+                new SuccessfulConsumption(consequence));
     }
 
 }

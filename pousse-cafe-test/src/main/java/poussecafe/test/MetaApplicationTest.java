@@ -43,11 +43,12 @@ public abstract class MetaApplicationTest {
     }
 
     protected void processAndAssertSuccess(Command command) {
-        CommandHandlingResult result = context()
-                .getCommandProcessor()
-                .processCommand(command)
-                .get(Duration.ofSeconds(1));
+        CommandHandlingResult result = processAndWait(command);
         assertTrue(result.toString(), result.isSuccess());
+    }
+
+    protected CommandHandlingResult processAndWait(Command command) {
+        return context().getCommandProcessor().processCommand(command).get(Duration.ofSeconds(1));
     }
 
     @SuppressWarnings("unchecked")

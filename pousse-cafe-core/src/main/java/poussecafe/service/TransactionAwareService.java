@@ -1,5 +1,7 @@
 package poussecafe.service;
 
+import java.util.function.Supplier;
+import poussecafe.process.ProcessManagerKey;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -16,5 +18,9 @@ public abstract class TransactionAwareService {
 
     protected void runInTransaction(Runnable runnable) {
         runner.runInTransaction(runnable);
+    }
+
+    protected ProcessManagerKey runInTransaction(Supplier<ProcessManagerKey> supplier) {
+        return runner.runInTransaction(supplier);
     }
 }

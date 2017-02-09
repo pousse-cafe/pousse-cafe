@@ -58,7 +58,7 @@ public abstract class ConsequenceJournalTest {
     }
 
     protected void whenLoggingSuccessfulConsumption() {
-        journal.logSuccessfulConsumption(listenerId, consequence);
+        journal.logSuccessfulConsumption(listenerId, new SuccessfulConsumption(consequence));
     }
 
     protected void whenLoggingIgnoredConsumption() {

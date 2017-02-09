@@ -65,7 +65,7 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
         storage.remove(key);
     }
 
-    public List<D> findByJSONPath(JSONPathSpecification specification) {
+    public synchronized List<D> findByJSONPath(JSONPathSpecification specification) {
         List<D> found = new ArrayList<>();
         for (String json : storage.values()) {
             if (specification.matches(json)) {

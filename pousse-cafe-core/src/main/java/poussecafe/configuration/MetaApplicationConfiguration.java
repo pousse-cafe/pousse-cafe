@@ -28,9 +28,6 @@ public class MetaApplicationConfiguration {
     @SuppressWarnings("rawtypes")
     private Set<ActiveStorableConfiguration> aggregateConfigurations;
 
-    @SuppressWarnings("rawtypes")
-    private Set<ActiveStorableConfiguration> processManagerConfigurations;
-
     private Set<Workflow> workflows;
 
     private Set<Object> services;
@@ -39,19 +36,22 @@ public class MetaApplicationConfiguration {
 
     private Set<ConsequenceReceiver> consequenceReceivers;
 
+    private ProcessManagerConfiguration processManagerConfiguration;
+
     public MetaApplicationConfiguration() {
         idGenerator = new IdGenerator();
         sourceSelector = new DefaultSourceSelector();
         storageConfiguration = new TransactionLessStorage();
         consequenceJournalEntryConfiguration = new InMemoryConsequenceJournalEntryConfiguration();
         aggregateConfigurations = new HashSet<>();
-        processManagerConfigurations = new HashSet<>();
         workflows = new HashSet<>();
         services = new HashSet<>();
 
         Set<InMemoryConsequenceQueue> defaultConsequenceQueues = defaultConsequenceQueues();
         consequenceEmitters = new HashSet<>(defaultConsequenceQueues);
         consequenceReceivers = new HashSet<>(defaultConsequenceQueues);
+
+        processManagerConfiguration = new InMemoryProcessManagerConfiguration();
     }
 
     protected IdGenerator idGenerator() {
@@ -71,11 +71,6 @@ public class MetaApplicationConfiguration {
     @SuppressWarnings("rawtypes")
     public void registerAggregate(ActiveStorableConfiguration configuration) {
         aggregateConfigurations.add(configuration);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void registerProcessManagerConfiguration(ActiveStorableConfiguration configuration) {
-        processManagerConfigurations.add(configuration);
     }
 
     public void registerWorkflow(Workflow service) {
@@ -117,11 +112,6 @@ public class MetaApplicationConfiguration {
         return aggregateConfigurations;
     }
 
-    @SuppressWarnings("rawtypes")
-    public Set<ActiveStorableConfiguration> getProcessManagerConfigurations() {
-        return processManagerConfigurations;
-    }
-
     public Set<Workflow> getWorkflows() {
         return workflows;
     }
@@ -140,6 +130,10 @@ public class MetaApplicationConfiguration {
 
     public Set<Object> getServices() {
         return services;
+    }
+
+    public ProcessManagerConfiguration getProcessManagerConfiguration() {
+        return processManagerConfiguration;
     }
 
 }

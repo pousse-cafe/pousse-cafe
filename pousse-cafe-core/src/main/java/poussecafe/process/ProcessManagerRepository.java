@@ -2,14 +2,23 @@ package poussecafe.process;
 
 import poussecafe.storable.ActiveStorableRepository;
 
-public abstract class ProcessManagerRepository<K, D extends ProcessManagerData<K>, P extends ProcessManager<K, D>>
-extends ActiveStorableRepository<P, K, D> {
+public class ProcessManagerRepository
+extends ActiveStorableRepository<ProcessManager, ProcessManagerKey, ProcessManager.Data> {
 
     @Override
-    protected P newStorable() {
-        return newProcessManager();
+    protected ProcessManager newStorable() {
+        return new ProcessManager();
     }
 
-    protected abstract P newProcessManager();
+    @Override
+    protected void addData(ProcessManager processManager) {
+        processManager.refreshStateMachineData();
+        super.addData(processManager);
+    }
 
+    @Override
+    protected void updateData(ProcessManager processManager) {
+        processManager.refreshStateMachineData();
+        super.updateData(processManager);
+    }
 }

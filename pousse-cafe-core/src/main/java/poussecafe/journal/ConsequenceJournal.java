@@ -16,11 +16,15 @@ public class ConsequenceJournal extends TransactionAwareService {
     private EntryFactory entryFactory;
 
     public void logSuccessfulConsumption(String listenerId,
-            Consequence consequence) {
-        EntrySaver saver = buildSaver(listenerId, consequence);
+            SuccessfulConsumption consumption) {
+        EntrySaver saver = buildSaver(listenerId, consumption.getConsumedConsequence());
         runInTransaction(() -> {
             Entry entry = saver.findOrBuild();
-            entry.logSuccess();
+            if (consumption.hasCreatedProcessManagerKey()) {
+                entry.logSuccess(consumption.getCreatedProcessManagerKey());
+            } else {
+                entry.logSuccess();
+            }
             saver.save();
         });
     }

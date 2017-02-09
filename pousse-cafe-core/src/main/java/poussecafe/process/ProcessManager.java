@@ -1,46 +1,73 @@
 package poussecafe.process;
 
-import poussecafe.consequence.Command;
-import poussecafe.consequence.ScheduledConsequence;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.storable.ActiveStorable;
+import poussecafe.storable.StorableData;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.equalTo;
-import static poussecafe.check.Predicates.not;
+public class ProcessManager extends ActiveStorable<ProcessManagerKey, ProcessManager.Data> {
 
-public class ProcessManager<K, D extends ProcessManagerData<K>> extends ActiveStorable<K, D> {
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(State.class, new StateSerializer())
+            .registerTypeAdapter(State.class, new StateDeserializer())
+            .registerTypeAdapter(StateMachine.class, new StateMachineSerializer())
+            .registerTypeAdapter(StateMachine.class, new StateMachineDeserializer())
+            .create();
 
-    public static final String INITIAL_STATE = "init";
+    private transient StateMachine stateMachine;
 
-    public static final String FINAL_STATE = "final";
-
-    public ProcessManager() {
-        getData().setCurrentState(INITIAL_STATE);
+    void setStateMachine(StateMachine stateMachine) {
+        this.stateMachine = stateMachine;
+        stateMachine.setUnitOfConsequence(getUnitOfConsequence());
+        setStateMachineData(stateMachine);
     }
 
-    protected void transitionTo(String state) {
-        checkThat(value(getData().getCurrentState())
-                .verifies(not(equalTo(FINAL_STATE)))
-                .because("This process already ended"));
-        checkThat(value(state)
-                .verifies(equalTo(getData().getExpectedNextState()))
-                .because("Next state must match expected"));
-        getData().setCurrentState(state);
+    private void setStateMachineData(StateMachine stateMachine) {
+        getData().setStateMachineData(GSON.toJson(stateMachine, StateMachine.class));
     }
 
-    protected void emitCommand(Command command) {
-        getUnitOfConsequence().addConsequence(command);
+    public boolean isInFinalState() {
+        return Final.NAME.equals(getStateMachine().getCurrentState().getName());
     }
 
-    protected void scheduleCommand(ScheduledConsequence scheduledConsequence) {
-        getUnitOfConsequence().scheduledConsequence(scheduledConsequence);
+    public StateMachine getStateMachine() {
+        if (stateMachine != null) {
+            return stateMachine;
+        } else {
+            stateMachine = getStateMachineFromData();
+            return stateMachine;
+        }
     }
 
-    protected void setExpectedNextState(String state) {
-        checkThat(value(getData().getCurrentState())
-                .verifies(not(equalTo(FINAL_STATE)))
-                .because("This process already ended"));
-        getData().setExpectedNextState(state);
+    private StateMachine getStateMachineFromData() {
+        try {
+            StateMachine stateMachine = GSON.fromJson(getData().getStateMachineData(),
+                    StateMachine.class);
+            stateMachine.setUnitOfConsequence(getUnitOfConsequence());
+            return stateMachine;
+        } catch (Exception e) {
+            throw new PousseCafeException("Unable to instantiate state machine from data", e);
+        }
     }
+
+    public boolean isInErrorState() {
+        return ErrorState.NAME.equals(getStateMachine().getCurrentState().getName());
+    }
+
+    public ErrorState getErrorState() {
+        return (ErrorState) getStateMachine().getCurrentState();
+    }
+
+    void refreshStateMachineData() {
+        setStateMachineData(stateMachine);
+    }
+
+    public interface Data extends StorableData<ProcessManagerKey> {
+
+        void setStateMachineData(String data);
+
+        String getStateMachineData();
+    }
+
 }

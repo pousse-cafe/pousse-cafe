@@ -2,14 +2,19 @@ package poussecafe.process;
 
 import poussecafe.storable.ActiveStorableFactory;
 
-public abstract class ProcessManagerFactory<K, A extends ProcessManager<K, D>, D extends ProcessManagerData<K>>
-extends ActiveStorableFactory<K, A, D> {
+public class ProcessManagerFactory
+extends ActiveStorableFactory<ProcessManagerKey, ProcessManager, ProcessManager.Data> {
 
     @Override
-    protected A newStorable() {
-        return newProcessManager();
+    protected ProcessManager newStorable() {
+        return new ProcessManager();
     }
 
-    protected abstract A newProcessManager();
+    public ProcessManager buildWithInitialState(ProcessManagerKey key,
+            StateMachine stateMachine) {
+        ProcessManager processManager = newStorableWithKey(key);
+        processManager.setStateMachine(stateMachine);
+        return processManager;
+    }
 
 }

@@ -4,12 +4,14 @@ import poussecafe.configuration.MetaApplicationConfiguration;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.workflow.CustomerCreation;
 import poussecafe.sample.workflow.Messaging;
-import poussecafe.sample.workflow.OrderManagement;
+import poussecafe.sample.workflow.OrderPlacement;
+import poussecafe.sample.workflow.OrderSettlement;
+import poussecafe.sample.workflow.OrderShipment;
 import poussecafe.sample.workflow.ProductManagement;
 
 public abstract class SampleAppConfiguration extends MetaApplicationConfiguration {
 
-    protected void registerComponents() {
+    public void registerComponents() {
         registerAggregate(customerConfiguration());
         registerAggregate(messageConfiguration());
         registerAggregate(orderConfiguration());
@@ -19,7 +21,9 @@ public abstract class SampleAppConfiguration extends MetaApplicationConfiguratio
 
         registerWorkflow(new CustomerCreation());
         registerWorkflow(new Messaging());
-        registerWorkflow(new OrderManagement());
+        registerWorkflow(new OrderPlacement());
+        registerWorkflow(new OrderSettlement());
+        registerWorkflow(new OrderShipment());
         registerWorkflow(new ProductManagement());
     }
 
