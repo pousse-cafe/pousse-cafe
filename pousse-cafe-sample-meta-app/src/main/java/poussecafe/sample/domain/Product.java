@@ -36,10 +36,10 @@ public class Product extends AggregateRoot<ProductKey, Data> {
     public void placeOrder(OrderDescription description) {
         int unitsAvailable = getData().getAvailableUnits();
         if (description.units > unitsAvailable) {
-            getUnitOfConsequence().addConsequence(new OrderRejected(getData().getKey(), description));
+            addDomainEvent(new OrderRejected(getData().getKey(), description));
         } else {
             getData().setAvailableUnits(unitsAvailable - description.units);
-            getUnitOfConsequence().addConsequence(new OrderPlaced(getData().getKey(), description));
+            addDomainEvent(new OrderPlaced(getData().getKey(), description));
         }
     }
 

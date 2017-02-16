@@ -93,7 +93,7 @@ public class OrderPlacement extends Workflow {
         ProcessManagerKey processManagerKey = processManagerKey(event);
         executeTransition(processManagerKey, current -> {
             WaitOrderCreated waitOrderCreated = (WaitOrderCreated) current;
-            return waitOrderCreated.toEnd();
+            return waitOrderCreated.toFinal();
         });
     }
 

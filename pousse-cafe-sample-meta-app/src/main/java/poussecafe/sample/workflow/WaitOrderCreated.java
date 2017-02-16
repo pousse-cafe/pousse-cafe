@@ -4,7 +4,7 @@ import poussecafe.process.Final;
 import poussecafe.process.State;
 
 public class WaitOrderCreated extends State {
-    public Final toEnd() {
+    public Final toFinal() {
         return new Final();
     }
 }
