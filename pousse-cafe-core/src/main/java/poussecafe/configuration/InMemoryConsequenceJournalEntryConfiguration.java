@@ -1,17 +1,17 @@
 package poussecafe.configuration;
 
 import poussecafe.data.memory.InMemoryDataFactory;
-import poussecafe.journal.Entry;
-import poussecafe.journal.EntryFactory;
-import poussecafe.journal.EntryRepository;
-import poussecafe.journal.InMemoryEntryDataAccess;
+import poussecafe.journal.InMemoryJournalEntryDataAccess;
+import poussecafe.journal.JournalEntry;
+import poussecafe.journal.JournalEntryFactory;
+import poussecafe.journal.JournalEntryRepository;
 
 public class InMemoryConsequenceJournalEntryConfiguration extends ConsequenceJournalEntryConfiguration {
 
     public InMemoryConsequenceJournalEntryConfiguration() {
-        super(Entry.class, EntryFactory.class, EntryRepository.class);
-        setDataFactory(new InMemoryDataFactory<>(Entry.Data.class));
-        setDataAccess(new InMemoryEntryDataAccess());
+        super(JournalEntry.class, JournalEntryFactory.class, JournalEntryRepository.class);
+        setDataFactory(new InMemoryDataFactory<>(JournalEntry.Data.class));
+        setDataAccess(new InMemoryJournalEntryDataAccess());
     }
 
 }

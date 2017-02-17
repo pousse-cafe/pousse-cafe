@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-public enum EntryLogType {
+public enum JournalEntryLogType {
     FAILURE,
     SUCCESS,
     IGNORE

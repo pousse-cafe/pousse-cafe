@@ -8,23 +8,23 @@ import poussecafe.util.KeyTest;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class EntryKeyTest extends KeyTest<EntryKey> {
+public class JournalEntryKeyTest extends KeyTest<JournalEntryKey> {
 
     private static final String REFERENCE_CONSEQUENCE_ID = "consequenceId1";
 
     private static final String REFERENCE_LISTENER_ID = "listener1";
 
     @Override
-    protected EntryKey referenceKey() {
-        return new EntryKey(REFERENCE_CONSEQUENCE_ID, REFERENCE_LISTENER_ID);
+    protected JournalEntryKey referenceKey() {
+        return new JournalEntryKey(REFERENCE_CONSEQUENCE_ID, REFERENCE_LISTENER_ID);
     }
 
     @Override
     protected List<Object> otherKeys() {
         List<Object> keys = new ArrayList<>();
-        keys.add(new EntryKey("consequenceId1", "listener2"));
-        keys.add(new EntryKey("consequenceId2", "listener1"));
-        keys.add(new EntryKey("consequenceId2", "listener2"));
+        keys.add(new JournalEntryKey("consequenceId1", "listener2"));
+        keys.add(new JournalEntryKey("consequenceId2", "listener1"));
+        keys.add(new JournalEntryKey("consequenceId2", "listener2"));
         return keys;
     }
 

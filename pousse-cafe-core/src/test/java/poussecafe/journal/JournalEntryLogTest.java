@@ -6,9 +6,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public abstract class EntryLogTest {
+public abstract class JournalEntryLogTest {
 
-    private EntryLog entryLog;
+    private JournalEntryLog entryLog;
 
     @Test
     public void logHasTimestamp() {
@@ -20,7 +20,7 @@ public abstract class EntryLogTest {
         entryLog = buildLog();
     }
 
-    protected abstract EntryLog buildLog();
+    protected abstract JournalEntryLog buildLog();
 
     private void thenLogHasTimestamp() {
         assertThat(entryLog.getTimestamp(), notNullValue());
@@ -32,9 +32,9 @@ public abstract class EntryLogTest {
         thenLogHasType(expectedType());
     }
 
-    protected abstract EntryLogType expectedType();
+    protected abstract JournalEntryLogType expectedType();
 
-    private void thenLogHasType(EntryLogType expectedType) {
+    private void thenLogHasType(JournalEntryLogType expectedType) {
         assertThat(entryLog.getType(), is(expectedType));
     }
 

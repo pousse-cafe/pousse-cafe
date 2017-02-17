@@ -12,10 +12,10 @@ import static org.mockito.Mockito.when;
 public abstract class ConsequenceJournalTest {
 
     @Mock
-    protected EntryRepository entryRepository;
+    protected JournalEntryRepository entryRepository;
 
     @Mock
-    protected EntryFactory entryFactory;
+    protected JournalEntryFactory entryFactory;
 
     @InjectMocks
     protected ConsequenceJournal journal;

@@ -1,15 +1,15 @@
 package poussecafe.journal;
 
-public class IgnoreLogTest extends EntryLogTest {
+public class IgnoreLogTest extends JournalEntryLogTest {
 
     @Override
-    protected EntryLog buildLog() {
-        return EntryLog.ignoreLog();
+    protected JournalEntryLog buildLog() {
+        return JournalEntryLog.ignoreLog();
     }
 
     @Override
-    protected EntryLogType expectedType() {
-        return EntryLogType.IGNORE;
+    protected JournalEntryLogType expectedType() {
+        return JournalEntryLogType.IGNORE;
     }
 
     @Override

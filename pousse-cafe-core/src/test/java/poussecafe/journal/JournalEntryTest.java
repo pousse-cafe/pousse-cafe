@@ -11,11 +11,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EntryTest {
+public class JournalEntryTest {
 
     private Consequence consequence;
 
-    private Entry entry;
+    private JournalEntry entry;
 
     @Test
     public void loggingSuccessAddsLog() {
@@ -26,9 +26,9 @@ public class EntryTest {
 
     private void givenEntry() {
         givenConsequence();
-        EntryFactory entryFactory = new EntryFactory();
-        entryFactory.setStorableDataFactory(new InMemoryDataFactory<>(Entry.Data.class));
-        entry = entryFactory.buildEntryForEmittedConsequence(new EntryKey(consequence.getId(), "listenerId"),
+        JournalEntryFactory entryFactory = new JournalEntryFactory();
+        entryFactory.setStorableDataFactory(new InMemoryDataFactory<>(JournalEntry.Data.class));
+        entry = entryFactory.buildEntryForEmittedConsequence(new JournalEntryKey(consequence.getId(), "listenerId"),
                 consequence);
     }
 
@@ -42,7 +42,7 @@ public class EntryTest {
     }
 
     private void thenSuccessLogAdded() {
-        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(EntryLogType.SUCCESS));
+        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(JournalEntryLogType.SUCCESS));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class EntryTest {
     }
 
     private void thenSuccessLogDetected() {
-        assertTrue(entry.hasLogWithType(EntryLogType.SUCCESS));
+        assertTrue(entry.getStatus() == JournalEntryStatus.SUCCESS);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class EntryTest {
     }
 
     private void thenIgnoredLogAdded() {
-        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(EntryLogType.IGNORE));
+        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(JournalEntryLogType.IGNORE));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class EntryTest {
     }
 
     private void thenFailureLogAdded() {
-        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(EntryLogType.FAILURE));
+        assertThat(entry.getLogs().get(entry.getLogs().size() - 1).getType(), equalTo(JournalEntryLogType.FAILURE));
     }
 
     @Test(expected = DomainException.class)

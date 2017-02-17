@@ -1,18 +1,18 @@
 package poussecafe.journal;
 
-public class FailureLogTest extends EntryLogTest {
+public class FailureLogTest extends JournalEntryLogTest {
 
     private String failureDescription;
 
     @Override
-    protected EntryLog buildLog() {
+    protected JournalEntryLog buildLog() {
         failureDescription = "description";
-        return EntryLog.failureLog(failureDescription);
+        return JournalEntryLog.failureLog(failureDescription);
     }
 
     @Override
-    protected EntryLogType expectedType() {
-        return EntryLogType.FAILURE;
+    protected JournalEntryLogType expectedType() {
+        return JournalEntryLogType.FAILURE;
     }
 
     @Override

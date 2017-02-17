@@ -5,13 +5,13 @@ import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.emptyOrNullString;
 import static poussecafe.check.Predicates.not;
 
-public class EntryKey {
+public class JournalEntryKey {
 
     private String consequenceId;
 
     private String listenerId;
 
-    public EntryKey(String consequenceId, String listenerId) {
+    public JournalEntryKey(String consequenceId, String listenerId) {
         setConsequenceId(consequenceId);
         setListenerId(listenerId);
     }
@@ -50,7 +50,7 @@ public class EntryKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        EntryKey other = (EntryKey) obj;
+        JournalEntryKey other = (JournalEntryKey) obj;
         if (!consequenceId.equals(other.consequenceId)) {
             return false;
         }

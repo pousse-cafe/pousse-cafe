@@ -6,17 +6,17 @@ import poussecafe.process.ProcessManagerKey;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class EntryLog {
+public class JournalEntryLog {
 
     private LocalDateTime dateTime;
 
-    private EntryLogType type;
+    private JournalEntryLogType type;
 
     private String description;
 
     private ProcessManagerKey createdProcessManagerKey;
 
-    private EntryLog(LocalDateTime dateTime, EntryLogType type, String description,
+    private JournalEntryLog(LocalDateTime dateTime, JournalEntryLogType type, String description,
             ProcessManagerKey createdProcessManagerKey) {
         setDateTime(dateTime);
         setType(type);
@@ -24,20 +24,20 @@ public class EntryLog {
         setCreatedProcessManagerKey(createdProcessManagerKey);
     }
 
-    public static EntryLog successLog() {
+    public static JournalEntryLog successLog() {
         return successLog(null);
     }
 
-    public static EntryLog successLog(ProcessManagerKey createdProcessManagerKey) {
-        return new EntryLog(LocalDateTime.now(), EntryLogType.SUCCESS, "Success", createdProcessManagerKey);
+    public static JournalEntryLog successLog(ProcessManagerKey createdProcessManagerKey) {
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.SUCCESS, "Success", createdProcessManagerKey);
     }
 
-    public static EntryLog failureLog(String failureDescription) {
-        return new EntryLog(LocalDateTime.now(), EntryLogType.FAILURE, failureDescription, null);
+    public static JournalEntryLog failureLog(String failureDescription) {
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.FAILURE, failureDescription, null);
     }
 
-    public static EntryLog ignoreLog() {
-        return new EntryLog(LocalDateTime.now(), EntryLogType.IGNORE, "Ignore", null);
+    public static JournalEntryLog ignoreLog() {
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.IGNORE, "Ignore", null);
     }
 
     public LocalDateTime getTimestamp() {
@@ -49,11 +49,11 @@ public class EntryLog {
         this.dateTime = dateTime;
     }
 
-    public EntryLogType getType() {
+    public JournalEntryLogType getType() {
         return type;
     }
 
-    private void setType(EntryLogType type) {
+    private void setType(JournalEntryLogType type) {
         checkThat(value(type).notNull().because("Log type cannot be null"));
         this.type = type;
     }

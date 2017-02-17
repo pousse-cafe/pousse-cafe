@@ -1,15 +1,15 @@
 package poussecafe.journal;
 
-public class SuccessLogTest extends EntryLogTest {
+public class SuccessLogTest extends JournalEntryLogTest {
 
     @Override
-    protected EntryLog buildLog() {
-        return EntryLog.successLog();
+    protected JournalEntryLog buildLog() {
+        return JournalEntryLog.successLog();
     }
 
     @Override
-    protected EntryLogType expectedType() {
-        return EntryLogType.SUCCESS;
+    protected JournalEntryLogType expectedType() {
+        return JournalEntryLogType.SUCCESS;
     }
 
     @Override

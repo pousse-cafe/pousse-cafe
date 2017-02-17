@@ -11,15 +11,15 @@ import static poussecafe.check.Checks.checkThat;
 
 public class ConsequenceJournal extends TransactionAwareService {
 
-    private EntryRepository entryRepository;
+    private JournalEntryRepository entryRepository;
 
-    private EntryFactory entryFactory;
+    private JournalEntryFactory entryFactory;
 
     public void logSuccessfulConsumption(String listenerId,
             SuccessfulConsumption consumption) {
-        EntrySaver saver = buildSaver(listenerId, consumption.getConsumedConsequence());
+        JournalEntrySaver saver = buildSaver(listenerId, consumption.getConsumedConsequence());
         runInTransaction(() -> {
-            Entry entry = saver.findOrBuild();
+            JournalEntry entry = saver.findOrBuild();
             if (consumption.hasCreatedProcessManagerKey()) {
                 entry.logSuccess(consumption.getCreatedProcessManagerKey());
             } else {
@@ -29,14 +29,14 @@ public class ConsequenceJournal extends TransactionAwareService {
         });
     }
 
-    private EntrySaver buildSaver(String listenerId,
+    private JournalEntrySaver buildSaver(String listenerId,
             Consequence consequence) {
-        EntrySaver saver = new EntrySaver();
+        JournalEntrySaver saver = new JournalEntrySaver();
         saver.setConsequence(consequence);
         saver.setEntryFactory(entryFactory);
         saver.setEntryRepository(entryRepository);
 
-        EntryKey entryKey = new EntryKey(consequence.getId(), listenerId);
+        JournalEntryKey entryKey = new JournalEntryKey(consequence.getId(), listenerId);
         saver.setEntryKey(entryKey);
 
         return saver;
@@ -44,9 +44,9 @@ public class ConsequenceJournal extends TransactionAwareService {
 
     public void logIgnoredConsumption(String listenerId,
             Consequence consequence) {
-        EntrySaver saver = buildSaver(listenerId, consequence);
+        JournalEntrySaver saver = buildSaver(listenerId, consequence);
         runInTransaction(() -> {
-            Entry entry = saver.findOrBuild();
+            JournalEntry entry = saver.findOrBuild();
             entry.logIgnored();
             saver.save();
         });
@@ -55,9 +55,9 @@ public class ConsequenceJournal extends TransactionAwareService {
     public void logFailedConsumption(String listenerId,
             Consequence consequence,
             Exception e) {
-        EntrySaver saver = buildSaver(listenerId, consequence);
+        JournalEntrySaver saver = buildSaver(listenerId, consequence);
         runInTransaction(() -> {
-            Entry entry = saver.findOrBuild();
+            JournalEntry entry = saver.findOrBuild();
             entry.logFailure(ExceptionUtils.getStackTrace(e));
             saver.save();
         });
@@ -65,17 +65,17 @@ public class ConsequenceJournal extends TransactionAwareService {
 
     public boolean isSuccessfullyConsumed(Consequence consequence,
             String listenerId) {
-        Entry entry = entryRepository
-                .find(new EntryKey(consequence.getId(), listenerId));
+        JournalEntry entry = entryRepository
+                .find(new JournalEntryKey(consequence.getId(), listenerId));
         if (entry == null) {
             return false;
         } else {
-            return entry.hasLogWithType(EntryLogType.SUCCESS);
+            return entry.getStatus() == JournalEntryStatus.SUCCESS;
         }
     }
 
-    public Entry findCommandEntry(String commandId) {
-        List<Entry> entries = entryRepository.findByConsequenceId(commandId);
+    public JournalEntry findCommandEntry(String commandId) {
+        List<JournalEntry> entries = entryRepository.findByConsequenceId(commandId);
         if (entries.size() > 1) {
             throw new AssertionFailedException("Consequence was consumed by several listeners, cannot be a command");
         }
@@ -86,12 +86,12 @@ public class ConsequenceJournal extends TransactionAwareService {
         }
     }
 
-    public void setEntryRepository(EntryRepository entryRepository) {
+    public void setEntryRepository(JournalEntryRepository entryRepository) {
         checkThat(value(entryRepository).notNull().because("Entry repository cannot be null"));
         this.entryRepository = entryRepository;
     }
 
-    public void setEntryFactory(EntryFactory entryFactory) {
+    public void setEntryFactory(JournalEntryFactory entryFactory) {
         checkThat(value(entryFactory).notNull().because("Entry factory cannot be null"));
         this.entryFactory = entryFactory;
     }

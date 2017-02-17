@@ -6,26 +6,26 @@ import java.util.function.Predicate;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-class HasLog implements Predicate<List<EntryLog>> {
+class HasLog implements Predicate<List<JournalEntryLog>> {
 
-    private EntryLogType type;
+    private JournalEntryLogType type;
 
-    private HasLog(EntryLogType type) {
+    private HasLog(JournalEntryLogType type) {
         setType(type);
     }
 
-    private void setType(EntryLogType type) {
+    private void setType(JournalEntryLogType type) {
         checkThat(value(type).notNull().because("Log type cannot be null"));
         this.type = type;
     }
 
-    public static HasLog hasLog(EntryLogType type) {
+    public static HasLog hasLog(JournalEntryLogType type) {
         return new HasLog(type);
     }
 
     @Override
-    public boolean test(List<EntryLog> item) {
-        for (EntryLog log : item) {
+    public boolean test(List<JournalEntryLog> item) {
+        for (JournalEntryLog log : item) {
             if (log.getType() == type) {
                 return true;
             }

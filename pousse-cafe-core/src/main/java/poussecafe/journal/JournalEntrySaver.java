@@ -5,21 +5,21 @@ import poussecafe.consequence.Consequence;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-class EntrySaver {
+class JournalEntrySaver {
 
-    private EntryKey entryKey;
+    private JournalEntryKey entryKey;
 
     private Consequence consequence;
 
-    private EntryRepository entryRepository;
+    private JournalEntryRepository entryRepository;
 
-    private EntryFactory entryFactory;
+    private JournalEntryFactory entryFactory;
 
-    private Entry entry;
+    private JournalEntry entry;
 
     private boolean entryFound;
 
-    public Entry findOrBuild() {
+    public JournalEntry findOrBuild() {
         entry = entryRepository.find(entryKey);
         if (entry == null) {
             entryFound = false;
@@ -38,7 +38,7 @@ class EntrySaver {
         }
     }
 
-    public void setEntryKey(EntryKey entryKey) {
+    public void setEntryKey(JournalEntryKey entryKey) {
         checkThat(value(entryKey).notNull().because("Entry key cannot be null"));
         this.entryKey = entryKey;
     }
@@ -48,12 +48,12 @@ class EntrySaver {
         this.consequence = consequence;
     }
 
-    public void setEntryRepository(EntryRepository entryRepository) {
+    public void setEntryRepository(JournalEntryRepository entryRepository) {
         checkThat(value(entryRepository).notNull().because("Entry repository cannot be null"));
         this.entryRepository = entryRepository;
     }
 
-    public void setEntryFactory(EntryFactory entryFactory) {
+    public void setEntryFactory(JournalEntryFactory entryFactory) {
         checkThat(value(entryFactory).notNull().because("Entry factory cannot be null"));
         this.entryFactory = entryFactory;
     }

@@ -84,11 +84,11 @@ public class CommandWatcher {
 
     private void handlePendingRequest(Iterator<PollingRequest> iterator,
             PollingRequest request) {
-        Entry journalEntry = consequenceJournal.findCommandEntry(request.getConsequenceId());
+        JournalEntry journalEntry = consequenceJournal.findCommandEntry(request.getConsequenceId());
         if (journalEntry != null) {
-            if (journalEntry.hasLogWithType(EntryLogType.SUCCESS)) {
+            if (journalEntry.getStatus() == JournalEntryStatus.SUCCESS) {
                 handlePendingRequestIfSuccessfulHandling(iterator, request, journalEntry.getSuccessLog());
-            } else if (journalEntry.hasLogWithType(EntryLogType.FAILURE)) {
+            } else if (journalEntry.getStatus() == JournalEntryStatus.FAILURE) {
                 handlePendingRequestIfFailedHandling(iterator, request, journalEntry.getLastFailureLog());
             }
         }
@@ -96,7 +96,7 @@ public class CommandWatcher {
 
     private void handlePendingRequestIfSuccessfulHandling(Iterator<PollingRequest> iterator,
             PollingRequest request,
-            EntryLog log) {
+            JournalEntryLog log) {
         if(!log.hasCreatedProcessManagerKey()) {
             request.completeWithSuccess();
             iterator.remove();
@@ -108,7 +108,7 @@ public class CommandWatcher {
 
     private void handlePendingRequestIfFailedHandling(Iterator<PollingRequest> iterator,
             PollingRequest request,
-            EntryLog log) {
+            JournalEntryLog log) {
         request.completeWithFailure(log.getDescription());
         iterator.remove();
     }

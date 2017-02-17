@@ -25,9 +25,9 @@ public class SuccessfulConsumptionDetectionTest extends ConsequenceJournalTest {
     }
 
     protected void givenExistingEntryWithSuccessLogValue(boolean successLog) {
-        Entry entry = mock(Entry.class);
-        when(entry.hasLogWithType(EntryLogType.SUCCESS)).thenReturn(successLog);
-        when(entryRepository.find(new EntryKey(consequence.getId(), listenerId))).thenReturn(entry);
+        JournalEntry entry = mock(JournalEntry.class);
+        when(entry.getStatus()).thenReturn(successLog ? JournalEntryStatus.SUCCESS : JournalEntryStatus.FAILURE);
+        when(entryRepository.find(new JournalEntryKey(consequence.getId(), listenerId))).thenReturn(entry);
     }
 
     private void whenDetectingSuccessfulConsumption() {

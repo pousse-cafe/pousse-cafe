@@ -12,9 +12,9 @@ import static org.mockito.Mockito.when;
 
 public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
 
-    protected Entry newEntry;
+    protected JournalEntry newEntry;
 
-    protected Entry existingEntry;
+    protected JournalEntry existingEntry;
 
     @Override
     protected TransactionRunner transactionRunner() {
@@ -33,8 +33,8 @@ public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
     protected abstract void givenConsequence();
 
     protected void givenNoEntryYetInJournal() {
-        newEntry = mock(Entry.class);
-        EntryKey key = new EntryKey(consequence.getId(), listenerId);
+        newEntry = mock(JournalEntry.class);
+        JournalEntryKey key = new JournalEntryKey(consequence.getId(), listenerId);
         when(entryFactory.buildEntryForEmittedConsequence(key, consequence)).thenReturn(newEntry);
     }
 
@@ -54,8 +54,8 @@ public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
     }
 
     protected void givenExistingEntryInJournal() {
-        existingEntry = mock(Entry.class);
-        EntryKey key = new EntryKey(consequence.getId(), listenerId);
+        existingEntry = mock(JournalEntry.class);
+        JournalEntryKey key = new JournalEntryKey(consequence.getId(), listenerId);
         when(entryRepository.find(key)).thenReturn(existingEntry);
     }
 

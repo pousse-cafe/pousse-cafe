@@ -96,19 +96,19 @@ public class CommandWatcherTest {
     }
 
     private void givenSuccessfulCommandHandling() {
-        givenEntryWithLogType(EntryLogType.SUCCESS);
+        givenEntryWithStatus(JournalEntryStatus.SUCCESS);
     }
 
-    private void givenEntryWithLogType(EntryLogType type) {
-        Entry entry = mock(Entry.class);
-        when(entry.hasLogWithType(type)).thenReturn(true);
+    private void givenEntryWithStatus(JournalEntryStatus status) {
+        JournalEntry entry = mock(JournalEntry.class);
+        when(entry.getStatus()).thenReturn(status);
         when(consequenceJournal.findCommandEntry(command.getId())).thenReturn(entry);
-        if (type == EntryLogType.FAILURE) {
-            EntryLog log = mock(EntryLog.class);
+        if (status == JournalEntryStatus.FAILURE) {
+            JournalEntryLog log = mock(JournalEntryLog.class);
             when(log.getDescription()).thenReturn("description");
             when(entry.getLastFailureLog()).thenReturn(log);
         } else {
-            EntryLog log = mock(EntryLog.class);
+            JournalEntryLog log = mock(JournalEntryLog.class);
             when(entry.getSuccessLog()).thenReturn(log);
         }
     }
@@ -133,6 +133,6 @@ public class CommandWatcherTest {
     }
 
     private void givenFailedCommandHandling() {
-        givenEntryWithLogType(EntryLogType.FAILURE);
+        givenEntryWithStatus(JournalEntryStatus.FAILURE);
     }
 }

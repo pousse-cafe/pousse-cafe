@@ -10,6 +10,8 @@ import poussecafe.consequence.ConsequenceReceiver;
 import poussecafe.consequence.ConsequenceRouter;
 import poussecafe.journal.CommandWatcher;
 import poussecafe.journal.ConsequenceJournal;
+import poussecafe.journal.ConsequenceReplayer;
+import poussecafe.journal.JournalEntryRepository;
 import poussecafe.service.Workflow;
 import poussecafe.storable.ActiveStorableFactory;
 import poussecafe.storable.ActiveStorableRepository;
@@ -33,6 +35,8 @@ public class MetaApplicationContext {
 
     private StorableRegistry storableRegistry;
 
+    private JournalEntryRepository journalEntryRepository;
+
     private ConsequenceJournal consequenceJournal;
 
     private ConsequenceRouter consequenceRouter;
@@ -40,6 +44,8 @@ public class MetaApplicationContext {
     private CommandWatcher commandWatcher;
 
     private CommandProcessor commandProcessor;
+
+    private ConsequenceReplayer consequenceReplayer;
 
     public MetaApplicationContext(MetaApplicationConfiguration configuration) {
         this.configuration = configuration;
@@ -73,6 +79,7 @@ public class MetaApplicationContext {
         configureConsequenceReceivers();
         configureCommandWatcher();
         configureCommandProcessor();
+        configureConsequenceReplayer();
     }
 
     protected void configureAggregateServices() {
@@ -141,7 +148,8 @@ public class MetaApplicationContext {
         ConsequenceJournalEntryConfiguration entryConfiguration = configuration
                 .getConsequenceJournalEntryConfiguration();
         consequenceJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
-        consequenceJournal.setEntryRepository(entryConfiguration.getConfiguredRepository().get());
+        journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
+        consequenceJournal.setEntryRepository(journalEntryRepository);
         consequenceJournal.setTransactionRunner(transactionRunner);
     }
 
@@ -162,6 +170,12 @@ public class MetaApplicationContext {
         commandProcessor = new CommandProcessor();
         commandProcessor.setConsequenceRouter(consequenceRouter);
         commandProcessor.setCommandWatcher(commandWatcher);
+    }
+
+    private void configureConsequenceReplayer() {
+        consequenceReplayer = new ConsequenceReplayer();
+        consequenceReplayer.setConsequenceRouter(consequenceRouter);
+        consequenceReplayer.setJournalEntryRepository(journalEntryRepository);
     }
 
     private void startConsequenceHandling() {
@@ -185,5 +199,13 @@ public class MetaApplicationContext {
 
     public ConsequenceRouter getConsequenceRouter() {
         return consequenceRouter;
+    }
+
+    public JournalEntryRepository getJournalEntryRepository() {
+        return journalEntryRepository;
+    }
+
+    public ConsequenceReplayer getConsequenceReplayer() {
+        return consequenceReplayer;
     }
 }
