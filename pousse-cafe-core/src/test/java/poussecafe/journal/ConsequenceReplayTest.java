@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 public abstract class ConsequenceReplayTest {
 
     @Mock
-    protected JournalEntryRepository journalEntryRepository;
+    protected ConsumptionFailureRepository consumptionFailureRepository;
 
     @Mock
     protected ConsequenceRouter consequenceRouter;
@@ -28,12 +28,10 @@ public abstract class ConsequenceReplayTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    protected JournalEntry entryWithStatus(JournalEntryStatus status,
-            Consequence consequence) {
-        JournalEntry entry = mock(JournalEntry.class);
-        when(entry.getStatus()).thenReturn(status);
-        when(entry.getConsequence()).thenReturn(consequence);
-        return entry;
+    protected ConsumptionFailure failureWithConsequence(Consequence consequence) {
+        ConsumptionFailure failure = mock(ConsumptionFailure.class);
+        when(failure.getConsequence()).thenReturn(consequence);
+        return failure;
     }
 
     protected void thenConsequenceIsRouted(Consequence consequence) {

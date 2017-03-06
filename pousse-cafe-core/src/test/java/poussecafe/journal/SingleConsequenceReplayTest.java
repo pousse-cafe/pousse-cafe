@@ -4,6 +4,7 @@ import org.junit.Test;
 import poussecafe.consequence.Consequence;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,19 +21,16 @@ public class SingleConsequenceReplayTest extends ConsequenceReplayTest {
 
     private void givenFailedConsequence() {
         givenConsequence();
-        givenAtLeastOneFailedConsumption();
+        givenFailedConsumption();
     }
 
     private void givenConsequence() {
         consequence = consequenceWithId("consequenceId");
     }
 
-    private void givenAtLeastOneFailedConsumption() {
-        JournalEntry successEntry = entryWithStatus(JournalEntryStatus.SUCCESS, consequence);
-        JournalEntry inProgressEntry = entryWithStatus(JournalEntryStatus.IN_PROGRESS, consequence);
-        JournalEntry failedEntry = entryWithStatus(JournalEntryStatus.FAILURE, consequence);
-        when(journalEntryRepository.findByConsequenceId(consequence.getId()))
-        .thenReturn(asList(successEntry, inProgressEntry, failedEntry));
+    private void givenFailedConsumption() {
+        ConsumptionFailure failure = failureWithConsequence(consequence);
+        when(consumptionFailureRepository.findConsumptionFailures(consequence.getId())).thenReturn(asList(failure));
     }
 
     private void whenReplayingConsequence() {
@@ -56,10 +54,7 @@ public class SingleConsequenceReplayTest extends ConsequenceReplayTest {
     }
 
     private void givenNoFailedConsumption() {
-        JournalEntry successEntry = entryWithStatus(JournalEntryStatus.SUCCESS, consequence);
-        JournalEntry inProgressEntry = entryWithStatus(JournalEntryStatus.IN_PROGRESS, consequence);
-        when(journalEntryRepository.findByConsequenceId(consequence.getId()))
-        .thenReturn(asList(successEntry, inProgressEntry));
+        when(consumptionFailureRepository.findConsumptionFailures(consequence.getId())).thenReturn(emptyList());
     }
 
     private void thenConsequenceIsNotRouted() {

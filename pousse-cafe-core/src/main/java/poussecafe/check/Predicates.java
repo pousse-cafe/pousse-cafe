@@ -40,4 +40,8 @@ public class Predicates {
     public static Predicate<Integer> lessThan(Integer other) {
         return integer -> integer != null && integer.compareTo(other) < 0;
     }
+
+    public static <C extends Collection<T>, T> Predicate<C> emptyOrNullCollection() {
+        return collection -> collection == null || collection.isEmpty();
+    }
 }

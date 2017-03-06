@@ -11,6 +11,7 @@ import poussecafe.consequence.ConsequenceRouter;
 import poussecafe.journal.CommandWatcher;
 import poussecafe.journal.ConsequenceJournal;
 import poussecafe.journal.ConsequenceReplayer;
+import poussecafe.journal.ConsumptionFailureRepository;
 import poussecafe.journal.JournalEntryRepository;
 import poussecafe.service.Workflow;
 import poussecafe.storable.ActiveStorableFactory;
@@ -35,7 +36,7 @@ public class MetaApplicationContext {
 
     private StorableRegistry storableRegistry;
 
-    private JournalEntryRepository journalEntryRepository;
+    private ConsumptionFailureRepository consumptionFailureRepository;
 
     private ConsequenceJournal consequenceJournal;
 
@@ -148,7 +149,11 @@ public class MetaApplicationContext {
         ConsequenceJournalEntryConfiguration entryConfiguration = configuration
                 .getConsequenceJournalEntryConfiguration();
         consequenceJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
-        journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
+
+        JournalEntryRepository journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
+        consumptionFailureRepository = new ConsumptionFailureRepository();
+        consumptionFailureRepository.setJournalEntryRepository(journalEntryRepository);
+
         consequenceJournal.setEntryRepository(journalEntryRepository);
         consequenceJournal.setTransactionRunner(transactionRunner);
     }
@@ -175,7 +180,7 @@ public class MetaApplicationContext {
     private void configureConsequenceReplayer() {
         consequenceReplayer = new ConsequenceReplayer();
         consequenceReplayer.setConsequenceRouter(consequenceRouter);
-        consequenceReplayer.setJournalEntryRepository(journalEntryRepository);
+        consequenceReplayer.setConsumptionFailureRepository(consumptionFailureRepository);
     }
 
     private void startConsequenceHandling() {
@@ -201,8 +206,8 @@ public class MetaApplicationContext {
         return consequenceRouter;
     }
 
-    public JournalEntryRepository getJournalEntryRepository() {
-        return journalEntryRepository;
+    public ConsumptionFailureRepository getConsumptionFailureRepository() {
+        return consumptionFailureRepository;
     }
 
     public ConsequenceReplayer getConsequenceReplayer() {

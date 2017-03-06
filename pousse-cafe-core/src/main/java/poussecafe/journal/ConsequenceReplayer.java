@@ -1,52 +1,43 @@
 package poussecafe.journal;
 
 import java.util.List;
-import java.util.Set;
 import poussecafe.consequence.Consequence;
 import poussecafe.consequence.ConsequenceRouter;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public class ConsequenceReplayer {
 
-    private JournalEntryRepository journalEntryRepository;
+    private ConsumptionFailureRepository consumptionFailureRepository;
 
     private ConsequenceRouter consequenceRouter;
 
     public void replayConsequence(String consequenceId) {
-        List<JournalEntry> entries = journalEntryRepository.findByConsequenceId(consequenceId);
-        replayConsequenceOfEntries(entries);
+        List<ConsumptionFailure> entries = consumptionFailureRepository.findConsumptionFailures(consequenceId);
+        replayFailedConsumptions(entries);
     }
 
-    private void replayConsequenceOfEntries(List<JournalEntry> entries) {
-        replayConsequences(uniqueConsequencesOfFailedEntries(entries));
+    private void replayFailedConsumptions(List<ConsumptionFailure> entries) {
+        replayConsequences(entries.stream().map(ConsumptionFailure::getConsequence).collect(toList()));
     }
 
-    private Set<Consequence> uniqueConsequencesOfFailedEntries(List<JournalEntry> entries) {
-        return entries
-                .stream()
-                .filter(entry -> entry.getStatus() == JournalEntryStatus.FAILURE)
-                .map(JournalEntry::getConsequence)
-                .collect(toSet());
-    }
-
-    private void replayConsequences(Set<Consequence> consequences) {
+    private void replayConsequences(List<Consequence> consequences) {
         for (Consequence consequence : consequences) {
             consequenceRouter.routeConsequence(consequence);
         }
     }
 
     public void replayAllFailedConsequences() {
-        List<JournalEntry> failedEntries = journalEntryRepository.findByStatus(JournalEntryStatus.FAILURE);
-        replayConsequenceOfEntries(failedEntries);
-
+        List<ConsumptionFailure> entries = consumptionFailureRepository.findAllConsumptionFailures();
+        replayFailedConsumptions(entries);
     }
 
-    public void setJournalEntryRepository(JournalEntryRepository journalEntryRepository) {
-        checkThat(value(journalEntryRepository).notNull().because("Journal entry repository cannot be null"));
-        this.journalEntryRepository = journalEntryRepository;
+    public void setConsumptionFailureRepository(ConsumptionFailureRepository consumptionFailureRepository) {
+        checkThat(
+                value(consumptionFailureRepository).notNull().because("Consumption failure repository cannot be null"));
+        this.consumptionFailureRepository = consumptionFailureRepository;
     }
 
     public void setConsequenceRouter(ConsequenceRouter consequenceRouter) {

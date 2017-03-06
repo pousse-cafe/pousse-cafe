@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 public class AllConsequencesReplayTest extends ConsequenceReplayTest {
 
-    private List<JournalEntry> failedEntries;
+    private List<ConsumptionFailure> failures;
 
     @Test
     public void allFailedReplayedRouted() {
@@ -20,16 +20,16 @@ public class AllConsequencesReplayTest extends ConsequenceReplayTest {
     }
 
     private void givenFailedConsequences() {
-        failedEntries = new ArrayList<>();
-        failedEntries.add(failedConsequenceEntry("id1"));
-        failedEntries.add(failedConsequenceEntry("id2"));
-        failedEntries.add(failedConsequenceEntry("id3"));
-        when(journalEntryRepository.findByStatus(JournalEntryStatus.FAILURE)).thenReturn(failedEntries);
+        failures = new ArrayList<>();
+        failures.add(failureWithConsequence("id1"));
+        failures.add(failureWithConsequence("id2"));
+        failures.add(failureWithConsequence("id3"));
+        when(consumptionFailureRepository.findAllConsumptionFailures()).thenReturn(failures);
     }
 
-    protected JournalEntry failedConsequenceEntry(String consequenceId) {
+    protected ConsumptionFailure failureWithConsequence(String consequenceId) {
         Consequence consequence = consequenceWithId(consequenceId);
-        JournalEntry entry = entryWithStatus(JournalEntryStatus.FAILURE, consequence);
+        ConsumptionFailure entry = failureWithConsequence(consequence);
         return entry;
     }
 
@@ -38,7 +38,7 @@ public class AllConsequencesReplayTest extends ConsequenceReplayTest {
     }
 
     private void thenFailedReplayed() {
-        for (JournalEntry failedEntry : failedEntries) {
+        for (ConsumptionFailure failedEntry : failures) {
             verify(consequenceRouter).routeConsequence(failedEntry.getConsequence());
         }
     }
