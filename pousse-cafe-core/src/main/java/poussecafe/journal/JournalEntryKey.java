@@ -62,7 +62,7 @@ public class JournalEntryKey {
 
     @Override
     public String toString() {
-        return "EntryKey [consequenceId=" + consequenceId + ", listenerId=" + listenerId + "]";
+        return "JournalEntryKey [consequenceId=" + consequenceId + ", listenerId=" + listenerId + "]";
     }
 
 }

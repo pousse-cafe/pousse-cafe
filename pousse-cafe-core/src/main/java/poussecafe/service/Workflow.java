@@ -18,13 +18,13 @@ public abstract class Workflow extends TransactionAwareService {
             StateMachine newStateMachine) {
         ProcessManager processManager = processManagerFactory.buildWithInitialState(processManagerKey, newStateMachine);
         newStateMachine.start();
-        runInTransaction(() -> processManagerRepository.add(processManager));
+        runInTransaction(ProcessManager.Data.class, () -> processManagerRepository.add(processManager));
         return processManagerKey;
     }
 
     protected void executeTransition(ProcessManagerKey processManagerKey,
             Function<State, State> transitionChooser) {
-        runInTransaction(() -> {
+        runInTransaction(ProcessManager.Data.class, () -> {
             ProcessManager processManager = processManagerRepository.get(processManagerKey);
             processManager.getStateMachine().executeTransition(transitionChooser);
             processManagerRepository.update(processManager);

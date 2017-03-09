@@ -22,9 +22,6 @@ public class Check<T> {
         if (specification.getPredicate() == null) {
             throw new PousseCafeException("No matcher in given specification");
         }
-        if (specification.getMessage() == null) {
-            throw new PousseCafeException("No message in given specification");
-        }
     }
 
     public void run() {

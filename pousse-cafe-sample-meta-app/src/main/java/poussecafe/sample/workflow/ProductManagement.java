@@ -17,12 +17,12 @@ public class ProductManagement extends Workflow {
     @CommandListener
     public void createProduct(CreateProduct command) {
         Product product = productFactory.buildProductWithNoStock(command.getProductKey());
-        runInTransaction(() -> productRepository.add(product));
+        runInTransaction(Product.Data.class, () -> productRepository.add(product));
     }
 
     @CommandListener
     public void addUnits(AddUnits command) {
-        runInTransaction(() -> {
+        runInTransaction(Product.Data.class, () -> {
             Product product = productRepository.get(command.getProductKey());
             product.addUnits(command.getUnits());
             productRepository.update(product);

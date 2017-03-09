@@ -9,7 +9,8 @@ public class ProcessManagerConfiguration extends
 ActiveStorableConfiguration<ProcessManagerKey, ProcessManager, ProcessManager.Data, ProcessManagerFactory, ProcessManagerRepository> {
 
     public ProcessManagerConfiguration() {
-        super(ProcessManager.class, ProcessManagerFactory.class, ProcessManagerRepository.class);
+        super(ProcessManager.class, ProcessManager.Data.class, ProcessManagerFactory.class,
+                ProcessManagerRepository.class);
     }
 
 }

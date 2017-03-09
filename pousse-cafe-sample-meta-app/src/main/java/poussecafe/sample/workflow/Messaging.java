@@ -30,7 +30,7 @@ public class Messaging extends Workflow {
             DomainEvent event) {
         Message message = factory.buildMessage(customerKey);
         message.setContentType(contentChooser.chooseContent(event));
-        runInTransaction(() -> repository.add(message));
+        runInTransaction(Message.Data.class, () -> repository.add(message));
     }
 
     @DomainEventListener

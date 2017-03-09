@@ -47,7 +47,7 @@ public class OrderPlacement extends Workflow {
 
     @CommandListener
     public void placeOrder(PlaceOrder command) {
-        runInTransaction(() -> {
+        runInTransaction(Product.Data.class, () -> {
             Product product = productRepository.get(command.getProductKey());
             product.placeOrder(command.getOrderDescription());
             productRepository.update(product);
@@ -72,7 +72,7 @@ public class OrderPlacement extends Workflow {
         OrderDescription description = event.getOrderDescription();
         OrderKey key = new OrderKey(event.getProductKey(), description.customerKey, description.reference);
         Order order = orderFactory.buildPlacedOrder(key, description.units);
-        runInTransaction(() -> orderRepository.add(order));
+        runInTransaction(Order.Data.class, () -> orderRepository.add(order));
     }
 
     @DomainEventListener

@@ -16,7 +16,7 @@ public class CustomerCreation extends Workflow {
     @CommandListener
     public void createCustomer(CreateCustomer command) {
         Customer customer = factory.createCustomer(command.getCustomerKey());
-        runInTransaction(() -> repository.add(customer));
+        runInTransaction(Customer.Data.class, () -> repository.add(customer));
     }
 
     public void setFactory(CustomerFactory factory) {

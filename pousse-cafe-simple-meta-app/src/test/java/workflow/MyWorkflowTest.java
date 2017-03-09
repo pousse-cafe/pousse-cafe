@@ -5,7 +5,6 @@ import domain.MyAggregate;
 import domain.MyAggregateKey;
 import org.junit.Test;
 import poussecafe.test.MetaApplicationTest;
-import poussecafe.test.TestConfigurationBuilder;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -28,10 +27,7 @@ public class MyWorkflowTest extends MetaApplicationTest {
     @Override
     protected void registerComponents() {
         // First, let's register Domain components
-        configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new MyAggregateConfiguration())
-                .withData(MyAggregate.Data.class)
-                .build());
+        configuration.registerAggregate(new MyAggregateConfiguration());
 
         // Second, let's register a work flow
         configuration.registerWorkflow(new MyWorkflow());

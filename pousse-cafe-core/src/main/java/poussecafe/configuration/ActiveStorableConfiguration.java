@@ -6,25 +6,25 @@ import poussecafe.storable.ActiveStorableRepository;
 import poussecafe.storable.StorableData;
 import poussecafe.storage.ConsequenceEmissionPolicy;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-
 public class ActiveStorableConfiguration<K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>>
 extends StorableConfiguration<K, A, D, F, R> {
 
     private ConsequenceEmissionPolicy consequenceEmissionPolicy;
 
-    public ActiveStorableConfiguration(Class<A> storableClass, StorableServiceFactory<F, R> serviceFactory) {
-        super(storableClass, serviceFactory);
+    public ActiveStorableConfiguration(Class<A> storableClass, Class<D> dataClass,
+            StorableServiceFactory<F, R> serviceFactory) {
+        super(storableClass, dataClass, serviceFactory);
     }
 
-    public ActiveStorableConfiguration(Class<A> storableClass, Class<F> factoryClass, Class<R> repositoryClass) {
-        super(storableClass, factoryClass, repositoryClass);
+    public ActiveStorableConfiguration(Class<A> storableClass, Class<D> dataClass, Class<F> factoryClass,
+            Class<R> repositoryClass) {
+        super(storableClass, dataClass, factoryClass, repositoryClass);
     }
 
-    public void setConsequenceEmissionPolicy(ConsequenceEmissionPolicy consequenceEmissionPolicy) {
-        checkThat(value(consequenceEmissionPolicy).notNull().because("Consequence emission policy cannot be null"));
-        this.consequenceEmissionPolicy = consequenceEmissionPolicy;
+    @Override
+    public void setStorageServices(StorageServices<K, D> storageServices) {
+        super.setStorageServices(storageServices);
+        this.consequenceEmissionPolicy = storageServices.getConsequenceEmissionPolicy();
     }
 
     @Override

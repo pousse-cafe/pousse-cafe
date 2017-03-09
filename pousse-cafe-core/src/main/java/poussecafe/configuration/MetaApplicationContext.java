@@ -12,12 +12,14 @@ import poussecafe.journal.CommandWatcher;
 import poussecafe.journal.ConsequenceJournal;
 import poussecafe.journal.ConsequenceReplayer;
 import poussecafe.journal.ConsumptionFailureRepository;
+import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryRepository;
 import poussecafe.service.Workflow;
+import poussecafe.storable.ActiveStorable;
 import poussecafe.storable.ActiveStorableFactory;
 import poussecafe.storable.ActiveStorableRepository;
-import poussecafe.storage.ConsequenceEmissionPolicy;
-import poussecafe.storage.TransactionRunner;
+import poussecafe.storable.StorableData;
+import poussecafe.storage.Storage;
 
 @SuppressWarnings("rawtypes")
 public class MetaApplicationContext {
@@ -25,10 +27,6 @@ public class MetaApplicationContext {
     private MetaApplicationConfiguration configuration;
 
     private Injector injector;
-
-    private ConsequenceEmissionPolicy consequenceEmissionPolicy;
-
-    private TransactionRunner transactionRunner;
 
     private ConsequenceListenerRegistry consequenceListenerRegistry;
 
@@ -48,17 +46,19 @@ public class MetaApplicationContext {
 
     private ConsequenceReplayer consequenceReplayer;
 
+    private StorageServiceLocator storageServiceLocator;
+
     public MetaApplicationContext(MetaApplicationConfiguration configuration) {
         this.configuration = configuration;
-
-        StorageConfiguration storageConfiguration = configuration.getStorageConfiguration();
-        consequenceEmissionPolicy = storageConfiguration.getConsequenceEmissionPolicy().get();
-        transactionRunner = storageConfiguration.getTransactionRunner().get();
 
         consequenceListenerRegistry = new ConsequenceListenerRegistry();
         consequenceEmitterRegistry = new ConsequenceEmitterRegistry();
         storableRegistry = new StorableRegistry();
         consequenceJournal = new ConsequenceJournal();
+
+        storageServiceLocator = new StorageServiceLocator();
+        storageServiceLocator.setStorages(configuration.getStorages());
+        storageServiceLocator.setDefaultStorage(configuration.getDefaultStorage());
 
         injector = new Injector();
         injector.registerInjectableService(configuration.getIdGenerator());
@@ -75,7 +75,7 @@ public class MetaApplicationContext {
         configureWorkflows();
         configureConsequenceEmitters();
         configureConsequenceRouter();
-        configureConsequenceEmissionPolicy();
+        configureConsequenceEmissionPolicies();
         configureConsequenceJournal();
         configureConsequenceReceivers();
         configureCommandWatcher();
@@ -94,11 +94,14 @@ public class MetaApplicationContext {
         }
     }
 
-    private void configureStorableService(ActiveStorableConfiguration<?, ?, ?, ?, ?> storableConfiguration) {
-        storableConfiguration.setConsequenceEmissionPolicy(consequenceEmissionPolicy);
-        Class<?> storableClass = storableConfiguration.getStorableClass();
-        ActiveStorableRepository<?, ?, ?> repository = storableConfiguration.getConfiguredRepository().get();
-        ActiveStorableFactory<?, ?, ?> factory = storableConfiguration.getConfiguredFactory().get();
+    private <K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>> void configureStorableService(
+            ActiveStorableConfiguration<K, A, D, F, R> storableConfiguration) {
+        Class<A> storableClass = storableConfiguration.getStorableClass();
+        Class<D> dataClass = storableConfiguration.getDataClass();
+        StorageServices<K, D> storageServices = storageServiceLocator.locateStorageServices(dataClass);
+        storableConfiguration.setStorageServices(storageServices);
+        ActiveStorableRepository<A, K, D> repository = storableConfiguration.getConfiguredRepository().get();
+        ActiveStorableFactory<K, A, D> factory = storableConfiguration.getConfiguredFactory().get();
 
         storableRegistry.registerServices(new StorableServices(storableClass, repository, factory));
 
@@ -121,7 +124,7 @@ public class MetaApplicationContext {
     protected void configureWorkflows() {
         WorkflowExplorer workflowExplorer = new WorkflowExplorer();
         workflowExplorer.setConsequenceListenerRegistry(consequenceListenerRegistry);
-        workflowExplorer.setTransactionRunner(transactionRunner);
+        workflowExplorer.setStorageServiceLocator(storageServiceLocator);
 
         for (Workflow workflow : configuration.getWorkflows()) {
             workflowExplorer.configureWorkflow(workflow);
@@ -141,13 +144,17 @@ public class MetaApplicationContext {
         consequenceRouter.setSourceSelector(configuration.getSourceSelector());
     }
 
-    protected void configureConsequenceEmissionPolicy() {
-        consequenceEmissionPolicy.setConsequenceRouter(consequenceRouter);
+    protected void configureConsequenceEmissionPolicies() {
+        for (Storage storage : configuration.getStorages()) {
+            storage.getConsequenceEmissionPolicy().setConsequenceRouter(consequenceRouter);
+        }
+        configuration.getDefaultStorage().getConsequenceEmissionPolicy().setConsequenceRouter(consequenceRouter);
     }
 
     private void configureConsequenceJournal() {
         ConsequenceJournalEntryConfiguration entryConfiguration = configuration
                 .getConsequenceJournalEntryConfiguration();
+        entryConfiguration.setStorageServices(storageServiceLocator.locateStorageServices(JournalEntry.Data.class));
         consequenceJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
 
         JournalEntryRepository journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
@@ -155,7 +162,7 @@ public class MetaApplicationContext {
         consumptionFailureRepository.setJournalEntryRepository(journalEntryRepository);
 
         consequenceJournal.setEntryRepository(journalEntryRepository);
-        consequenceJournal.setTransactionRunner(transactionRunner);
+        consequenceJournal.setStorageServiceLocator(storageServiceLocator);
     }
 
     private void configureConsequenceReceivers() {

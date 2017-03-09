@@ -8,11 +8,9 @@ import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderKey;
-import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.OrderPlacement;
 import poussecafe.test.MetaApplicationTest;
-import poussecafe.test.TestConfigurationBuilder;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -28,16 +26,8 @@ public class OrderManagementTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new ProductConfiguration())
-                .withData(Product.Data.class)
-                .build());
-
-        configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new OrderConfiguration())
-                .withData(Order.Data.class)
-                .build());
-
+        configuration.registerAggregate(new ProductConfiguration());
+        configuration.registerAggregate(new OrderConfiguration());
         configuration.registerWorkflow(new OrderPlacement());
     }
 

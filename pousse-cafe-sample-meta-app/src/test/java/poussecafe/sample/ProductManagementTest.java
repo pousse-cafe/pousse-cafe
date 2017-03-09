@@ -8,7 +8,6 @@ import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.ProductManagement;
 import poussecafe.test.MetaApplicationTest;
-import poussecafe.test.TestConfigurationBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -22,11 +21,7 @@ public class ProductManagementTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new ProductConfiguration())
-                .withData(Product.Data.class)
-                .build());
-
+        configuration.registerAggregate(new ProductConfiguration());
         configuration.registerWorkflow(new ProductManagement());
     }
 

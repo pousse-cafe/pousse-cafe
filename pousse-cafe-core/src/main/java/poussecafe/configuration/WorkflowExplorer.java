@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import poussecafe.consequence.ConsequenceListenerRegistry;
 import poussecafe.service.Workflow;
-import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -15,7 +14,7 @@ public class WorkflowExplorer {
 
     private ConsequenceListenerRegistry registry;
 
-    private TransactionRunner transactionRunner;
+    private StorageServiceLocator storageServiceLocator;
 
     private Set<Workflow> configuredServices;
 
@@ -28,9 +27,9 @@ public class WorkflowExplorer {
         this.registry = registry;
     }
 
-    public void setTransactionRunner(TransactionRunner transactionRunner) {
-        checkThat(value(transactionRunner).notNull().because("Transaction runner cannot be null"));
-        this.transactionRunner = transactionRunner;
+    public void setStorageServiceLocator(StorageServiceLocator storageServiceLocator) {
+        checkThat(value(storageServiceLocator).notNull().because("Transaction runner cannot be null"));
+        this.storageServiceLocator = storageServiceLocator;
     }
 
     public void configureWorkflow(Workflow service) {
@@ -38,7 +37,7 @@ public class WorkflowExplorer {
         checkThat(value(configuredServices).verifies(not(hasItem(service)))
                 .because("Service cannot be configured more than once"));
 
-        service.setTransactionRunner(transactionRunner);
+        service.setStorageServiceLocator(storageServiceLocator);
 
         discoverDomainEventListeners(service);
         discoverCommandListeners(service);

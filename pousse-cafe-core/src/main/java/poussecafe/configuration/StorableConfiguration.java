@@ -14,6 +14,8 @@ public class StorableConfiguration<K, A extends Storable<K, D>, D extends Storab
 
     private Class<A> storableClass;
 
+    private Class<D> dataClass;
+
     private Singleton<R> repository;
 
     private Singleton<F> factory;
@@ -22,15 +24,18 @@ public class StorableConfiguration<K, A extends Storable<K, D>, D extends Storab
 
     private StorableDataAccess<K, D> dataAccess;
 
-    public StorableConfiguration(Class<A> storableClass, StorableServiceFactory<F, R> serviceFactory) {
+    public StorableConfiguration(Class<A> storableClass, Class<D> dataClass,
+            StorableServiceFactory<F, R> serviceFactory) {
         setStorableClass(storableClass);
+        setDataClass(dataClass);
 
         repository = new Singleton<>(serviceFactory::newRepository);
         factory = new Singleton<>(serviceFactory::newFactory);
     }
 
-    public StorableConfiguration(Class<A> storableClass, Class<F> factoryClass, Class<R> repositoryClass) {
-        this(storableClass, new ClassBasedStorableServiceFactory<>(factoryClass, repositoryClass));
+    public StorableConfiguration(Class<A> storableClass, Class<D> dataClass, Class<F> factoryClass,
+            Class<R> repositoryClass) {
+        this(storableClass, dataClass, new ClassBasedStorableServiceFactory<>(factoryClass, repositoryClass));
     }
 
     private void setStorableClass(Class<A> storableClass) {
@@ -38,18 +43,23 @@ public class StorableConfiguration<K, A extends Storable<K, D>, D extends Storab
         this.storableClass = storableClass;
     }
 
-    public void setDataFactory(StorableDataFactory<D> aggregateDataFactory) {
-        checkThat(value(aggregateDataFactory).notNull().because("Data factory cannot be null"));
-        this.aggregateDataFactory = aggregateDataFactory;
+    private void setDataClass(Class<D> dataClass) {
+        checkThat(value(dataClass).notNull().because("Data class cannot be null"));
+        this.dataClass = dataClass;
     }
 
-    public void setDataAccess(StorableDataAccess<K, D> dataAccess) {
-        checkThat(value(dataAccess).notNull().because("Data access cannot be null"));
-        this.dataAccess = dataAccess;
+    public void setStorageServices(StorageServices<K, D> storageServices) {
+        checkThat(value(storageServices).notNull().because("Storage services cannot be null"));
+        this.aggregateDataFactory = storageServices.getDataFactory();
+        this.dataAccess = storageServices.getDataAccess();
     }
 
     public Class<A> getStorableClass() {
         return storableClass;
+    }
+
+    public Class<D> getDataClass() {
+        return dataClass;
     }
 
     public Singleton<F> getConfiguredFactory() {

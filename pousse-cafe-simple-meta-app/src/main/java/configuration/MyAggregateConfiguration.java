@@ -10,7 +10,7 @@ public class MyAggregateConfiguration
 extends AggregateConfiguration<MyAggregateKey, MyAggregate, MyAggregate.Data, MyFactory, MyRepository> {
 
     public MyAggregateConfiguration() {
-        super(MyAggregate.class, MyFactory.class, MyRepository.class);
+        super(MyAggregate.class, MyAggregate.Data.class, MyFactory.class, MyRepository.class);
     }
 
 }

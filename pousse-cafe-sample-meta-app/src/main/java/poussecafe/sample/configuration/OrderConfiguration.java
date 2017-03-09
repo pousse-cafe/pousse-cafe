@@ -11,7 +11,7 @@ public class OrderConfiguration
 extends AggregateConfiguration<OrderKey, Order, Data, OrderFactory, OrderRepository> {
 
     public OrderConfiguration() {
-        super(Order.class, OrderFactory.class, OrderRepository.class);
+        super(Order.class, Order.Data.class, OrderFactory.class, OrderRepository.class);
     }
 
 }

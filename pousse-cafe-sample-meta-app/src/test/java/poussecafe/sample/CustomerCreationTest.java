@@ -7,7 +7,6 @@ import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.workflow.CustomerCreation;
 import poussecafe.test.MetaApplicationTest;
-import poussecafe.test.TestConfigurationBuilder;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -18,12 +17,7 @@ public class CustomerCreationTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(
-                new TestConfigurationBuilder()
-                .withConfiguration(new CustomerConfiguration())
-                .withData(Customer.Data.class)
-                .build());
-
+        configuration.registerAggregate(new CustomerConfiguration());
         configuration.registerWorkflow(new CustomerCreation());
     }
 

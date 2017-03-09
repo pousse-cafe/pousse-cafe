@@ -31,4 +31,9 @@ public class JSONPathSpecification {
         }
     }
 
+    @Override
+    public String toString() {
+        return "JSONPathSpecification [jsonPath=" + jsonPath + ", predicate=" + predicate + "]";
+    }
+
 }

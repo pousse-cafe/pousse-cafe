@@ -10,7 +10,7 @@ public class MessageConfiguration
 extends AggregateConfiguration<MessageKey, Message, Message.Data, MessageFactory, MessageRepository> {
 
     public MessageConfiguration() {
-        super(Message.class, MessageFactory.class, MessageRepository.class);
+        super(Message.class, Message.Data.class, MessageFactory.class, MessageRepository.class);
     }
 
 }

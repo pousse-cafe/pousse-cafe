@@ -1,6 +1,9 @@
 package poussecafe.configuration;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import poussecafe.consequence.ConsequenceEmitter;
 import poussecafe.consequence.ConsequenceReceiver;
@@ -10,18 +13,19 @@ import poussecafe.consequence.Source;
 import poussecafe.consequence.SourceSelector;
 import poussecafe.journal.PollingPeriod;
 import poussecafe.service.Workflow;
-import poussecafe.storage.TransactionLessStorage;
+import poussecafe.storage.InMemoryStorage;
+import poussecafe.storage.Storage;
 import poussecafe.util.IdGenerator;
 
 import static java.util.Arrays.asList;
+import static poussecafe.check.AssertionSpecification.value;
+import static poussecafe.check.Checks.checkThat;
 
 public class MetaApplicationConfiguration {
 
     private IdGenerator idGenerator;
 
     private SourceSelector sourceSelector;
-
-    private StorageConfiguration storageConfiguration;
 
     private ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration;
 
@@ -38,11 +42,14 @@ public class MetaApplicationConfiguration {
 
     private ProcessManagerConfiguration processManagerConfiguration;
 
+    private List<Storage> storages;
+
+    private Storage defaultStorage;
+
     public MetaApplicationConfiguration() {
         idGenerator = new IdGenerator();
         sourceSelector = new DefaultSourceSelector();
-        storageConfiguration = new TransactionLessStorage();
-        consequenceJournalEntryConfiguration = new InMemoryConsequenceJournalEntryConfiguration();
+        consequenceJournalEntryConfiguration = new ConsequenceJournalEntryConfiguration();
         aggregateConfigurations = new HashSet<>();
         workflows = new HashSet<>();
         services = new HashSet<>();
@@ -51,7 +58,10 @@ public class MetaApplicationConfiguration {
         consequenceEmitters = new HashSet<>(defaultConsequenceQueues);
         consequenceReceivers = new HashSet<>(defaultConsequenceQueues);
 
-        processManagerConfiguration = new InMemoryProcessManagerConfiguration();
+        processManagerConfiguration = new ProcessManagerConfiguration();
+
+        storages = new ArrayList<>();
+        defaultStorage = new InMemoryStorage();
     }
 
     protected IdGenerator idGenerator() {
@@ -99,10 +109,6 @@ public class MetaApplicationConfiguration {
         return sourceSelector;
     }
 
-    public StorageConfiguration getStorageConfiguration() {
-        return storageConfiguration;
-    }
-
     public ConsequenceJournalEntryConfiguration getConsequenceJournalEntryConfiguration() {
         return consequenceJournalEntryConfiguration;
     }
@@ -136,4 +142,21 @@ public class MetaApplicationConfiguration {
         return processManagerConfiguration;
     }
 
+    public void setStorages(List<Storage> storages) {
+        this.storages.clear();
+        this.storages.addAll(storages);
+    }
+
+    public List<Storage> getStorages() {
+        return Collections.unmodifiableList(storages);
+    }
+
+    public void setDefaultStorage(Storage defaultStorage) {
+        checkThat(value(defaultStorage).notNull().because("Default storage cannot be null"));
+        this.defaultStorage = defaultStorage;
+    }
+
+    public Storage getDefaultStorage() {
+        return defaultStorage;
+    }
 }

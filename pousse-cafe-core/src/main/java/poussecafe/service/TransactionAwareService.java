@@ -1,26 +1,29 @@
 package poussecafe.service;
 
 import java.util.function.Supplier;
+import poussecafe.configuration.StorageServiceLocator;
 import poussecafe.process.ProcessManagerKey;
-import poussecafe.storage.TransactionRunner;
+import poussecafe.storable.StorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public abstract class TransactionAwareService {
 
-    private TransactionRunner runner;
+    private StorageServiceLocator storageServiceLocator;
 
-    public void setTransactionRunner(TransactionRunner runner) {
-        checkThat(value(runner).notNull().because("Transaction runner cannot be null"));
-        this.runner = runner;
+    public void setStorageServiceLocator(StorageServiceLocator transactionRunnerLocator) {
+        checkThat(value(transactionRunnerLocator).notNull().because("Storage service locator cannot be null"));
+        this.storageServiceLocator = transactionRunnerLocator;
     }
 
-    protected void runInTransaction(Runnable runnable) {
-        runner.runInTransaction(runnable);
+    protected <D extends StorableData<?>> void runInTransaction(Class<D> dataClass,
+            Runnable runnable) {
+        storageServiceLocator.locateTransactionRunner(dataClass).runInTransaction(runnable);
     }
 
-    protected ProcessManagerKey runInTransaction(Supplier<ProcessManagerKey> supplier) {
-        return runner.runInTransaction(supplier);
+    protected <D extends StorableData<?>> ProcessManagerKey runInTransaction(Class<D> dataClass,
+            Supplier<ProcessManagerKey> supplier) {
+        return storageServiceLocator.locateTransactionRunner(dataClass).runInTransaction(supplier);
     }
 }

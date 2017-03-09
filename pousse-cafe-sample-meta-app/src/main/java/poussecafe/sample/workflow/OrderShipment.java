@@ -12,7 +12,7 @@ public class OrderShipment extends Workflow {
 
     @CommandListener
     public void shipOrder(ShipOrder command) {
-        runInTransaction(() -> {
+        runInTransaction(Order.Data.class, () -> {
             Order order = orderRepository.get(command.getOrderKey());
             order.ship();
         });

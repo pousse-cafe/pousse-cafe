@@ -3,6 +3,7 @@ package poussecafe.journal;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import poussecafe.configuration.StorageServiceLocator;
 import poussecafe.consequence.Consequence;
 import poussecafe.storage.TransactionRunner;
 
@@ -31,11 +32,17 @@ public abstract class ConsequenceJournalTest {
     protected void givenConfiguredConsequenceJournal() {
         MockitoAnnotations.initMocks(this);
         transactionRunner = transactionRunner();
-        journal.setTransactionRunner(transactionRunner);
+        journal.setStorageServiceLocator(storageServiceLocator(transactionRunner));
     }
 
     protected TransactionRunner transactionRunner() {
         return mock(TransactionRunner.class);
+    }
+
+    private StorageServiceLocator storageServiceLocator(TransactionRunner transactionRunner) {
+        StorageServiceLocator locator = mock(StorageServiceLocator.class);
+        when(locator.locateTransactionRunner(JournalEntry.Data.class)).thenReturn(transactionRunner);
+        return locator;
     }
 
     protected void givenSuccessfullyConsumedConsequence() {

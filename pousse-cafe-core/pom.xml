@@ -101,8 +101,8 @@
         <artifactId>aspectj-maven-plugin</artifactId>
         <version>1.9</version>
         <configuration>
-            <complianceLevel>1.8</complianceLevel>
-            <aspectDirectory>src/main/aspectj</aspectDirectory>
+          <complianceLevel>1.8</complianceLevel>
+          <aspectDirectory>src/main/aspectj</aspectDirectory>
         </configuration>
         <executions>
           <execution>

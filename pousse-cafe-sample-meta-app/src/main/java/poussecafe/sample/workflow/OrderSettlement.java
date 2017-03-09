@@ -12,7 +12,7 @@ public class OrderSettlement extends Workflow {
 
     @CommandListener
     public void settleOrder(SettleOrder command) {
-        runInTransaction(() -> {
+        runInTransaction(Order.Data.class, () -> {
             Order order = orderRepository.get(command.getOrderKey());
             order.settle();
         });

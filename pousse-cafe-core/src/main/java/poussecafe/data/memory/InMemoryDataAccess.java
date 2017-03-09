@@ -49,7 +49,11 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
         if (storage.containsKey(data.getKey())) {
             throw new InMemoryDataException("Duplicate key");
         }
-        storage.put(data.getKey(), gson.toJson(data, dataType));
+        storage.put(data.getKey(), serialize(data));
+    }
+
+    private String serialize(D data) {
+        return gson.toJson(data, dataType);
     }
 
     @Override
@@ -57,7 +61,7 @@ public class InMemoryDataAccess<K, D extends StorableData<K>> implements Storabl
         if (!storage.containsKey(data.getKey())) {
             throw new InMemoryDataException("No entry with key " + data.getKey());
         }
-        storage.put(data.getKey(), gson.toJson(data, dataType));
+        storage.put(data.getKey(), serialize(data));
     }
 
     @Override

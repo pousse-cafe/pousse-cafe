@@ -28,7 +28,7 @@ public class MyWorkflow extends Workflow {
     @CommandListener
     public void handle(CreateAggregate command) {
         MyAggregate aggregate = factory.buildAggregate(command.getKey());
-        runInTransaction(() -> repository.add(aggregate));
+        runInTransaction(MyAggregate.Data.class, () -> repository.add(aggregate));
     }
 
     /*
@@ -39,7 +39,7 @@ public class MyWorkflow extends Workflow {
      */
     @CommandListener
     public void handle(MyCommand command) {
-        runInTransaction(() -> {
+        runInTransaction(MyAggregate.Data.class, () -> {
             MyAggregate aggregate = repository.get(command.getKey());
             aggregate.doSomeAction(command.getX());
             repository.update(aggregate); // Without this call, update might not be executed with some storage types

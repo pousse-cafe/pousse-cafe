@@ -11,6 +11,6 @@ public class ProductConfiguration
 extends AggregateConfiguration<ProductKey, Product, Data, ProductFactory, ProductRepository> {
 
     public ProductConfiguration() {
-        super(Product.class, ProductFactory.class, ProductRepository.class);
+        super(Product.class, Product.Data.class, ProductFactory.class, ProductRepository.class);
     }
 }

@@ -18,7 +18,7 @@ public class ConsequenceJournal extends TransactionAwareService {
     public void logSuccessfulConsumption(String listenerId,
             SuccessfulConsumption consumption) {
         JournalEntrySaver saver = buildSaver(listenerId, consumption.getConsumedConsequence());
-        runInTransaction(() -> {
+        runInTransaction(JournalEntry.Data.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             if (consumption.hasCreatedProcessManagerKey()) {
                 entry.logSuccess(consumption.getCreatedProcessManagerKey());
@@ -45,7 +45,7 @@ public class ConsequenceJournal extends TransactionAwareService {
     public void logIgnoredConsumption(String listenerId,
             Consequence consequence) {
         JournalEntrySaver saver = buildSaver(listenerId, consequence);
-        runInTransaction(() -> {
+        runInTransaction(JournalEntry.Data.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logIgnored();
             saver.save();
@@ -56,7 +56,7 @@ public class ConsequenceJournal extends TransactionAwareService {
             Consequence consequence,
             Exception e) {
         JournalEntrySaver saver = buildSaver(listenerId, consequence);
-        runInTransaction(() -> {
+        runInTransaction(JournalEntry.Data.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logFailure(ExceptionUtils.getStackTrace(e));
             saver.save();

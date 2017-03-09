@@ -12,8 +12,8 @@ import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.Messaging;
+import poussecafe.storage.InMemoryStorage;
 import poussecafe.test.MetaApplicationTest;
-import poussecafe.test.TestConfigurationBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,15 +28,12 @@ public class MessagingTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new TestConfigurationBuilder()
-                .withConfiguration(new MessageConfiguration())
-                .withData(Message.Data.class)
-                .withDataAccess(new InMemoryMessageDataAccess())
-                .build());
-
+        configuration.registerAggregate(new MessageConfiguration());
         configuration.registerWorkflow(new Messaging());
-
         configuration.registerService(new ContentChooser());
+
+        InMemoryStorage storage = (InMemoryStorage) configuration.getDefaultStorage();
+        storage.registerDataAccess(Message.Data.class, new InMemoryMessageDataAccess());
     }
 
     @Test

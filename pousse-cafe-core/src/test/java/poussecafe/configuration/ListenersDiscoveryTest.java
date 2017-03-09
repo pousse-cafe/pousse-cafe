@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.consequence.ConsequenceListenerRegistry;
 import poussecafe.consequence.Source;
-import poussecafe.storage.TransactionRunner;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -19,7 +18,7 @@ public class ListenersDiscoveryTest {
     private ConsequenceListenerRegistry registry;
 
     @Mock
-    private TransactionRunner transactionRunner;
+    private StorageServiceLocator storageServiceLocator;
 
     private WorkflowExplorer workflowExplorer;
 
@@ -31,7 +30,7 @@ public class ListenersDiscoveryTest {
 
         workflowExplorer = new WorkflowExplorer();
         workflowExplorer.setConsequenceListenerRegistry(registry);
-        workflowExplorer.setTransactionRunner(transactionRunner);
+        workflowExplorer.setStorageServiceLocator(storageServiceLocator);
     }
 
     @Test
