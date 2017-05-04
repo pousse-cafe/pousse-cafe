@@ -5,8 +5,8 @@ import domain.MyDomainEvent;
 import domain.MyFactory;
 import domain.MyRepository;
 import org.slf4j.LoggerFactory;
-import poussecafe.consequence.CommandListener;
-import poussecafe.consequence.DomainEventListener;
+import poussecafe.messaging.CommandListener;
+import poussecafe.messaging.DomainEventListener;
 import poussecafe.service.Workflow;
 
 /*

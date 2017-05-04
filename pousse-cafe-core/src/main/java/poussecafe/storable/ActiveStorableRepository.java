@@ -1,6 +1,6 @@
 package poussecafe.storable;
 
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -8,56 +8,56 @@ import static poussecafe.check.Checks.checkThat;
 public abstract class ActiveStorableRepository<A extends ActiveStorable<K, D>, K, D extends StorableData<K>>
 extends StorableRepository<A, K, D> {
 
-    protected ConsequenceEmissionPolicy consequenceEmissionPolicy;
+    protected MessageSendingPolicy messageSendingPolicy;
 
-    public void setConsequenceEmissionPolicy(ConsequenceEmissionPolicy consequenceEmissionPolicy) {
-        checkThat(value(consequenceEmissionPolicy)
+    public void setMessageSendingPolicy(MessageSendingPolicy messageSendingPolicy) {
+        checkThat(value(messageSendingPolicy)
                 .notNull()
-                .because("Consequence emission policy cannot be null"));
-        this.consequenceEmissionPolicy = consequenceEmissionPolicy;
+                .because("Message sending policy cannot be null"));
+        this.messageSendingPolicy = messageSendingPolicy;
     }
 
     @Override
     protected A newStorableWithData(D data) {
         A storable = super.newStorableWithData(data);
-        storable.setUnitOfConsequence(consequenceEmissionPolicy.newUnitOfConsequence());
+        storable.setMessageCollection(messageSendingPolicy.newMessageCollection());
         return storable;
     }
 
     @Override
     protected void addData(A storable) {
-        UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
+        MessageCollection messageCollection = storable.getMessageCollection();
         super.addData(storable);
-        considerUnitEmissionAfterAdd(storable, unitOfConsequence);
+        considerMessageSendingAfterAdd(storable, messageCollection);
     }
 
-    protected void considerUnitEmissionAfterAdd(A storable,
-            UnitOfConsequence unitOfConsequence) {
-        consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
+    protected void considerMessageSendingAfterAdd(A storable,
+            MessageCollection messageCollection) {
+        messageSendingPolicy.considerSending(messageCollection);
     }
 
     @Override
     protected void updateData(A storable) {
-        UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
+        MessageCollection messageCollection = storable.getMessageCollection();
         super.updateData(storable);
-        considerUnitEmissionAfterUpdate(storable, unitOfConsequence);
+        considerMessageSendingAfterUpdate(storable, messageCollection);
     }
 
-    protected void considerUnitEmissionAfterUpdate(A storable,
-            UnitOfConsequence unitOfConsequence) {
-        consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
+    protected void considerMessageSendingAfterUpdate(A storable,
+            MessageCollection messageCollection) {
+        messageSendingPolicy.considerSending(messageCollection);
     }
 
     @Override
     protected void deleteData(A storable) {
-        UnitOfConsequence unitOfConsequence = storable.getUnitOfConsequence();
+        MessageCollection messageCollection = storable.getMessageCollection();
         super.deleteData(storable);
-        considerUnitEmissionAfterDelete(storable, unitOfConsequence);
+        considerMessageSendingAfterDelete(storable, messageCollection);
     }
 
-    protected void considerUnitEmissionAfterDelete(A storable,
-            UnitOfConsequence unitOfConsequence) {
-        consequenceEmissionPolicy.considerUnitEmission(unitOfConsequence);
+    protected void considerMessageSendingAfterDelete(A storable,
+            MessageCollection messageCollection) {
+        messageSendingPolicy.considerSending(messageCollection);
     }
 
 }

@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -9,7 +9,7 @@ class JournalEntrySaver {
 
     private JournalEntryKey entryKey;
 
-    private Consequence consequence;
+    private Message message;
 
     private JournalEntryRepository entryRepository;
 
@@ -23,7 +23,7 @@ class JournalEntrySaver {
         entry = entryRepository.find(entryKey);
         if (entry == null) {
             entryFound = false;
-            entry = entryFactory.buildEntryForEmittedConsequence(entryKey, consequence);
+            entry = entryFactory.buildEntryForSentMessage(entryKey, message);
         } else {
             entryFound = true;
         }
@@ -43,9 +43,9 @@ class JournalEntrySaver {
         this.entryKey = entryKey;
     }
 
-    public void setConsequence(Consequence consequence) {
-        checkThat(value(consequence).notNull().because("Consequence cannot be null"));
-        this.consequence = consequence;
+    public void setMessage(Message message) {
+        checkThat(value(message).notNull().because("Message cannot be null"));
+        this.message = message;
     }
 
     public void setEntryRepository(JournalEntryRepository entryRepository) {

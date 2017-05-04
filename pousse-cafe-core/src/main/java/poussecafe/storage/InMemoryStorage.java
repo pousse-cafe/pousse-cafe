@@ -15,8 +15,8 @@ public class InMemoryStorage extends ServiceCachingStorage {
     }
 
     @Override
-    protected ConsequenceEmissionPolicy newConsequenceEmissionPolicy() {
-        return new DirectEmissionPolicy();
+    protected MessageSendingPolicy newMessageSendingPolicy() {
+        return new DirectMessageSending();
     }
 
     @Override

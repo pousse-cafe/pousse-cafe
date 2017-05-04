@@ -2,9 +2,9 @@ package poussecafe.test;
 
 import java.time.Duration;
 import poussecafe.configuration.MetaApplicationConfiguration;
-import poussecafe.consequence.ConsequenceReceiver;
-import poussecafe.consequence.InMemoryConsequenceQueue;
 import poussecafe.journal.PollingPeriod;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.InMemoryMessageQueue;
 
 public class TestMetaApplicationConfiguration extends MetaApplicationConfiguration {
 
@@ -13,10 +13,10 @@ public class TestMetaApplicationConfiguration extends MetaApplicationConfigurati
         return PollingPeriod.withPeriod(Duration.ofMillis(10));
     }
 
-    public void waitUntilAllConsequenceQueuesEmpty()
+    public void waitUntilAllMessageQueuesEmpty()
             throws InterruptedException {
-        for (ConsequenceReceiver consequenceReceiver : getConsequenceReceivers()) {
-            InMemoryConsequenceQueue queue = (InMemoryConsequenceQueue) consequenceReceiver;
+        for (MessageReceiver messageReceiver : getMessageReceivers()) {
+            InMemoryMessageQueue queue = (InMemoryMessageQueue) messageReceiver;
             queue.waitUntilEmpty();
         }
     }

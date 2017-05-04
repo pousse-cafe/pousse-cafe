@@ -7,31 +7,31 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SuccessfulConsumptionDetectionTest extends ConsequenceJournalTest {
+public class SuccessfulConsumptionDetectionTest extends MessagingJournalTest {
 
     private boolean consumptionSuccess;
 
     @Test
     public void successfulConsumptionIsDetectedWithExistingEntryAndSuccessLogged() {
-        givenConfiguredConsequenceJournal();
+        givenConfiguredMessagingJournal();
         givenLoggedSuccessfulConsumption();
         whenDetectingSuccessfulConsumption();
         thenConsumptionSuccessIs(true);
     }
 
     private void givenLoggedSuccessfulConsumption() {
-        givenReceivedConsequence();
+        givenReceivedMessage();
         givenExistingEntryWithSuccessLogValue(true);
     }
 
     protected void givenExistingEntryWithSuccessLogValue(boolean successLog) {
         JournalEntry entry = mock(JournalEntry.class);
         when(entry.getStatus()).thenReturn(successLog ? JournalEntryStatus.SUCCESS : JournalEntryStatus.FAILURE);
-        when(entryRepository.find(new JournalEntryKey(consequence.getId(), listenerId))).thenReturn(entry);
+        when(entryRepository.find(new JournalEntryKey(message.getId(), listenerId))).thenReturn(entry);
     }
 
     private void whenDetectingSuccessfulConsumption() {
-        consumptionSuccess = journal.isSuccessfullyConsumed(consequence, listenerId);
+        consumptionSuccess = journal.isSuccessfullyConsumed(message, listenerId);
     }
 
     private void thenConsumptionSuccessIs(boolean expected) {
@@ -40,22 +40,22 @@ public class SuccessfulConsumptionDetectionTest extends ConsequenceJournalTest {
 
     @Test
     public void unsuccessfulConsumptionIsDetectedWithNoEntry() {
-        givenConfiguredConsequenceJournal();
-        givenReceivedConsequence();
+        givenConfiguredMessagingJournal();
+        givenReceivedMessage();
         whenDetectingSuccessfulConsumption();
         thenConsumptionSuccessIs(false);
     }
 
     @Test
     public void unsuccessfulConsumptionIsDetectedWithExistingEntryAndNoSuccess() {
-        givenConfiguredConsequenceJournal();
+        givenConfiguredMessagingJournal();
         givenLoggedUnsuccessfulConsumption();
         whenDetectingSuccessfulConsumption();
         thenConsumptionSuccessIs(false);
     }
 
     private void givenLoggedUnsuccessfulConsumption() {
-        givenReceivedConsequence();
+        givenReceivedMessage();
         givenExistingEntryWithSuccessLogValue(false);
     }
 }

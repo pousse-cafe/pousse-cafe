@@ -1,9 +1,9 @@
 package poussecafe.journal;
 
 import org.junit.Test;
-import poussecafe.consequence.Consequence;
 import poussecafe.data.memory.InMemoryDataFactory;
 import poussecafe.domain.DomainException;
+import poussecafe.messaging.Message;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 public class JournalEntryTest {
 
-    private Consequence consequence;
+    private Message message;
 
     private JournalEntry entry;
 
@@ -25,16 +25,16 @@ public class JournalEntryTest {
     }
 
     private void givenEntry() {
-        givenConsequence();
+        givenMessage();
         JournalEntryFactory entryFactory = new JournalEntryFactory();
         entryFactory.setStorableDataFactory(new InMemoryDataFactory<>(JournalEntry.Data.class));
-        entry = entryFactory.buildEntryForEmittedConsequence(new JournalEntryKey(consequence.getId(), "listenerId"),
-                consequence);
+        entry = entryFactory.buildEntryForSentMessage(new JournalEntryKey(message.getId(), "listenerId"),
+                message);
     }
 
-    private void givenConsequence() {
-        consequence = mock(Consequence.class);
-        when(consequence.getId()).thenReturn("consequenceId");
+    private void givenMessage() {
+        message = mock(Message.class);
+        when(message.getId()).thenReturn("messageId");
     }
 
     private void whenLoggingSuccess() {

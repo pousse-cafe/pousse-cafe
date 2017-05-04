@@ -1,7 +1,7 @@
 package workflow;
 
 import domain.MyAggregateKey;
-import poussecafe.consequence.Command;
+import poussecafe.messaging.Command;
 
 public class CreateAggregate extends Command {
 

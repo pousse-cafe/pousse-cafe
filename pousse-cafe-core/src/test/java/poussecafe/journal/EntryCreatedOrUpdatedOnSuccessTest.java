@@ -5,8 +5,8 @@ import org.mockito.InOrder;
 public class EntryCreatedOrUpdatedOnSuccessTest extends EntryCreatedOrUpdatedTest {
 
     @Override
-    protected void givenConsequence() {
-        givenSuccessfullyConsumedConsequence();
+    protected void givenMessage() {
+        givenSuccessfullyConsumedMessage();
     }
 
     @Override

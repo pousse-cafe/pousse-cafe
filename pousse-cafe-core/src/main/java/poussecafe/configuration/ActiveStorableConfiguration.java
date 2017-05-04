@@ -4,12 +4,12 @@ import poussecafe.storable.ActiveStorable;
 import poussecafe.storable.ActiveStorableFactory;
 import poussecafe.storable.ActiveStorableRepository;
 import poussecafe.storable.StorableData;
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 
 public class ActiveStorableConfiguration<K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>>
 extends StorableConfiguration<K, A, D, F, R> {
 
-    private ConsequenceEmissionPolicy consequenceEmissionPolicy;
+    private MessageSendingPolicy messageSendingPolicy;
 
     public ActiveStorableConfiguration(Class<A> storableClass, Class<D> dataClass,
             StorableServiceFactory<F, R> serviceFactory) {
@@ -24,13 +24,13 @@ extends StorableConfiguration<K, A, D, F, R> {
     @Override
     public void setStorageServices(StorageServices<K, D> storageServices) {
         super.setStorageServices(storageServices);
-        this.consequenceEmissionPolicy = storageServices.getConsequenceEmissionPolicy();
+        this.messageSendingPolicy = storageServices.getMessageSendingPolicy();
     }
 
     @Override
     public Singleton<R> getConfiguredRepository() {
         Singleton<R> repository = super.getConfiguredRepository();
-        repository.get().setConsequenceEmissionPolicy(consequenceEmissionPolicy);
+        repository.get().setMessageSendingPolicy(messageSendingPolicy);
         return repository;
     }
 

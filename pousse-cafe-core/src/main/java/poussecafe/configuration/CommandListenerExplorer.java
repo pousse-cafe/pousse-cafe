@@ -1,20 +1,20 @@
 package poussecafe.configuration;
 
-import poussecafe.consequence.ConsequenceListenerRegistry;
+import poussecafe.messaging.MessageListenerRegistry;
 
-class CommandListenerExplorer extends ConsequenceListenerExplorer {
+class CommandListenerExplorer extends MessageListenerExplorer {
 
-    CommandListenerExplorer(ConsequenceListenerRegistry registry, Object service) {
+    CommandListenerExplorer(MessageListenerRegistry registry, Object service) {
         super(registry, service);
     }
 
     @Override
-    protected void registerListener(ConsequenceListenerEntry entry) {
+    protected void registerListener(MessageListenerEntry entry) {
         registry.registerCommandListener(entry);
     }
 
     @Override
-    protected ConsequenceListeningServiceSourceProcessor buildSourceProcessor(Object service) {
+    protected MessageListeningServiceSourceProcessor buildSourceProcessor(Object service) {
         return new CommandListeningServiceSourceProcessor(service);
     }
 

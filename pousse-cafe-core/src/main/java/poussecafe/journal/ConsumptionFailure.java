@@ -1,7 +1,7 @@
 package poussecafe.journal;
 
 import java.util.List;
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -10,22 +10,22 @@ import static poussecafe.check.Predicates.not;
 
 public class ConsumptionFailure {
 
-    private Consequence consequence;
+    private Message message;
 
     private List<String> listenerIds;
 
-    public ConsumptionFailure(Consequence consequence, List<String> listenerIds) {
-        setConsequence(consequence);
+    public ConsumptionFailure(Message message, List<String> listenerIds) {
+        setMessage(message);
         setListenerIds(listenerIds);
     }
 
-    public Consequence getConsequence() {
-        return consequence;
+    public Message getMessage() {
+        return message;
     }
 
-    private void setConsequence(Consequence consequence) {
-        checkThat(value(consequence).notNull().because("Consequence cannot be null"));
-        this.consequence = consequence;
+    private void setMessage(Message message) {
+        checkThat(value(message).notNull().because("Message cannot be null"));
+        this.message = message;
     }
 
     public List<String> getListenerIds() {

@@ -7,7 +7,7 @@ import poussecafe.storable.StorableDataFactory;
 
 public interface Storage {
 
-    ConsequenceEmissionPolicy getConsequenceEmissionPolicy();
+    MessageSendingPolicy getMessageSendingPolicy();
 
     TransactionRunner getTransactionRunner();
 

@@ -1,25 +1,25 @@
 package poussecafe.configuration;
 
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.TransactionRunner;
 
 public abstract class StorageConfiguration {
 
-    private Singleton<ConsequenceEmissionPolicy> consequenceEmissionPolicy;
+    private Singleton<MessageSendingPolicy> messageSendingPolicy;
 
     private Singleton<TransactionRunner> transactionRunner;
 
     public StorageConfiguration() {
-        consequenceEmissionPolicy = new Singleton<>(this::consequenceEmissionPolicy);
+        messageSendingPolicy = new Singleton<>(this::messageSendingPolicy);
         transactionRunner = new Singleton<>(this::transactionRunner);
     }
 
-    protected abstract ConsequenceEmissionPolicy consequenceEmissionPolicy();
+    protected abstract MessageSendingPolicy messageSendingPolicy();
 
     protected abstract TransactionRunner transactionRunner();
 
-    public Singleton<ConsequenceEmissionPolicy> getConsequenceEmissionPolicy() {
-        return consequenceEmissionPolicy;
+    public Singleton<MessageSendingPolicy> getMessageSendingPolicy() {
+        return messageSendingPolicy;
     }
 
     public Singleton<TransactionRunner> getTransactionRunner() {

@@ -1,19 +1,19 @@
 package poussecafe.configuration;
 
 import java.util.Set;
-import poussecafe.consequence.CommandProcessor;
-import poussecafe.consequence.ConsequenceEmitter;
-import poussecafe.consequence.ConsequenceListener;
-import poussecafe.consequence.ConsequenceListenerRegistry;
-import poussecafe.consequence.ConsequenceListenerRoutingKey;
-import poussecafe.consequence.ConsequenceReceiver;
-import poussecafe.consequence.ConsequenceRouter;
 import poussecafe.journal.CommandWatcher;
-import poussecafe.journal.ConsequenceJournal;
-import poussecafe.journal.ConsequenceReplayer;
+import poussecafe.journal.MessagingJournal;
+import poussecafe.journal.MessageReplayer;
 import poussecafe.journal.ConsumptionFailureRepository;
 import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryRepository;
+import poussecafe.messaging.CommandProcessor;
+import poussecafe.messaging.MessageSender;
+import poussecafe.messaging.MessageListener;
+import poussecafe.messaging.MessageListenerRegistry;
+import poussecafe.messaging.MessageListenerRoutingKey;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.MessageRouter;
 import poussecafe.service.Workflow;
 import poussecafe.storable.ActiveStorable;
 import poussecafe.storable.ActiveStorableFactory;
@@ -28,33 +28,33 @@ public class MetaApplicationContext {
 
     private Injector injector;
 
-    private ConsequenceListenerRegistry consequenceListenerRegistry;
+    private MessageListenerRegistry messageListenerRegistry;
 
-    private ConsequenceEmitterRegistry consequenceEmitterRegistry;
+    private MessageSenderRegistry messageSenderRegistry;
 
     private StorableRegistry storableRegistry;
 
     private ConsumptionFailureRepository consumptionFailureRepository;
 
-    private ConsequenceJournal consequenceJournal;
+    private MessagingJournal messagingJournal;
 
-    private ConsequenceRouter consequenceRouter;
+    private MessageRouter messageRouter;
 
     private CommandWatcher commandWatcher;
 
     private CommandProcessor commandProcessor;
 
-    private ConsequenceReplayer consequenceReplayer;
+    private MessageReplayer messageReplayer;
 
     private StorageServiceLocator storageServiceLocator;
 
     public MetaApplicationContext(MetaApplicationConfiguration configuration) {
         this.configuration = configuration;
 
-        consequenceListenerRegistry = new ConsequenceListenerRegistry();
-        consequenceEmitterRegistry = new ConsequenceEmitterRegistry();
+        messageListenerRegistry = new MessageListenerRegistry();
+        messageSenderRegistry = new MessageSenderRegistry();
         storableRegistry = new StorableRegistry();
-        consequenceJournal = new ConsequenceJournal();
+        messagingJournal = new MessagingJournal();
 
         storageServiceLocator = new StorageServiceLocator();
         storageServiceLocator.setStorages(configuration.getStorages());
@@ -65,7 +65,7 @@ public class MetaApplicationContext {
 
         configureContext();
         injector.injectDependencies();
-        startConsequenceHandling();
+        startMessageHandling();
     }
 
     private void configureContext() {
@@ -73,14 +73,14 @@ public class MetaApplicationContext {
         configureServices();
         configureProcessManagerServices();
         configureWorkflows();
-        configureConsequenceEmitters();
-        configureConsequenceRouter();
-        configureConsequenceEmissionPolicies();
-        configureConsequenceJournal();
-        configureConsequenceReceivers();
+        configureMessageSenders();
+        configureMessageRouter();
+        configureMessageEmissionPolicies();
+        configureMessageJournal();
+        configureMessageReceivers();
         configureCommandWatcher();
         configureCommandProcessor();
-        configureConsequenceReplayer();
+        configureMessageReplayer();
     }
 
     protected void configureAggregateServices() {
@@ -123,7 +123,7 @@ public class MetaApplicationContext {
 
     protected void configureWorkflows() {
         WorkflowExplorer workflowExplorer = new WorkflowExplorer();
-        workflowExplorer.setConsequenceListenerRegistry(consequenceListenerRegistry);
+        workflowExplorer.setMessageListenerRegistry(messageListenerRegistry);
         workflowExplorer.setStorageServiceLocator(storageServiceLocator);
 
         for (Workflow workflow : configuration.getWorkflows()) {
@@ -132,66 +132,66 @@ public class MetaApplicationContext {
         }
     }
 
-    private void configureConsequenceEmitters() {
-        for (ConsequenceEmitter emitter : configuration.getConsequenceEmitters()) {
-            consequenceEmitterRegistry.registerEmitter(emitter.getDestinationSource(), emitter);
+    private void configureMessageSenders() {
+        for (MessageSender emitter : configuration.getMessageSenders()) {
+            messageSenderRegistry.registerEmitter(emitter.getDestinationQueue(), emitter);
         }
     }
 
-    private void configureConsequenceRouter() {
-        consequenceRouter = new ConsequenceRouter();
-        consequenceRouter.setConsequenceEmitterRegistry(consequenceEmitterRegistry);
-        consequenceRouter.setSourceSelector(configuration.getSourceSelector());
+    private void configureMessageRouter() {
+        messageRouter = new MessageRouter();
+        messageRouter.setMessageSenderRegistry(messageSenderRegistry);
+        messageRouter.setQueueSelector(configuration.getSourceSelector());
     }
 
-    protected void configureConsequenceEmissionPolicies() {
+    protected void configureMessageEmissionPolicies() {
         for (Storage storage : configuration.getStorages()) {
-            storage.getConsequenceEmissionPolicy().setConsequenceRouter(consequenceRouter);
+            storage.getMessageSendingPolicy().setMessageRouter(messageRouter);
         }
-        configuration.getDefaultStorage().getConsequenceEmissionPolicy().setConsequenceRouter(consequenceRouter);
+        configuration.getDefaultStorage().getMessageSendingPolicy().setMessageRouter(messageRouter);
     }
 
-    private void configureConsequenceJournal() {
-        ConsequenceJournalEntryConfiguration entryConfiguration = configuration
-                .getConsequenceJournalEntryConfiguration();
+    private void configureMessageJournal() {
+        MessagingJournalEntryConfiguration entryConfiguration = configuration
+                .getMessagingJournalEntryConfiguration();
         entryConfiguration.setStorageServices(storageServiceLocator.locateStorageServices(JournalEntry.Data.class));
-        consequenceJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
+        messagingJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
 
         JournalEntryRepository journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
         consumptionFailureRepository = new ConsumptionFailureRepository();
         consumptionFailureRepository.setJournalEntryRepository(journalEntryRepository);
 
-        consequenceJournal.setEntryRepository(journalEntryRepository);
-        consequenceJournal.setStorageServiceLocator(storageServiceLocator);
+        messagingJournal.setEntryRepository(journalEntryRepository);
+        messagingJournal.setStorageServiceLocator(storageServiceLocator);
     }
 
-    private void configureConsequenceReceivers() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
-            receiver.setConsequenceJournal(consequenceJournal);
-            receiver.setListenerRegistry(consequenceListenerRegistry);
+    private void configureMessageReceivers() {
+        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
+            receiver.setMessagingJournal(messagingJournal);
+            receiver.setListenerRegistry(messageListenerRegistry);
         }
     }
 
     private void configureCommandWatcher() {
         commandWatcher = CommandWatcher.withPollingPeriod(configuration.getCommandWatcherPollingPeriod());
-        commandWatcher.setConsequenceJournal(consequenceJournal);
+        commandWatcher.setMessagingJournal(messagingJournal);
         commandWatcher.setProcessManagerRepository(configuration.getProcessManagerConfiguration().repository().get());
     }
 
     private void configureCommandProcessor() {
         commandProcessor = new CommandProcessor();
-        commandProcessor.setConsequenceRouter(consequenceRouter);
+        commandProcessor.setMessageRouter(messageRouter);
         commandProcessor.setCommandWatcher(commandWatcher);
     }
 
-    private void configureConsequenceReplayer() {
-        consequenceReplayer = new ConsequenceReplayer();
-        consequenceReplayer.setConsequenceRouter(consequenceRouter);
-        consequenceReplayer.setConsumptionFailureRepository(consumptionFailureRepository);
+    private void configureMessageReplayer() {
+        messageReplayer = new MessageReplayer();
+        messageReplayer.setMessageRouter(messageRouter);
+        messageReplayer.setConsumptionFailureRepository(consumptionFailureRepository);
     }
 
-    private void startConsequenceHandling() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
+    private void startMessageHandling() {
+        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
             receiver.startReceiving();
         }
         commandWatcher.startWatching();
@@ -201,23 +201,23 @@ public class MetaApplicationContext {
         return storableRegistry.getServices(storableClass);
     }
 
-    public Set<ConsequenceListener> getConsequenceListeners(ConsequenceListenerRoutingKey key) {
-        return consequenceListenerRegistry.getListeners(key);
+    public Set<MessageListener> getMessageListeners(MessageListenerRoutingKey key) {
+        return messageListenerRegistry.getListeners(key);
     }
 
     public CommandProcessor getCommandProcessor() {
         return commandProcessor;
     }
 
-    public ConsequenceRouter getConsequenceRouter() {
-        return consequenceRouter;
+    public MessageRouter getMessageRouter() {
+        return messageRouter;
     }
 
     public ConsumptionFailureRepository getConsumptionFailureRepository() {
         return consumptionFailureRepository;
     }
 
-    public ConsequenceReplayer getConsequenceReplayer() {
-        return consequenceReplayer;
+    public MessageReplayer getMessageReplayer() {
+        return messageReplayer;
     }
 }

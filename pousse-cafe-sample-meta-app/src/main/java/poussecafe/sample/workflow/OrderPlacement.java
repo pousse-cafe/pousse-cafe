@@ -1,7 +1,7 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.consequence.CommandListener;
-import poussecafe.consequence.DomainEventListener;
+import poussecafe.messaging.CommandListener;
+import poussecafe.messaging.DomainEventListener;
 import poussecafe.process.ProcessManagerKey;
 import poussecafe.sample.command.CreateOrder;
 import poussecafe.sample.command.PlaceOrder;

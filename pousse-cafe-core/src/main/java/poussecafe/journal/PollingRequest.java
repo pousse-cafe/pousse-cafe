@@ -1,7 +1,7 @@
 package poussecafe.journal;
 
 import java.util.concurrent.CompletableFuture;
-import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.messaging.CommandHandlingResult;
 import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -11,24 +11,24 @@ import static poussecafe.check.Predicates.not;
 
 public class PollingRequest {
 
-    private String consequenceId;
+    private String commandId;
 
     private CompletableFuture<CommandHandlingResult> completable;
 
     private ProcessManagerKey processManagerKey;
 
-    public PollingRequest(String consequenceId, CompletableFuture<CommandHandlingResult> completable) {
-        setConsequenceId(consequenceId);
+    public PollingRequest(String commandId, CompletableFuture<CommandHandlingResult> completable) {
+        setCommandId(commandId);
         setFuture(completable);
     }
 
-    public String getConsequenceId() {
-        return consequenceId;
+    public String getCommandId() {
+        return commandId;
     }
 
-    private void setConsequenceId(String consequenceId) {
-        checkThat(value(consequenceId).verifies(not(emptyOrNullString())).because("Consequence ID cannot be empty"));
-        this.consequenceId = consequenceId;
+    private void setCommandId(String commandId) {
+        checkThat(value(commandId).verifies(not(emptyOrNullString())).because("Command ID cannot be empty"));
+        this.commandId = commandId;
     }
 
     public CompletableFuture<CommandHandlingResult> getFuture() {

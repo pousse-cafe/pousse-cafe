@@ -1,6 +1,6 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.consequence.CommandListener;
+import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;

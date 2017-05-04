@@ -1,12 +1,12 @@
 package poussecafe.configuration;
 
 import java.lang.annotation.Annotation;
-import poussecafe.consequence.CommandListener;
+import poussecafe.messaging.CommandListener;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-class CommandListenerAnnotationWrapper implements ConsequenceListenerAnnotationWrapper {
+class CommandListenerAnnotationWrapper implements MessageListenerAnnotationWrapper {
 
     private CommandListener annotation;
 

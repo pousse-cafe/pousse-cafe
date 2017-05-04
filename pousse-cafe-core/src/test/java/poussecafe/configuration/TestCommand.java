@@ -1,6 +1,6 @@
 package poussecafe.configuration;
 
-import poussecafe.consequence.Command;
+import poussecafe.messaging.Command;
 
 public class TestCommand extends Command {
 

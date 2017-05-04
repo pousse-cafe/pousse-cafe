@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -8,26 +8,26 @@ import static poussecafe.check.Checks.checkThat;
 
 public class SuccessfulConsumption {
 
-    private Consequence consumedConsequence;
+    private Message consumedMessage;
 
     private ProcessManagerKey createdProcessManagerKey;
 
-    public SuccessfulConsumption(Consequence consumedConsequence) {
-        this(consumedConsequence, null);
+    public SuccessfulConsumption(Message consumedMessage) {
+        this(consumedMessage, null);
     }
 
-    public SuccessfulConsumption(Consequence consumedConsequence, ProcessManagerKey createdProcessManagerKey) {
-        setConsumedConsequence(consumedConsequence);
+    public SuccessfulConsumption(Message consumedMessage, ProcessManagerKey createdProcessManagerKey) {
+        setConsumedMessage(consumedMessage);
         setCreatedProcessManagerKey(createdProcessManagerKey);
     }
 
-    public Consequence getConsumedConsequence() {
-        return consumedConsequence;
+    public Message getConsumedMessage() {
+        return consumedMessage;
     }
 
-    private void setConsumedConsequence(Consequence consumedConsequence) {
-        checkThat(value(consumedConsequence).notNull().because("Consumed consequence cannot be null"));
-        this.consumedConsequence = consumedConsequence;
+    private void setConsumedMessage(Message consumedMessage) {
+        checkThat(value(consumedMessage).notNull().because("Consumed message cannot be null"));
+        this.consumedMessage = consumedMessage;
     }
 
     public ProcessManagerKey getCreatedProcessManagerKey() {
@@ -44,7 +44,7 @@ public class SuccessfulConsumption {
 
     @Override
     public String toString() {
-        return "SuccessfulConsumption [consumedConsequence=" + consumedConsequence + ", createdProcessManagerKey="
+        return "SuccessfulConsumption [consumedMessage=" + consumedMessage + ", createdProcessManagerKey="
                 + createdProcessManagerKey + "]";
     }
 
@@ -52,7 +52,7 @@ public class SuccessfulConsumption {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((consumedConsequence == null) ? 0 : consumedConsequence.hashCode());
+        result = prime * result + ((consumedMessage == null) ? 0 : consumedMessage.hashCode());
         result = prime * result + ((createdProcessManagerKey == null) ? 0 : createdProcessManagerKey.hashCode());
         return result;
     }
@@ -69,11 +69,11 @@ public class SuccessfulConsumption {
             return false;
         }
         SuccessfulConsumption other = (SuccessfulConsumption) obj;
-        if (consumedConsequence == null) {
-            if (other.consumedConsequence != null) {
+        if (consumedMessage == null) {
+            if (other.consumedMessage != null) {
                 return false;
             }
-        } else if (!consumedConsequence.equals(other.consumedConsequence)) {
+        } else if (!consumedMessage.equals(other.consumedMessage)) {
             return false;
         }
         if (createdProcessManagerKey == null) {

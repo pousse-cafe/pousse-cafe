@@ -10,7 +10,7 @@ import poussecafe.storable.StorableDataFactory;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ServiceCachingStorage implements Storage {
 
-    private ConsequenceEmissionPolicy policy;
+    private MessageSendingPolicy policy;
 
     private TransactionRunner transactionRunner;
 
@@ -19,11 +19,11 @@ public abstract class ServiceCachingStorage implements Storage {
     private Map<Class, StorableDataFactory> dataFactories = new HashMap<>();
 
     public ServiceCachingStorage() {
-        policy = newConsequenceEmissionPolicy();
+        policy = newMessageSendingPolicy();
         transactionRunner = newTransactionRunner();
     }
 
-    protected abstract ConsequenceEmissionPolicy newConsequenceEmissionPolicy();
+    protected abstract MessageSendingPolicy newMessageSendingPolicy();
 
     protected abstract TransactionRunner newTransactionRunner();
 
@@ -35,7 +35,7 @@ public abstract class ServiceCachingStorage implements Storage {
     }
 
     @Override
-    public ConsequenceEmissionPolicy getConsequenceEmissionPolicy() {
+    public MessageSendingPolicy getMessageSendingPolicy() {
         return policy;
     }
 

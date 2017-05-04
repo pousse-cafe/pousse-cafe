@@ -18,7 +18,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
     public void doSomeAction(int x) {
         checkThat(value(x).verifies(greaterThan(0)).because("X cannot be <=0"));
         getData().setX(x);
-        getUnitOfConsequence().addConsequence(new MyDomainEvent(getKey()));
+        getMessageCollection().addMessage(new MyDomainEvent(getKey()));
     }
 
     /*

@@ -1,8 +1,8 @@
 package poussecafe.process;
 
 import java.util.function.Function;
-import poussecafe.consequence.Command;
-import poussecafe.storable.UnitOfConsequence;
+import poussecafe.messaging.Command;
+import poussecafe.storable.MessageCollection;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -11,7 +11,7 @@ public abstract class StateMachine {
 
     private State currentState;
 
-    private transient UnitOfConsequence unitOfConsequence;
+    private transient MessageCollection messageCollection;
 
     public State getCurrentState() {
         wireCurrentState();
@@ -19,7 +19,7 @@ public abstract class StateMachine {
     }
 
     private void wireCurrentState() {
-        currentState.setUnitOfConsequence(unitOfConsequence);
+        currentState.setMessageCollection(messageCollection);
         currentState.setStateMachine(this);
     }
 
@@ -28,12 +28,12 @@ public abstract class StateMachine {
         currentState = state;
     }
 
-    void setUnitOfConsequence(UnitOfConsequence unitOfConsequence) {
-        this.unitOfConsequence = unitOfConsequence;
+    void setMessageCollection(MessageCollection messageCollection) {
+        this.messageCollection = messageCollection;
     }
 
     protected void addCommand(Command command) {
-        unitOfConsequence.addConsequence(command);
+        messageCollection.addMessage(command);
     }
 
     public void executeTransition(Function<State, State> transitionChooser) {

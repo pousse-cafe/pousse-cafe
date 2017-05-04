@@ -17,8 +17,8 @@ extends StorableRepository<JournalEntry, JournalEntryKey, JournalEntry.Data> {
         return new JournalEntry();
     }
 
-    public List<JournalEntry> findByConsequenceId(String consequenceId) {
-        return newStorablesWithData(dataAccess().findByConsequenceId(consequenceId));
+    public List<JournalEntry> findByMessageId(String messageId) {
+        return newStorablesWithData(dataAccess().findByMessageId(messageId));
     }
 
     @Override

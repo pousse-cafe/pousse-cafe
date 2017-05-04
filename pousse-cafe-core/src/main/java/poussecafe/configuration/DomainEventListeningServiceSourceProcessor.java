@@ -1,16 +1,16 @@
 package poussecafe.configuration;
 
 import java.lang.reflect.Method;
-import poussecafe.consequence.DomainEventListener;
+import poussecafe.messaging.DomainEventListener;
 
-class DomainEventListeningServiceSourceProcessor extends ConsequenceListeningServiceSourceProcessor {
+class DomainEventListeningServiceSourceProcessor extends MessageListeningServiceSourceProcessor {
 
     public DomainEventListeningServiceSourceProcessor(Object service) {
         super(service);
     }
 
     @Override
-    protected ConsequenceListenerAnnotationWrapper buildListenerAnnotationWrapper(Method method) {
+    protected MessageListenerAnnotationWrapper buildListenerAnnotationWrapper(Method method) {
         DomainEventListener annotation = method.getAnnotation(DomainEventListener.class);
         if (annotation == null) {
             return null;

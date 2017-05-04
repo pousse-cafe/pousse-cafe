@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 import poussecafe.storable.StorableFactory;
 
 public class JournalEntryFactory extends StorableFactory<JournalEntryKey, JournalEntry, JournalEntry.Data> {
@@ -10,9 +10,9 @@ public class JournalEntryFactory extends StorableFactory<JournalEntryKey, Journa
         return new JournalEntry();
     }
 
-    public JournalEntry buildEntryForEmittedConsequence(JournalEntryKey key, Consequence consequence) {
+    public JournalEntry buildEntryForSentMessage(JournalEntryKey key, Message message) {
         JournalEntry entry = newStorableWithKey(key);
-        entry.setConsequence(consequence);
+        entry.setMessage(message);
         entry.setInitialStatus(JournalEntryStatus.IN_PROGRESS);
         return entry;
     }

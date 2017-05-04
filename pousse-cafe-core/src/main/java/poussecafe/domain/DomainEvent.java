@@ -1,7 +1,7 @@
 package poussecafe.domain;
 
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 
-public class DomainEvent extends Consequence {
+public class DomainEvent extends Message {
 
 }

@@ -1,12 +1,12 @@
 package poussecafe.configuration;
 
 import java.lang.annotation.Annotation;
-import poussecafe.consequence.DomainEventListener;
+import poussecafe.messaging.DomainEventListener;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-class DomainEventListenerAnnotationWrapper implements ConsequenceListenerAnnotationWrapper {
+class DomainEventListenerAnnotationWrapper implements MessageListenerAnnotationWrapper {
 
     private DomainEventListener annotation;
 

@@ -5,8 +5,8 @@ import org.mockito.InOrder;
 public class EntryCreatedOrUpdatedOnIgnoreTest extends EntryCreatedOrUpdatedTest {
 
     @Override
-    protected void givenConsequence() {
-        givenIgnoredConsequence();
+    protected void givenMessage() {
+        givenIgnoredMessage();
     }
 
     @Override

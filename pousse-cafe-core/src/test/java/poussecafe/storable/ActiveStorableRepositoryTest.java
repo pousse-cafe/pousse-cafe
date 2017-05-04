@@ -1,7 +1,7 @@
 package poussecafe.storable;
 
 import org.junit.Test;
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,16 +13,16 @@ import static org.mockito.Mockito.when;
 public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends StorableData<K>>
 extends StorableRepositoryTest<K, S, D> {
 
-    private ConsequenceEmissionPolicy consequenceEmissionPolicy;
+    private MessageSendingPolicy messageSendingPolicy;
 
-    private UnitOfConsequence newUnitOfConsequence;
+    private MessageCollection newMessageCollection;
 
     @Override
     public void setupRepository() {
         super.setupRepository();
 
-        consequenceEmissionPolicy = mock(ConsequenceEmissionPolicy.class);
-        repository().setConsequenceEmissionPolicy(consequenceEmissionPolicy);
+        messageSendingPolicy = mock(MessageSendingPolicy.class);
+        repository().setMessageSendingPolicy(messageSendingPolicy);
     }
 
     private ActiveStorableRepository<S, K, D> repository() {
@@ -30,37 +30,37 @@ extends StorableRepositoryTest<K, S, D> {
     }
 
     @Test
-    public void foundDataHasUnitOfConsequence() {
+    public void foundDataHasMessageCollection() {
         givenKey();
         givenDataForKey();
-        givenEventEmissionPolicyBuildsUnitOfConsequence();
+        givenMessageSendingPolicyBuildsCollection();
         whenFindingDataWithKey();
-        thenFoundStorableHasUnitOfConsequence();
+        thenFoundStorableHasMessageCollection();
     }
 
-    private void givenEventEmissionPolicyBuildsUnitOfConsequence() {
-        newUnitOfConsequence = mock(UnitOfConsequence.class);
-        when(consequenceEmissionPolicy.newUnitOfConsequence()).thenReturn(newUnitOfConsequence);
+    private void givenMessageSendingPolicyBuildsCollection() {
+        newMessageCollection = mock(MessageCollection.class);
+        when(messageSendingPolicy.newMessageCollection()).thenReturn(newMessageCollection);
     }
 
-    private void thenFoundStorableHasUnitOfConsequence() {
-        assertThat(storable.getUnitOfConsequence(), is(newUnitOfConsequence));
+    private void thenFoundStorableHasMessageCollection() {
+        assertThat(storable.getMessageCollection(), is(newMessageCollection));
     }
 
     @Test
-    public void gotDataHasUnitOfConsequence() {
+    public void gotDataHasMessageCollection() {
         givenKey();
-        givenEventEmissionPolicyBuildsUnitOfConsequence();
+        givenMessageSendingPolicyBuildsCollection();
         givenDataForKey();
         whenGettingDataWithKey();
-        thenFoundStorableHasUnitOfConsequence();
+        thenFoundStorableHasMessageCollection();
     }
 
     @Override
     protected void givenStorable() {
         super.givenStorable();
-        UnitOfConsequence unitOfConsequence = mock(UnitOfConsequence.class);
-        when(storable.getUnitOfConsequence()).thenReturn(unitOfConsequence);
+        MessageCollection messageCollection = mock(MessageCollection.class);
+        when(storable.getMessageCollection()).thenReturn(messageCollection);
     }
 
     @Override
@@ -74,7 +74,7 @@ extends StorableRepositoryTest<K, S, D> {
     }
 
     private void thenUnitEmitted() {
-        verify(consequenceEmissionPolicy).considerUnitEmission(storable.getUnitOfConsequence());
+        verify(messageSendingPolicy).considerSending(storable.getMessageCollection());
     }
 
     @Test
@@ -92,6 +92,6 @@ extends StorableRepositoryTest<K, S, D> {
     }
 
     private void thenNothingHappens() {
-        verifyZeroInteractions(consequenceEmissionPolicy);
+        verifyZeroInteractions(messageSendingPolicy);
     }
 }

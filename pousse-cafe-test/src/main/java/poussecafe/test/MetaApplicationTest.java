@@ -12,11 +12,11 @@ import java.time.Duration;
 import java.util.Map.Entry;
 import org.junit.Before;
 import poussecafe.configuration.MetaApplicationContext;
-import poussecafe.consequence.Command;
-import poussecafe.consequence.CommandHandlingResult;
 import poussecafe.data.memory.InMemoryDataAccess;
 import poussecafe.domain.DomainEvent;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.Command;
+import poussecafe.messaging.CommandHandlingResult;
 import poussecafe.storable.Storable;
 import poussecafe.storable.StorableData;
 import poussecafe.storable.StorableRepository;
@@ -54,16 +54,16 @@ public abstract class MetaApplicationTest {
     @SuppressWarnings("unchecked")
     protected <T extends Storable<K, D>, K, D extends StorableData<K>> T find(Class<T> storableClass,
             K key) {
-        waitUntilAllConsequenceQueuesEmpty();
+        waitUntilAllMessageQueuesEmpty();
         StorableRepository<Storable<K, D>, K, D> repository = (StorableRepository<Storable<K, D>, K, D>) context
                 .getStorableServices(storableClass)
                 .getRepository();
         return (T) repository.find(key);
     }
 
-    protected void waitUntilAllConsequenceQueuesEmpty() {
+    protected void waitUntilAllMessageQueuesEmpty() {
         try {
-            configuration.waitUntilAllConsequenceQueuesEmpty();
+            configuration.waitUntilAllMessageQueuesEmpty();
         } catch (InterruptedException e) {
             return;
         }
@@ -75,8 +75,8 @@ public abstract class MetaApplicationTest {
     }
 
     protected void addDomainEvent(DomainEvent event) {
-        context.getConsequenceRouter().routeConsequence(event);
-        waitUntilAllConsequenceQueuesEmpty();
+        context.getMessageRouter().routeMessage(event);
+        waitUntilAllMessageQueuesEmpty();
     }
 
     @SuppressWarnings("rawtypes")

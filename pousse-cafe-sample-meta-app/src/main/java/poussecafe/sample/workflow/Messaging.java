@@ -1,7 +1,7 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.consequence.DomainEventListener;
 import poussecafe.domain.DomainEvent;
+import poussecafe.messaging.DomainEventListener;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;

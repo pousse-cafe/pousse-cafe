@@ -7,22 +7,22 @@ import static poussecafe.check.Predicates.not;
 
 public class JournalEntryKey {
 
-    private String consequenceId;
+    private String messageId;
 
     private String listenerId;
 
-    public JournalEntryKey(String consequenceId, String listenerId) {
-        setConsequenceId(consequenceId);
+    public JournalEntryKey(String messageId, String listenerId) {
+        setMessageId(messageId);
         setListenerId(listenerId);
     }
 
-    public String getConsequenceId() {
-        return consequenceId;
+    public String getMessageId() {
+        return messageId;
     }
 
-    private void setConsequenceId(String consequenceId) {
-        checkThat(value(consequenceId).verifies(not(emptyOrNullString())).because("Consequence ID cannot be null"));
-        this.consequenceId = consequenceId;
+    private void setMessageId(String messageId) {
+        checkThat(value(messageId).verifies(not(emptyOrNullString())).because("Message ID cannot be null"));
+        this.messageId = messageId;
     }
 
     public String getListenerId() {
@@ -36,7 +36,7 @@ public class JournalEntryKey {
 
     @Override
     public int hashCode() {
-        return 31 * consequenceId.hashCode() + 31 * listenerId.hashCode();
+        return 31 * messageId.hashCode() + 31 * listenerId.hashCode();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class JournalEntryKey {
             return false;
         }
         JournalEntryKey other = (JournalEntryKey) obj;
-        if (!consequenceId.equals(other.consequenceId)) {
+        if (!messageId.equals(other.messageId)) {
             return false;
         }
         if (!listenerId.equals(other.listenerId)) {
@@ -62,7 +62,7 @@ public class JournalEntryKey {
 
     @Override
     public String toString() {
-        return "JournalEntryKey [consequenceId=" + consequenceId + ", listenerId=" + listenerId + "]";
+        return "JournalEntryKey [messageId=" + messageId + ", listenerId=" + listenerId + "]";
     }
 
 }

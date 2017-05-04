@@ -2,13 +2,13 @@ package poussecafe.storable;
 
 public abstract class ActiveStorable<K, D extends StorableData<K>> extends Storable<K, D> {
 
-    private UnitOfConsequence unitOfConsequence;
+    private MessageCollection messageCollection;
 
-    void setUnitOfConsequence(UnitOfConsequence unitOfConsequence) {
-        this.unitOfConsequence = unitOfConsequence;
+    void setMessageCollection(MessageCollection messageCollection) {
+        this.messageCollection = messageCollection;
     }
 
-    protected UnitOfConsequence getUnitOfConsequence() {
-        return unitOfConsequence;
+    protected MessageCollection getMessageCollection() {
+        return messageCollection;
     }
 }

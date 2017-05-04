@@ -19,7 +19,7 @@ public class ProcessManager extends ActiveStorable<ProcessManagerKey, ProcessMan
 
     void setStateMachine(StateMachine stateMachine) {
         this.stateMachine = stateMachine;
-        stateMachine.setUnitOfConsequence(getUnitOfConsequence());
+        stateMachine.setMessageCollection(getMessageCollection());
         setStateMachineData(stateMachine);
     }
 
@@ -44,7 +44,7 @@ public class ProcessManager extends ActiveStorable<ProcessManagerKey, ProcessMan
         try {
             StateMachine stateMachine = GSON.fromJson(getData().getStateMachineData(),
                     StateMachine.class);
-            stateMachine.setUnitOfConsequence(getUnitOfConsequence());
+            stateMachine.setMessageCollection(getMessageCollection());
             return stateMachine;
         } catch (Exception e) {
             throw new PousseCafeException("Unable to instantiate state machine from data", e);

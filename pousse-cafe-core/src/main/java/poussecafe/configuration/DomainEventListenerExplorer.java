@@ -1,20 +1,20 @@
 package poussecafe.configuration;
 
-import poussecafe.consequence.ConsequenceListenerRegistry;
+import poussecafe.messaging.MessageListenerRegistry;
 
-class DomainEventListenerExplorer extends ConsequenceListenerExplorer {
+class DomainEventListenerExplorer extends MessageListenerExplorer {
 
-    DomainEventListenerExplorer(ConsequenceListenerRegistry registry, Object service) {
+    DomainEventListenerExplorer(MessageListenerRegistry registry, Object service) {
         super(registry, service);
     }
 
     @Override
-    protected void registerListener(ConsequenceListenerEntry entry) {
+    protected void registerListener(MessageListenerEntry entry) {
         registry.registerDomainEventListener(entry);
     }
 
     @Override
-    protected ConsequenceListeningServiceSourceProcessor buildSourceProcessor(Object service) {
+    protected MessageListeningServiceSourceProcessor buildSourceProcessor(Object service) {
         return new DomainEventListeningServiceSourceProcessor(service);
     }
 

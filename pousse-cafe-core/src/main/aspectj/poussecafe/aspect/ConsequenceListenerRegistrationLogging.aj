@@ -1,16 +1,16 @@
 package poussecafe.aspect;
 
 import org.slf4j.LoggerFactory;
-import poussecafe.configuration.ConsequenceListenerEntry;
-import poussecafe.consequence.ConsequenceListenerRegistry;
+import poussecafe.configuration.MessageListenerEntry;
+import poussecafe.messaging.MessageListenerRegistry;
 
 public aspect ConsequenceListenerRegistrationLogging {
 
-    pointcut onListenerRegistration(ConsequenceListenerEntry entry) :
-        call(void ConsequenceListenerRegistry.registerListener(ConsequenceListenerEntry))
+    pointcut onListenerRegistration(MessageListenerEntry entry) :
+        call(void MessageListenerRegistry.registerListener(MessageListenerEntry))
         && args(entry);
 
-    before(ConsequenceListenerEntry entry) : onListenerRegistration(entry) {
+    before(MessageListenerEntry entry) : onListenerRegistration(entry) {
         LoggerFactory.getLogger(thisJoinPoint.getTarget().getClass()).info("Registring listener " + entry);
     }
 }

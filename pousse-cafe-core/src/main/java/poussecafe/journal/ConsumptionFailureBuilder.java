@@ -2,16 +2,16 @@ package poussecafe.journal;
 
 import java.util.ArrayList;
 import java.util.List;
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 
 public class ConsumptionFailureBuilder {
 
-    private Consequence consequence;
+    private Message message;
 
     private List<String> listenerIds;
 
-    public ConsumptionFailureBuilder(Consequence consequence) {
-        this.consequence = consequence;
+    public ConsumptionFailureBuilder(Message message) {
+        this.message = message;
         listenerIds = new ArrayList<>();
     }
 
@@ -20,7 +20,7 @@ public class ConsumptionFailureBuilder {
     }
 
     public ConsumptionFailure build() {
-        return new ConsumptionFailure(consequence, listenerIds);
+        return new ConsumptionFailure(message, listenerIds);
     }
 
 }

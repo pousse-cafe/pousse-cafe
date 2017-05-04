@@ -5,7 +5,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import poussecafe.configuration.TestCommand;
-import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.messaging.CommandHandlingResult;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 public class CommandWatcherTest {
 
-    private ConsequenceJournal consequenceJournal;
+    private MessagingJournal messagingJournal;
 
     private CommandWatcher watcher;
 
@@ -40,11 +40,11 @@ public class CommandWatcherTest {
     }
 
     protected void givenWatcher() {
-        consequenceJournal = mock(ConsequenceJournal.class);
+        messagingJournal = mock(MessagingJournal.class);
         waitTimeBeforeAtLeastOnePoll = 10;
         watcher = CommandWatcher
                 .withPollingPeriod(PollingPeriod.withPeriod(Duration.ofMillis(waitTimeBeforeAtLeastOnePoll)));
-        watcher.setConsequenceJournal(consequenceJournal);
+        watcher.setMessagingJournal(messagingJournal);
     }
 
     private void whenWaitingForAtLeastPolls(int polls) {
@@ -61,7 +61,7 @@ public class CommandWatcherTest {
     }
 
     private void thenJournalWasNotQueries() {
-        verifyZeroInteractions(consequenceJournal);
+        verifyZeroInteractions(messagingJournal);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CommandWatcherTest {
     }
 
     private void thenJournalWasQueriedTwice() {
-        verify(consequenceJournal, atLeast(2)).findCommandEntry(command.getId());
+        verify(messagingJournal, atLeast(2)).findCommandEntry(command.getId());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class CommandWatcherTest {
     private void givenEntryWithStatus(JournalEntryStatus status) {
         JournalEntry entry = mock(JournalEntry.class);
         when(entry.getStatus()).thenReturn(status);
-        when(consequenceJournal.findCommandEntry(command.getId())).thenReturn(entry);
+        when(messagingJournal.findCommandEntry(command.getId())).thenReturn(entry);
         if (status == JournalEntryStatus.FAILURE) {
             JournalEntryLog log = mock(JournalEntryLog.class);
             when(log.getDescription()).thenReturn("description");

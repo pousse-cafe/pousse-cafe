@@ -1,7 +1,7 @@
 package poussecafe.configuration;
 
-import poussecafe.consequence.CommandListener;
-import poussecafe.consequence.DomainEventListener;
+import poussecafe.messaging.CommandListener;
+import poussecafe.messaging.DomainEventListener;
 import poussecafe.service.Workflow;
 
 public class DummyWorkflow extends Workflow {

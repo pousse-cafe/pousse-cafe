@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import java.util.List;
 import poussecafe.domain.Repository;
-import poussecafe.storable.UnitOfConsequence;
+import poussecafe.storable.MessageCollection;
 
 public class MessageRepository extends Repository<Message, MessageKey, Message.Data> {
 
@@ -12,10 +12,10 @@ public class MessageRepository extends Repository<Message, MessageKey, Message.D
     }
 
     @Override
-    protected void considerUnitEmissionAfterAdd(Message message,
-            UnitOfConsequence unitOfConsequence) {
-        unitOfConsequence.addConsequence(new MessageCreated(message.getKey()));
-        super.considerUnitEmissionAfterAdd(message, unitOfConsequence);
+    protected void considerMessageSendingAfterAdd(Message message,
+            MessageCollection messageCollection) {
+        messageCollection.addMessage(new MessageCreated(message.getKey()));
+        super.considerMessageSendingAfterAdd(message, messageCollection);
     }
 
     public List<Message> findByCustomer(CustomerKey customerKey) {

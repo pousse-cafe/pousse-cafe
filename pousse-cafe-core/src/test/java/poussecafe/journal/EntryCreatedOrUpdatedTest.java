@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
+public abstract class EntryCreatedOrUpdatedTest extends MessagingJournalTest {
 
     protected JournalEntry newEntry;
 
@@ -23,19 +23,19 @@ public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
 
     @Test
     public void entryCreatedOnSuccess() {
-        givenConfiguredConsequenceJournal();
-        givenConsequence();
+        givenConfiguredMessagingJournal();
+        givenMessage();
         givenNoEntryYetInJournal();
         whenLogging();
         thenNewEntryIsAdded();
     }
 
-    protected abstract void givenConsequence();
+    protected abstract void givenMessage();
 
     protected void givenNoEntryYetInJournal() {
         newEntry = mock(JournalEntry.class);
-        JournalEntryKey key = new JournalEntryKey(consequence.getId(), listenerId);
-        when(entryFactory.buildEntryForEmittedConsequence(key, consequence)).thenReturn(newEntry);
+        JournalEntryKey key = new JournalEntryKey(message.getId(), listenerId);
+        when(entryFactory.buildEntryForSentMessage(key, message)).thenReturn(newEntry);
     }
 
     protected abstract void whenLogging();
@@ -46,8 +46,8 @@ public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
 
     @Test
     public void entryUpdatedOnSuccess() {
-        givenConfiguredConsequenceJournal();
-        givenConsequence();
+        givenConfiguredMessagingJournal();
+        givenMessage();
         givenExistingEntryInJournal();
         whenLogging();
         thenExistingEntryIsUpdated();
@@ -55,7 +55,7 @@ public abstract class EntryCreatedOrUpdatedTest extends ConsequenceJournalTest {
 
     protected void givenExistingEntryInJournal() {
         existingEntry = mock(JournalEntry.class);
-        JournalEntryKey key = new JournalEntryKey(consequence.getId(), listenerId);
+        JournalEntryKey key = new JournalEntryKey(message.getId(), listenerId);
         when(entryRepository.find(key)).thenReturn(existingEntry);
     }
 

@@ -2,7 +2,7 @@ package poussecafe.configuration;
 
 import java.util.HashSet;
 import java.util.Set;
-import poussecafe.consequence.ConsequenceListenerRegistry;
+import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.service.Workflow;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -12,7 +12,7 @@ import static poussecafe.check.Predicates.not;
 
 public class WorkflowExplorer {
 
-    private ConsequenceListenerRegistry registry;
+    private MessageListenerRegistry registry;
 
     private StorageServiceLocator storageServiceLocator;
 
@@ -22,8 +22,8 @@ public class WorkflowExplorer {
         configuredServices = new HashSet<>();
     }
 
-    public void setConsequenceListenerRegistry(ConsequenceListenerRegistry registry) {
-        checkThat(value(registry).notNull().because("Consequence listener registry cannot be null"));
+    public void setMessageListenerRegistry(MessageListenerRegistry registry) {
+        checkThat(value(registry).notNull().because("Message listener registry cannot be null"));
         this.registry = registry;
     }
 

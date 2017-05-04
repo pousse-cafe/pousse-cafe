@@ -1,6 +1,6 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.consequence.CommandListener;
+import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.ShipOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderRepository;

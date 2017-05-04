@@ -2,7 +2,7 @@ package poussecafe.journal;
 
 import java.util.List;
 import java.util.ListIterator;
-import poussecafe.consequence.Consequence;
+import poussecafe.messaging.Message;
 import poussecafe.process.ProcessManagerKey;
 import poussecafe.storable.Storable;
 import poussecafe.storable.StorableData;
@@ -19,8 +19,8 @@ public class JournalEntry extends Storable<JournalEntryKey, JournalEntry.Data> {
         getData().setStatus(status);
     }
 
-    void setConsequence(Consequence consequence) {
-        getData().setConsequence(consequence);
+    void setMessage(Message message) {
+        getData().setMessage(message);
     }
 
     public void logSuccess() {
@@ -75,15 +75,15 @@ public class JournalEntry extends Storable<JournalEntryKey, JournalEntry.Data> {
         return getLogs().stream().filter(log -> log.getType() == JournalEntryLogType.SUCCESS).findFirst().orElse(null);
     }
 
-    public Consequence getConsequence() {
-        return getData().getConsequence();
+    public Message getMessage() {
+        return getData().getMessage();
     }
 
     public static interface Data extends StorableData<JournalEntryKey> {
 
-        void setConsequence(Consequence consequence);
+        void setMessage(Message message);
 
-        Consequence getConsequence();
+        Message getMessage();
 
         List<JournalEntryLog> getLogs();
 

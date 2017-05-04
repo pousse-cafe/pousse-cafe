@@ -3,7 +3,7 @@ package poussecafe.configuration;
 import poussecafe.storable.StorableData;
 import poussecafe.storable.StorableDataAccess;
 import poussecafe.storable.StorableDataFactory;
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -11,7 +11,7 @@ import static poussecafe.check.Checks.checkThat;
 
 public class StorageServices<K, D extends StorableData<K>> {
 
-    private ConsequenceEmissionPolicy consequenceEmissionPolicy;
+    private MessageSendingPolicy messageSendingPolicy;
 
     private TransactionRunner transactionRunner;
 
@@ -19,21 +19,21 @@ public class StorageServices<K, D extends StorableData<K>> {
 
     private StorableDataFactory<D> dataFactory;
 
-    public StorageServices(ConsequenceEmissionPolicy consequenceEmissionPolicy, TransactionRunner transactionRunner,
+    public StorageServices(MessageSendingPolicy messageSendingPolicy, TransactionRunner transactionRunner,
             StorableDataAccess<K, D> dataAccess, StorableDataFactory<D> dataFactory) {
-        setConsequenceEmissionPolicy(consequenceEmissionPolicy);
+        setMessageSendingPolicy(messageSendingPolicy);
         setTransactionRunner(transactionRunner);
         setDataAccess(dataAccess);
         setDataFactory(dataFactory);
     }
 
-    public ConsequenceEmissionPolicy getConsequenceEmissionPolicy() {
-        return consequenceEmissionPolicy;
+    public MessageSendingPolicy getMessageSendingPolicy() {
+        return messageSendingPolicy;
     }
 
-    private void setConsequenceEmissionPolicy(ConsequenceEmissionPolicy consequenceEmissionPolicy) {
-        checkThat(value(consequenceEmissionPolicy).notNull());
-        this.consequenceEmissionPolicy = consequenceEmissionPolicy;
+    private void setMessageSendingPolicy(MessageSendingPolicy messageSendingPolicy) {
+        checkThat(value(messageSendingPolicy).notNull());
+        this.messageSendingPolicy = messageSendingPolicy;
     }
 
     public TransactionRunner getTransactionRunner() {

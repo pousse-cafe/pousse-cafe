@@ -86,7 +86,7 @@ public abstract class StorableRepositoryTest<K, S extends Storable<K, D>, D exte
         givenKey();
         givenDataForKey();
         whenFindingDataWithKey();
-        thenFoundStorableHasDataAndUnitOfConsequence();
+        thenFoundStorableHasDataAndMessageCollection();
     }
 
     protected void givenDataForKey() {
@@ -95,7 +95,7 @@ public abstract class StorableRepositoryTest<K, S extends Storable<K, D>, D exte
         when(dataAccess.findData(key)).thenReturn(foundOrCreatedData);
     }
 
-    protected void thenFoundStorableHasDataAndUnitOfConsequence() {
+    protected void thenFoundStorableHasDataAndMessageCollection() {
         assertThat(storable.getData(), is(foundOrCreatedData));
     }
 
@@ -115,7 +115,7 @@ public abstract class StorableRepositoryTest<K, S extends Storable<K, D>, D exte
         givenKey();
         givenDataForKey();
         whenGettingDataWithKey();
-        thenFoundStorableHasDataAndUnitOfConsequence();
+        thenFoundStorableHasDataAndMessageCollection();
     }
 
     @Test

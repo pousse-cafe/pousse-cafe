@@ -6,8 +6,8 @@ import poussecafe.util.ExceptionUtils;
 public class EntryCreatedOrUpdatedOnFailureTest extends EntryCreatedOrUpdatedTest {
 
     @Override
-    protected void givenConsequence() {
-        givenConsequenceConsumptionFailed();
+    protected void givenMessage() {
+        givenMessageConsumptionFailed();
     }
 
     @Override

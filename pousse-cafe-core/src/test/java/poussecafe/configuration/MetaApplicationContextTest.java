@@ -2,12 +2,12 @@ package poussecafe.configuration;
 
 import java.util.Set;
 import org.junit.Test;
-import poussecafe.consequence.CommandProcessor;
-import poussecafe.consequence.ConsequenceListener;
-import poussecafe.consequence.ConsequenceListenerRoutingKey;
-import poussecafe.consequence.ConsequenceReceiver;
-import poussecafe.consequence.Source;
 import poussecafe.domain.SimpleAggregate;
+import poussecafe.messaging.CommandProcessor;
+import poussecafe.messaging.MessageListener;
+import poussecafe.messaging.MessageListenerRoutingKey;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.Queue;
 import poussecafe.util.FieldAccessor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -49,25 +49,25 @@ public class MetaApplicationContextTest {
     }
 
     @Test
-    public void consequenceListenersConfiguration() {
+    public void messageListenersConfiguration() {
         givenApplicationConfiguration();
         whenCreatingContext();
-        thenConsequenceListenersAreConfigured();
+        thenMessageListenersAreConfigured();
     }
 
-    private void thenConsequenceListenersAreConfigured() {
-        Set<ConsequenceListener> listeners;
+    private void thenMessageListenersAreConfigured() {
+        Set<MessageListener> listeners;
 
-        listeners = context.getConsequenceListeners(
-                new ConsequenceListenerRoutingKey(Source.DEFAULT_DOMAIN_EVENT_SOURCE, TestDomainEvent.class));
+        listeners = context.getMessageListeners(
+                new MessageListenerRoutingKey(Queue.DEFAULT_DOMAIN_EVENT_QUEUE, TestDomainEvent.class));
         assertThat(listeners.size(), is(2));
 
-        listeners = context.getConsequenceListeners(
-                new ConsequenceListenerRoutingKey(Source.DEFAULT_COMMAND_SOURCE, TestCommand.class));
+        listeners = context.getMessageListeners(
+                new MessageListenerRoutingKey(Queue.DEFAULT_COMMAND_QUEUE, TestCommand.class));
         assertThat(listeners.size(), is(1));
 
-        listeners = context.getConsequenceListeners(
-                new ConsequenceListenerRoutingKey(Source.DEFAULT_COMMAND_SOURCE, AnotherTestCommand.class));
+        listeners = context.getMessageListeners(
+                new MessageListenerRoutingKey(Queue.DEFAULT_COMMAND_QUEUE, AnotherTestCommand.class));
         assertThat(listeners.size(), is(1));
     }
 
@@ -84,14 +84,14 @@ public class MetaApplicationContextTest {
     }
 
     @Test
-    public void consequenceReceiversStarted() {
+    public void messageReceiversStarted() {
         givenApplicationConfiguration();
         whenCreatingContext();
-        thenConsequenceReceiversAreStarted();
+        thenMessageReceiversAreStarted();
     }
 
-    private void thenConsequenceReceiversAreStarted() {
-        for (ConsequenceReceiver receiver : configuration.getConsequenceReceivers()) {
+    private void thenMessageReceiversAreStarted() {
+        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
             assertTrue(receiver.isStarted());
         }
     }

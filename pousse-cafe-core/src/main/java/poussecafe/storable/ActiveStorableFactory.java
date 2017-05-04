@@ -6,7 +6,7 @@ extends StorableFactory<K, A, D> {
     @Override
     protected A newStorableWithKey(K key) {
         A storable = super.newStorableWithKey(key);
-        storable.setUnitOfConsequence(new DefaultUnitOfConsequence());
+        storable.setMessageCollection(new DefaultMessageCollection());
         return storable;
     }
 

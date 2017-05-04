@@ -1,6 +1,6 @@
 package poussecafe.sample.command;
 
-import poussecafe.consequence.Command;
+import poussecafe.messaging.Command;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.ProductKey;
 

@@ -27,7 +27,7 @@ extends StorableRepositoryTest<JournalEntryKey, JournalEntry, JournalEntry.Data>
 
     @Override
     protected JournalEntryKey buildKey() {
-        return new JournalEntryKey("consequenceId", "listenerId");
+        return new JournalEntryKey("messageId", "listenerId");
     }
 
     @Override

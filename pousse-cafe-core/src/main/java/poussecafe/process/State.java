@@ -1,20 +1,20 @@
 package poussecafe.process;
 
-import poussecafe.consequence.Command;
-import poussecafe.storable.UnitOfConsequence;
+import poussecafe.messaging.Command;
+import poussecafe.storable.MessageCollection;
 
 public class State {
 
     protected transient StateMachine stateMachine;
 
-    protected transient UnitOfConsequence unitOfConsequence;
+    protected transient MessageCollection messageCollection;
 
     void setStateMachine(StateMachine stateMachine) {
         this.stateMachine = stateMachine;
     }
 
-    void setUnitOfConsequence(UnitOfConsequence unitOfConsequence) {
-        this.unitOfConsequence = unitOfConsequence;
+    void setMessageCollection(MessageCollection messageCollection) {
+        this.messageCollection = messageCollection;
     }
 
     public String getName() {
@@ -22,7 +22,7 @@ public class State {
     }
 
     protected void addCommand(Command command) {
-        unitOfConsequence.addConsequence(command);
+        messageCollection.addMessage(command);
     }
 
 }

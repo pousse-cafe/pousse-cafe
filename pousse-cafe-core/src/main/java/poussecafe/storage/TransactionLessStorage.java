@@ -5,8 +5,8 @@ import poussecafe.configuration.StorageConfiguration;
 public class TransactionLessStorage extends StorageConfiguration {
 
     @Override
-    public ConsequenceEmissionPolicy consequenceEmissionPolicy() {
-        return new DirectEmissionPolicy();
+    public MessageSendingPolicy messageSendingPolicy() {
+        return new DirectMessageSending();
     }
 
     @Override

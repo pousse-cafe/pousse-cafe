@@ -1,6 +1,6 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.consequence.CommandListener;
+import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;

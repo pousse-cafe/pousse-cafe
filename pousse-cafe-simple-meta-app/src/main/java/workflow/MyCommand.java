@@ -1,7 +1,7 @@
 package workflow;
 
 import domain.MyAggregateKey;
-import poussecafe.consequence.Command;
+import poussecafe.messaging.Command;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;

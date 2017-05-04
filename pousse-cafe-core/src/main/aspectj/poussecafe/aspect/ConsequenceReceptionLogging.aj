@@ -1,20 +1,20 @@
 package poussecafe.aspect;
 
 import org.slf4j.LoggerFactory;
-import poussecafe.consequence.Consequence;
-import poussecafe.consequence.ConsequenceReceiver;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.Message;
 
 public aspect ConsequenceReceptionLogging {
 
-    pointcut onConsequenceReception(Consequence aConsequence) :
-        call(void ConsequenceReceiver.onConsequence(Consequence))
+    pointcut onConsequenceReception(Message aConsequence) :
+        call(void MessageReceiver.onConsequence(Message))
         && args(aConsequence);
 
-    before(Consequence aConsequence) : onConsequenceReception(aConsequence) {
+    before(Message aConsequence) : onConsequenceReception(aConsequence) {
         LoggerFactory.getLogger(thisJoinPoint.getTarget().getClass()).info("Handling received consequence " + aConsequence);
     }
 
-    after(Consequence aConsequence) : onConsequenceReception(aConsequence) {
+    after(Message aConsequence) : onConsequenceReception(aConsequence) {
         LoggerFactory.getLogger(thisJoinPoint.getTarget().getClass()).info("Consequence " + aConsequence + " handled");
     }
 }

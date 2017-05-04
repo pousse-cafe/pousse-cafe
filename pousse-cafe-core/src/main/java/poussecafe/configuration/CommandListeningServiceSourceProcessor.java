@@ -1,16 +1,16 @@
 package poussecafe.configuration;
 
 import java.lang.reflect.Method;
-import poussecafe.consequence.CommandListener;
+import poussecafe.messaging.CommandListener;
 
-class CommandListeningServiceSourceProcessor extends ConsequenceListeningServiceSourceProcessor {
+class CommandListeningServiceSourceProcessor extends MessageListeningServiceSourceProcessor {
 
     public CommandListeningServiceSourceProcessor(Object service) {
         super(service);
     }
 
     @Override
-    protected ConsequenceListenerAnnotationWrapper buildListenerAnnotationWrapper(Method method) {
+    protected MessageListenerAnnotationWrapper buildListenerAnnotationWrapper(Method method) {
         CommandListener annotation = method.getAnnotation(CommandListener.class);
         if (annotation == null) {
             return null;

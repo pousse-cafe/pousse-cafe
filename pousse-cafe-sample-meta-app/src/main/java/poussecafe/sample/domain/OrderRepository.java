@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.Repository;
 import poussecafe.sample.domain.Order.Data;
-import poussecafe.storable.UnitOfConsequence;
+import poussecafe.storable.MessageCollection;
 
 public class OrderRepository extends Repository<Order, OrderKey, Data> {
 
@@ -12,9 +12,9 @@ public class OrderRepository extends Repository<Order, OrderKey, Data> {
     }
 
     @Override
-    protected void considerUnitEmissionAfterAdd(Order order,
-            UnitOfConsequence unitOfConsequence) {
-        unitOfConsequence.addConsequence(new OrderCreated(order.getKey()));
-        super.considerUnitEmissionAfterAdd(order, unitOfConsequence);
+    protected void considerMessageSendingAfterAdd(Order order,
+            MessageCollection messageCollection) {
+        messageCollection.addMessage(new OrderCreated(order.getKey()));
+        super.considerMessageSendingAfterAdd(order, messageCollection);
     }
 }

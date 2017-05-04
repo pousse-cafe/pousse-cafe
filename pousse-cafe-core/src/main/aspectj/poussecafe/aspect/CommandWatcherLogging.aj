@@ -2,8 +2,8 @@ package poussecafe.aspect;
 
 import java.util.concurrent.Future;
 import org.slf4j.LoggerFactory;
-import poussecafe.consequence.CommandHandlingResult;
 import poussecafe.journal.CommandWatcher;
+import poussecafe.messaging.CommandHandlingResult;
 
 public aspect CommandWatcherLogging {
     

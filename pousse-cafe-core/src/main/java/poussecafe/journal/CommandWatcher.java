@@ -7,7 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import poussecafe.consequence.CommandHandlingResult;
+import poussecafe.messaging.CommandHandlingResult;
 import poussecafe.process.ProcessManager;
 import poussecafe.process.ProcessManagerRepository;
 
@@ -18,7 +18,7 @@ public class CommandWatcher {
 
     private PollingPeriod pollingPeriod;
 
-    private ConsequenceJournal consequenceJournal;
+    private MessagingJournal messagingJournal;
 
     private List<PollingRequest> requests;
 
@@ -84,7 +84,7 @@ public class CommandWatcher {
 
     private void handlePendingRequest(Iterator<PollingRequest> iterator,
             PollingRequest request) {
-        JournalEntry journalEntry = consequenceJournal.findCommandEntry(request.getConsequenceId());
+        JournalEntry journalEntry = messagingJournal.findCommandEntry(request.getCommandId());
         if (journalEntry != null) {
             if (journalEntry.getStatus() == JournalEntryStatus.SUCCESS) {
                 handlePendingRequestIfSuccessfulHandling(iterator, request, journalEntry.getSuccessLog());
@@ -119,9 +119,9 @@ public class CommandWatcher {
         return task;
     }
 
-    public void setConsequenceJournal(ConsequenceJournal consequenceJournal) {
-        checkThat(value(consequenceJournal).notNull().because("Consequence journal cannot be null"));
-        this.consequenceJournal = consequenceJournal;
+    public void setMessagingJournal(MessagingJournal messagingJournal) {
+        checkThat(value(messagingJournal).notNull().because("Messaging journal cannot be null"));
+        this.messagingJournal = messagingJournal;
     }
 
     public void setProcessManagerRepository(ProcessManagerRepository processManagerRepository) {

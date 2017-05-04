@@ -8,13 +8,13 @@ import poussecafe.journal.JournalEntry.Data;
 
 public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEntryKey, Data> implements JournalEntryDataAccess {
 
-    private Multimap<String, Data> consequenceIdIndex;
+    private Multimap<String, Data> messageIdIndex;
 
     private Multimap<JournalEntryStatus, Data> statusIndex;
 
     public InMemoryJournalEntryDataAccess() {
         super(JournalEntry.Data.class);
-        consequenceIdIndex = new Multimap<>();
+        messageIdIndex = new Multimap<>();
         statusIndex = new Multimap<>();
     }
 
@@ -25,7 +25,7 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
     }
 
     protected void addToIndex(Data data) {
-        consequenceIdIndex.put(data.getConsequence().getId(), data);
+        messageIdIndex.put(data.getMessage().getId(), data);
         statusIndex.put(data.getStatus(), data);
     }
 
@@ -37,7 +37,7 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
     }
 
     private void removeFromIndex(Data data) {
-        consequenceIdIndex.remove(data.getConsequence().getId(), data);
+        messageIdIndex.remove(data.getMessage().getId(), data);
         statusIndex.remove(data.getStatus(), data);
     }
 
@@ -51,8 +51,8 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
     }
 
     @Override
-    public List<Data> findByConsequenceId(String consequenceId) {
-        return new ArrayList<>(consequenceIdIndex.get(consequenceId));
+    public List<Data> findByMessageId(String messageId) {
+        return new ArrayList<>(messageIdIndex.get(messageId));
     }
 
     @Override

@@ -5,12 +5,12 @@ import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
-public class LogsRunInTransactionTest extends ConsequenceJournalTest {
+public class LogsRunInTransactionTest extends MessagingJournalTest {
 
     @Test
     public void logSuccessfulConsumptionRunsInTransaction() {
-        givenConfiguredConsequenceJournal();
-        givenSuccessfullyConsumedConsequence();
+        givenConfiguredMessagingJournal();
+        givenSuccessfullyConsumedMessage();
         whenLoggingSuccessfulConsumption();
         thenTransactionRunnerIsInvoked();
     }
@@ -21,16 +21,16 @@ public class LogsRunInTransactionTest extends ConsequenceJournalTest {
 
     @Test
     public void logIgnoredConsumptionRunsInTransaction() {
-        givenConfiguredConsequenceJournal();
-        givenIgnoredConsequence();
+        givenConfiguredMessagingJournal();
+        givenIgnoredMessage();
         whenLoggingIgnoredConsumption();
         thenTransactionRunnerIsInvoked();
     }
 
     @Test
     public void logFailedConsumptionRunsInTransaction() {
-        givenConfiguredConsequenceJournal();
-        givenConsequenceConsumptionFailed();
+        givenConfiguredMessagingJournal();
+        givenMessageConsumptionFailed();
         whenLoggingFailedConsumption();
         thenTransactionRunnerIsInvoked();
     }

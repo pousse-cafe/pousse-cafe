@@ -3,7 +3,7 @@ package poussecafe.configuration;
 import java.util.List;
 import java.util.function.Function;
 import poussecafe.storable.StorableData;
-import poussecafe.storage.ConsequenceEmissionPolicy;
+import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.Storage;
 import poussecafe.storage.TransactionRunner;
 
@@ -21,8 +21,8 @@ public class StorageServiceLocator {
         this.defaultStorage = defaultStorage;
     }
 
-    public <D extends StorableData<?>> ConsequenceEmissionPolicy locateConsequenceEmissionPolicy(Class<D> dataClass) {
-        return locateService(dataClass, p -> p.storage.getConsequenceEmissionPolicy());
+    public <D extends StorableData<?>> MessageSendingPolicy locateMessageSendingPolicy(Class<D> dataClass) {
+        return locateService(dataClass, p -> p.storage.getMessageSendingPolicy());
     }
 
     public <K, D extends StorableData<K>> StorageServices<K, D> locateStorageServices(Class<D> dataClass) {

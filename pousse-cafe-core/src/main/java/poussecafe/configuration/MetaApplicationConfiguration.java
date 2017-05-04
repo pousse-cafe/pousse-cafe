@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import poussecafe.consequence.ConsequenceEmitter;
-import poussecafe.consequence.ConsequenceReceiver;
-import poussecafe.consequence.DefaultSourceSelector;
-import poussecafe.consequence.InMemoryConsequenceQueue;
-import poussecafe.consequence.Source;
-import poussecafe.consequence.SourceSelector;
 import poussecafe.journal.PollingPeriod;
+import poussecafe.messaging.MessageSender;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.DefaultQueueSelector;
+import poussecafe.messaging.InMemoryMessageQueue;
+import poussecafe.messaging.Queue;
+import poussecafe.messaging.QueueSelector;
 import poussecafe.service.Workflow;
 import poussecafe.storage.InMemoryStorage;
 import poussecafe.storage.Storage;
@@ -25,9 +25,9 @@ public class MetaApplicationConfiguration {
 
     private IdGenerator idGenerator;
 
-    private SourceSelector sourceSelector;
+    private QueueSelector sourceSelector;
 
-    private ConsequenceJournalEntryConfiguration consequenceJournalEntryConfiguration;
+    private MessagingJournalEntryConfiguration messagingJournalEntryConfiguration;
 
     @SuppressWarnings("rawtypes")
     private Set<ActiveStorableConfiguration> aggregateConfigurations;
@@ -36,9 +36,9 @@ public class MetaApplicationConfiguration {
 
     private Set<Object> services;
 
-    private Set<ConsequenceEmitter> consequenceEmitters;
+    private Set<MessageSender> messageSenders;
 
-    private Set<ConsequenceReceiver> consequenceReceivers;
+    private Set<MessageReceiver> messageReceivers;
 
     private ProcessManagerConfiguration processManagerConfiguration;
 
@@ -48,15 +48,15 @@ public class MetaApplicationConfiguration {
 
     public MetaApplicationConfiguration() {
         idGenerator = new IdGenerator();
-        sourceSelector = new DefaultSourceSelector();
-        consequenceJournalEntryConfiguration = new ConsequenceJournalEntryConfiguration();
+        sourceSelector = new DefaultQueueSelector();
+        messagingJournalEntryConfiguration = new MessagingJournalEntryConfiguration();
         aggregateConfigurations = new HashSet<>();
         workflows = new HashSet<>();
         services = new HashSet<>();
 
-        Set<InMemoryConsequenceQueue> defaultConsequenceQueues = defaultConsequenceQueues();
-        consequenceEmitters = new HashSet<>(defaultConsequenceQueues);
-        consequenceReceivers = new HashSet<>(defaultConsequenceQueues);
+        Set<InMemoryMessageQueue> defaultMessageQueues = defaultMessageQueues();
+        messageSenders = new HashSet<>(defaultMessageQueues);
+        messageReceivers = new HashSet<>(defaultMessageQueues);
 
         processManagerConfiguration = new ProcessManagerConfiguration();
 
@@ -68,13 +68,13 @@ public class MetaApplicationConfiguration {
         return new IdGenerator();
     }
 
-    protected SourceSelector sourceSelectorSupplier() {
-        return new DefaultSourceSelector();
+    protected QueueSelector sourceSelectorSupplier() {
+        return new DefaultQueueSelector();
     }
 
-    private Set<InMemoryConsequenceQueue> defaultConsequenceQueues() {
-        InMemoryConsequenceQueue commandQueue = new InMemoryConsequenceQueue(Source.DEFAULT_COMMAND_SOURCE);
-        InMemoryConsequenceQueue eventQueue = new InMemoryConsequenceQueue(Source.DEFAULT_DOMAIN_EVENT_SOURCE);
+    private Set<InMemoryMessageQueue> defaultMessageQueues() {
+        InMemoryMessageQueue commandQueue = new InMemoryMessageQueue(Queue.DEFAULT_COMMAND_QUEUE);
+        InMemoryMessageQueue eventQueue = new InMemoryMessageQueue(Queue.DEFAULT_DOMAIN_EVENT_QUEUE);
         return new HashSet<>(asList(commandQueue, eventQueue));
     }
 
@@ -91,26 +91,26 @@ public class MetaApplicationConfiguration {
         services.add(service);
     }
 
-    public void replaceEmitters(Set<ConsequenceEmitter> emitters) {
-        consequenceEmitters.clear();
-        consequenceEmitters.addAll(emitters);
+    public void replaceEmitters(Set<MessageSender> emitters) {
+        messageSenders.clear();
+        messageSenders.addAll(emitters);
     }
 
-    public void replaceReceivers(Set<ConsequenceReceiver> receivers) {
-        consequenceReceivers.clear();
-        consequenceReceivers.addAll(receivers);
+    public void replaceReceivers(Set<MessageReceiver> receivers) {
+        messageReceivers.clear();
+        messageReceivers.addAll(receivers);
     }
 
     public IdGenerator getIdGenerator() {
         return idGenerator;
     }
 
-    public SourceSelector getSourceSelector() {
+    public QueueSelector getSourceSelector() {
         return sourceSelector;
     }
 
-    public ConsequenceJournalEntryConfiguration getConsequenceJournalEntryConfiguration() {
-        return consequenceJournalEntryConfiguration;
+    public MessagingJournalEntryConfiguration getMessagingJournalEntryConfiguration() {
+        return messagingJournalEntryConfiguration;
     }
 
     @SuppressWarnings("rawtypes")
@@ -122,12 +122,12 @@ public class MetaApplicationConfiguration {
         return workflows;
     }
 
-    public Set<ConsequenceEmitter> getConsequenceEmitters() {
-        return consequenceEmitters;
+    public Set<MessageSender> getMessageSenders() {
+        return messageSenders;
     }
 
-    public Set<ConsequenceReceiver> getConsequenceReceivers() {
-        return consequenceReceivers;
+    public Set<MessageReceiver> getMessageReceivers() {
+        return messageReceivers;
     }
 
     public PollingPeriod getCommandWatcherPollingPeriod() {
