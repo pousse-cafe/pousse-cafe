@@ -25,9 +25,10 @@ public class SuccessfulConsumptionDetectionTest extends MessagingJournalTest {
     }
 
     protected void givenExistingEntryWithSuccessLogValue(boolean successLog) {
+        givenKey();
         JournalEntry entry = mock(JournalEntry.class);
         when(entry.getStatus()).thenReturn(successLog ? JournalEntryStatus.SUCCESS : JournalEntryStatus.FAILURE);
-        when(entryRepository.find(new JournalEntryKey(message.getId(), listenerId))).thenReturn(entry);
+        when(entryRepository.find(key)).thenReturn(entry);
     }
 
     private void whenDetectingSuccessfulConsumption() {

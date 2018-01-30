@@ -12,9 +12,4 @@ public class MyFactory extends Factory<MyAggregateKey, MyAggregate, MyAggregate.
         return newAggregateWithKey(key);
     }
 
-    @Override
-    protected MyAggregate newAggregate() {
-        return new MyAggregate();
-    }
-
 }

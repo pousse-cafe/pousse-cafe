@@ -3,6 +3,7 @@ package poussecafe.journal;
 import java.util.List;
 import poussecafe.exception.AssertionFailedException;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageAdapter;
 import poussecafe.service.TransactionAwareService;
 import poussecafe.util.ExceptionUtils;
 
@@ -10,6 +11,8 @@ import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public class MessagingJournal extends TransactionAwareService {
+
+    private MessageAdapter messageAdapter;
 
     private JournalEntryRepository entryRepository;
 
@@ -20,11 +23,7 @@ public class MessagingJournal extends TransactionAwareService {
         JournalEntrySaver saver = buildSaver(listenerId, consumption.getConsumedMessage());
         runInTransaction(JournalEntry.Data.class, () -> {
             JournalEntry entry = saver.findOrBuild();
-            if (consumption.hasCreatedProcessManagerKey()) {
-                entry.logSuccess(consumption.getCreatedProcessManagerKey());
-            } else {
-                entry.logSuccess();
-            }
+            entry.logSuccess();
             saver.save();
         });
     }
@@ -32,7 +31,7 @@ public class MessagingJournal extends TransactionAwareService {
     private JournalEntrySaver buildSaver(String listenerId,
             Message message) {
         JournalEntrySaver saver = new JournalEntrySaver();
-        saver.setMessage(message);
+        saver.setMessage(messageAdapter.adaptMessage(message));
         saver.setEntryFactory(entryFactory);
         saver.setEntryRepository(entryRepository);
 
@@ -65,8 +64,8 @@ public class MessagingJournal extends TransactionAwareService {
 
     public boolean isSuccessfullyConsumed(Message message,
             String listenerId) {
-        JournalEntry entry = entryRepository
-                .find(new JournalEntryKey(message.getId(), listenerId));
+        JournalEntryKey entryKey = new JournalEntryKey(message.getId(), listenerId);
+        JournalEntry entry = entryRepository.find(entryKey);
         if (entry == null) {
             return false;
         } else {
@@ -94,6 +93,11 @@ public class MessagingJournal extends TransactionAwareService {
     public void setEntryFactory(JournalEntryFactory entryFactory) {
         checkThat(value(entryFactory).notNull().because("Entry factory cannot be null"));
         this.entryFactory = entryFactory;
+    }
+
+    public void setMessageAdapter(MessageAdapter messageAdapter) {
+        checkThat(value(messageAdapter).notNull().because("Message adapter cannot be null"));
+        this.messageAdapter = messageAdapter;
     }
 
 }

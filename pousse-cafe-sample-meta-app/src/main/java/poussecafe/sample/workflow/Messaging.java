@@ -11,9 +11,9 @@ import poussecafe.sample.domain.OrderCreated;
 import poussecafe.sample.domain.OrderReadyForShipping;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.OrderSettled;
-import poussecafe.service.Workflow;
+import poussecafe.service.Process;
 
-public class Messaging extends Workflow {
+public class Messaging extends Process {
 
     private MessageFactory factory;
 

@@ -6,12 +6,12 @@ import poussecafe.messaging.Message;
 
 public aspect ConsequenceEmissionLogging {
 
-    pointcut onConsequenceEmission(Message aConsequence) :
-        call(void MessageSender.emitConsequence(Message))
-        && args(aConsequence);
+    pointcut onMessageSending(Message aMessage) :
+        call(void MessageSender.sendMessage(Message))
+        && args(aMessage);
 
-    before(Message aConsequence) : onConsequenceEmission(aConsequence) {
+    before(Message aMessage) : onMessageSending(aMessage) {
         MessageSender emitter = (MessageSender) thisJoinPoint.getTarget();
-        LoggerFactory.getLogger(emitter.getClass()).info("Emitting consequence " + aConsequence + " on source " + emitter.getDestinationQueue());
+        LoggerFactory.getLogger(emitter.getClass()).info("Sending message " + aMessage);
     }
 }

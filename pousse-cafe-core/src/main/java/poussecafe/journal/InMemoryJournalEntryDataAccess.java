@@ -3,19 +3,25 @@ package poussecafe.journal;
 import java.util.ArrayList;
 import java.util.List;
 import poussecafe.collection.Multimap;
-import poussecafe.data.memory.InMemoryDataAccess;
+import poussecafe.inmemory.InMemoryDataAccess;
 import poussecafe.journal.JournalEntry.Data;
 
-public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEntryKey, Data> implements JournalEntryDataAccess {
+import static java.util.stream.Collectors.toList;
 
-    private Multimap<String, Data> messageIdIndex;
+public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<Data> implements JournalEntryDataAccess {
 
-    private Multimap<JournalEntryStatus, Data> statusIndex;
+    private Multimap<String, Object> messageIdIndex;
+
+    private Multimap<JournalEntryStatus, Object> statusIndex;
 
     public InMemoryJournalEntryDataAccess() {
-        super(JournalEntry.Data.class);
         messageIdIndex = new Multimap<>();
         statusIndex = new Multimap<>();
+    }
+
+    @Override
+    protected JournalEntryKey extractKey(Data data) {
+        return new JournalEntryKey(data.getMessageId(), data.listenerId().get());
     }
 
     @Override
@@ -25,8 +31,9 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
     }
 
     protected void addToIndex(Data data) {
-        messageIdIndex.put(data.getMessage().getId(), data);
-        statusIndex.put(data.getStatus(), data);
+        JournalEntryKey key = extractKey(data);
+        messageIdIndex.put(data.getMessageId(), key);
+        statusIndex.put(data.getStatus(), key);
     }
 
     @Override
@@ -37,12 +44,13 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
     }
 
     private void removeFromIndex(Data data) {
-        messageIdIndex.remove(data.getMessage().getId(), data);
-        statusIndex.remove(data.getStatus(), data);
+        JournalEntryKey key = extractKey(data);
+        messageIdIndex.remove(data.getMessageId(), key);
+        statusIndex.remove(data.getStatus(), key);
     }
 
     @Override
-    public synchronized void deleteData(JournalEntryKey key) {
+    public synchronized void deleteData(Object key) {
         Data data = findData(key);
         super.deleteData(key);
         if (data != null) {
@@ -52,12 +60,12 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
 
     @Override
     public List<Data> findByMessageId(String messageId) {
-        return new ArrayList<>(messageIdIndex.get(messageId));
+        return new ArrayList<>(messageIdIndex.get(messageId).stream().map(this::findData).collect(toList()));
     }
 
     @Override
     public List<Data> findByStatus(JournalEntryStatus status) {
-        return new ArrayList<>(statusIndex.get(status));
+        return new ArrayList<>(statusIndex.get(status).stream().map(this::findData).collect(toList()));
     }
 
 }

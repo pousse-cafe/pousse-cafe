@@ -1,12 +1,11 @@
 package workflow;
 
 import domain.MyAggregateKey;
-import poussecafe.messaging.Command;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class MyCommand extends Command {
+public class MyCommand {
 
     private MyAggregateKey key;
 

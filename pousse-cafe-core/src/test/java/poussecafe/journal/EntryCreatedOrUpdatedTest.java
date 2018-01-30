@@ -34,8 +34,7 @@ public abstract class EntryCreatedOrUpdatedTest extends MessagingJournalTest {
 
     protected void givenNoEntryYetInJournal() {
         newEntry = mock(JournalEntry.class);
-        JournalEntryKey key = new JournalEntryKey(message.getId(), listenerId);
-        when(entryFactory.buildEntryForSentMessage(key, message)).thenReturn(newEntry);
+        when(entryFactory.buildEntryForSentMessage(key, serializedMessage)).thenReturn(newEntry);
     }
 
     protected abstract void whenLogging();
@@ -55,7 +54,7 @@ public abstract class EntryCreatedOrUpdatedTest extends MessagingJournalTest {
 
     protected void givenExistingEntryInJournal() {
         existingEntry = mock(JournalEntry.class);
-        JournalEntryKey key = new JournalEntryKey(message.getId(), listenerId);
+        givenKey();
         when(entryRepository.find(key)).thenReturn(existingEntry);
     }
 

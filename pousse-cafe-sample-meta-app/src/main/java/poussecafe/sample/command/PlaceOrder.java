@@ -1,10 +1,9 @@
 package poussecafe.sample.command;
 
-import poussecafe.messaging.Command;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.ProductKey;
 
-public class PlaceOrder extends Command {
+public class PlaceOrder {
 
     private ProductKey productKey;
 

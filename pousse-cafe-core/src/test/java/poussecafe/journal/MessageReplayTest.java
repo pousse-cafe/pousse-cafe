@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import poussecafe.messaging.MessageRouter;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageSender;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -18,7 +18,7 @@ public abstract class MessageReplayTest {
     protected ConsumptionFailureRepository consumptionFailureRepository;
 
     @Mock
-    protected MessageRouter messageRouter;
+    protected MessageSender messageSender;
 
     @InjectMocks
     protected MessageReplayer messageReplayer;
@@ -35,11 +35,11 @@ public abstract class MessageReplayTest {
     }
 
     protected void thenMessageIsRouted(Message message) {
-        verify(messageRouter).routeMessage(message);
+        verify(messageSender).sendMessage(message);
     }
 
     protected void thenMessageIsNotRouted(Message message) {
-        verify(messageRouter, never()).routeMessage(message);
+        verify(messageSender, never()).sendMessage(message);
     }
 
     protected Message messageWithId(String id) {

@@ -1,8 +1,5 @@
 package poussecafe.storable;
 
-public interface StorableData<K> {
+public interface StorableData {
 
-    void setKey(K key);
-
-    K getKey();
 }

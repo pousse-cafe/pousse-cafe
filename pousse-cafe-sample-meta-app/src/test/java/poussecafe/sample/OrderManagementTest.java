@@ -1,15 +1,19 @@
 package poussecafe.sample;
 
 import org.junit.Test;
-import poussecafe.sample.command.StartOrderPlacementProcess;
-import poussecafe.sample.configuration.OrderConfiguration;
-import poussecafe.sample.configuration.ProductConfiguration;
+import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderDescription;
+import poussecafe.sample.domain.OrderFactory;
 import poussecafe.sample.domain.OrderKey;
+import poussecafe.sample.domain.OrderRepository;
+import poussecafe.sample.domain.Product;
+import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductKey;
+import poussecafe.sample.domain.ProductRepository;
 import poussecafe.sample.workflow.OrderPlacement;
+import poussecafe.storable.StorableDefinition;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -26,9 +30,19 @@ public class OrderManagementTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new ProductConfiguration());
-        configuration.registerAggregate(new OrderConfiguration());
-        configuration.registerWorkflow(new OrderPlacement());
+        context().environment().defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(Product.class)
+                .withFactoryClass(ProductFactory.class)
+                .withRepositoryClass(ProductRepository.class)
+                .build());
+
+        context().environment().defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(Order.class)
+                .withFactoryClass(OrderFactory.class)
+                .withRepositoryClass(OrderRepository.class)
+                .build());
+
+        context().environment().defineProcess(OrderPlacement.class);
     }
 
     @Test
@@ -57,7 +71,7 @@ public class OrderManagementTest extends MetaApplicationTest {
         description.customerKey = customerKey;
         description.reference = "ref";
         description.units = 1;
-        processAndWait(new StartOrderPlacementProcess(productKey, description));
+        context().getProcess(OrderPlacement.class).placeOrder(new PlaceOrder(productKey, description));
     }
 
     private void thenOrderCreated() {

@@ -5,6 +5,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.configuration.StorageServiceLocator;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageAdapter;
+import poussecafe.storable.PrimitiveFactory;
 import poussecafe.storage.TransactionRunner;
 
 import static org.mockito.Mockito.mock;
@@ -18,8 +20,14 @@ public abstract class MessagingJournalTest {
     @Mock
     protected JournalEntryFactory entryFactory;
 
+    @Mock
+    protected PrimitiveFactory primitiveFactory;
+
     @InjectMocks
     protected MessagingJournal journal;
+
+    protected MessageAdapter messageAdapter;
+
 
     protected TransactionRunner transactionRunner;
 
@@ -27,12 +35,29 @@ public abstract class MessagingJournalTest {
 
     protected Message message;
 
+    protected SerializedMessage serializedMessage;
+
     protected Exception exception;
+
+    protected JournalEntryKey key;
 
     protected void givenConfiguredMessagingJournal() {
         MockitoAnnotations.initMocks(this);
         transactionRunner = transactionRunner();
         journal.setStorageServiceLocator(storageServiceLocator(transactionRunner));
+
+        messageAdapter = new MessageAdapter() {
+            @Override
+            public SerializedMessage adaptMessage(Message message) {
+                return serializedMessage;
+            }
+
+            @Override
+            public Message adaptSerializedMessage(SerializedMessage serializedMessage) {
+                return message;
+            }
+        };
+        journal.setMessageAdapter(messageAdapter);
     }
 
     protected TransactionRunner transactionRunner() {
@@ -52,7 +77,19 @@ public abstract class MessagingJournalTest {
     protected void givenReceivedMessage() {
         listenerId = "listenerId";
         message = mock(Message.class);
-        when(message.getId()).thenReturn("messageId");
+
+        String messageId = "messageId";
+        when(message.getId()).thenReturn(messageId);
+        when(message.getType()).thenReturn(Message.class.getName());
+
+        serializedMessage = mock(SerializedMessage.class);
+        when(serializedMessage.getId()).thenReturn(messageId);
+
+        givenKey();
+    }
+
+    protected void givenKey() {
+        key = new JournalEntryKey(message.getId(), listenerId);
     }
 
     protected void givenIgnoredMessage() {

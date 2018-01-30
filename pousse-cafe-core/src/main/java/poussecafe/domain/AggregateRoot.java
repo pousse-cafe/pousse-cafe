@@ -1,10 +1,7 @@
 package poussecafe.domain;
 
-import poussecafe.storable.ActiveStorable;
+import poussecafe.storable.StorableData;
 
-public abstract class AggregateRoot<K, D extends AggregateData<K>> extends ActiveStorable<K, D> {
+public abstract class AggregateRoot<K, D extends StorableData> extends Entity<K, D> {
 
-    protected void addDomainEvent(DomainEvent event) {
-        getMessageCollection().addMessage(event);
-    }
 }

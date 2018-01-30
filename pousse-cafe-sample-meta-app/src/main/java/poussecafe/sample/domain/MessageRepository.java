@@ -7,11 +7,6 @@ import poussecafe.storable.MessageCollection;
 public class MessageRepository extends Repository<Message, MessageKey, Message.Data> {
 
     @Override
-    protected Message newAggregate() {
-        return new Message();
-    }
-
-    @Override
     protected void considerMessageSendingAfterAdd(Message message,
             MessageCollection messageCollection) {
         messageCollection.addMessage(new MessageCreated(message.getKey()));

@@ -2,7 +2,6 @@ package poussecafe.messaging;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -50,9 +49,9 @@ public class MessageListener {
         this.listenerId = listenerId;
     }
 
-    public ProcessManagerKey consume(Message message) {
+    public void consume(Message message) {
         try {
-            return (ProcessManagerKey) method.invoke(target, message);
+            method.invoke(target, message);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new MessageConsumptionException("Unable to invoke listener", e);
         }

@@ -39,7 +39,7 @@ public class AllMessagesReplayTest extends MessageReplayTest {
 
     private void thenFailedReplayed() {
         for (ConsumptionFailure failedEntry : failures) {
-            verify(messageRouter).routeMessage(failedEntry.getMessage());
+            verify(messageSender).sendMessage(failedEntry.getMessage());
         }
     }
 }

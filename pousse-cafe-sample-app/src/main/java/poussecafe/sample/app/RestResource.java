@@ -1,45 +1,29 @@
 package poussecafe.sample.app;
 
-import java.time.Duration;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import poussecafe.messaging.CommandHandlingResult;
-import poussecafe.messaging.CommandProcessor;
+import poussecafe.configuration.MetaApplicationContext;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.sample.domain.ProductRepository;
+import poussecafe.sample.workflow.ProductManagement;
 
 @Path("/")
 public class RestResource {
 
     @Autowired
-    private CommandProcessor commandProcessor;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private ProductConverter productConverter;
+    private MetaApplicationContext metaApplicationContext;
 
     @POST
     @Path("product")
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @Produces(MediaType.APPLICATION_JSON_VALUE)
-    public void createProduct(CreateProductView input,
-            @Suspended final AsyncResponse asyncResponse) {
+    public void createProduct(CreateProductView input) {
         ProductKey productKey = new ProductKey(input.key);
-        CommandHandlingResult result = commandProcessor.processCommand(new CreateProduct(productKey)).get(Duration.ofSeconds(10));
-        if (result.isSuccess()) {
-            asyncResponse.resume(productConverter.convert(productRepository.get(productKey)));
-        } else {
-            asyncResponse.resume(new RuntimeException("Unable to create product: " + result.getFailureDescription()));
-        }
+        metaApplicationContext.getProcess(ProductManagement.class).createProduct(new CreateProduct(productKey));
     }
 
 }

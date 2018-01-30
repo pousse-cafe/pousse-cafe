@@ -1,7 +1,6 @@
 package poussecafe.journal;
 
 import java.time.LocalDateTime;
-import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -14,30 +13,22 @@ public class JournalEntryLog {
 
     private String description;
 
-    private ProcessManagerKey createdProcessManagerKey;
-
-    private JournalEntryLog(LocalDateTime dateTime, JournalEntryLogType type, String description,
-            ProcessManagerKey createdProcessManagerKey) {
+    private JournalEntryLog(LocalDateTime dateTime, JournalEntryLogType type, String description) {
         setDateTime(dateTime);
         setType(type);
         setDescription(description);
-        setCreatedProcessManagerKey(createdProcessManagerKey);
     }
 
     public static JournalEntryLog successLog() {
-        return successLog(null);
-    }
-
-    public static JournalEntryLog successLog(ProcessManagerKey createdProcessManagerKey) {
-        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.SUCCESS, "Success", createdProcessManagerKey);
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.SUCCESS, "Success");
     }
 
     public static JournalEntryLog failureLog(String failureDescription) {
-        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.FAILURE, failureDescription, null);
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.FAILURE, failureDescription);
     }
 
     public static JournalEntryLog ignoreLog() {
-        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.IGNORE, "Ignore", null);
+        return new JournalEntryLog(LocalDateTime.now(), JournalEntryLogType.IGNORE, "Ignore");
     }
 
     public LocalDateTime getTimestamp() {
@@ -65,18 +56,6 @@ public class JournalEntryLog {
     private void setDescription(String description) {
         checkThat(value(description).notNull().because("Log description cannot be null"));
         this.description = description;
-    }
-
-    public ProcessManagerKey getCreatedProcessManagerKey() {
-        return createdProcessManagerKey;
-    }
-
-    private void setCreatedProcessManagerKey(ProcessManagerKey createdProcessManagerKey) {
-        this.createdProcessManagerKey = createdProcessManagerKey;
-    }
-
-    public boolean hasCreatedProcessManagerKey() {
-        return createdProcessManagerKey != null;
     }
 
 }

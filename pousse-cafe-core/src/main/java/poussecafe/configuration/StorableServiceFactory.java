@@ -1,9 +1,9 @@
 package poussecafe.configuration;
 
-import poussecafe.storable.StorableFactory;
-import poussecafe.storable.StorableRepository;
+import poussecafe.storable.IdentifiedStorableFactory;
+import poussecafe.storable.IdentifiedStorableRepository;
 
-public interface StorableServiceFactory<F extends StorableFactory<?, ?, ?>, R extends StorableRepository<?, ?, ?>> {
+public interface StorableServiceFactory<F extends IdentifiedStorableFactory<?, ?, ?>, R extends IdentifiedStorableRepository<?, ?, ?>> {
 
     R newRepository();
 

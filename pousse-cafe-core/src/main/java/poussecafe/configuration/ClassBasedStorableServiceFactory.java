@@ -1,13 +1,13 @@
 package poussecafe.configuration;
 
 import poussecafe.exception.PousseCafeException;
-import poussecafe.storable.StorableFactory;
-import poussecafe.storable.StorableRepository;
+import poussecafe.storable.IdentifiedStorableFactory;
+import poussecafe.storable.IdentifiedStorableRepository;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class ClassBasedStorableServiceFactory<F extends StorableFactory<?, ?, ?>, R extends StorableRepository<?, ?, ?>>
+public class ClassBasedStorableServiceFactory<F extends IdentifiedStorableFactory<?, ?, ?>, R extends IdentifiedStorableRepository<?, ?, ?>>
 implements StorableServiceFactory<F, R> {
 
     private Class<F> factoryClass;

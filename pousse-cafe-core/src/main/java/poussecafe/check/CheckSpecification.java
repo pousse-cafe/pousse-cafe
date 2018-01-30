@@ -21,7 +21,13 @@ public abstract class CheckSpecification<T> {
     }
 
     public CheckSpecification<T> notNull() {
-        return verifies(Objects::nonNull);
+        verifies(Objects::nonNull);
+        return because("Value cannot be null");
+    }
+
+    public CheckSpecification<T> isTrue() {
+        verifies(value -> Boolean.TRUE.equals(value));
+        return because("Value must be true");
     }
 
     public CheckSpecification<T> because(String message) {

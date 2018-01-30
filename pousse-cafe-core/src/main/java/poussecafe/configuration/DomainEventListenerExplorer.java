@@ -10,7 +10,7 @@ class DomainEventListenerExplorer extends MessageListenerExplorer {
 
     @Override
     protected void registerListener(MessageListenerEntry entry) {
-        registry.registerDomainEventListener(entry);
+        registry.registerListener(entry);
     }
 
     @Override

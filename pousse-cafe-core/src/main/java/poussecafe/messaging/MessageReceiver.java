@@ -2,14 +2,11 @@ package poussecafe.messaging;
 
 import poussecafe.journal.MessagingJournal;
 import poussecafe.journal.SuccessfulConsumption;
-import poussecafe.process.ProcessManagerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public abstract class MessageReceiver {
-
-    private Queue messageSource;
 
     private MessageListenerRegistry listenerRegistry;
 
@@ -17,19 +14,10 @@ public abstract class MessageReceiver {
 
     private boolean started;
 
-    protected MessageReceiver(Queue messageSource) {
-        setMessageSource(messageSource);
-    }
-
-    private void setMessageSource(Queue messageSource) {
-        checkThat(value(messageSource).notNull().because("Message source cannot be null"));
-        this.messageSource = messageSource;
-    }
-
     protected void onMessage(Message receivedMessage) {
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
         for (MessageListener listener : listenerRegistry
-                .getListeners(new MessageListenerRoutingKey(messageSource, receivedMessage.getClass()))) {
+                .getListeners(new MessageListenerRoutingKey(receivedMessage.getClass()))) {
             if (!messagingJournal.isSuccessfullyConsumed(receivedMessage, listener.getListenerId())) {
                 consumeMessage(receivedMessage, listener);
             } else {
@@ -41,9 +29,9 @@ public abstract class MessageReceiver {
     private void consumeMessage(Message receivedMessage,
             MessageListener listener) {
         try {
-            ProcessManagerKey createdProcessManagerKey = listener.consume(receivedMessage);
+            listener.consume(receivedMessage);
             messagingJournal.logSuccessfulConsumption(listener.getListenerId(),
-                    new SuccessfulConsumption(receivedMessage, createdProcessManagerKey));
+                    new SuccessfulConsumption(receivedMessage));
         } catch (Exception e) {
             messagingJournal.logFailedConsumption(listener.getListenerId(), receivedMessage, e);
         }
@@ -63,10 +51,6 @@ public abstract class MessageReceiver {
     }
 
     protected abstract void actuallyStartReceiving();
-
-    public Queue getSource() {
-        return messageSource;
-    }
 
     public void setListenerRegistry(MessageListenerRegistry listenerRegistry) {
         checkThat(value(listenerRegistry).notNull().because("Message listener registry cannot be null"));

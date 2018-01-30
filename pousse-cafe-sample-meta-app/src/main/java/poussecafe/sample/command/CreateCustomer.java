@@ -1,12 +1,11 @@
 package poussecafe.sample.command;
 
-import poussecafe.messaging.Command;
 import poussecafe.sample.domain.CustomerKey;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class CreateCustomer extends Command {
+public class CreateCustomer {
 
     private CustomerKey customerKey;
 

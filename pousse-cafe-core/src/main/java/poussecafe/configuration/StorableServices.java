@@ -1,7 +1,7 @@
 package poussecafe.configuration;
 
-import poussecafe.storable.ActiveStorableFactory;
-import poussecafe.storable.ActiveStorableRepository;
+import poussecafe.storable.IdentifiedStorableFactory;
+import poussecafe.storable.IdentifiedStorableRepository;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -10,12 +10,12 @@ public class StorableServices {
 
     private Class<?> storableClass;
 
-    private ActiveStorableRepository<?, ?, ?> repository;
+    private IdentifiedStorableRepository<?, ?, ?> repository;
 
-    private ActiveStorableFactory<?, ?, ?> factory;
+    private IdentifiedStorableFactory<?, ?, ?> factory;
 
-    public StorableServices(Class<?> storableClass, ActiveStorableRepository<?, ?, ?> repository,
-            ActiveStorableFactory<?, ?, ?> factory) {
+    public StorableServices(Class<?> storableClass, IdentifiedStorableRepository<?, ?, ?> repository,
+            IdentifiedStorableFactory<?, ?, ?> factory) {
         setStorableClass(storableClass);
         setRepository(repository);
         setFactory(factory);
@@ -30,20 +30,20 @@ public class StorableServices {
         this.storableClass = storableClass;
     }
 
-    public ActiveStorableRepository<?, ?, ?> getRepository() {
+    public IdentifiedStorableRepository<?, ?, ?> getRepository() {
         return repository;
     }
 
-    private void setRepository(ActiveStorableRepository<?, ?, ?> repository) {
+    private void setRepository(IdentifiedStorableRepository<?, ?, ?> repository) {
         checkThat(value(repository).notNull().because("Repository cannot be null"));
         this.repository = repository;
     }
 
-    public ActiveStorableFactory<?, ?, ?> getFactory() {
+    public IdentifiedStorableFactory<?, ?, ?> getFactory() {
         return factory;
     }
 
-    private void setFactory(ActiveStorableFactory<?, ?, ?> factory) {
+    private void setFactory(IdentifiedStorableFactory<?, ?, ?> factory) {
         checkThat(value(factory).notNull().because("Factory cannot be null"));
         this.factory = factory;
     }

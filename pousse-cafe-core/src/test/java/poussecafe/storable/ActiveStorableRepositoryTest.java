@@ -10,24 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends StorableData<K>>
-extends StorableRepositoryTest<K, S, D> {
+public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends StorableData>
+        extends IdentifiedStorableRepositoryTest<K, S, D> {
 
     private MessageSendingPolicy messageSendingPolicy;
 
     private MessageCollection newMessageCollection;
-
-    @Override
-    public void setupRepository() {
-        super.setupRepository();
-
-        messageSendingPolicy = mock(MessageSendingPolicy.class);
-        repository().setMessageSendingPolicy(messageSendingPolicy);
-    }
-
-    private ActiveStorableRepository<S, K, D> repository() {
-        return (ActiveStorableRepository<S, K, D>) repository;
-    }
 
     @Test
     public void foundDataHasMessageCollection() {

@@ -7,6 +7,4 @@ interface MessageListenerAnnotationWrapper {
     Class<? extends Annotation> getAnnotationClass();
 
     String getListenerId();
-
-    String getSourceName();
 }

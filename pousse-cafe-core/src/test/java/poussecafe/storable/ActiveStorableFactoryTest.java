@@ -5,8 +5,13 @@ import poussecafe.exception.AssertionFailedException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public abstract class ActiveStorableFactoryTest<K, D extends StorableData<K>, A extends ActiveStorable<K, D>, F extends ActiveStorableFactory<K, A, D>> {
+public abstract class ActiveStorableFactoryTest<K, D extends StorableData, A extends ActiveStorable<K, D>, F extends ActiveStorableFactory<K, A, D>> {
+
+    private PrimitiveFactory primitiveFactory = mock(PrimitiveFactory.class);
 
     private K givenKey;
 
@@ -26,8 +31,13 @@ public abstract class ActiveStorableFactoryTest<K, D extends StorableData<K>, A 
     protected abstract K buildKey();
 
     private void whenCreatingAggregate() {
-        createdStorable = factory().newStorableWithKey(givenKey);
+        F factory = factory();
+        factory.setPrimitiveFactory(primitiveFactory);
+        when(primitiveFactory.newPrimitive(any())).thenReturn(givenKey);
+        createdStorable = factory.newStorableWithKey(givenKey);
     }
+
+    protected abstract Class<K> keyClass();
 
     protected abstract F factory();
 

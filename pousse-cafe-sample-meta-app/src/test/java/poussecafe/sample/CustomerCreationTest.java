@@ -2,10 +2,12 @@ package poussecafe.sample;
 
 import org.junit.Test;
 import poussecafe.sample.command.CreateCustomer;
-import poussecafe.sample.configuration.CustomerConfiguration;
 import poussecafe.sample.domain.Customer;
+import poussecafe.sample.domain.CustomerFactory;
 import poussecafe.sample.domain.CustomerKey;
+import poussecafe.sample.domain.CustomerRepository;
 import poussecafe.sample.workflow.CustomerCreation;
+import poussecafe.storable.StorableDefinition;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -17,14 +19,19 @@ public class CustomerCreationTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new CustomerConfiguration());
-        configuration.registerWorkflow(new CustomerCreation());
+        context().environment().defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(Customer.class)
+                .withFactoryClass(CustomerFactory.class)
+                .withRepositoryClass(CustomerRepository.class)
+                .build());
+
+        context().environment().defineProcess(CustomerCreation.class);
     }
 
     @Test
     public void customerCreation() {
         givenCustomerKey();
-        whenSubmittingCommand();
+        whenCreatingCustomer();
         thenCustomerIsCreated();
     }
 
@@ -32,8 +39,8 @@ public class CustomerCreationTest extends MetaApplicationTest {
         customerKey = new CustomerKey("customer-id");
     }
 
-    private void whenSubmittingCommand() {
-        processAndAssertSuccess(new CreateCustomer(customerKey));
+    private void whenCreatingCustomer() {
+        context().getProcess(CustomerCreation.class).createCustomer(new CreateCustomer(customerKey));
     }
 
     private void thenCustomerIsCreated() {

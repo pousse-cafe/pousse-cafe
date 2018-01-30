@@ -1,18 +1,12 @@
 package poussecafe.journal;
 
-import poussecafe.messaging.Message;
-import poussecafe.storable.StorableFactory;
+import poussecafe.storable.IdentifiedStorableFactory;
 
-public class JournalEntryFactory extends StorableFactory<JournalEntryKey, JournalEntry, JournalEntry.Data> {
+public class JournalEntryFactory extends IdentifiedStorableFactory<JournalEntryKey, JournalEntry, JournalEntry.Data> {
 
-    @Override
-    protected JournalEntry newStorable() {
-        return new JournalEntry();
-    }
-
-    public JournalEntry buildEntryForSentMessage(JournalEntryKey key, Message message) {
+    public JournalEntry buildEntryForSentMessage(JournalEntryKey key, SerializedMessage serializedMessage) {
         JournalEntry entry = newStorableWithKey(key);
-        entry.setMessage(message);
+        entry.setSerializedMessage(serializedMessage);
         entry.setInitialStatus(JournalEntryStatus.IN_PROGRESS);
         return entry;
     }

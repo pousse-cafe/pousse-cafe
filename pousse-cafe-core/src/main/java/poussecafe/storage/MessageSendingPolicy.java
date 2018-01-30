@@ -1,7 +1,7 @@
 package poussecafe.storage;
 
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageRouter;
+import poussecafe.messaging.MessageSender;
 import poussecafe.storable.MessageCollection;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -9,7 +9,7 @@ import static poussecafe.check.Checks.checkThat;
 
 public abstract class MessageSendingPolicy {
 
-    private MessageRouter messageRouter;
+    private MessageSender messageSender;
 
     public abstract void considerSending(MessageCollection collection);
 
@@ -17,13 +17,13 @@ public abstract class MessageSendingPolicy {
 
     protected void sendCollection(MessageCollection collection) {
         for (Message message : collection.getMessages()) {
-            messageRouter.routeMessage(message);
+            messageSender.sendMessage(message);
         }
     }
 
-    public void setMessageRouter(MessageRouter messageRouter) {
-        checkThat(value(messageRouter).notNull().because("Message router cannot be null"));
-        this.messageRouter = messageRouter;
+    public void setMessageSender(MessageSender messageSender) {
+        checkThat(value(messageSender).notNull().because("Message sender cannot be null"));
+        this.messageSender = messageSender;
     }
 
 }

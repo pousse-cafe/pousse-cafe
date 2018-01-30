@@ -2,9 +2,8 @@ package poussecafe.journal;
 
 import java.util.List;
 import java.util.ListIterator;
-import poussecafe.messaging.Message;
-import poussecafe.process.ProcessManagerKey;
-import poussecafe.storable.Storable;
+import poussecafe.storable.IdentifiedStorable;
+import poussecafe.storable.Property;
 import poussecafe.storable.StorableData;
 
 import static poussecafe.check.Checks.checkThat;
@@ -12,27 +11,32 @@ import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.not;
 import static poussecafe.domain.DomainSpecification.value;
 
-public class JournalEntry extends Storable<JournalEntryKey, JournalEntry.Data> {
+public class JournalEntry extends IdentifiedStorable<JournalEntryKey, JournalEntry.Data> {
+
+    @Override
+    public JournalEntryKey getKey() {
+        return new JournalEntryKey(getData().getMessageId(), getData().listenerId().get());
+    }
+
+    @Override
+    public void setKey(JournalEntryKey key) {
+        getData().setMessageId(key.getMessageId());
+        getData().listenerId().set(key.getListenerId());
+    }
 
     void setInitialStatus(JournalEntryStatus status) {
         checkThat(value(status).notNull().because("Status cannot be null"));
         getData().setStatus(status);
     }
 
-    void setMessage(Message message) {
-        getData().setMessage(message);
+    void setSerializedMessage(SerializedMessage serializedMessage) {
+        getData().setMessageId(serializedMessage.getId());
+        getData().setMessageType(serializedMessage.getType());
+        getData().setMessageData(serializedMessage.getData());
     }
 
     public void logSuccess() {
-        logSuccess(null);
-    }
-
-    public void logSuccess(ProcessManagerKey createdProcessManagerKey) {
-        if (createdProcessManagerKey != null) {
-            getLogsWithNoSuccessDetected().add(JournalEntryLog.successLog(createdProcessManagerKey));
-        } else {
-            getLogsWithNoSuccessDetected().add(JournalEntryLog.successLog());
-        }
+        getLogsWithNoSuccessDetected().add(JournalEntryLog.successLog());
         getData().setStatus(JournalEntryStatus.SUCCESS);
     }
 
@@ -75,15 +79,29 @@ public class JournalEntry extends Storable<JournalEntryKey, JournalEntry.Data> {
         return getLogs().stream().filter(log -> log.getType() == JournalEntryLogType.SUCCESS).findFirst().orElse(null);
     }
 
-    public Message getMessage() {
-        return getData().getMessage();
+    public SerializedMessage getSerializedMessage() {
+        return new SerializedMessage.Builder()
+                .withId(getData().getMessageId())
+                .withType(getData().getMessageType())
+                .withData(getData().getMessageData())
+                .build();
     }
 
-    public static interface Data extends StorableData<JournalEntryKey> {
+    public static interface Data extends StorableData {
 
-        void setMessage(Message message);
+        Property<String> listenerId();
 
-        Message getMessage();
+        void setMessageId(String messageId);
+
+        String getMessageId();
+
+        void setMessageType(String messageClassName);
+
+        String getMessageType();
+
+        void setMessageData(String messageData);
+
+        String getMessageData();
 
         List<JournalEntryLog> getLogs();
 

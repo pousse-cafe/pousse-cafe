@@ -3,12 +3,14 @@ package poussecafe.configuration;
 import java.util.Set;
 import org.junit.Test;
 import poussecafe.domain.SimpleAggregate;
-import poussecafe.messaging.CommandProcessor;
+import poussecafe.domain.SimpleAggregateData;
+import poussecafe.domain.SimpleAggregateDataAccess;
+import poussecafe.domain.SimpleAggregateFactory;
+import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRoutingKey;
-import poussecafe.messaging.MessageReceiver;
-import poussecafe.messaging.Queue;
-import poussecafe.util.FieldAccessor;
+import poussecafe.storable.StorableDefinition;
+import poussecafe.storable.StorableImplementation;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -18,9 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class MetaApplicationContextTest {
 
-    private MetaApplicationConfiguration configuration;
-
-    private MetaApplicationContext context;
+    private MetaApplicationContext context = new MetaApplicationContext();
 
     @Test
     public void storableServicesConfiguration() {
@@ -30,13 +30,24 @@ public class MetaApplicationContextTest {
     }
 
     private void givenApplicationConfiguration() {
-        configuration = new MetaApplicationConfiguration();
-        configuration.registerAggregate(new SimpleAggregateConfiguration());
-        configuration.registerWorkflow(new DummyWorkflow());
+        context.environment().defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(SimpleAggregate.class)
+                .withFactoryClass(SimpleAggregateFactory.class)
+                .withRepositoryClass(SimpleAggregateRepository.class)
+                .build());
+
+        context.environment().implementStorable(new StorableImplementation.Builder()
+                .withStorableClass(SimpleAggregate.class)
+                .withDataFactory(SimpleAggregateData::new)
+                .withDataAccessFactory(SimpleAggregateDataAccess::new)
+                .withStorage(context.getInMemoryStorage())
+                .build());
+
+        context.environment().defineProcess(DummyProcess.class);
     }
 
     private void whenCreatingContext() {
-        context = new MetaApplicationContext(configuration);
+        context.start();
     }
 
     private void thenStorableServicesAreConfigured() {
@@ -58,41 +69,18 @@ public class MetaApplicationContextTest {
     private void thenMessageListenersAreConfigured() {
         Set<MessageListener> listeners;
 
-        listeners = context.getMessageListeners(
-                new MessageListenerRoutingKey(Queue.DEFAULT_DOMAIN_EVENT_QUEUE, TestDomainEvent.class));
+        listeners = context.getMessageListeners(new MessageListenerRoutingKey(TestDomainEvent.class));
         assertThat(listeners.size(), is(2));
-
-        listeners = context.getMessageListeners(
-                new MessageListenerRoutingKey(Queue.DEFAULT_COMMAND_QUEUE, TestCommand.class));
-        assertThat(listeners.size(), is(1));
-
-        listeners = context.getMessageListeners(
-                new MessageListenerRoutingKey(Queue.DEFAULT_COMMAND_QUEUE, AnotherTestCommand.class));
-        assertThat(listeners.size(), is(1));
-    }
-
-    @Test
-    public void commandProcessorConfiguration() {
-        givenApplicationConfiguration();
-        whenCreatingContext();
-        thenCommandProcessorIsConfigured();
-    }
-
-    private void thenCommandProcessorIsConfigured() {
-        CommandProcessor processor = context.getCommandProcessor();
-        assertThat(FieldAccessor.getFieldValue(processor, "router"), notNullValue());
     }
 
     @Test
     public void messageReceiversStarted() {
         givenApplicationConfiguration();
         whenCreatingContext();
-        thenMessageReceiversAreStarted();
+        thenMessageReceiversIsStarted();
     }
 
-    private void thenMessageReceiversAreStarted() {
-        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
-            assertTrue(receiver.isStarted());
-        }
+    private void thenMessageReceiversIsStarted() {
+        assertTrue(context.getMessageReceiver().isStarted());
     }
 }

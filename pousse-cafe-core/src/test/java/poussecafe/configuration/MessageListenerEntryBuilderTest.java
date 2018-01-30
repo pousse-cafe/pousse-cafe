@@ -3,14 +3,11 @@ package poussecafe.configuration;
 import java.lang.reflect.Method;
 import org.junit.Test;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.Queue;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class MessageListenerEntryBuilderTest {
-
-    private Queue source;
 
     private Class<? extends Message> messageClass;
 
@@ -18,7 +15,7 @@ public class MessageListenerEntryBuilderTest {
 
     private Method method;
 
-    private DummyWorkflow service;
+    private DummyProcess service;
 
     private MessageListenerEntry builtEntry;
 
@@ -37,19 +34,17 @@ public class MessageListenerEntryBuilderTest {
     }
 
     private void givenMessageListener() {
-        source = Queue.forName("source");
         messageClass = TestDomainEvent.class;
         try {
-            method = DummyWorkflow.class.getMethod("domainEventListenerWithDefaultId", TestDomainEvent.class);
+            method = DummyProcess.class.getMethod("domainEventListenerWithDefaultId", TestDomainEvent.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        service = new DummyWorkflow();
+        service = new DummyProcess();
     }
 
     protected void whenBuildingEntry() {
         builtEntry = new MessageListenerEntryBuilder()
-                .withSource(source)
                 .withMessageClass(messageClass)
                 .withListenerId(givenListenerId)
                 .withMethod(method)

@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.messaging.MessageListenerRegistry;
-import poussecafe.messaging.Queue;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -20,15 +19,15 @@ public class ListenersDiscoveryTest {
     @Mock
     private StorageServiceLocator storageServiceLocator;
 
-    private WorkflowExplorer workflowExplorer;
+    private ProcessExplorer workflowExplorer;
 
-    private DummyWorkflow workflow;
+    private DummyProcess workflow;
 
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
 
-        workflowExplorer = new WorkflowExplorer();
+        workflowExplorer = new ProcessExplorer();
         workflowExplorer.setMessageListenerRegistry(registry);
         workflowExplorer.setStorageServiceLocator(storageServiceLocator);
     }
@@ -41,16 +40,15 @@ public class ListenersDiscoveryTest {
     }
 
     private void givenWorkflow() {
-        workflow = new DummyWorkflow();
+        workflow = new DummyProcess();
     }
 
     private void whenConfiguringWorkflow() {
-        workflowExplorer.configureWorkflow(workflow);
+        workflowExplorer.configureProcess(workflow);
     }
 
     private void thenDomainEventListenerWithDefaultIdRegistered() {
-        verify(registry).registerDomainEventListener(new MessageListenerEntryBuilder()
-                .withSource(Queue.forName("domainEvents"))
+        verify(registry).registerListener(new MessageListenerEntryBuilder()
                 .withMessageClass(TestDomainEvent.class)
                 .withListenerId("")
                 .withMethod(getMethodByName("domainEventListenerWithDefaultId"))
@@ -59,7 +57,7 @@ public class ListenersDiscoveryTest {
     }
 
     private Method getMethodByName(String name) {
-        for (Method method : DummyWorkflow.class.getMethods()) {
+        for (Method method : DummyProcess.class.getMethods()) {
             if (method.getName().equals(name)) {
                 return method;
             }
@@ -75,45 +73,10 @@ public class ListenersDiscoveryTest {
     }
 
     private void thenDomainEventListenerWithCustomIdRegistered() {
-        verify(registry).registerDomainEventListener(new MessageListenerEntryBuilder()
-                .withSource(Queue.forName("domainEvents"))
+        verify(registry).registerListener(new MessageListenerEntryBuilder()
                 .withMessageClass(TestDomainEvent.class)
                 .withListenerId("customDomainEventListenerId")
                 .withMethod(getMethodByName("domainEventListenerWithCustomId"))
-                .withTarget(workflow)
-                .build());
-    }
-
-    @Test
-    public void discoverCommandListenerWithDefaultId() {
-        givenWorkflow();
-        whenConfiguringWorkflow();
-        thenCommandListenerWithDefaultIdRegistered();
-    }
-
-    private void thenCommandListenerWithDefaultIdRegistered() {
-        verify(registry).registerCommandListener(new MessageListenerEntryBuilder()
-                .withSource(Queue.forName("commands"))
-                .withMessageClass(TestCommand.class)
-                .withListenerId("")
-                .withMethod(getMethodByName("commandListenerWithDefaultId"))
-                .withTarget(workflow)
-                .build());
-    }
-
-    @Test
-    public void discoverCommandListenerWithCustomId() {
-        givenWorkflow();
-        whenConfiguringWorkflow();
-        thenCommandListenerWithCustomIdRegistered();
-    }
-
-    private void thenCommandListenerWithCustomIdRegistered() {
-        verify(registry).registerCommandListener(new MessageListenerEntryBuilder()
-                .withSource(Queue.forName("commands"))
-                .withMessageClass(AnotherTestCommand.class)
-                .withListenerId("customCommandListenerId")
-                .withMethod(getMethodByName("commandListenerWithCustomId"))
                 .withTarget(workflow)
                 .build());
     }
@@ -126,8 +89,7 @@ public class ListenersDiscoveryTest {
     }
 
     protected void thenOnlyFourListenersRegistered() {
-        verify(registry, times(2)).registerDomainEventListener(any(MessageListenerEntry.class));
-        verify(registry, times(2)).registerCommandListener(any(MessageListenerEntry.class));
+        verify(registry, times(2)).registerListener(any(MessageListenerEntry.class));
     }
 
 }

@@ -2,9 +2,9 @@ package poussecafe.sample.domain;
 
 import java.util.List;
 import poussecafe.sample.domain.Message.Data;
-import poussecafe.storable.StorableDataAccess;
+import poussecafe.storable.IdentifiedStorableDataAccess;
 
-public interface MessageDataAccess extends StorableDataAccess<MessageKey, Message.Data> {
+public interface MessageDataAccess extends IdentifiedStorableDataAccess<Message.Data> {
 
     List<Data> findByCustomer(CustomerKey customerKey);
 

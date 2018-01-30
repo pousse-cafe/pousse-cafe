@@ -12,8 +12,7 @@ public class InMemoryMessageQueue extends MessageReceiver implements MessageSend
 
     private Semaphore mutex = new Semaphore(1);
 
-    public InMemoryMessageQueue(poussecafe.messaging.Queue source) {
-        super(source);
+    public InMemoryMessageQueue() {
         queue = new LinkedList<>();
     }
 
@@ -42,11 +41,6 @@ public class InMemoryMessageQueue extends MessageReceiver implements MessageSend
         t.setDaemon(true);
         t.setName("in-memory message queue");
         t.start();
-    }
-
-    @Override
-    public poussecafe.messaging.Queue getDestinationQueue() {
-        return getSource();
     }
 
     public void waitUntilEmpty()

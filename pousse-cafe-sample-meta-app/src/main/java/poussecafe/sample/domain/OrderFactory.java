@@ -11,9 +11,4 @@ public class OrderFactory extends Factory<OrderKey, Order, Data> {
         order.setUnits(units);
         return order;
     }
-
-    @Override
-    protected Order newAggregate() {
-        return new Order();
-    }
 }

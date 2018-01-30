@@ -2,17 +2,20 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.sample.configuration.MessageConfiguration;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
+import poussecafe.sample.domain.InMemoryMessageDataAccess;
 import poussecafe.sample.domain.Message;
+import poussecafe.sample.domain.MessageData;
+import poussecafe.sample.domain.MessageFactory;
 import poussecafe.sample.domain.MessageRepository;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.Messaging;
-import poussecafe.storage.InMemoryStorage;
+import poussecafe.storable.StorableDefinition;
+import poussecafe.storable.StorableImplementation;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,12 +31,20 @@ public class MessagingTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        configuration.registerAggregate(new MessageConfiguration());
-        configuration.registerWorkflow(new Messaging());
-        configuration.registerService(new ContentChooser());
+        context().environment().defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(Message.class)
+                .withFactoryClass(MessageFactory.class)
+                .withRepositoryClass(MessageRepository.class)
+                .build());
+        context().environment().implementStorable(new StorableImplementation.Builder()
+                .withStorableClass(Message.class)
+                .withDataAccessFactory(InMemoryMessageDataAccess::new)
+                .withDataFactory(MessageData::new)
+                .withStorage(context().getInMemoryStorage())
+                .build());
 
-        InMemoryStorage storage = (InMemoryStorage) configuration.getDefaultStorage();
-        storage.registerDataAccess(Message.Data.class, new InMemoryMessageDataAccess());
+        context().environment().defineProcess(Messaging.class);
+        context().environment().defineService(ContentChooser.class);
     }
 
     @Test

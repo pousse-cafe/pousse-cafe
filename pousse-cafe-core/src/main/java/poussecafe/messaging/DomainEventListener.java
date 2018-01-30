@@ -11,6 +11,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface DomainEventListener {
 
     String id() default "";
-
-    String source() default Queue.DEFAULT_DOMAIN_EVENT_QUEUE_NAME;
 }

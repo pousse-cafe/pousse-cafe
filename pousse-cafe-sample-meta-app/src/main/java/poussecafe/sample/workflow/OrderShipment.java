@@ -1,6 +1,5 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.ShipOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderRepository;
@@ -10,16 +9,11 @@ public class OrderShipment extends Workflow {
 
     private OrderRepository orderRepository;
 
-    @CommandListener
     public void shipOrder(ShipOrder command) {
         runInTransaction(Order.Data.class, () -> {
             Order order = orderRepository.get(command.getOrderKey());
             order.ship();
         });
-    }
-
-    public void setOrderRepository(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
     }
 
 }

@@ -1,7 +1,5 @@
 package poussecafe.journal;
 
-import poussecafe.messaging.Message;
-
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
@@ -9,7 +7,7 @@ class JournalEntrySaver {
 
     private JournalEntryKey entryKey;
 
-    private Message message;
+    private SerializedMessage message;
 
     private JournalEntryRepository entryRepository;
 
@@ -43,7 +41,7 @@ class JournalEntrySaver {
         this.entryKey = entryKey;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(SerializedMessage message) {
         checkThat(value(message).notNull().because("Message cannot be null"));
         this.message = message;
     }

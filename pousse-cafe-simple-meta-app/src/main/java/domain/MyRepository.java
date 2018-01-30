@@ -8,9 +8,4 @@ import poussecafe.domain.Repository;
  */
 public class MyRepository extends Repository<MyAggregate, MyAggregateKey, MyAggregate.Data> {
 
-    @Override
-    protected MyAggregate newAggregate() {
-        return new MyAggregate();
-    }
-
 }

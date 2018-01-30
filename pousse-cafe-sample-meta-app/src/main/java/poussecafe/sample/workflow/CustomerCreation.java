@@ -1,19 +1,17 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;
 import poussecafe.sample.domain.CustomerRepository;
-import poussecafe.service.Workflow;
+import poussecafe.service.Process;
 
-public class CustomerCreation extends Workflow {
+public class CustomerCreation extends Process {
 
     private CustomerFactory factory;
 
     private CustomerRepository repository;
 
-    @CommandListener
     public void createCustomer(CreateCustomer command) {
         Customer customer = factory.createCustomer(command.getCustomerKey());
         runInTransaction(Customer.Data.class, () -> repository.add(customer));

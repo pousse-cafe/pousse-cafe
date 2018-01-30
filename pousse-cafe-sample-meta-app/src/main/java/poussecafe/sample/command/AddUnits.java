@@ -1,6 +1,5 @@
 package poussecafe.sample.command;
 
-import poussecafe.messaging.Command;
 import poussecafe.sample.domain.ProductKey;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -8,7 +7,7 @@ import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.greaterThan;
 
-public class AddUnits extends Command {
+public class AddUnits {
 
     private ProductKey productKey;
 

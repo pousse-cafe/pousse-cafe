@@ -2,21 +2,10 @@ package poussecafe.messaging;
 
 public class MessageListenerRoutingKey {
 
-    private Queue source;
-
     private Class<? extends Message> messageClass;
 
-    public MessageListenerRoutingKey(Queue source, Class<? extends Message> messageClass) {
-        setSource(source);
+    public MessageListenerRoutingKey(Class<? extends Message> messageClass) {
         setMessageClass(messageClass);
-    }
-
-    public Queue getSource() {
-        return source;
-    }
-
-    private void setSource(Queue source) {
-        this.source = source;
     }
 
     public Class<? extends Message> getMessageClass() {
@@ -28,16 +17,10 @@ public class MessageListenerRoutingKey {
     }
 
     @Override
-    public String toString() {
-        return "MessageListenerRoutingKey [source=" + source + ", messageClass=" + messageClass + "]";
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((messageClass == null) ? 0 : messageClass.hashCode());
-        result = prime * result + ((source == null) ? 0 : source.hashCode());
         return result;
     }
 
@@ -60,14 +43,12 @@ public class MessageListenerRoutingKey {
         } else if (!messageClass.equals(other.messageClass)) {
             return false;
         }
-        if (source == null) {
-            if (other.source != null) {
-                return false;
-            }
-        } else if (!source.equals(other.source)) {
-            return false;
-        }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageListenerRoutingKey [messageClass=" + messageClass + "]";
     }
 
 }

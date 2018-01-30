@@ -1,67 +1,110 @@
 package poussecafe.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-import poussecafe.journal.CommandWatcher;
-import poussecafe.journal.MessagingJournal;
-import poussecafe.journal.MessageReplayer;
+import poussecafe.exception.PousseCafeException;
+import poussecafe.inmemory.InMemoryJournalEntryData;
 import poussecafe.journal.ConsumptionFailureRepository;
+import poussecafe.journal.InMemoryJournalEntryDataAccess;
 import poussecafe.journal.JournalEntry;
+import poussecafe.journal.JournalEntryFactory;
 import poussecafe.journal.JournalEntryRepository;
-import poussecafe.messaging.CommandProcessor;
-import poussecafe.messaging.MessageSender;
+import poussecafe.journal.MessageReplayer;
+import poussecafe.journal.MessagingJournal;
+import poussecafe.messaging.InMemoryMessageQueue;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.MessageListenerRoutingKey;
 import poussecafe.messaging.MessageReceiver;
-import poussecafe.messaging.MessageRouter;
-import poussecafe.service.Workflow;
-import poussecafe.storable.ActiveStorable;
-import poussecafe.storable.ActiveStorableFactory;
-import poussecafe.storable.ActiveStorableRepository;
-import poussecafe.storable.StorableData;
+import poussecafe.messaging.MessageSender;
+import poussecafe.service.Process;
+import poussecafe.storable.Environment;
+import poussecafe.storable.IdentifiedStorableFactory;
+import poussecafe.storable.IdentifiedStorableRepository;
+import poussecafe.storable.PrimitiveFactory;
+import poussecafe.storable.PrimitiveSpecification;
+import poussecafe.storable.StorableDefinition;
+import poussecafe.storable.StorableImplementation;
+import poussecafe.storage.InMemoryStorage;
 import poussecafe.storage.Storage;
+import poussecafe.util.IdGenerator;
 
-@SuppressWarnings("rawtypes")
 public class MetaApplicationContext {
 
-    private MetaApplicationConfiguration configuration;
+    private Environment environment;
+
+    private PrimitiveFactory primitiveFactory;
 
     private Injector injector;
 
     private MessageListenerRegistry messageListenerRegistry;
 
-    private MessageSenderRegistry messageSenderRegistry;
-
-    private StorableRegistry storableRegistry;
-
     private ConsumptionFailureRepository consumptionFailureRepository;
 
     private MessagingJournal messagingJournal;
-
-    private MessageRouter messageRouter;
-
-    private CommandWatcher commandWatcher;
-
-    private CommandProcessor commandProcessor;
 
     private MessageReplayer messageReplayer;
 
     private StorageServiceLocator storageServiceLocator;
 
-    public MetaApplicationContext(MetaApplicationConfiguration configuration) {
-        this.configuration = configuration;
+    private Storage inMemoryStorage;
+
+    private InMemoryMessageQueue inMemoryMessageQueue;
+
+    private MessageSender messageSender;
+
+    private MessageReceiver messageReceiver;
+
+    private Map<Class<?>, StorableServices> storableServices = new HashMap<>();
+
+    public MetaApplicationContext() {
+        environment = new Environment();
+
+        primitiveFactory = new PrimitiveFactory();
+        primitiveFactory.setEnvironment(environment);
 
         messageListenerRegistry = new MessageListenerRegistry();
-        messageSenderRegistry = new MessageSenderRegistry();
-        storableRegistry = new StorableRegistry();
         messagingJournal = new MessagingJournal();
 
         storageServiceLocator = new StorageServiceLocator();
-        storageServiceLocator.setStorages(configuration.getStorages());
-        storageServiceLocator.setDefaultStorage(configuration.getDefaultStorage());
+        storageServiceLocator.setEnvironment(environment);
+
+        inMemoryStorage = new InMemoryStorage();
+        configureDefaultEnvironment();
+
+        inMemoryMessageQueue = new InMemoryMessageQueue();
+        messageSender = inMemoryMessageQueue;
+        messageReceiver = inMemoryMessageQueue;
+    }
+
+    private void configureDefaultEnvironment() {
+        environment.defineService(IdGenerator.class);
+
+        environment.defineStorable(new StorableDefinition.Builder()
+                .withStorableClass(JournalEntry.class)
+                .withFactoryClass(JournalEntryFactory.class)
+                .withRepositoryClass(JournalEntryRepository.class)
+                .build());
+        environment.implementStorable(new StorableImplementation.Builder()
+                .withStorableClass(JournalEntry.class)
+                .withDataFactory(InMemoryJournalEntryData::new)
+                .withDataAccessFactory(InMemoryJournalEntryDataAccess::new)
+                .withStorage(inMemoryStorage)
+                .build());
+    }
+
+    public Environment environment() {
+        return environment;
+    }
+
+    public void start() {
+        if(environment.isAbstract()) {
+            throw new PousseCafeException("Cannot start meta-application with an abstract environment");
+        }
 
         injector = new Injector();
-        injector.registerInjectableService(configuration.getIdGenerator());
+        injector.registerInjectableService(new IdGenerator());
 
         configureContext();
         injector.injectDependencies();
@@ -69,148 +112,102 @@ public class MetaApplicationContext {
     }
 
     private void configureContext() {
-        configureAggregateServices();
+        configureStorables();
         configureServices();
-        configureProcessManagerServices();
-        configureWorkflows();
-        configureMessageSenders();
-        configureMessageRouter();
+        configureProcesses();
         configureMessageEmissionPolicies();
         configureMessageJournal();
         configureMessageReceivers();
-        configureCommandWatcher();
-        configureCommandProcessor();
         configureMessageReplayer();
     }
 
-    protected void configureAggregateServices() {
-        Set<ActiveStorableConfiguration> configurations = configuration.getAggregateConfigurations();
-        configureStorableServices(configurations);
-    }
-
-    protected void configureStorableServices(Set<ActiveStorableConfiguration> configurations) {
-        for (ActiveStorableConfiguration<?, ?, ?, ?, ?> storableConfiguration : configurations) {
-            configureStorableService(storableConfiguration);
+    protected void configureStorables() {
+        for (Class<?> storableClass : environment.getDefinedStorables()) {
+            configureStorable(storableClass);
         }
     }
 
-    private <K, A extends ActiveStorable<K, D>, D extends StorableData<K>, F extends ActiveStorableFactory<K, A, D>, R extends ActiveStorableRepository<A, K, D>> void configureStorableService(
-            ActiveStorableConfiguration<K, A, D, F, R> storableConfiguration) {
-        Class<A> storableClass = storableConfiguration.getStorableClass();
-        Class<D> dataClass = storableConfiguration.getDataClass();
-        StorageServices<K, D> storageServices = storageServiceLocator.locateStorageServices(dataClass);
-        storableConfiguration.setStorageServices(storageServices);
-        ActiveStorableRepository<A, K, D> repository = storableConfiguration.getConfiguredRepository().get();
-        ActiveStorableFactory<K, A, D> factory = storableConfiguration.getConfiguredFactory().get();
+    private void configureStorable(Class<?> storableClass) {
+        StorableDefinition definition = environment.getStorableDefinition(storableClass);
+        if(definition.hasFactory() && definition.hasRepository()) {
+            IdentifiedStorableRepository repository = primitiveFactory.newPrimitive(PrimitiveSpecification.ofClass(definition.getRepositoryClass()));
+            IdentifiedStorableFactory factory = primitiveFactory.newPrimitive(PrimitiveSpecification.ofClass(definition.getFactoryClass()));
 
-        storableRegistry.registerServices(new StorableServices(storableClass, repository, factory));
+            injector.registerInjectableService(repository);
+            injector.registerInjectableService(factory);
+            injector.addInjectionCandidate(factory);
 
-        injector.registerInjectableService(repository);
-        injector.registerInjectableService(factory);
-        injector.addInjectionCandidate(factory);
+            storableServices.put(storableClass, new StorableServices(storableClass, repository, factory));
+        }
     }
 
     protected void configureServices() {
-        for (Object service : configuration.getServices()) {
+        for (Class<?> serviceClass : environment.getDefinedServices()) {
+            Object service = newInstance(serviceClass);
             injector.registerInjectableService(service);
             injector.addInjectionCandidate(service);
         }
     }
 
-    protected void configureProcessManagerServices() {
-        configureStorableService(configuration.getProcessManagerConfiguration());
-    }
-
-    protected void configureWorkflows() {
-        WorkflowExplorer workflowExplorer = new WorkflowExplorer();
-        workflowExplorer.setMessageListenerRegistry(messageListenerRegistry);
-        workflowExplorer.setStorageServiceLocator(storageServiceLocator);
-
-        for (Workflow workflow : configuration.getWorkflows()) {
-            workflowExplorer.configureWorkflow(workflow);
-            injector.addInjectionCandidate(workflow);
+    private Object newInstance(Class<?> serviceClass) {
+        try {
+            return serviceClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new PousseCafeException("Unable to instantiate service", e);
         }
     }
 
-    private void configureMessageSenders() {
-        for (MessageSender emitter : configuration.getMessageSenders()) {
-            messageSenderRegistry.registerEmitter(emitter.getDestinationQueue(), emitter);
+    protected void configureProcesses() {
+        ProcessExplorer processExplorer = new ProcessExplorer();
+        processExplorer.setMessageListenerRegistry(messageListenerRegistry);
+        processExplorer.setStorageServiceLocator(storageServiceLocator);
+
+        for (Class<?> processClass : environment.getDefinedProcesses()) {
+            Process process = (Process) newInstance(processClass);
+            processExplorer.configureProcess(process);
+            injector.addInjectionCandidate(process);
+
+            processes.put(processClass, process);
         }
     }
 
-    private void configureMessageRouter() {
-        messageRouter = new MessageRouter();
-        messageRouter.setMessageSenderRegistry(messageSenderRegistry);
-        messageRouter.setQueueSelector(configuration.getSourceSelector());
-    }
+    private Map<Class<?>, Process> processes = new HashMap<>();
 
     protected void configureMessageEmissionPolicies() {
-        for (Storage storage : configuration.getStorages()) {
-            storage.getMessageSendingPolicy().setMessageRouter(messageRouter);
+        for (Storage storage : environment.getStorages()) {
+            storage.getMessageSendingPolicy().setMessageSender(messageSender);
         }
-        configuration.getDefaultStorage().getMessageSendingPolicy().setMessageRouter(messageRouter);
     }
 
     private void configureMessageJournal() {
-        MessagingJournalEntryConfiguration entryConfiguration = configuration
-                .getMessagingJournalEntryConfiguration();
-        entryConfiguration.setStorageServices(storageServiceLocator.locateStorageServices(JournalEntry.Data.class));
-        messagingJournal.setEntryFactory(entryConfiguration.getConfiguredFactory().get());
-
-        JournalEntryRepository journalEntryRepository = entryConfiguration.getConfiguredRepository().get();
-        consumptionFailureRepository = new ConsumptionFailureRepository();
-        consumptionFailureRepository.setJournalEntryRepository(journalEntryRepository);
-
-        messagingJournal.setEntryRepository(journalEntryRepository);
+        injector.addInjectionCandidate(messagingJournal);
         messagingJournal.setStorageServiceLocator(storageServiceLocator);
+
+        consumptionFailureRepository = new ConsumptionFailureRepository();
+        injector.addInjectionCandidate(consumptionFailureRepository);
     }
 
     private void configureMessageReceivers() {
-        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
-            receiver.setMessagingJournal(messagingJournal);
-            receiver.setListenerRegistry(messageListenerRegistry);
-        }
-    }
-
-    private void configureCommandWatcher() {
-        commandWatcher = CommandWatcher.withPollingPeriod(configuration.getCommandWatcherPollingPeriod());
-        commandWatcher.setMessagingJournal(messagingJournal);
-        commandWatcher.setProcessManagerRepository(configuration.getProcessManagerConfiguration().repository().get());
-    }
-
-    private void configureCommandProcessor() {
-        commandProcessor = new CommandProcessor();
-        commandProcessor.setMessageRouter(messageRouter);
-        commandProcessor.setCommandWatcher(commandWatcher);
+        messageReceiver.setMessagingJournal(messagingJournal);
+        messageReceiver.setListenerRegistry(messageListenerRegistry);
     }
 
     private void configureMessageReplayer() {
         messageReplayer = new MessageReplayer();
-        messageReplayer.setMessageRouter(messageRouter);
+        messageReplayer.setMessageSender(messageSender);
         messageReplayer.setConsumptionFailureRepository(consumptionFailureRepository);
     }
 
     private void startMessageHandling() {
-        for (MessageReceiver receiver : configuration.getMessageReceivers()) {
-            receiver.startReceiving();
-        }
-        commandWatcher.startWatching();
-    }
-
-    public StorableServices getStorableServices(Class<?> storableClass) {
-        return storableRegistry.getServices(storableClass);
+        messageReceiver.startReceiving();
     }
 
     public Set<MessageListener> getMessageListeners(MessageListenerRoutingKey key) {
         return messageListenerRegistry.getListeners(key);
     }
 
-    public CommandProcessor getCommandProcessor() {
-        return commandProcessor;
-    }
-
-    public MessageRouter getMessageRouter() {
-        return messageRouter;
+    public MessageSender getMessageSender() {
+        return messageSender;
     }
 
     public ConsumptionFailureRepository getConsumptionFailureRepository() {
@@ -219,5 +216,25 @@ public class MetaApplicationContext {
 
     public MessageReplayer getMessageReplayer() {
         return messageReplayer;
+    }
+
+    public MessageReceiver getMessageReceiver() {
+        return messageReceiver;
+    }
+
+    public Storage getInMemoryStorage() {
+        return inMemoryStorage;
+    }
+
+    public StorableServices getStorableServices(Class<?> storableClass) {
+        return storableServices.get(storableClass);
+    }
+
+    public InMemoryMessageQueue getInMemoryQueue() {
+        return inMemoryMessageQueue;
+    }
+
+    public <T extends Process> T getProcess(Class<T> processClass) {
+        return (T) processes.get(processClass);
     }
 }

@@ -10,9 +10,4 @@ public class ProductFactory extends Factory<ProductKey, Product, Product.Data> {
         product.setAvailableUnits(0);
         return product;
     }
-
-    @Override
-    protected Product newAggregate() {
-        return new Product();
-    }
 }

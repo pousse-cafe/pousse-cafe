@@ -2,6 +2,7 @@ package poussecafe.journal;
 
 import java.util.List;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageAdapter;
 import poussecafe.util.MapBuilder;
 
 import static java.util.stream.Collectors.toList;
@@ -12,6 +13,8 @@ public class ConsumptionFailureRepository {
 
     private JournalEntryRepository journalEntryRepository;
 
+    private MessageAdapter messageAdapter;
+
     public List<ConsumptionFailure> findConsumptionFailures(String messageId) {
         List<JournalEntry> entries = journalEntryRepository.findByMessageId(messageId);
         return map(entries);
@@ -21,14 +24,15 @@ public class ConsumptionFailureRepository {
         MapBuilder<Message, ConsumptionFailureBuilder> builders = new MapBuilder<>(this::newBuilder);
         for (JournalEntry entry : entries) {
             if (entry.getStatus() == JournalEntryStatus.FAILURE) {
-                ConsumptionFailureBuilder builder = builders.getOrCreate(entry.getMessage());
+                Message message = messageAdapter.adaptSerializedMessage(entry.getSerializedMessage());
+                ConsumptionFailureBuilder builder = builders.getOrCreate(message);
                 builder.addListener(entry.getKey().getListenerId());
             }
         }
         return builders.buildMap().values().stream().map(ConsumptionFailureBuilder::build).collect(toList());
     }
 
-    private ConsumptionFailureBuilder newBuilder(Message message) { // NOSONAR
+    private ConsumptionFailureBuilder newBuilder(Message message) {
         return new ConsumptionFailureBuilder(message);
     }
 

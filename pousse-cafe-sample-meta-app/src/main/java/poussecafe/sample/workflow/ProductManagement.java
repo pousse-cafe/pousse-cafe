@@ -1,26 +1,23 @@
 package poussecafe.sample.workflow;
 
-import poussecafe.messaging.CommandListener;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.service.Workflow;
+import poussecafe.service.Process;
 
-public class ProductManagement extends Workflow {
+public class ProductManagement extends Process {
 
     private ProductFactory productFactory;
 
     private ProductRepository productRepository;
 
-    @CommandListener
     public void createProduct(CreateProduct command) {
         Product product = productFactory.buildProductWithNoStock(command.getProductKey());
         runInTransaction(Product.Data.class, () -> productRepository.add(product));
     }
 
-    @CommandListener
     public void addUnits(AddUnits command) {
         runInTransaction(Product.Data.class, () -> {
             Product product = productRepository.get(command.getProductKey());

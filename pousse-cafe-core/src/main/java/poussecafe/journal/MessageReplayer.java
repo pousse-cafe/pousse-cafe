@@ -2,7 +2,7 @@ package poussecafe.journal;
 
 import java.util.List;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageRouter;
+import poussecafe.messaging.MessageSender;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
@@ -12,7 +12,7 @@ public class MessageReplayer {
 
     private ConsumptionFailureRepository consumptionFailureRepository;
 
-    private MessageRouter messageRouter;
+    private MessageSender messageSender;
 
     public void replayMessage(String messageId) {
         List<ConsumptionFailure> entries = consumptionFailureRepository.findConsumptionFailures(messageId);
@@ -25,7 +25,7 @@ public class MessageReplayer {
 
     private void replayMessages(List<Message> messages) {
         for (Message message : messages) {
-            messageRouter.routeMessage(message);
+            messageSender.sendMessage(message);
         }
     }
 
@@ -40,8 +40,8 @@ public class MessageReplayer {
         this.consumptionFailureRepository = consumptionFailureRepository;
     }
 
-    public void setMessageRouter(MessageRouter messageRouter) {
-        checkThat(value(messageRouter).notNull().because("Message router cannot be null"));
-        this.messageRouter = messageRouter;
+    public void setMessageSender(MessageSender messageSender) {
+        checkThat(value(messageSender).notNull().because("Message sender cannot be null"));
+        this.messageSender = messageSender;
     }
 }

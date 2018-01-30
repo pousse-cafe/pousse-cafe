@@ -29,9 +29,4 @@ class DomainEventListenerAnnotationWrapper implements MessageListenerAnnotationW
         return annotation.id();
     }
 
-    @Override
-    public String getSourceName() {
-        return annotation.source();
-    }
-
 }

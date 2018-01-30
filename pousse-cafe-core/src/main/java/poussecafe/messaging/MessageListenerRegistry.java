@@ -8,26 +8,12 @@ import java.util.Set;
 import poussecafe.configuration.MessageListenerEntry;
 
 import static java.util.Collections.emptySet;
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.hasKey;
-import static poussecafe.check.Predicates.not;
 
 public class MessageListenerRegistry {
 
     private Map<MessageListenerRoutingKey, Set<MessageListener>> listeners = new HashMap<>();
 
-    public void registerDomainEventListener(MessageListenerEntry entry) {
-        registerListener(entry);
-    }
-
-    public void registerCommandListener(MessageListenerEntry entry) {
-        checkThat(value(listeners).verifies(not(hasKey(entry.getKey())))
-                .because("Only one listener can be registered per command"));
-        registerListener(entry);
-    }
-
-    private void registerListener(MessageListenerEntry entry) {
+    public void registerListener(MessageListenerEntry entry) {
         Set<MessageListener> registeredListeners = getOrCreateSet(entry.getKey());
         registeredListeners.add(entry.getListener());
     }

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.Queue;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -41,7 +40,6 @@ abstract class MessageListeningServiceSourceProcessor {
             builder.withTarget(service);
             builder.withMethod(method);
             builder.withListenerId(annotationWrapper.getListenerId());
-            builder.withSource(Queue.forName(annotationWrapper.getSourceName()));
             builder.withMessageClass((Class<? extends Message>) method.getParameters()[0].getType());
             return builder.build();
         } else {

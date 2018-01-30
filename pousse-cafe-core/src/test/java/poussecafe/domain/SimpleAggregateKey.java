@@ -10,6 +10,14 @@ public class SimpleAggregateKey {
         id = UUID.randomUUID().toString();
     }
 
+    public SimpleAggregateKey(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

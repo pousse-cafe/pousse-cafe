@@ -1,28 +1,7 @@
 package poussecafe.storable;
 
-import poussecafe.storage.MessageSendingPolicy;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-
-public abstract class ActiveStorableRepository<A extends ActiveStorable<K, D>, K, D extends StorableData<K>>
-extends StorableRepository<A, K, D> {
-
-    protected MessageSendingPolicy messageSendingPolicy;
-
-    public void setMessageSendingPolicy(MessageSendingPolicy messageSendingPolicy) {
-        checkThat(value(messageSendingPolicy)
-                .notNull()
-                .because("Message sending policy cannot be null"));
-        this.messageSendingPolicy = messageSendingPolicy;
-    }
-
-    @Override
-    protected A newStorableWithData(D data) {
-        A storable = super.newStorableWithData(data);
-        storable.setMessageCollection(messageSendingPolicy.newMessageCollection());
-        return storable;
-    }
+public abstract class ActiveStorableRepository<A extends ActiveStorable<K, D>, K, D extends StorableData>
+        extends IdentifiedStorableRepository<A, K, D> {
 
     @Override
     protected void addData(A storable) {
@@ -33,7 +12,7 @@ extends StorableRepository<A, K, D> {
 
     protected void considerMessageSendingAfterAdd(A storable,
             MessageCollection messageCollection) {
-        messageSendingPolicy.considerSending(messageCollection);
+        storable.getStorage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
     @Override
@@ -45,7 +24,7 @@ extends StorableRepository<A, K, D> {
 
     protected void considerMessageSendingAfterUpdate(A storable,
             MessageCollection messageCollection) {
-        messageSendingPolicy.considerSending(messageCollection);
+        storable.getStorage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
     @Override
@@ -57,7 +36,7 @@ extends StorableRepository<A, K, D> {
 
     protected void considerMessageSendingAfterDelete(A storable,
             MessageCollection messageCollection) {
-        messageSendingPolicy.considerSending(messageCollection);
+        storable.getStorage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
 }

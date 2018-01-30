@@ -1,30 +1,26 @@
 package poussecafe.configuration;
 
+import poussecafe.storable.IdentifiedStorableDataAccess;
 import poussecafe.storable.StorableData;
-import poussecafe.storable.StorableDataAccess;
-import poussecafe.storable.StorableDataFactory;
 import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class StorageServices<K, D extends StorableData<K>> {
+public class StorageServices<D extends StorableData> {
 
     private MessageSendingPolicy messageSendingPolicy;
 
     private TransactionRunner transactionRunner;
 
-    private StorableDataAccess<K, D> dataAccess;
-
-    private StorableDataFactory<D> dataFactory;
+    private IdentifiedStorableDataAccess<D> dataAccess;
 
     public StorageServices(MessageSendingPolicy messageSendingPolicy, TransactionRunner transactionRunner,
-            StorableDataAccess<K, D> dataAccess, StorableDataFactory<D> dataFactory) {
+            IdentifiedStorableDataAccess<D> dataAccess) {
         setMessageSendingPolicy(messageSendingPolicy);
         setTransactionRunner(transactionRunner);
         setDataAccess(dataAccess);
-        setDataFactory(dataFactory);
     }
 
     public MessageSendingPolicy getMessageSendingPolicy() {
@@ -45,21 +41,12 @@ public class StorageServices<K, D extends StorableData<K>> {
         this.transactionRunner = transactionRunner;
     }
 
-    public StorableDataAccess<K, D> getDataAccess() {
+    public IdentifiedStorableDataAccess<D> getDataAccess() {
         return dataAccess;
     }
 
-    private void setDataAccess(StorableDataAccess<K, D> dataAccess) {
+    private void setDataAccess(IdentifiedStorableDataAccess<D> dataAccess) {
         checkThat(value(dataAccess).notNull());
         this.dataAccess = dataAccess;
-    }
-
-    public StorableDataFactory<D> getDataFactory() {
-        return dataFactory;
-    }
-
-    private void setDataFactory(StorableDataFactory<D> dataFactory) {
-        checkThat(value(dataFactory).notNull());
-        this.dataFactory = dataFactory;
     }
 }

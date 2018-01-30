@@ -1,15 +1,8 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
-import poussecafe.configuration.TestCommand;
 import poussecafe.journal.MessagingJournal;
 import poussecafe.journal.SuccessfulConsumption;
-import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerRegistry;
-import poussecafe.messaging.MessageListenerRoutingKey;
-import poussecafe.messaging.MessageReceiver;
-import poussecafe.messaging.Message;
-import poussecafe.messaging.Queue;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,17 +35,16 @@ public abstract class MessageReceiverTest {
         listener = mock(MessageListener.class);
         when(listener.getListenerId()).thenReturn("listenerId");
 
-        Queue source = Queue.DEFAULT_COMMAND_QUEUE;
-        message = new TestCommand();
-        when(listenerRegistry.getListeners(new MessageListenerRoutingKey(source, message.getClass())))
-        .thenReturn(asSet(listener));
+        message = new TestMessage();
+        when(listenerRegistry.getListeners(new MessageListenerRoutingKey(message.getClass())))
+                .thenReturn(asSet(listener));
 
-        receiver = newMessageReceiver(source);
+        receiver = newMessageReceiver();
         receiver.setMessagingJournal(messagingJournal);
         receiver.setListenerRegistry(listenerRegistry);
     }
 
-    protected abstract MessageReceiver newMessageReceiver(Queue source);
+    protected abstract MessageReceiver newMessageReceiver();
 
     private void whenConsumingMessage() {
         receiver.onMessage(message);
@@ -70,8 +62,7 @@ public abstract class MessageReceiverTest {
     }
 
     private void thenJournalUpdatedWithSuccess() {
-        verify(messagingJournal).logSuccessfulConsumption(listener.getListenerId(),
-                new SuccessfulConsumption(message));
+        verify(messagingJournal).logSuccessfulConsumption(listener.getListenerId(), new SuccessfulConsumption(message));
     }
 
 }

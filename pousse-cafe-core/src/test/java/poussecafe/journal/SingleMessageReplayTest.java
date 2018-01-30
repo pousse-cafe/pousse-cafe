@@ -38,7 +38,7 @@ public class SingleMessageReplayTest extends MessageReplayTest {
     }
 
     private void thenMessageIsRouted() {
-        verify(messageRouter).routeMessage(message);
+        verify(messageSender).sendMessage(message);
     }
 
     @Test

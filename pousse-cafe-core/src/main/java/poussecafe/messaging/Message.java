@@ -28,6 +28,10 @@ public abstract class Message {
         this.id = id;
     }
 
+    public String getType() {
+        return getClass().getName();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
