@@ -13,7 +13,7 @@ public class JournalEntryLog {
 
     private String description;
 
-    private JournalEntryLog(LocalDateTime dateTime, JournalEntryLogType type, String description) {
+    public JournalEntryLog(LocalDateTime dateTime, JournalEntryLogType type, String description) {
         setDateTime(dateTime);
         setType(type);
         setDescription(description);

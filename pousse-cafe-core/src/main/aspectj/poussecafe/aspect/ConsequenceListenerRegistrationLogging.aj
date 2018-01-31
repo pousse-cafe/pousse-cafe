@@ -1,7 +1,7 @@
 package poussecafe.aspect;
 
 import org.slf4j.LoggerFactory;
-import poussecafe.configuration.MessageListenerEntry;
+import poussecafe.context.MessageListenerEntry;
 import poussecafe.messaging.MessageListenerRegistry;
 
 public aspect ConsequenceListenerRegistrationLogging {

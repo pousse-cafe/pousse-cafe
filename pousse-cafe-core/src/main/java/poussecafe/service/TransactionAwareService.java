@@ -1,6 +1,6 @@
 package poussecafe.service;
 
-import poussecafe.configuration.StorageServiceLocator;
+import poussecafe.context.StorageServiceLocator;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;

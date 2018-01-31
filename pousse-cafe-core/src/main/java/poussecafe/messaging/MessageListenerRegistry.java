@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import poussecafe.configuration.MessageListenerEntry;
+import poussecafe.context.MessageListenerEntry;
 
 import static java.util.Collections.emptySet;
 

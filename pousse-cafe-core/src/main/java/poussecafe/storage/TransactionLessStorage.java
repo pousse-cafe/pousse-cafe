@@ -1,6 +1,6 @@
 package poussecafe.storage;
 
-import poussecafe.configuration.StorageConfiguration;
+import poussecafe.context.StorageConfiguration;
 
 public class TransactionLessStorage extends StorageConfiguration {
 

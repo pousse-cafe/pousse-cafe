@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import poussecafe.configuration.MetaApplicationContext;
+import poussecafe.context.MetaApplicationContext;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.workflow.ProductManagement;

@@ -3,7 +3,7 @@ package poussecafe.journal;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import poussecafe.configuration.StorageServiceLocator;
+import poussecafe.context.StorageServiceLocator;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.storable.PrimitiveFactory;

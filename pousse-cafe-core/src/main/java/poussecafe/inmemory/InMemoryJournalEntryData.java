@@ -6,52 +6,62 @@ import poussecafe.journal.JournalEntryLog;
 import poussecafe.journal.JournalEntryStatus;
 import poussecafe.storable.Property;
 
-public class InMemoryJournalEntryData extends GenericInMemoryData implements JournalEntry.Data {
+public class InMemoryJournalEntryData implements JournalEntry.Data {
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<JournalEntryLog> getLogs() {
-        return property(List.class, "logs").get();
+        return logs.get();
     }
+
+    private InlineProperty<List<JournalEntryLog>> logs = new InlineProperty<>(
+            new GenericType<List<JournalEntryLog>>().getRawType());
 
     @Override
     public void setStatus(JournalEntryStatus status) {
-        setProperty("status", status);
+        this.status.set(status);
     }
+
+    private InlineProperty<JournalEntryStatus> status = new InlineProperty<>(JournalEntryStatus.class);
 
     @Override
     public JournalEntryStatus getStatus() {
-        return property(JournalEntryStatus.class, "status").get();
+        return status.get();
     }
 
     @Override
     public void setMessageId(String messageId) {
-        setProperty("messageId", messageId);
+        this.messageId.set(messageId);
     }
+
+    private InlineProperty<String> messageId = new InlineProperty<>(String.class);
 
     @Override
     public String getMessageId() {
-        return property(String.class, "messageId").get();
+        return messageId.get();
     }
 
     @Override
     public void setMessageData(String messageData) {
-        setProperty("messageData", messageData);
+        this.messageData.set(messageData);
     }
+
+    private InlineProperty<String> messageData = new InlineProperty<>(String.class);
 
     @Override
     public String getMessageData() {
-        return property(String.class, "messageData").get();
+        return messageData.get();
     }
 
     @Override
     public void setMessageType(String messageType) {
-        setProperty("messageType", messageType);
+        this.messageType.set(messageType);
     }
+
+    private InlineProperty<String> messageType = new InlineProperty<>(String.class);
 
     @Override
     public String getMessageType() {
-        return property(String.class, "messageType").get();
+        return messageType.get();
     }
 
     @Override

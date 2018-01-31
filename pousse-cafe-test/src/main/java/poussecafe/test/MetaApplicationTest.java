@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.junit.Before;
-import poussecafe.configuration.MetaApplicationContext;
+import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.DomainEvent;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.storable.IdentifiedStorable;

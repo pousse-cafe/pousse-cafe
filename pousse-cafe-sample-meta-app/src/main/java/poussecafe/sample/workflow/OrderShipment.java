@@ -3,9 +3,8 @@ package poussecafe.sample.workflow;
 import poussecafe.sample.command.ShipOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderRepository;
-import poussecafe.service.Workflow;
 
-public class OrderShipment extends Workflow {
+public class OrderShipment extends poussecafe.service.Process {
 
     private OrderRepository orderRepository;
 
