@@ -1,11 +1,15 @@
-package workflow;
+package process;
 
 import domain.MyAggregate;
 import domain.MyAggregateKey;
 import domain.MyFactory;
 import domain.MyRepository;
+import domain.data.MyAggregateData;
 import org.junit.Test;
+import poussecafe.inmemory.InMemoryDataAccess;
 import poussecafe.storable.StorableDefinition;
+import poussecafe.storable.StorableImplementation;
+import poussecafe.storage.InMemoryStorage;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,6 +38,12 @@ public class MyProcessTest extends MetaApplicationTest {
                 .withFactoryClass(MyFactory.class)
                 .withRepositoryClass(MyRepository.class)
                 .build());
+        context().environment().implementStorable(new StorableImplementation.Builder()
+                .withStorableClass(MyAggregate.class)
+                .withDataFactory(MyAggregateData::new)
+                .withDataAccessFactory(InMemoryDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
 
         // Second, let's register a work flow
         context().environment().defineProcess(MyProcess.class);
@@ -52,12 +62,12 @@ public class MyProcessTest extends MetaApplicationTest {
 
     private void givenAvailableAggregate() {
         key = new MyAggregateKey("key");
-        context().getProcess(MyProcess.class).handle(new CreateAggregate(key));
+        context().getDomainProcess(MyProcess.class).handle(new CreateAggregate(key));
     }
 
     private void whenProcessingCommand() {
         x = 10;
-        context().getProcess(MyProcess.class).handle(new MyCommand(key, x));
+        context().getDomainProcess(MyProcess.class).handle(new MyCommand(key, x));
     }
 
     private void thenAggregateUpdated() {

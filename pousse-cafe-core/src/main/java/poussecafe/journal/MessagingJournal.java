@@ -21,7 +21,7 @@ public class MessagingJournal extends TransactionAwareService {
     public void logSuccessfulConsumption(String listenerId,
             SuccessfulConsumption consumption) {
         JournalEntrySaver saver = buildSaver(listenerId, consumption.getConsumedMessage());
-        runInTransaction(JournalEntry.Data.class, () -> {
+        runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logSuccess();
             saver.save();
@@ -44,7 +44,7 @@ public class MessagingJournal extends TransactionAwareService {
     public void logIgnoredConsumption(String listenerId,
             Message message) {
         JournalEntrySaver saver = buildSaver(listenerId, message);
-        runInTransaction(JournalEntry.Data.class, () -> {
+        runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logIgnored();
             saver.save();
@@ -55,7 +55,7 @@ public class MessagingJournal extends TransactionAwareService {
             Message message,
             Exception e) {
         JournalEntrySaver saver = buildSaver(listenerId, message);
-        runInTransaction(JournalEntry.Data.class, () -> {
+        runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logFailure(ExceptionUtils.getStackTrace(e));
             saver.save();

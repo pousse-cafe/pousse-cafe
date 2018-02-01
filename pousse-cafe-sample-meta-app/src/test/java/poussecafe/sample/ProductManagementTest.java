@@ -4,11 +4,8 @@ import org.junit.Test;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
-import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.sample.domain.ProductRepository;
-import poussecafe.sample.workflow.ProductManagement;
-import poussecafe.storable.StorableDefinition;
+import poussecafe.sample.process.ProductManagement;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,13 +20,7 @@ public class ProductManagementTest extends MetaApplicationTest {
 
     @Override
     protected void registerComponents() {
-        context().environment().defineStorable(new StorableDefinition.Builder()
-                .withStorableClass(Product.class)
-                .withFactoryClass(ProductFactory.class)
-                .withRepositoryClass(ProductRepository.class)
-                .build());
-
-        context().environment().defineProcess(ProductManagement.class);
+        context().loadBundle(new SampleMetaAppBundle());
     }
 
     @Test
@@ -48,7 +39,7 @@ public class ProductManagementTest extends MetaApplicationTest {
     }
 
     protected void createProduct() {
-        context().getProcess(ProductManagement.class).createProduct(new CreateProduct(productKey));
+        context().getDomainProcess(ProductManagement.class).createProduct(new CreateProduct(productKey));
     }
 
     private void thenProductCreated() {
@@ -69,7 +60,7 @@ public class ProductManagementTest extends MetaApplicationTest {
 
     private void whenSubmittingAddUnitsCommand() {
         addUnits = new AddUnits(productKey, 10);
-        context().getProcess(ProductManagement.class).addUnits(addUnits);
+        context().getDomainProcess(ProductManagement.class).addUnits(addUnits);
     }
 
     private void thenProductHasAddedUnits() {

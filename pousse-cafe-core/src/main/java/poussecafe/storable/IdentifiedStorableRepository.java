@@ -7,7 +7,7 @@ import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<K, D>, K, D extends StorableData>
+public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>>
         extends Primitive {
 
     @SuppressWarnings("unchecked")
@@ -28,7 +28,7 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
         }
     }
 
-    protected IdentifiedStorableDataAccess<D> dataAccess;
+    protected IdentifiedStorableDataAccess<K, D> dataAccess;
 
     private void checkKey(K key) {
         checkThat(value(key).notNull().because("Key cannot be null"));
@@ -94,10 +94,10 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     @SuppressWarnings("unchecked")
     void setDataAccess(Object dataAccess) {
         checkThat(value(dataAccess).notNull().because("Data access cannot be null"));
-        this.dataAccess = (IdentifiedStorableDataAccess<D>) dataAccess;
+        this.dataAccess = (IdentifiedStorableDataAccess<K, D>) dataAccess;
     }
 
-    public IdentifiedStorableDataAccess<D> getDataAccess() {
+    public IdentifiedStorableDataAccess<K, D> getDataAccess() {
         return dataAccess;
     }
 

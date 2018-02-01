@@ -2,8 +2,6 @@ package poussecafe.context;
 
 import java.util.Set;
 import org.junit.Test;
-import poussecafe.context.MetaApplicationContext;
-import poussecafe.context.StorableServices;
 import poussecafe.domain.SimpleAggregate;
 import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
@@ -13,6 +11,7 @@ import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRoutingKey;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
+import poussecafe.storage.InMemoryStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +41,7 @@ public class MetaApplicationContextTest {
                 .withStorableClass(SimpleAggregate.class)
                 .withDataFactory(SimpleAggregateData::new)
                 .withDataAccessFactory(SimpleAggregateDataAccess::new)
-                .withStorage(context.getInMemoryStorage())
+                .withStorage(InMemoryStorage.instance())
                 .build());
 
         context.environment().defineProcess(DummyProcess.class);

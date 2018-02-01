@@ -2,8 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.sample.domain.Product.Data;
-import poussecafe.storable.Property;
-import poussecafe.storable.StorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
@@ -11,16 +10,6 @@ import static poussecafe.check.Predicates.greaterThan;
 import static poussecafe.domain.DomainSpecification.value;
 
 public class Product extends AggregateRoot<ProductKey, Data> {
-
-    @Override
-    public ProductKey getKey() {
-        return new ProductKey(getData().key().get());
-    }
-
-    @Override
-    public void setKey(ProductKey key) {
-        getData().key().set(key.getValue());
-    }
 
     void setTotalUnits(int units) {
         getData().setTotalUnits(units);
@@ -54,9 +43,7 @@ public class Product extends AggregateRoot<ProductKey, Data> {
         }
     }
 
-    public static interface Data extends StorableData {
-
-        Property<String> key();
+    public static interface Data extends IdentifiedStorableData<ProductKey> {
 
         void setTotalUnits(int units);
 

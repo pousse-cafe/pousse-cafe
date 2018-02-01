@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 
 public abstract class IdentifiedStorableDataAccessTest {
 
-    private IdentifiedStorableDataAccess<Data> dataAccess;
+    private IdentifiedStorableDataAccess<String, Data> dataAccess;
 
     private Data foundData;
 
@@ -28,7 +28,7 @@ public abstract class IdentifiedStorableDataAccessTest {
         dataAccess = newDataAccess();
     }
 
-    protected abstract IdentifiedStorableDataAccess<Data> newDataAccess();
+    protected abstract IdentifiedStorableDataAccess<String, Data> newDataAccess();
 
     private void whenFindingData() {
         foundData = dataAccess.findData(key1());
@@ -123,9 +123,7 @@ public abstract class IdentifiedStorableDataAccessTest {
         foundData = dataAccess.findData(addedData.key().get());
     }
 
-    public static interface Data extends StorableData {
-
-        Property<String> key();
+    public static interface Data extends IdentifiedStorableData<String> {
 
         void setX(int x);
     }

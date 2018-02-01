@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends StorableData>
+public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends IdentifiedStorableData<K>>
         extends IdentifiedStorableRepositoryTest<K, S, D> {
 
     private MessageSendingPolicy messageSendingPolicy;

@@ -1,4 +1,4 @@
-package poussecafe.sample.workflow;
+package poussecafe.sample.process;
 
 import poussecafe.domain.DomainEvent;
 import poussecafe.messaging.DomainEventListener;
@@ -11,9 +11,9 @@ import poussecafe.sample.domain.OrderCreated;
 import poussecafe.sample.domain.OrderReadyForShipping;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.OrderSettled;
-import poussecafe.service.Process;
+import poussecafe.service.DomainProcess;
 
-public class Messaging extends Process {
+public class Messaging extends DomainProcess {
 
     private MessageFactory factory;
 
@@ -30,7 +30,7 @@ public class Messaging extends Process {
             DomainEvent event) {
         Message message = factory.buildMessage(customerKey);
         message.setContentType(contentChooser.chooseContent(event));
-        runInTransaction(Message.Data.class, () -> repository.add(message));
+        runInTransaction(Message.class, () -> repository.add(message));
     }
 
     @DomainEventListener
@@ -46,17 +46,5 @@ public class Messaging extends Process {
     @DomainEventListener
     public void createMessage(OrderReadyForShipping event) {
         createMessageWithContent(event.getOrderKey().getCustomerKey(), event);
-    }
-
-    public void setFactory(MessageFactory factory) {
-        this.factory = factory;
-    }
-
-    public void setRepository(MessageRepository repository) {
-        this.repository = repository;
-    }
-
-    public void setContentChooser(ContentChooser contentChooser) {
-        this.contentChooser = contentChooser;
     }
 }

@@ -1,23 +1,23 @@
 package poussecafe.context;
 
+import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
-import poussecafe.storable.StorableData;
 import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class StorageServices<D extends StorableData> {
+public class StorageServices<K, D extends IdentifiedStorableData<K>> {
 
     private MessageSendingPolicy messageSendingPolicy;
 
     private TransactionRunner transactionRunner;
 
-    private IdentifiedStorableDataAccess<D> dataAccess;
+    private IdentifiedStorableDataAccess<K, D> dataAccess;
 
     public StorageServices(MessageSendingPolicy messageSendingPolicy, TransactionRunner transactionRunner,
-            IdentifiedStorableDataAccess<D> dataAccess) {
+            IdentifiedStorableDataAccess<K, D> dataAccess) {
         setMessageSendingPolicy(messageSendingPolicy);
         setTransactionRunner(transactionRunner);
         setDataAccess(dataAccess);
@@ -41,11 +41,11 @@ public class StorageServices<D extends StorableData> {
         this.transactionRunner = transactionRunner;
     }
 
-    public IdentifiedStorableDataAccess<D> getDataAccess() {
+    public IdentifiedStorableDataAccess<K, D> getDataAccess() {
         return dataAccess;
     }
 
-    private void setDataAccess(IdentifiedStorableDataAccess<D> dataAccess) {
+    private void setDataAccess(IdentifiedStorableDataAccess<K, D> dataAccess) {
         checkThat(value(dataAccess).notNull());
         this.dataAccess = dataAccess;
     }

@@ -5,21 +5,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import poussecafe.collection.Multimap;
+import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
-import poussecafe.storable.StorableData;
 
-public abstract class InMemoryDataAccess<D extends StorableData> implements IdentifiedStorableDataAccess<D> {
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
-    private Map<Object, byte[]> storage;
+public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implements IdentifiedStorableDataAccess<K, D> {
+
+    private Map<K, byte[]> storage;
+
+    private Multimap<Object, K> index = new Multimap<>();
 
     public InMemoryDataAccess() {
         storage = new HashMap<>();
     }
 
     @Override
-    public synchronized D findData(Object key) {
+    public synchronized D findData(K key) {
         byte[] serializedBytes = storage.get(key);
         if (serializedBytes == null) {
             return null;
@@ -39,14 +47,23 @@ public abstract class InMemoryDataAccess<D extends StorableData> implements Iden
 
     @Override
     public synchronized void addData(D data) {
-        Object key = extractKey(data);
+        K key = data.key().get();
         if (storage.containsKey(key)) {
             throw new InMemoryDataException("Duplicate key");
         }
         storage.put(key, serialize(data));
+        index(data);
     }
 
-    protected abstract Object extractKey(D data);
+    private void index(D data) {
+        K key = data.key().get();
+        List<Object> indexedData = extractIndexedData(data);
+        indexedData.forEach(indexed -> index.put(indexed, key));
+    }
+
+    protected List<Object> extractIndexedData(D data) {
+        return emptyList();
+    }
 
     private byte[] serialize(D data) {
         try {
@@ -62,16 +79,32 @@ public abstract class InMemoryDataAccess<D extends StorableData> implements Iden
 
     @Override
     public synchronized void updateData(D data) {
-        Object key = extractKey(data);
+        K key = data.key().get();
         if (!storage.containsKey(key)) {
             throw new InMemoryDataException("No entry with key " + key);
         }
+        D old = findData(key);
+        unindex(old);
         storage.put(key, serialize(data));
+        index(data);
     }
 
     @Override
-    public synchronized void deleteData(Object key) {
-        storage.remove(key);
+    public synchronized void deleteData(K key) {
+        D data = findData(key);
+        if(data != null) {
+            storage.remove(key);
+            unindex(data);
+        }
     }
 
+    private void unindex(D data) {
+        K key = data.key().get();
+        List<Object> indexedData = extractIndexedData(data);
+        indexedData.forEach(indexed -> index.remove(indexed, key));
+    }
+
+    protected List<D> findBy(Object indexed) {
+        return new ArrayList<>(index.get(indexed).stream().map(this::findData).collect(toList()));
+    }
 }

@@ -1,12 +1,12 @@
 package poussecafe.storable;
 
-public interface IdentifiedStorableDataAccess<D extends StorableData> {
+public interface IdentifiedStorableDataAccess<K, D extends IdentifiedStorableData<K>> {
 
-    D findData(Object key);
+    D findData(K key);
 
     void addData(D data);
 
     void updateData(D data);
 
-    void deleteData(Object key);
+    void deleteData(K key);
 }

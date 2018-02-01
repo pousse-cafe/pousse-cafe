@@ -12,13 +12,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class IdentifiedStorableRepositoryTest<K, S extends IdentifiedStorable<K, D>, D extends StorableData> {
+public abstract class IdentifiedStorableRepositoryTest<K, S extends IdentifiedStorable<K, D>, D extends IdentifiedStorableData<K>> {
 
     protected Class<D> dataClass;
 
     protected IdentifiedStorableRepository<S, K, D> repository;
 
-    protected IdentifiedStorableDataAccess<D> dataAccess;
+    protected IdentifiedStorableDataAccess<K, D> dataAccess;
 
     private PrimitiveFactory primitiveFactory = new PrimitiveFactory();
 
@@ -43,7 +43,7 @@ public abstract class IdentifiedStorableRepositoryTest<K, S extends IdentifiedSt
     protected abstract void registerData(PrimitiveFactory storableFactory);
 
     @SuppressWarnings("unchecked")
-    protected IdentifiedStorableDataAccess<D> mockStorableDataAccess() {
+    protected IdentifiedStorableDataAccess<K, D> mockStorableDataAccess() {
         return mock(IdentifiedStorableDataAccess.class);
     }
 

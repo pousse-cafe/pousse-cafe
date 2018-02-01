@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.service.DomainProcess;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableSet;
@@ -123,14 +124,14 @@ public class Environment {
         return unmodifiableSet(services);
     }
 
-    public void defineProcess(Class<?> processClass) {
+    public void defineProcess(Class<? extends DomainProcess> processClass) {
         checkThat(value(processClass).notNull());
         processes.add(processClass);
     }
 
-    private Set<Class<?>> processes = new HashSet<>();
+    private Set<Class<? extends DomainProcess>> processes = new HashSet<>();
 
-    public Set<Class<?>> getDefinedProcesses() {
+    public Set<Class<? extends DomainProcess>> getDefinedProcesses() {
         return unmodifiableSet(processes);
     }
 

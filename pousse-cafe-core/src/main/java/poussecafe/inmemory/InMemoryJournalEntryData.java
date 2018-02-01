@@ -1,20 +1,35 @@
 package poussecafe.inmemory;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 import poussecafe.journal.JournalEntry;
+import poussecafe.journal.JournalEntryKey;
 import poussecafe.journal.JournalEntryLog;
 import poussecafe.journal.JournalEntryStatus;
+import poussecafe.journal.Logs;
+import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
 
-public class InMemoryJournalEntryData implements JournalEntry.Data {
+public class InMemoryJournalEntryData implements JournalEntry.Data, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public List<JournalEntryLog> getLogs() {
-        return logs.get();
+    public Property<Logs> logs() {
+        return new ConvertingProperty<ArrayList<JournalEntryLog>, Logs>(logs, Logs.class) {
+            @Override
+            protected Logs convertFrom(ArrayList<JournalEntryLog> from) {
+                return new Logs(from);
+            }
+
+            @Override
+            protected ArrayList<JournalEntryLog> convertTo(Logs to) {
+                return new ArrayList<>(to.asList());
+            }
+        };
     }
 
-    private InlineProperty<List<JournalEntryLog>> logs = new InlineProperty<>(
-            new GenericType<List<JournalEntryLog>>().getRawType());
+    private InlineProperty<ArrayList<JournalEntryLog>> logs = new InlineProperty<>(new GenericType<ArrayList<JournalEntryLog>>() {}.getRawType());
 
     @Override
     public void setStatus(JournalEntryStatus status) {
@@ -65,8 +80,19 @@ public class InMemoryJournalEntryData implements JournalEntry.Data {
     }
 
     @Override
-    public Property<String> listenerId() {
-        return listenerId;
+    public Property<JournalEntryKey> key() {
+        return new BaseProperty<JournalEntryKey>(JournalEntryKey.class) {
+            @Override
+            protected JournalEntryKey getValue() {
+                return new JournalEntryKey(messageId.get(), listenerId.get());
+            }
+
+            @Override
+            protected void setValue(JournalEntryKey value) {
+                messageId.set(value.getMessageId());
+                listenerId.set(value.getListenerId());
+            }
+        };
     }
 
     private InlineProperty<String> listenerId = new InlineProperty<>(String.class);

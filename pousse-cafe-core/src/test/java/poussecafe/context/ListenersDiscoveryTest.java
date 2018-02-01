@@ -5,10 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import poussecafe.context.MessageListenerEntry;
-import poussecafe.context.MessageListenerEntryBuilder;
-import poussecafe.context.ProcessExplorer;
-import poussecafe.context.StorageServiceLocator;
 import poussecafe.messaging.MessageListenerRegistry;
 
 import static org.mockito.Matchers.any;
@@ -20,9 +16,6 @@ public class ListenersDiscoveryTest {
     @Mock
     private MessageListenerRegistry registry;
 
-    @Mock
-    private StorageServiceLocator storageServiceLocator;
-
     private ProcessExplorer workflowExplorer;
 
     private DummyProcess workflow;
@@ -33,7 +26,6 @@ public class ListenersDiscoveryTest {
 
         workflowExplorer = new ProcessExplorer();
         workflowExplorer.setMessageListenerRegistry(registry);
-        workflowExplorer.setStorageServiceLocator(storageServiceLocator);
     }
 
     @Test
@@ -48,7 +40,7 @@ public class ListenersDiscoveryTest {
     }
 
     private void whenConfiguringWorkflow() {
-        workflowExplorer.configureProcess(workflow);
+        workflowExplorer.discoverListeners(workflow);
     }
 
     private void thenDomainEventListenerWithDefaultIdRegistered() {

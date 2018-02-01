@@ -1,23 +1,12 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.Property;
-import poussecafe.storable.StorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public class Message extends AggregateRoot<MessageKey, Message.Data> {
-
-    @Override
-    public MessageKey getKey() {
-        return new MessageKey(getData().key().get());
-    }
-
-    @Override
-    public void setKey(MessageKey key) {
-        getData().key().set(key.getValue());
-    }
 
     void setCustomerKey(CustomerKey customerKey) {
         checkThat(value(customerKey).notNull().because("Customer key cannot be null"));
@@ -33,9 +22,7 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
         return getData().getContentType();
     }
 
-    public static interface Data extends StorableData {
-
-        Property<String> key();
+    public static interface Data extends IdentifiedStorableData<MessageKey> {
 
         void setCustomerKey(CustomerKey customerKey);
 

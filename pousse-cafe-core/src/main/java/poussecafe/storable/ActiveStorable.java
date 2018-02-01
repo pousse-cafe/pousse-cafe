@@ -2,7 +2,7 @@ package poussecafe.storable;
 
 import poussecafe.storage.Storage;
 
-public abstract class ActiveStorable<K, D extends StorableData> extends IdentifiedStorable<K, D> {
+public abstract class ActiveStorable<K, D extends IdentifiedStorableData<K>> extends IdentifiedStorable<K, D> {
 
     private MessageCollection messageCollection;
 

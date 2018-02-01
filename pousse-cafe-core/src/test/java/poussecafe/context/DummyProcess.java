@@ -1,9 +1,9 @@
 package poussecafe.context;
 
 import poussecafe.messaging.DomainEventListener;
-import poussecafe.service.Process;
+import poussecafe.service.DomainProcess;
 
-public class DummyProcess extends Process {
+public class DummyProcess extends DomainProcess {
 
     @DomainEventListener
     public void domainEventListenerWithDefaultId(TestDomainEvent event) {

@@ -3,7 +3,7 @@ package poussecafe.storable;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class IdentifiedStorableFactory<K, A extends IdentifiedStorable<K, D>, D extends StorableData> extends Primitive {
+public abstract class IdentifiedStorableFactory<K, A extends IdentifiedStorable<K, D>, D extends IdentifiedStorableData<K>> extends Primitive {
 
     @SuppressWarnings("unchecked")
     void setStorableClass(Class<?> storableClass) {

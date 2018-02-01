@@ -1,12 +1,12 @@
-package poussecafe.sample.workflow;
+package poussecafe.sample.process;
 
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;
 import poussecafe.sample.domain.CustomerRepository;
-import poussecafe.service.Process;
+import poussecafe.service.DomainProcess;
 
-public class CustomerCreation extends Process {
+public class CustomerCreation extends DomainProcess {
 
     private CustomerFactory factory;
 
@@ -14,14 +14,6 @@ public class CustomerCreation extends Process {
 
     public void createCustomer(CreateCustomer command) {
         Customer customer = factory.createCustomer(command.getCustomerKey());
-        runInTransaction(Customer.Data.class, () -> repository.add(customer));
-    }
-
-    public void setFactory(CustomerFactory factory) {
-        this.factory = factory;
-    }
-
-    public void setRepository(CustomerRepository repository) {
-        this.repository = repository;
+        runInTransaction(Customer.class, () -> repository.add(customer));
     }
 }

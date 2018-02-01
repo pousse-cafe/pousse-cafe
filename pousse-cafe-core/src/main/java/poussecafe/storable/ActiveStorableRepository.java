@@ -1,6 +1,6 @@
 package poussecafe.storable;
 
-public abstract class ActiveStorableRepository<A extends ActiveStorable<K, D>, K, D extends StorableData>
+public abstract class ActiveStorableRepository<A extends ActiveStorable<K, D>, K, D extends IdentifiedStorableData<K>>
         extends IdentifiedStorableRepository<A, K, D> {
 
     @Override

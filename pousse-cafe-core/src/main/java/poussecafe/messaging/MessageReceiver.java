@@ -1,5 +1,7 @@
 package poussecafe.messaging;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.journal.MessagingJournal;
 import poussecafe.journal.SuccessfulConsumption;
 
@@ -33,9 +35,15 @@ public abstract class MessageReceiver {
             messagingJournal.logSuccessfulConsumption(listener.getListenerId(),
                     new SuccessfulConsumption(receivedMessage));
         } catch (Exception e) {
-            messagingJournal.logFailedConsumption(listener.getListenerId(), receivedMessage, e);
+            try {
+                messagingJournal.logFailedConsumption(listener.getListenerId(), receivedMessage, e);
+            } catch (Exception e1) {
+                logger.error("Unable to log failed consumption", e1);
+            }
         }
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void ignoreMessage(Message receivedMessage,
             MessageListener listener) {

@@ -1,7 +1,7 @@
 package poussecafe.domain;
 
-import poussecafe.storable.StorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
-public abstract class AggregateRoot<K, D extends StorableData> extends Entity<K, D> {
+public abstract class AggregateRoot<K, D extends IdentifiedStorableData<K>> extends Entity<K, D> {
 
 }

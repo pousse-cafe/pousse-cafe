@@ -1,24 +1,12 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.Property;
-import poussecafe.storable.StorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
 public class Customer extends AggregateRoot<CustomerKey, Customer.Data> {
 
-    @Override
-    public CustomerKey getKey() {
-        return new CustomerKey(getData().key().get());
-    }
+    public static interface Data extends IdentifiedStorableData<CustomerKey> {
 
-    @Override
-    public void setKey(CustomerKey key) {
-        getData().key().set(key.getValue());
-    }
-
-    public static interface Data extends StorableData {
-
-        Property<String> key();
     }
 
 }

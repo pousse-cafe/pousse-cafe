@@ -2,14 +2,14 @@ package poussecafe.context;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import poussecafe.util.ReflectionUtils;
 
-import static java.util.Arrays.asList;
+import static poussecafe.check.AssertionSpecification.value;
+import static poussecafe.check.Checks.checkThat;
 
 public class Injector {
 
@@ -19,6 +19,11 @@ public class Injector {
 
     public void registerInjectableService(Object service) {
         injectableServices.put(service.getClass(), service);
+    }
+
+    public void registerInjectableService(Class<?> forClass, Object service) {
+        checkThat(value(forClass.isAssignableFrom(service.getClass())).isTrue().because("Service must subclass forClass"));
+        injectableServices.put(forClass, service);
     }
 
     public void addInjectionCandidate(Object candidate) {
@@ -44,19 +49,9 @@ public class Injector {
     }
 
     private void tryUsingMembers(Object service) {
-        for(Field field : getAllMembers(service)) {
+        for(Field field : ReflectionUtils.getHierarchyFields(service.getClass())) {
             FieldDependencyInjector dependencyInjector = new FieldDependencyInjector(service, field, injectableServices);
             dependencyInjector.trySettingDependency();
         }
-    }
-
-    private List<Field> getAllMembers(Object service) {
-        List<Field> allFields = new ArrayList<>();
-        Class<?> currentClass = service.getClass();
-        while(currentClass != null && currentClass != Object.class) {
-            allFields.addAll(asList(currentClass.getDeclaredFields()));
-            currentClass = currentClass.getSuperclass();
-        }
-        return allFields;
     }
 }

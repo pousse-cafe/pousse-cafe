@@ -28,10 +28,6 @@ public class PrimitiveFactory {
                 activeStorable.setStorage(storage);
             }
         }
-        if(StorableBuilder.class.isAssignableFrom(primitiveClass) && specification.isWithData()) {
-            StorableBuilder<?> builder = (StorableBuilder<?>) primitive;
-            builder.setData(supplyDataImplementation(builder.getStorableClass()));
-        }
         if(IdentifiedStorableRepository.class.isAssignableFrom(primitiveClass)) {
             IdentifiedStorableRepository<?, ?, ?> repository = (IdentifiedStorableRepository<?, ?, ?>) primitive;
             Class<?> storableClass = environment.getStorableClass(primitiveClass);

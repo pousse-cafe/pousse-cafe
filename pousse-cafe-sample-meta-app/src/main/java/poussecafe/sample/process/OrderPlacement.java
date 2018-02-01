@@ -1,4 +1,4 @@
-package poussecafe.sample.workflow;
+package poussecafe.sample.process;
 
 import poussecafe.messaging.DomainEventListener;
 import poussecafe.sample.command.PlaceOrder;
@@ -10,9 +10,9 @@ import poussecafe.sample.domain.OrderPlaced;
 import poussecafe.sample.domain.OrderRepository;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.service.Process;
+import poussecafe.service.DomainProcess;
 
-public class OrderPlacement extends Process {
+public class OrderPlacement extends DomainProcess {
 
     private ProductRepository productRepository;
 
@@ -21,7 +21,7 @@ public class OrderPlacement extends Process {
     private OrderRepository orderRepository;
 
     public void placeOrder(PlaceOrder command) {
-        runInTransaction(Product.Data.class, () -> {
+        runInTransaction(Product.class, () -> {
             Product product = productRepository.get(command.getProductKey());
             product.placeOrder(command.getOrderDescription());
             productRepository.update(product);

@@ -2,18 +2,20 @@ package poussecafe.sample.domain;
 
 import java.util.List;
 import poussecafe.inmemory.InMemoryDataAccess;
+import poussecafe.sample.domain.Message.Data;
 
-public class InMemoryMessageDataAccess extends InMemoryDataAccess<Message.Data> implements MessageDataAccess {
+import static java.util.Arrays.asList;
+
+public class InMemoryMessageDataAccess extends InMemoryDataAccess<MessageKey, Message.Data> implements MessageDataAccess {
 
     @Override
-    public List<Message.Data> findByCustomer(CustomerKey customerKey) {
-        // TODO Auto-generated method stub
-        return null;
+    protected List<Object> extractIndexedData(Data data) {
+        return asList(data.getCustomerKey());
     }
 
     @Override
-    protected Object extractKey(Message.Data data) {
-        return data.key().get();
+    public List<Message.Data> findByCustomer(CustomerKey customerKey) {
+        return findBy(customerKey);
     }
 
 }

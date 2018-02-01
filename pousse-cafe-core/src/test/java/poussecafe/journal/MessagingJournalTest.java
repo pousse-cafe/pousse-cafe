@@ -66,7 +66,7 @@ public abstract class MessagingJournalTest {
 
     private StorageServiceLocator storageServiceLocator(TransactionRunner transactionRunner) {
         StorageServiceLocator locator = mock(StorageServiceLocator.class);
-        when(locator.locateTransactionRunner(JournalEntry.Data.class)).thenReturn(transactionRunner);
+        when(locator.locateTransactionRunner(JournalEntry.class)).thenReturn(transactionRunner);
         return locator;
     }
 

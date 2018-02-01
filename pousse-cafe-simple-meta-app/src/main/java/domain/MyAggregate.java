@@ -1,8 +1,7 @@
 package domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.Property;
-import poussecafe.storable.StorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -29,23 +28,11 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
         return getData().getX();
     }
 
-    @Override
-    public MyAggregateKey getKey() {
-        return new MyAggregateKey(getData().key().get());
-    }
-
-    @Override
-    public void setKey(MyAggregateKey key) {
-        getData().key().set(key.getValue());
-    }
-
     /*
      * This interface defines the data model without exposing implementation details (JPA Entity, Mongo document, POJO,
      * etc).
      */
-    public interface Data extends StorableData {
-
-        Property<String> key();
+    public interface Data extends IdentifiedStorableData<MyAggregateKey> {
 
         void setX(int x);
 

@@ -1,11 +1,14 @@
 package poussecafe.journal;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class JournalEntryLog {
+public class JournalEntryLog implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private LocalDateTime dateTime;
 

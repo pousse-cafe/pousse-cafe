@@ -1,5 +1,6 @@
 package poussecafe.inmemory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import poussecafe.storable.Property;
 
@@ -13,18 +14,27 @@ public abstract class BaseProperty<T> implements Property<T> {
         setValueClass(valueClass);
     }
 
+    protected BaseProperty() {
+
+    }
+
     private void setValueClass(Class<T> valueClass) {
         checkThat(value(valueClass).notNull());
         this.valueClass = valueClass;
     }
 
-    private Class<T> valueClass;
+    protected Class<T> valueClass;
+
+    @Override
+    public Class<T> getValueClass() {
+        return valueClass;
+    }
 
     @Override
     public T get() {
         T value = getValue();
         if(value == null) {
-            return defaultValue(valueClass);
+            return defaultValue();
         } else {
             return value;
         }
@@ -33,9 +43,13 @@ public abstract class BaseProperty<T> implements Property<T> {
     protected abstract T getValue();
 
     @SuppressWarnings("unchecked")
-    private T defaultValue(Class<T> valueClass) {
-        if(Collection.class.isAssignableFrom(valueClass)) {
+    protected T defaultValue() {
+        if(ArrayList.class.isAssignableFrom(valueClass)) {
+            return (T) new ArrayList<>();
+        } else if(Collection.class.isAssignableFrom(valueClass)) {
             return (T) emptyList();
+        } else if(Integer.class.isAssignableFrom(valueClass)) {
+            return (T) new Integer(0);
         } else {
             return null;
         }
