@@ -5,8 +5,6 @@ import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageSender;
 
 import static java.util.stream.Collectors.toList;
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class MessageReplayer {
 
@@ -32,16 +30,5 @@ public class MessageReplayer {
     public void replayAllFailedConsumptions() {
         List<ConsumptionFailure> entries = consumptionFailureRepository.findAllConsumptionFailures();
         replayFailedConsumptions(entries);
-    }
-
-    public void setConsumptionFailureRepository(ConsumptionFailureRepository consumptionFailureRepository) {
-        checkThat(
-                value(consumptionFailureRepository).notNull().because("Consumption failure repository cannot be null"));
-        this.consumptionFailureRepository = consumptionFailureRepository;
-    }
-
-    public void setMessageSender(MessageSender messageSender) {
-        checkThat(value(messageSender).notNull().because("Message sender cannot be null"));
-        this.messageSender = messageSender;
     }
 }

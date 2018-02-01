@@ -1,5 +1,6 @@
 package poussecafe.context;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,8 @@ import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.InMemoryStorage;
 import poussecafe.storage.Storage;
 import poussecafe.util.IdGenerator;
+
+import static java.util.Collections.unmodifiableCollection;
 
 public class MetaApplicationContext {
 
@@ -170,8 +173,11 @@ public class MetaApplicationContext {
             Object service = newInstance(serviceClass);
             injector.registerInjectableService(service);
             injector.addInjectionCandidate(service);
+            services.put(serviceClass, service);
         }
     }
+
+    private Map<Class<?>, Object> services = new HashMap<>();
 
     private Object newInstance(Class<?> serviceClass) {
         try {
@@ -258,5 +264,17 @@ public class MetaApplicationContext {
     public <T extends IdentifiedStorableRepository<A, K, D>, A extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T getRepository(Class<A> storableClass) {
         StorableServices services = getStorableServices(storableClass);
         return (T) services.getRepository();
+    }
+
+    public Collection<StorableServices> getAllStorableServices() {
+        return unmodifiableCollection(storableServices.values());
+    }
+
+    public Collection<DomainProcess> getAllDomainProcesses() {
+        return unmodifiableCollection(processes.values());
+    }
+
+    public Collection<Object> getAllServices() {
+        return unmodifiableCollection(services.values());
     }
 }

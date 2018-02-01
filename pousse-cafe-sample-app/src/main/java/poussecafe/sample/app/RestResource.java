@@ -8,23 +8,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import poussecafe.context.MetaApplicationContext;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
+import poussecafe.sample.domain.ProductRepository;
 import poussecafe.sample.process.ProductManagement;
 
 @RestController
 public class RestResource {
 
     @Autowired
-    private MetaApplicationContext metaApplicationContext;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ProductManagement productManagement;
 
     @RequestMapping(path = "/product", method = RequestMethod.POST)
     public void createProduct(@RequestBody CreateProductView input) {
         logger.info("Creating product with key {}", input.key);
         ProductKey productKey = new ProductKey(input.key);
-        metaApplicationContext.getDomainProcess(ProductManagement.class).createProduct(new CreateProduct(productKey));
+        productManagement.createProduct(new CreateProduct(productKey));
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,7 +36,7 @@ public class RestResource {
     public ProductView getProduct(@PathVariable("key") String key) {
         logger.info("Fetching product with key {}", key);
         ProductKey productKey = new ProductKey(key);
-        Product product = metaApplicationContext.getRepository(Product.class).find(productKey);
+        Product product = productRepository.find(productKey);
 
         ProductView view = new ProductView();
         view.key = key;

@@ -7,7 +7,7 @@ import poussecafe.context.MetaApplicationContext;
 import poussecafe.sample.SampleMetaAppBundle;
 
 @Configuration
-@ComponentScan(basePackages = { "poussecafe.sample" })
+@ComponentScan(basePackages = { "poussecafe.sample", "poussecafe.spring" })
 public class AppConfiguration {
 
     @Bean
