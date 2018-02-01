@@ -17,6 +17,7 @@ public abstract class MessageReceiver {
     private boolean started;
 
     protected void onMessage(Message receivedMessage) {
+        logger.info("Handling received message {}", receivedMessage);
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
         for (MessageListener listener : listenerRegistry
                 .getListeners(new MessageListenerRoutingKey(receivedMessage.getClass()))) {
@@ -26,10 +27,12 @@ public abstract class MessageReceiver {
                 ignoreMessage(receivedMessage, listener);
             }
         }
+        logger.info("Message {} handled", receivedMessage);
     }
 
     private void consumeMessage(Message receivedMessage,
             MessageListener listener) {
+        logger.debug("Consumption of message {} by listener {}", receivedMessage, listener);
         try {
             listener.consume(receivedMessage);
             messagingJournal.logSuccessfulConsumption(listener.getListenerId(),
@@ -41,9 +44,10 @@ public abstract class MessageReceiver {
                 logger.error("Unable to log failed consumption", e1);
             }
         }
+        logger.debug("Message {} consumed by listener {}", receivedMessage, listener);
     }
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     private void ignoreMessage(Message receivedMessage,
             MessageListener listener) {

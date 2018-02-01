@@ -1,14 +1,13 @@
 package poussecafe.journal;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.exception.AssertionFailedException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.service.TransactionAwareService;
 import poussecafe.util.ExceptionUtils;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class MessagingJournal extends TransactionAwareService {
 
@@ -54,6 +53,7 @@ public class MessagingJournal extends TransactionAwareService {
     public void logFailedConsumption(String listenerId,
             Message message,
             Exception e) {
+        logger.error("Consumption of consequence {} by listener {} failed", message, listenerId, e);
         JournalEntrySaver saver = buildSaver(listenerId, message);
         runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
@@ -61,6 +61,8 @@ public class MessagingJournal extends TransactionAwareService {
             saver.save();
         });
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public boolean isSuccessfullyConsumed(Message message,
             String listenerId) {
@@ -83,21 +85,6 @@ public class MessagingJournal extends TransactionAwareService {
         } else {
             return null;
         }
-    }
-
-    public void setEntryRepository(JournalEntryRepository entryRepository) {
-        checkThat(value(entryRepository).notNull().because("Entry repository cannot be null"));
-        this.entryRepository = entryRepository;
-    }
-
-    public void setEntryFactory(JournalEntryFactory entryFactory) {
-        checkThat(value(entryFactory).notNull().because("Entry factory cannot be null"));
-        this.entryFactory = entryFactory;
-    }
-
-    public void setMessageAdapter(MessageAdapter messageAdapter) {
-        checkThat(value(messageAdapter).notNull().because("Message adapter cannot be null"));
-        this.messageAdapter = messageAdapter;
     }
 
 }

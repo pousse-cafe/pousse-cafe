@@ -8,6 +8,7 @@ import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.storable.PrimitiveFactory;
 import poussecafe.storage.TransactionRunner;
+import poussecafe.util.FieldAccessor;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,7 +58,7 @@ public abstract class MessagingJournalTest {
                 return message;
             }
         };
-        journal.setMessageAdapter(messageAdapter);
+        new FieldAccessor(journal).set("messageAdapter", messageAdapter);
     }
 
     protected TransactionRunner transactionRunner() {

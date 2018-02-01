@@ -18,6 +18,7 @@ public class InMemoryMessageQueue extends MessageReceiver implements MessageSend
 
     @Override
     public void sendMessage(Message message) {
+        logger.info("Sending message {}", message);
         queue.add(message);
         available.release();
     }

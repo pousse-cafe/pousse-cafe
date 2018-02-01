@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.util.ReflectionUtils;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -37,9 +39,12 @@ public class Injector {
     }
 
     private void injectDependencies(Object service) {
+        logger.info("Injecting dependencies in " + service.getClass().getName());
         tryUsingSetters(service);
         tryUsingMembers(service);
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void tryUsingSetters(Object service) {
         for (Method method : service.getClass().getMethods()) {
