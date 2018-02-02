@@ -14,4 +14,6 @@ modules:
 - Test: Tools helping in writing powerful and Domain-centric unit tests
 - Simple App: A template project used to generate related Maven archetype
 - Sample Meta App: A sample meta-application implementation show-casing Pousse-Café's features
+- Spring Bridge: A bridge allowing to directly inject Pousse-Café components into Spring beans
+- Spring Mongo: Helpers and core components implementation relying on Spring Data Mongo DB
 - Sample App: A sample Spring Boot app show-casing the integration of the Sample Meta App in an actual application

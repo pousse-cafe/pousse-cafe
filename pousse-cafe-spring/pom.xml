@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>pousse-cafe-spring</artifactId>
-  <name>Pousse-Café - Spring Integration</name>
+  <name>Pousse-Café - Spring Bridge</name>
   
   <properties>
     <!-- This should be kept in sync from time to time -->
