@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
 
 @Configuration
-@ComponentScan(basePackages = { "poussecafe.sample", "poussecafe.spring" })
+@ComponentScan(basePackages = { "poussecafe.spring" })
 public class AppConfiguration {
 
     @Bean
