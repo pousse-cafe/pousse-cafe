@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import poussecafe.storable.BaseProperty;
 
 public class InlineProperty<T extends Serializable> extends BaseProperty<T> implements Serializable {
 

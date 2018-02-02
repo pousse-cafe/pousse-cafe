@@ -41,12 +41,24 @@ public class FieldAccessor {
     private Field getUnprotectedField(String fieldName) {
         Class<?> targetClass = target.getClass();
         try {
-            Field field = targetClass.getDeclaredField(fieldName);
+            Field field = searchField(targetClass, fieldName);
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException e) {
             throw new PousseCafeException("Unable to get field", e);
         }
+    }
+
+    private Field searchField(Class<?> targetClass, String fieldName) throws NoSuchFieldException {
+        Class<?> currentClass = targetClass;
+        while(currentClass != null) {
+            try {
+                return currentClass.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                currentClass = targetClass.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException();
     }
 
     public void set(String fieldName,

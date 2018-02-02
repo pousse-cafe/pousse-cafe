@@ -3,7 +3,7 @@ package poussecafe.journal;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import poussecafe.context.StorageServiceLocator;
+import poussecafe.context.TransactionRunnerLocator;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.storable.PrimitiveFactory;
@@ -45,7 +45,8 @@ public abstract class MessagingJournalTest {
     protected void givenConfiguredMessagingJournal() {
         MockitoAnnotations.initMocks(this);
         transactionRunner = transactionRunner();
-        journal.setStorageServiceLocator(storageServiceLocator(transactionRunner));
+        FieldAccessor journalAccessor = new FieldAccessor(journal);
+        journalAccessor.set("transactionRunnerLocator", storageServiceLocator(transactionRunner));
 
         messageAdapter = new MessageAdapter() {
             @Override
@@ -58,15 +59,15 @@ public abstract class MessagingJournalTest {
                 return message;
             }
         };
-        new FieldAccessor(journal).set("messageAdapter", messageAdapter);
+        journalAccessor.set("messageAdapter", messageAdapter);
     }
 
     protected TransactionRunner transactionRunner() {
         return mock(TransactionRunner.class);
     }
 
-    private StorageServiceLocator storageServiceLocator(TransactionRunner transactionRunner) {
-        StorageServiceLocator locator = mock(StorageServiceLocator.class);
+    private TransactionRunnerLocator storageServiceLocator(TransactionRunner transactionRunner) {
+        TransactionRunnerLocator locator = mock(TransactionRunnerLocator.class);
         when(locator.locateTransactionRunner(JournalEntry.class)).thenReturn(transactionRunner);
         return locator;
     }

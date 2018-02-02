@@ -6,7 +6,7 @@ import domain.MyFactory;
 import domain.MyRepository;
 import org.slf4j.LoggerFactory;
 import poussecafe.messaging.DomainEventListener;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 
 /*
  * This work flow describes how Commands are related to Domain actions. A work flow also describes how Domain Events

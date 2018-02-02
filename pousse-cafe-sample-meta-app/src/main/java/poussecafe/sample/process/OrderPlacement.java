@@ -1,6 +1,7 @@
 package poussecafe.sample.process;
 
 import poussecafe.messaging.DomainEventListener;
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderDescription;
@@ -10,7 +11,6 @@ import poussecafe.sample.domain.OrderPlaced;
 import poussecafe.sample.domain.OrderRepository;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.service.DomainProcess;
 
 public class OrderPlacement extends DomainProcess {
 

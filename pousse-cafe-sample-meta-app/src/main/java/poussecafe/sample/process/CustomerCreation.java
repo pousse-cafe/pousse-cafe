@@ -1,10 +1,10 @@
 package poussecafe.sample.process;
 
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;
 import poussecafe.sample.domain.CustomerRepository;
-import poussecafe.service.DomainProcess;
 
 public class CustomerCreation extends DomainProcess {
 

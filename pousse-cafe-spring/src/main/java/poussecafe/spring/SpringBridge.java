@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.StorableServices;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 import poussecafe.storable.IdentifiedStorableRepository;
 
 @Configuration

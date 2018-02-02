@@ -1,7 +1,5 @@
 package poussecafe.storable;
 
-import poussecafe.storage.memory.BaseProperty;
-
 public abstract class ConvertingProperty<F, T> extends BaseProperty<T> {
 
     public ConvertingProperty(Property<F> from) {

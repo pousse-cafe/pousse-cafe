@@ -7,7 +7,7 @@ import poussecafe.storable.Property;
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.not;
-import static poussecafe.domain.DomainSpecification.value;
+import static poussecafe.domain.DomainCheckSpecification.value;
 
 public class JournalEntry extends IdentifiedStorable<JournalEntryKey, JournalEntry.Data> {
 

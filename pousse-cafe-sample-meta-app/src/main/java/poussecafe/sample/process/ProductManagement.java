@@ -1,11 +1,11 @@
 package poussecafe.sample.process;
 
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.service.DomainProcess;
 
 public class ProductManagement extends DomainProcess {
 

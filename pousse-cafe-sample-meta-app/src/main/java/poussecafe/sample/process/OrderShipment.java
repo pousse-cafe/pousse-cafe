@@ -1,9 +1,9 @@
 package poussecafe.sample.process;
 
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.command.ShipOrder;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderRepository;
-import poussecafe.service.DomainProcess;
 
 public class OrderShipment extends DomainProcess {
 

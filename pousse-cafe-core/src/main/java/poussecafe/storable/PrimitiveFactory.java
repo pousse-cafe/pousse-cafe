@@ -1,6 +1,7 @@
 package poussecafe.storable;
 
 import java.util.function.Supplier;
+import poussecafe.context.Environment;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.storage.Storage;
 

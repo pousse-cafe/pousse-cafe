@@ -1,4 +1,4 @@
-package poussecafe.storable;
+package poussecafe.context;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
+import poussecafe.storable.StorableDefinition;
+import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableSet;

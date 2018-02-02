@@ -7,8 +7,8 @@ import poussecafe.journal.JournalEntryKey;
 import poussecafe.journal.JournalEntryStatus;
 import poussecafe.journal.Logs;
 import poussecafe.journal.memory.SerializableJournalEntryKey;
+import poussecafe.storable.BaseProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.BaseProperty;
 
 public class JournalEntryData implements JournalEntry.Data {
 

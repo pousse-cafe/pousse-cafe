@@ -2,6 +2,7 @@ package poussecafe.sample;
 
 import java.util.Set;
 import poussecafe.context.MetaApplicationBundle;
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;
@@ -27,7 +28,6 @@ import poussecafe.sample.process.CustomerCreation;
 import poussecafe.sample.process.Messaging;
 import poussecafe.sample.process.OrderPlacement;
 import poussecafe.sample.process.ProductManagement;
-import poussecafe.service.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;

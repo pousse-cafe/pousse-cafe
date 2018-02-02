@@ -1,10 +1,13 @@
-package poussecafe.messaging;
+package poussecafe.messaging.internal;
 
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.MessageSender;
 
-public class InMemoryMessageQueue extends MessageReceiver implements MessageSender {
+public class InternalMessageQueue extends MessageReceiver implements MessageSender {
 
     private Queue<Message> queue;
 
@@ -12,7 +15,7 @@ public class InMemoryMessageQueue extends MessageReceiver implements MessageSend
 
     private Semaphore mutex = new Semaphore(1);
 
-    public InMemoryMessageQueue() {
+    public InternalMessageQueue() {
         queue = new LinkedList<>();
     }
 

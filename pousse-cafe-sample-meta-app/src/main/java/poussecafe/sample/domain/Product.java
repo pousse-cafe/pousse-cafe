@@ -7,7 +7,7 @@ import poussecafe.storable.IdentifiedStorableData;
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.greaterThan;
-import static poussecafe.domain.DomainSpecification.value;
+import static poussecafe.domain.DomainCheckSpecification.value;
 
 public class Product extends AggregateRoot<ProductKey, Data> {
 

@@ -1,8 +1,7 @@
-package poussecafe.storage.memory;
+package poussecafe.storable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import poussecafe.storable.Property;
 
 import static java.util.Collections.emptyList;
 import static poussecafe.check.AssertionSpecification.value;

@@ -6,7 +6,7 @@ import domain.MyRepository;
 import domain.data.MyAggregateData;
 import java.util.Set;
 import poussecafe.context.MetaApplicationBundle;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryDataAccess;

@@ -1,12 +1,12 @@
 package poussecafe.context;
 
 import poussecafe.messaging.MessageListenerRegistry;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class ProcessExplorer {
+public class DomainProcessExplorer {
 
     private MessageListenerRegistry registry;
 

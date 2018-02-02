@@ -2,6 +2,7 @@ package poussecafe.sample.process;
 
 import poussecafe.domain.DomainEvent;
 import poussecafe.messaging.DomainEventListener;
+import poussecafe.process.DomainProcess;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
@@ -11,7 +12,6 @@ import poussecafe.sample.domain.OrderCreated;
 import poussecafe.sample.domain.OrderReadyForShipping;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.OrderSettled;
-import poussecafe.service.DomainProcess;
 
 public class Messaging extends DomainProcess {
 

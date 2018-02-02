@@ -8,15 +8,15 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.journal.ConsumptionFailureRepository;
 import poussecafe.journal.MessageReplayer;
 import poussecafe.journal.MessagingJournal;
-import poussecafe.messaging.InMemoryMessageQueue;
+import poussecafe.messaging.JacksonMessageAdapter;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.MessageListenerRoutingKey;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
-import poussecafe.service.DomainProcess;
-import poussecafe.storable.Environment;
+import poussecafe.messaging.internal.InternalMessageQueue;
+import poussecafe.process.DomainProcess;
 import poussecafe.storable.IdentifiedStorable;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableFactory;
@@ -46,9 +46,9 @@ public class MetaApplicationContext {
 
     private MessageReplayer messageReplayer;
 
-    private StorageServiceLocator storageServiceLocator;
+    private TransactionRunnerLocator storageServiceLocator;
 
-    private InMemoryMessageQueue inMemoryMessageQueue;
+    private InternalMessageQueue inMemoryMessageQueue;
 
     private MessageSender messageSender;
 
@@ -67,10 +67,10 @@ public class MetaApplicationContext {
         messageListenerRegistry = new MessageListenerRegistry();
         messagingJournal = new MessagingJournal();
 
-        storageServiceLocator = new StorageServiceLocator();
+        storageServiceLocator = new TransactionRunnerLocator();
         storageServiceLocator.setEnvironment(environment);
 
-        inMemoryMessageQueue = new InMemoryMessageQueue();
+        inMemoryMessageQueue = new InternalMessageQueue();
         messageSender = inMemoryMessageQueue;
         messageReceiver = inMemoryMessageQueue;
 
@@ -164,7 +164,7 @@ public class MetaApplicationContext {
     }
 
     protected void configureProcesses() {
-        ProcessExplorer processExplorer = new ProcessExplorer();
+        DomainProcessExplorer processExplorer = new DomainProcessExplorer();
         processExplorer.setMessageListenerRegistry(messageListenerRegistry);
 
         for (Class<?> processClass : environment.getDefinedProcesses()) {
@@ -229,7 +229,7 @@ public class MetaApplicationContext {
         return storableServices.get(storableClass);
     }
 
-    public InMemoryMessageQueue getInMemoryQueue() {
+    public InternalMessageQueue getInMemoryQueue() {
         return inMemoryMessageQueue;
     }
 

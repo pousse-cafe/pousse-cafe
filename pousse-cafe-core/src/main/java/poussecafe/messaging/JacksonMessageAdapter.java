@@ -1,12 +1,10 @@
-package poussecafe.context;
+package poussecafe.messaging;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.journal.SerializedMessage;
-import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageAdapter;
 
 public class JacksonMessageAdapter implements MessageAdapter {
 

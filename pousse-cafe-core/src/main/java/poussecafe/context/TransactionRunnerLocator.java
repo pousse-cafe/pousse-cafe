@@ -1,13 +1,12 @@
 package poussecafe.context;
 
-import poussecafe.storable.Environment;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class StorageServiceLocator {
+public class TransactionRunnerLocator {
 
     public void setEnvironment(Environment environment) {
         checkThat(value(environment).notNull());

@@ -12,7 +12,7 @@ import poussecafe.storable.Property;
 import poussecafe.storage.memory.GenericType;
 import poussecafe.storage.memory.InlineProperty;
 
-public class InMemoryJournalEntryData implements JournalEntry.Data, Serializable {
+public class JournalEntryData implements JournalEntry.Data, Serializable {
 
     private static final long serialVersionUID = 1L;
 

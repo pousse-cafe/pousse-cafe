@@ -5,8 +5,8 @@ import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
+import poussecafe.storable.BaseProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.BaseProperty;
 
 public class MessageData implements Message.Data {
 

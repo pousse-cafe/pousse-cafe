@@ -9,7 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.StorableServices;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 
 @Component
 public class PousseCafeComponentsWirer implements ApplicationListener<ContextRefreshedEvent> {

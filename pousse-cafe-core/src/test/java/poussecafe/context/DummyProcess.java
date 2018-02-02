@@ -1,7 +1,7 @@
 package poussecafe.context;
 
 import poussecafe.messaging.DomainEventListener;
-import poussecafe.service.DomainProcess;
+import poussecafe.process.DomainProcess;
 
 public class DummyProcess extends DomainProcess {
 

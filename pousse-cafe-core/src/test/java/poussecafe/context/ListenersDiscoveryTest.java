@@ -16,7 +16,7 @@ public class ListenersDiscoveryTest {
     @Mock
     private MessageListenerRegistry registry;
 
-    private ProcessExplorer workflowExplorer;
+    private DomainProcessExplorer workflowExplorer;
 
     private DummyProcess workflow;
 
@@ -24,7 +24,7 @@ public class ListenersDiscoveryTest {
     public void before() {
         MockitoAnnotations.initMocks(this);
 
-        workflowExplorer = new ProcessExplorer();
+        workflowExplorer = new DomainProcessExplorer();
         workflowExplorer.setMessageListenerRegistry(registry);
     }
 

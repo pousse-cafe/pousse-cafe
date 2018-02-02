@@ -1,8 +1,9 @@
-package poussecafe.storable;
+package poussecafe.storage;
 
 import java.util.ArrayList;
 import java.util.List;
 import poussecafe.messaging.Message;
+import poussecafe.storable.MessageCollection;
 
 import static java.util.Collections.unmodifiableList;
 import static poussecafe.check.AssertionSpecification.value;

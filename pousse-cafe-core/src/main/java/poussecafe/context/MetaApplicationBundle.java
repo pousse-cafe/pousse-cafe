@@ -5,9 +5,9 @@ import java.util.Set;
 import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryFactory;
 import poussecafe.journal.JournalEntryRepository;
-import poussecafe.journal.memory.InMemoryJournalEntryData;
-import poussecafe.journal.memory.InMemoryJournalEntryDataAccess;
-import poussecafe.service.DomainProcess;
+import poussecafe.journal.memory.JournalEntryData;
+import poussecafe.journal.memory.JournalEntryDataAccess;
+import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;
@@ -44,8 +44,8 @@ public abstract class MetaApplicationBundle {
     protected void loadCoreImplementations(Set<StorableImplementation> coreImplementations) {
         coreImplementations.add(new StorableImplementation.Builder()
                 .withStorableClass(JournalEntry.class)
-                .withDataFactory(InMemoryJournalEntryData::new)
-                .withDataAccessFactory(InMemoryJournalEntryDataAccess::new)
+                .withDataFactory(JournalEntryData::new)
+                .withDataAccessFactory(JournalEntryDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
     }
