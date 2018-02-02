@@ -62,4 +62,8 @@ public abstract class Message {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [id=" + id + "]";
+    }
 }

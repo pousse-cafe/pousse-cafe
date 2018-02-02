@@ -1,8 +1,20 @@
 package poussecafe.storage;
 
-public interface Storage {
+public abstract class Storage {
 
-    MessageSendingPolicy getMessageSendingPolicy();
+    public MessageSendingPolicy getMessageSendingPolicy() {
+        return policy;
+    }
 
-    TransactionRunner getTransactionRunner();
+    private MessageSendingPolicy policy = initMessageSendingPolicy();
+
+    protected abstract MessageSendingPolicy initMessageSendingPolicy();
+
+    public TransactionRunner getTransactionRunner() {
+        return transactionRunner;
+    }
+
+    private TransactionRunner transactionRunner = initTransactionRunner();
+
+    protected abstract TransactionRunner initTransactionRunner();
 }

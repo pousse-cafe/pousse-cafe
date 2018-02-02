@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.inmemory.InMemoryJournalEntryData;
 import poussecafe.journal.ConsumptionFailureRepository;
-import poussecafe.journal.InMemoryJournalEntryDataAccess;
-import poussecafe.journal.JournalEntry;
-import poussecafe.journal.JournalEntryFactory;
-import poussecafe.journal.JournalEntryRepository;
 import poussecafe.journal.MessageReplayer;
 import poussecafe.journal.MessagingJournal;
 import poussecafe.messaging.InMemoryMessageQueue;
@@ -30,7 +25,6 @@ import poussecafe.storable.PrimitiveFactory;
 import poussecafe.storable.PrimitiveSpecification;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
-import poussecafe.storage.InMemoryStorage;
 import poussecafe.storage.Storage;
 import poussecafe.util.IdGenerator;
 
@@ -76,29 +70,11 @@ public class MetaApplicationContext {
         storageServiceLocator = new StorageServiceLocator();
         storageServiceLocator.setEnvironment(environment);
 
-        configureDefaultEnvironment();
-
         inMemoryMessageQueue = new InMemoryMessageQueue();
         messageSender = inMemoryMessageQueue;
         messageReceiver = inMemoryMessageQueue;
 
         messageAdapter = new JacksonMessageAdapter();
-    }
-
-    private void configureDefaultEnvironment() {
-        environment.defineService(IdGenerator.class);
-
-        environment.defineStorable(new StorableDefinition.Builder()
-                .withStorableClass(JournalEntry.class)
-                .withFactoryClass(JournalEntryFactory.class)
-                .withRepositoryClass(JournalEntryRepository.class)
-                .build());
-        environment.implementStorable(new StorableImplementation.Builder()
-                .withStorableClass(JournalEntry.class)
-                .withDataFactory(InMemoryJournalEntryData::new)
-                .withDataAccessFactory(InMemoryJournalEntryDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
-                .build());
     }
 
     public Environment environment() {

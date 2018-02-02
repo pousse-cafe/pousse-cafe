@@ -1,15 +1,10 @@
 package process;
 
+import configuration.MyMetaApplicationBundle;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
-import domain.MyFactory;
-import domain.MyRepository;
-import domain.data.MyAggregateData;
 import org.junit.Test;
-import poussecafe.inmemory.InMemoryDataAccess;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
-import poussecafe.storage.InMemoryStorage;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.test.MetaApplicationTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -31,22 +26,8 @@ public class MyProcessTest extends MetaApplicationTest {
      * The context will be configured with provided actors (Domain Components and Work Flows).
      */
     @Override
-    protected void registerComponents() {
-        // First, let's register Domain components
-        context().environment().defineStorable(new StorableDefinition.Builder()
-                .withStorableClass(MyAggregate.class)
-                .withFactoryClass(MyFactory.class)
-                .withRepositoryClass(MyRepository.class)
-                .build());
-        context().environment().implementStorable(new StorableImplementation.Builder()
-                .withStorableClass(MyAggregate.class)
-                .withDataFactory(MyAggregateData::new)
-                .withDataAccessFactory(InMemoryDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
-                .build());
-
-        // Second, let's register a work flow
-        context().environment().defineProcess(MyProcess.class);
+    protected MetaApplicationBundle testBundle() {
+        return new MyMetaApplicationBundle();
     }
 
     /*

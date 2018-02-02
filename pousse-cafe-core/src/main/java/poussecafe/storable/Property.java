@@ -6,5 +6,5 @@ public interface Property<T> {
 
     void set(T value);
 
-    Class<T> getValueClass();
+    Class<? extends T> getValueClass();
 }

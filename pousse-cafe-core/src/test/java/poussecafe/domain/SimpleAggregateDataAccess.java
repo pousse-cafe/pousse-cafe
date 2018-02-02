@@ -1,6 +1,6 @@
 package poussecafe.domain;
 
-import poussecafe.inmemory.InMemoryDataAccess;
+import poussecafe.storage.memory.InMemoryDataAccess;
 
 public class SimpleAggregateDataAccess extends InMemoryDataAccess<SimpleAggregateKey, SimpleAggregate.Data> {
 

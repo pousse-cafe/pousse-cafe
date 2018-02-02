@@ -1,6 +1,7 @@
 package poussecafe.sample;
 
 import org.junit.Test;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Order;
@@ -23,8 +24,8 @@ public class OrderManagementTest extends MetaApplicationTest {
     private OrderDescription description;
 
     @Override
-    protected void registerComponents() {
-        context().loadBundle(new SampleMetaAppBundle());
+    protected MetaApplicationBundle testBundle() {
+        return new SampleMetaAppBundle();
     }
 
     @Test

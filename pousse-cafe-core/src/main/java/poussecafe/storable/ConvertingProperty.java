@@ -1,11 +1,10 @@
 package poussecafe.storable;
 
-import poussecafe.inmemory.BaseProperty;
+import poussecafe.storage.memory.BaseProperty;
 
 public abstract class ConvertingProperty<F, T> extends BaseProperty<T> {
 
-    public ConvertingProperty(Property<F> from, Class<T> toClass) {
-        super(toClass);
+    public ConvertingProperty(Property<F> from) {
         this.from = from;
     }
 
@@ -14,11 +13,7 @@ public abstract class ConvertingProperty<F, T> extends BaseProperty<T> {
     @Override
     protected T getValue() {
         F fromValue = from.get();
-        if(fromValue == null) {
-            return defaultValue();
-        } else {
-            return convertFrom(fromValue);
-        }
+        return convertFrom(fromValue);
     }
 
     protected abstract T convertFrom(F from);

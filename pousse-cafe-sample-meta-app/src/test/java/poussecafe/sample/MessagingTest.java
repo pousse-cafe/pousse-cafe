@@ -2,6 +2,7 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
@@ -23,8 +24,8 @@ public class MessagingTest extends MetaApplicationTest {
     private OrderDescription orderDescription;
 
     @Override
-    protected void registerComponents() {
-        context().loadBundle(new SampleMetaAppBundle());
+    protected MetaApplicationBundle testBundle() {
+        return new SampleMetaAppBundle();
     }
 
     @Test

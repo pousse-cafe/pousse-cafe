@@ -1,12 +1,12 @@
 package poussecafe.storable;
 
-import poussecafe.inmemory.InlineProperty;
+import poussecafe.storage.memory.InlineProperty;
 
 public class SimpleStorableData implements SimpleStorable.Data {
 
     @Override
     public Property<SimpleStorableKey> key() {
-        return new ConvertingProperty<String, SimpleStorableKey>(key, SimpleStorableKey.class) {
+        return new ConvertingProperty<String, SimpleStorableKey>(key) {
             @Override
             protected SimpleStorableKey convertFrom(String from) {
                 return new SimpleStorableKey(from);

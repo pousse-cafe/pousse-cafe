@@ -1,6 +1,7 @@
 package poussecafe.sample;
 
 import org.junit.Test;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
@@ -15,8 +16,8 @@ public class CustomerCreationTest extends MetaApplicationTest {
     private CustomerKey customerKey;
 
     @Override
-    protected void registerComponents() {
-        context().loadBundle(new SampleMetaAppBundle());
+    protected MetaApplicationBundle testBundle() {
+        return new SampleMetaAppBundle();
     }
 
     @Test

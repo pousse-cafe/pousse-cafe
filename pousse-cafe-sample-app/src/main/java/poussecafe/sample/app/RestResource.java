@@ -36,7 +36,7 @@ public class RestResource {
     public ProductView getProduct(@PathVariable("key") String key) {
         logger.info("Fetching product with key {}", key);
         ProductKey productKey = new ProductKey(key);
-        Product product = productRepository.find(productKey);
+        Product product = productRepository.get(productKey);
 
         ProductView view = new ProductView();
         view.key = key;

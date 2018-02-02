@@ -1,7 +1,7 @@
 package poussecafe.storable;
 
 import java.util.List;
-import poussecafe.domain.DomainException;
+import poussecafe.exception.NotFoundException;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
@@ -44,7 +44,7 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     public A get(K key) {
         A storable = find(key);
         if (storable == null) {
-            throw new DomainException("Storable with key " + key + " not found");
+            throw new NotFoundException("Storable with key " + key + " not found");
         } else {
             return storable;
         }

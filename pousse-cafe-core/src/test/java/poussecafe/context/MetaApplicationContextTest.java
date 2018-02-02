@@ -11,7 +11,7 @@ import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRoutingKey;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
-import poussecafe.storage.InMemoryStorage;
+import poussecafe.storage.memory.InMemoryStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;

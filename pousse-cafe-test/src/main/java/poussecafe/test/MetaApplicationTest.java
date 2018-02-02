@@ -8,16 +8,17 @@ import java.nio.file.Paths;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.StorableServices;
 import poussecafe.domain.DomainEvent;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.inmemory.InMemoryDataAccess;
 import poussecafe.storable.IdentifiedStorable;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableRepository;
 import poussecafe.storable.StorableImplementation;
-import poussecafe.storage.InMemoryStorage;
+import poussecafe.storage.memory.InMemoryDataAccess;
+import poussecafe.storage.memory.InMemoryStorage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -31,11 +32,11 @@ public abstract class MetaApplicationTest {
     @Before
     public void configureContext() {
         context = new MetaApplicationContext();
-        registerComponents();
+        context.loadBundle(testBundle());
         context.start();
     }
 
-    protected abstract void registerComponents();
+    protected abstract MetaApplicationBundle testBundle();
 
     protected MetaApplicationContext context() {
         return context;

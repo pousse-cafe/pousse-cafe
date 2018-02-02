@@ -1,6 +1,7 @@
 package poussecafe.sample;
 
 import org.junit.Test;
+import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
@@ -19,8 +20,8 @@ public class ProductManagementTest extends MetaApplicationTest {
     private AddUnits addUnits;
 
     @Override
-    protected void registerComponents() {
-        context().loadBundle(new SampleMetaAppBundle());
+    protected MetaApplicationBundle testBundle() {
+        return new SampleMetaAppBundle();
     }
 
     @Test

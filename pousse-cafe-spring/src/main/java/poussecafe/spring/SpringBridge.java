@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.StorableServices;
 import poussecafe.service.DomainProcess;
+import poussecafe.storable.IdentifiedStorableRepository;
 
 @Configuration
 public class SpringBridge implements BeanFactoryPostProcessor {
@@ -33,35 +34,43 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private void registeringFactory(StorableServices services) {
-        String beanName = BEAN_NAME_PREFIX + services.getFactory().getClass().getSimpleName();
+        String beanName = beanName(services.getFactory());
         logger.info("Registering factory {}", services.getFactory().getClass().getSimpleName());
-        beanFactory.registerSingleton(beanName, services.getFactory());
+        registerInstance(beanName, services.getFactory());
+    }
+
+    private String beanName(Object instance) {
+        return BEAN_NAME_PREFIX + instance.getClass().getSimpleName();
     }
 
     private static final String BEAN_NAME_PREFIX = "pousseCafe";
 
+    private void registerInstance(String beanName, Object instance) {
+        beanFactory.registerSingleton(beanName, instance);
+    }
+
     private void registeringRepository(StorableServices services) {
-        String beanName = BEAN_NAME_PREFIX + services.getRepository().getClass().getSimpleName();
-        logger.info("Registering repository {}", services.getRepository().getClass().getSimpleName());
-        beanFactory.registerSingleton(beanName, services.getRepository());
+        IdentifiedStorableRepository<?, ?, ?> repository = services.getRepository();
+        String beanName = beanName(repository);
+        logger.info("Registering repository {}", repository.getClass().getSimpleName());
+        registerInstance(beanName, repository);
     }
 
     private void registerDomainProcesses() {
         for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {
-            String beanName = BEAN_NAME_PREFIX + process.getClass().getSimpleName();
+            String beanName = beanName(process);
             logger.info("Registering domain process {}", process.getClass().getSimpleName());
-            beanFactory.registerSingleton(beanName, process);
+            registerInstance(beanName, process);
         }
     }
 
     private void registerServices() {
         for(Object service : pousseCafeContext.getAllServices()) {
-            String beanName = BEAN_NAME_PREFIX + service.getClass().getSimpleName();
+            String beanName = beanName(service);
             logger.info("Registering service {}", service.getClass().getSimpleName());
-            beanFactory.registerSingleton(beanName, service);
+            registerInstance(beanName, service);
         }
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
 }

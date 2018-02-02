@@ -1,14 +1,14 @@
 package poussecafe.domain;
 
-import poussecafe.inmemory.InlineProperty;
 import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
+import poussecafe.storage.memory.InlineProperty;
 
 public class SimpleAggregateData implements SimpleAggregate.Data {
 
     @Override
     public Property<SimpleAggregateKey> key() {
-        return new ConvertingProperty<String, SimpleAggregateKey>(key, SimpleAggregateKey.class) {
+        return new ConvertingProperty<String, SimpleAggregateKey>(key) {
             @Override
             protected SimpleAggregateKey convertFrom(String f) {
                 return new SimpleAggregateKey(f);

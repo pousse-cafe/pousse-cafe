@@ -3,9 +3,9 @@ package poussecafe.journal;
 import java.util.List;
 import poussecafe.storable.IdentifiedStorableDataAccess;
 
-public interface JournalEntryDataAccess extends IdentifiedStorableDataAccess<JournalEntryKey, JournalEntry.Data> {
+public interface JournalEntryDataAccess<D extends JournalEntry.Data> extends IdentifiedStorableDataAccess<JournalEntryKey, D> {
 
-    List<JournalEntry.Data> findByMessageId(String messageId);
+    List<D> findByMessageId(String messageId);
 
-    List<JournalEntry.Data> findByStatus(JournalEntryStatus status);
+    List<D> findByStatus(JournalEntryStatus status);
 }

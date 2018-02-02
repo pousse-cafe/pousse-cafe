@@ -3,9 +3,9 @@ package domain.data;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
 import java.io.Serializable;
-import poussecafe.inmemory.InlineProperty;
 import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
+import poussecafe.storage.memory.InlineProperty;
 
 public class MyAggregateData implements MyAggregate.Data, Serializable {
 
@@ -13,7 +13,7 @@ public class MyAggregateData implements MyAggregate.Data, Serializable {
 
     @Override
     public Property<MyAggregateKey> key() {
-        return new ConvertingProperty<String, MyAggregateKey>(key, MyAggregateKey.class) {
+        return new ConvertingProperty<String, MyAggregateKey>(key) {
             @Override
             protected MyAggregateKey convertFrom(String from) {
                 return new MyAggregateKey(from);

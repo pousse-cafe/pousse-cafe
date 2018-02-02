@@ -6,7 +6,6 @@ import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerFactory;
 import poussecafe.sample.domain.CustomerRepository;
-import poussecafe.sample.domain.InMemoryMessageDataAccess;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageFactory;
 import poussecafe.sample.domain.MessageRepository;
@@ -16,13 +15,14 @@ import poussecafe.sample.domain.OrderRepository;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductFactory;
 import poussecafe.sample.domain.ProductRepository;
-import poussecafe.sample.domain.data.CustomerData;
-import poussecafe.sample.domain.data.CustomerDataAccess;
-import poussecafe.sample.domain.data.MessageData;
-import poussecafe.sample.domain.data.OrderData;
-import poussecafe.sample.domain.data.OrderDataAccess;
-import poussecafe.sample.domain.data.ProductData;
-import poussecafe.sample.domain.data.ProductDataAccess;
+import poussecafe.sample.domain.memory.CustomerData;
+import poussecafe.sample.domain.memory.CustomerDataAccess;
+import poussecafe.sample.domain.memory.InMemoryMessageDataAccess;
+import poussecafe.sample.domain.memory.MessageData;
+import poussecafe.sample.domain.memory.OrderData;
+import poussecafe.sample.domain.memory.OrderDataAccess;
+import poussecafe.sample.domain.memory.ProductData;
+import poussecafe.sample.domain.memory.ProductDataAccess;
 import poussecafe.sample.process.CustomerCreation;
 import poussecafe.sample.process.Messaging;
 import poussecafe.sample.process.OrderPlacement;
@@ -30,7 +30,7 @@ import poussecafe.sample.process.ProductManagement;
 import poussecafe.service.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
-import poussecafe.storage.InMemoryStorage;
+import poussecafe.storage.memory.InMemoryStorage;
 
 public class SampleMetaAppBundle extends MetaApplicationBundle {
 

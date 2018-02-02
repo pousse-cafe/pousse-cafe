@@ -144,6 +144,7 @@
     <module>pousse-cafe-simple-meta-app</module>
     <module>pousse-cafe-sample-meta-app</module>
     <module>pousse-cafe-spring</module>
+    <module>pousse-cafe-spring-mongo</module>
     <module>pousse-cafe-sample-app</module>
   </modules>
 </project>
