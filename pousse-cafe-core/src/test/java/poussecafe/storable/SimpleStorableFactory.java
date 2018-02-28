@@ -1,5 +1,5 @@
 package poussecafe.storable;
 
 public class SimpleStorableFactory
-        extends ActiveStorableFactory<SimpleStorableKey, SimpleStorable, SimpleStorable.Data> {
+        extends IdentifiedStorableFactory<SimpleStorableKey, SimpleStorable, SimpleStorable.Data> {
 }

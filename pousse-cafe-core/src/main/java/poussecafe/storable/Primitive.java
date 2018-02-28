@@ -12,8 +12,12 @@ public class Primitive {
 
     private PrimitiveFactory primitiveFactory;
 
+    protected PrimitiveFactory primitiveFactory() {
+        return primitiveFactory;
+    }
+
     protected <T> T newPrimitive(Class<T> primitiveClass) {
-        return primitiveFactory.newPrimitive(
+        return newPrimitive(
                 new PrimitiveSpecification.Builder<T>().withPrimitiveClass(primitiveClass).withData(true).build());
     }
 

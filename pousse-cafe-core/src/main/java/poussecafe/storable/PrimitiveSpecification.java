@@ -30,7 +30,7 @@ public class PrimitiveSpecification<T> {
     private Object existingData;
 
     public static class Builder<T> extends AbstractBuilder<PrimitiveSpecification<T>> {
-        protected Builder() {
+        public Builder() {
             super(new PrimitiveSpecification<>());
         }
 
@@ -45,6 +45,7 @@ public class PrimitiveSpecification<T> {
         }
 
         public Builder<T> withExistingData(Object existingData) {
+            product().withData = false;
             product().existingData = existingData;
             return this;
         }

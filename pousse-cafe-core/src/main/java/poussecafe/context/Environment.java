@@ -41,9 +41,6 @@ public class Environment {
     public void implementStorable(StorableImplementation implementation) {
         checkThat(value(implementation).notNull());
         Class<?> storableClass = implementation.getStorableClass();
-        if(!definitions.containsKey(storableClass)) {
-            throw new PousseCafeException("Storable " + storableClass.getName() + " is not defined");
-        }
         implementations.put(storableClass, implementation);
 
         if(implementation.hasStorage()) {
@@ -139,5 +136,9 @@ public class Environment {
 
     public Set<Storage> getStorages() {
         return unmodifiableSet(storages);
+    }
+
+    public boolean hasImplementation(Class<?> primitiveClass) {
+        return implementations.containsKey(primitiveClass);
     }
 }

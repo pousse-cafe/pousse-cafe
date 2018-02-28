@@ -1,31 +1,29 @@
 package poussecafe.sample.domain.memory;
 
-import java.io.Serializable;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class CustomerData implements Customer.Data, Serializable {
+public class CustomerData extends InMemoryActiveData<CustomerKey> implements Customer.Data {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public Property<CustomerKey> key() {
-        return new ConvertingProperty<String, CustomerKey>(key) {
+        return new Property<CustomerKey>() {
             @Override
-            protected CustomerKey convertFrom(String from) {
-                return new CustomerKey(from);
+            public CustomerKey get() {
+                return new CustomerKey(key);
             }
 
             @Override
-            protected String convertTo(CustomerKey to) {
-                return to.getValue();
+            public void set(CustomerKey value) {
+                key = value.getValue();
             }
 
         };
     }
 
-    private InlineProperty<String> key = new InlineProperty<>(String.class);
+    private String key;
 }

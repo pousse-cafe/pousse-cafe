@@ -1,27 +1,25 @@
 package poussecafe.spring.mongo.journal;
 
-import java.util.ArrayList;
 import org.springframework.data.annotation.Id;
 import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryKey;
 import poussecafe.journal.JournalEntryStatus;
 import poussecafe.journal.Logs;
 import poussecafe.journal.memory.SerializableJournalEntryKey;
-import poussecafe.storable.BaseProperty;
 import poussecafe.storable.Property;
 
 public class JournalEntryData implements JournalEntry.Data {
 
     @Override
     public Property<JournalEntryKey> key() {
-        return new BaseProperty<JournalEntryKey>() {
+        return new Property<JournalEntryKey>() {
             @Override
-            protected JournalEntryKey getValue() {
+            public JournalEntryKey get() {
                 return key.toJournalEntryKey();
             }
 
             @Override
-            protected void setValue(JournalEntryKey value) {
+            public void set(JournalEntryKey value) {
                 key = new SerializableJournalEntryKey(value);
                 messageId = value.getMessageId();
             }
@@ -69,18 +67,14 @@ public class JournalEntryData implements JournalEntry.Data {
 
     @Override
     public Property<Logs> logs() {
-        return new BaseProperty<Logs>() {
+        return new Property<Logs>() {
             @Override
-            protected Logs getValue() {
-                if(logs == null) {
-                    return new Logs(new ArrayList<>());
-                } else {
-                    return logs;
-                }
+            public Logs get() {
+                return logs;
             }
 
             @Override
-            protected void setValue(Logs value) {
+            public void set(Logs value) {
                 logs = value;
             }
         };

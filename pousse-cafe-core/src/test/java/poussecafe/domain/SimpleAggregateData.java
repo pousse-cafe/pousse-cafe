@@ -1,25 +1,25 @@
 package poussecafe.domain;
 
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class SimpleAggregateData implements SimpleAggregate.Data {
+@SuppressWarnings("serial")
+public class SimpleAggregateData extends InMemoryActiveData<SimpleAggregateKey> implements SimpleAggregate.Data {
 
     @Override
     public Property<SimpleAggregateKey> key() {
-        return new ConvertingProperty<String, SimpleAggregateKey>(key) {
+        return new Property<SimpleAggregateKey>() {
             @Override
-            protected SimpleAggregateKey convertFrom(String f) {
-                return new SimpleAggregateKey(f);
+            public SimpleAggregateKey get() {
+                return new SimpleAggregateKey(key);
             }
 
             @Override
-            protected String convertTo(SimpleAggregateKey f) {
-                return f.getId();
+            public void set(SimpleAggregateKey value) {
+                key = value.getId();
             }
         };
     }
 
-    private InlineProperty<String> key = new InlineProperty<>(String.class);
+    private String key;
 }

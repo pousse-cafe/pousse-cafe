@@ -17,8 +17,8 @@ public class MessageRepository extends Repository<Message, MessageKey, Message.D
         return newStorablesWithData(dataAccess().findByCustomer(customerKey));
     }
 
-    private MessageDataAccess dataAccess() {
-        return (MessageDataAccess) dataAccess;
+    private MessageDataAccess<Message.Data> dataAccess() {
+        return (MessageDataAccess<Message.Data>) dataAccess;
     }
 
 }

@@ -1,55 +1,53 @@
 package poussecafe.sample.domain.memory;
 
-import java.io.Serializable;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class ProductData implements Product.Data, Serializable {
+public class ProductData extends InMemoryActiveData<ProductKey> implements Product.Data {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public Property<ProductKey> key() {
-        return new ConvertingProperty<String, ProductKey>(productKey) {
+        return new Property<ProductKey>() {
             @Override
-            protected ProductKey convertFrom(String from) {
-                return new ProductKey(from);
+            public ProductKey get() {
+                return new ProductKey(productKey);
             }
 
             @Override
-            protected String convertTo(ProductKey to) {
-                return to.getValue();
+            public void set(ProductKey value) {
+                productKey = value.getValue();
             }
         };
     }
 
-    private InlineProperty<String> productKey = new InlineProperty<>(String.class);
+    private String productKey;
 
     @Override
     public void setTotalUnits(int units) {
-        totalUnits.set(units);
+        totalUnits = units;
     }
 
-    private InlineProperty<Integer> totalUnits = new InlineProperty<>(Integer.class);
+    private int totalUnits;
 
     @Override
     public int getTotalUnits() {
-        return totalUnits.get();
+        return totalUnits;
     }
 
     @Override
     public void setAvailableUnits(int units) {
-        availableUnits.set(units);
+        availableUnits = units;
     }
 
-    private InlineProperty<Integer> availableUnits = new InlineProperty<>(Integer.class);
+    private int availableUnits;
 
     @Override
     public int getAvailableUnits() {
-        return availableUnits.get();
+        return availableUnits;
     }
 
 }

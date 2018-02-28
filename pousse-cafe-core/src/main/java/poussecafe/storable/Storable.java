@@ -11,6 +11,10 @@ public abstract class Storable<D extends StorableData> extends Primitive {
     void setData(Object data) {
         checkThat(value(data).notNull().because("Data cannot be null"));
         this.data = (D) data;
+        if(data instanceof Primitive) {
+            Primitive primitive = (Primitive) data;
+            primitive.setPrimitiveFactory(primitiveFactory());
+        }
     }
 
     public D getData() {

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends IdentifiedStorableData<K>>
+public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K, D>, D extends ActiveStorableData<K>>
         extends IdentifiedStorableRepositoryTest<K, S, D> {
 
     private MessageSendingPolicy messageSendingPolicy;
@@ -32,7 +32,7 @@ public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K
     }
 
     private void thenFoundStorableHasMessageCollection() {
-        assertThat(storable.getMessageCollection(), is(newMessageCollection));
+        assertThat(storable.getData().messageCollection(), is(newMessageCollection));
     }
 
     @Test
@@ -48,7 +48,7 @@ public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K
     protected void givenStorable() {
         super.givenStorable();
         MessageCollection messageCollection = mock(MessageCollection.class);
-        when(storable.getMessageCollection()).thenReturn(messageCollection);
+        when(storable.getData().messageCollection()).thenReturn(messageCollection);
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class ActiveStorableRepositoryTest<K, S extends ActiveStorable<K
     }
 
     private void thenUnitEmitted() {
-        verify(messageSendingPolicy).considerSending(storable.getMessageCollection());
+        verify(messageSendingPolicy).considerSending(storable.getData().messageCollection());
     }
 
     @Test

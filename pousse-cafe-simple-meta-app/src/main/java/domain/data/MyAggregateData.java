@@ -2,42 +2,39 @@ package domain.data;
 
 import domain.MyAggregate;
 import domain.MyAggregateKey;
-import java.io.Serializable;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class MyAggregateData implements MyAggregate.Data, Serializable {
-
-    private static final long serialVersionUID = 6899835081195830873L;
+@SuppressWarnings("serial")
+public class MyAggregateData extends InMemoryActiveData<MyAggregateKey> implements MyAggregate.Data {
 
     @Override
     public Property<MyAggregateKey> key() {
-        return new ConvertingProperty<String, MyAggregateKey>(key) {
+        return new Property<MyAggregateKey>() {
             @Override
-            protected MyAggregateKey convertFrom(String from) {
-                return new MyAggregateKey(from);
+            public MyAggregateKey get() {
+                return new MyAggregateKey(key);
             }
 
             @Override
-            protected String convertTo(MyAggregateKey to) {
-                return to.getValue();
+            public void set(MyAggregateKey value) {
+                key = value.getValue();
             }
         };
     }
 
-    private InlineProperty<String> key = new InlineProperty<>(String.class);
+    private String key;
 
     @Override
     public void setX(int x) {
-        this.x.set(x);
+        this.x = x;
     }
 
-    private InlineProperty<Integer> x = new InlineProperty<>(Integer.class);
+    private int x;
 
     @Override
     public int getX() {
-        return x.get();
+        return x;
     }
 
 }

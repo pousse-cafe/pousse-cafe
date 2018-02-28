@@ -1,23 +1,21 @@
 package poussecafe.storable;
 
-import poussecafe.storage.memory.InlineProperty;
-
 public class SimpleStorableData implements SimpleStorable.Data {
 
     @Override
     public Property<SimpleStorableKey> key() {
-        return new ConvertingProperty<String, SimpleStorableKey>(key) {
+        return new Property<SimpleStorableKey>() {
             @Override
-            protected SimpleStorableKey convertFrom(String from) {
-                return new SimpleStorableKey(from);
+            public SimpleStorableKey get() {
+                return new SimpleStorableKey(key);
             }
 
             @Override
-            protected String convertTo(SimpleStorableKey to) {
-                return to.getId();
+            public void set(SimpleStorableKey value) {
+                key = value.getId();
             }
         };
     }
 
-    private InlineProperty<String> key = new InlineProperty<>(String.class);
+    private String key;
 }

@@ -4,98 +4,97 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryKey;
-import poussecafe.journal.JournalEntryLog;
 import poussecafe.journal.JournalEntryStatus;
 import poussecafe.journal.Logs;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.GenericType;
-import poussecafe.storage.memory.InlineProperty;
 
+import static java.util.stream.Collectors.toList;
+
+@SuppressWarnings("serial")
 public class JournalEntryData implements JournalEntry.Data, Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     @Override
     public Property<Logs> logs() {
-        return new ConvertingProperty<ArrayList<JournalEntryLog>, Logs>(logs) {
+        return new Property<Logs>() {
             @Override
-            protected Logs convertFrom(ArrayList<JournalEntryLog> from) {
-                return new Logs(from);
+            public Logs get() {
+                return new Logs(new ArrayList<>(logs.stream().map(JournalEntryLogData::toLog).collect(toList())));
             }
 
             @Override
-            protected ArrayList<JournalEntryLog> convertTo(Logs to) {
-                return new ArrayList<>(to.asList());
+            public void set(Logs value) {
+                logs.clear();
+                logs.addAll(value.asList().stream().map(JournalEntryLogData::new).collect(toList()));
             }
         };
     }
 
-    private InlineProperty<ArrayList<JournalEntryLog>> logs = new InlineProperty<>(new GenericType<ArrayList<JournalEntryLog>>() {}.getRawType());
+    private ArrayList<JournalEntryLogData> logs = new ArrayList<>();
 
     @Override
     public void setStatus(JournalEntryStatus status) {
-        this.status.set(status);
+        this.status = status;
     }
 
-    private InlineProperty<JournalEntryStatus> status = new InlineProperty<>(JournalEntryStatus.class);
+    private JournalEntryStatus status;
 
     @Override
     public JournalEntryStatus getStatus() {
-        return status.get();
+        return status;
     }
 
     @Override
     public void setMessageId(String messageId) {
-        this.messageId.set(messageId);
+        this.messageId = messageId;
     }
 
-    private InlineProperty<String> messageId = new InlineProperty<>(String.class);
+    private String messageId;
 
     @Override
     public String getMessageId() {
-        return messageId.get();
+        return messageId;
     }
 
     @Override
     public void setMessageData(String messageData) {
-        this.messageData.set(messageData);
+        this.messageData = messageData;
     }
 
-    private InlineProperty<String> messageData = new InlineProperty<>(String.class);
+    private String messageData;
 
     @Override
     public String getMessageData() {
-        return messageData.get();
+        return messageData;
     }
 
     @Override
     public void setMessageType(String messageType) {
-        this.messageType.set(messageType);
+        this.messageType = messageType;
     }
 
-    private InlineProperty<String> messageType = new InlineProperty<>(String.class);
+    private String messageType;
 
     @Override
     public String getMessageType() {
-        return messageType.get();
+        return messageType;
     }
 
     @Override
     public Property<JournalEntryKey> key() {
-        return new ConvertingProperty<SerializableJournalEntryKey, JournalEntryKey>(key) {
+        return new Property<JournalEntryKey>() {
             @Override
-            protected JournalEntryKey convertFrom(SerializableJournalEntryKey from) {
-                return from.toJournalEntryKey();
+            public JournalEntryKey get() {
+                return new JournalEntryKey(messageId, listenerId);
             }
 
             @Override
-            protected SerializableJournalEntryKey convertTo(JournalEntryKey to) {
-                return new SerializableJournalEntryKey(to);
+            public void set(JournalEntryKey value) {
+                messageId = value.getMessageId();
+                listenerId = value.getListenerId();
             }
         };
     }
 
-    private InlineProperty<SerializableJournalEntryKey> key = new InlineProperty<>(SerializableJournalEntryKey.class);
+    private String listenerId;
 
 }

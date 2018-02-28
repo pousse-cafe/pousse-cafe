@@ -1,9 +1,9 @@
 package poussecafe.domain;
 
+import poussecafe.storable.ActiveStorableData;
 import poussecafe.storable.ActiveStorableRepository;
-import poussecafe.storable.IdentifiedStorableData;
 
-public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends IdentifiedStorableData<K>>
+public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends ActiveStorableData<K>>
         extends ActiveStorableRepository<A, K, D> {
 
 }

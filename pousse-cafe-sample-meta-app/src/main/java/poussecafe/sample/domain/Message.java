@@ -1,7 +1,7 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.IdentifiedStorableData;
+import poussecafe.storable.ActiveStorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -22,7 +22,7 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
         return getData().getContentType();
     }
 
-    public static interface Data extends IdentifiedStorableData<MessageKey> {
+    public static interface Data extends ActiveStorableData<MessageKey> {
 
         void setCustomerKey(CustomerKey customerKey);
 

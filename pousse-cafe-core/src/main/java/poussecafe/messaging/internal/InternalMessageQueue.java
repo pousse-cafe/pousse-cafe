@@ -33,9 +33,7 @@ public class InternalMessageQueue extends MessageReceiver implements MessageSend
                 while (true) {
                     available.acquire();
                     mutex.acquire();
-                    Message message = queue.peek();
-                    onMessage(message);
-                    queue.poll();
+                    onMessage(queue.poll());
                     mutex.release();
                 }
             } catch (InterruptedException e) {

@@ -19,14 +19,25 @@ public class PrimitiveFactory {
         }
         if(Storable.class.isAssignableFrom(primitiveClass)) {
             Storable<?> storable = (Storable<?>) primitive;
-
-            if(specification.isWithData()) {
-                storable.setData(supplyDataImplementation(primitiveClass));
+            if(specification.getExistingData() != null) {
+                storable.setData(specification.getExistingData());
             }
-            if(ActiveStorable.class.isAssignableFrom(primitiveClass)) {
-                ActiveStorable<?, ?> activeStorable = (ActiveStorable<?, ?>) primitive;
-                Storage storage = environment.getStorage(primitiveClass);
-                activeStorable.setStorage(storage);
+
+            if(environment.hasImplementation(primitiveClass)) {
+                Object data = null;
+                if(specification.isWithData()) {
+                    data = supplyDataImplementation(primitiveClass);
+                    storable.setData(data);
+                } else {
+                    data = specification.getExistingData();
+                }
+                if(data != null && data instanceof ActiveStorableData) {
+                    @SuppressWarnings("rawtypes")
+                    ActiveStorableData activeStorableData = (ActiveStorableData) data;
+                    Storage storage = environment.getStorage(primitiveClass);
+                    activeStorableData.storage(storage);
+                    activeStorableData.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
+                }
             }
         }
         if(IdentifiedStorableRepository.class.isAssignableFrom(primitiveClass)) {

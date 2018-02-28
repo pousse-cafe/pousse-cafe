@@ -5,29 +5,28 @@ import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
-import poussecafe.storable.BaseProperty;
+import poussecafe.spring.mongo.storage.MongoData;
 import poussecafe.storable.Property;
 
-public class MessageData implements Message.Data {
+public class MessageData extends MongoData<MessageKey> implements Message.Data {
 
     @Override
     public Property<MessageKey> key() {
-        return new BaseProperty<MessageKey>(MessageKey.class) {
+        return new Property<MessageKey>() {
             @Override
-            protected MessageKey getValue() {
-                return key;
+            public MessageKey get() {
+                return new MessageKey(key);
             }
 
             @Override
-            protected void setValue(MessageKey value) {
-                key = value;
+            public void set(MessageKey value) {
+                key = value.getValue();
             }
-
         };
     }
 
     @Id
-    private MessageKey key;
+    private String key;
 
     @Override
     public void setCustomerKey(CustomerKey customerKey) {

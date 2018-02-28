@@ -1,57 +1,55 @@
 package poussecafe.sample.domain.memory;
 
-import java.io.Serializable;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class MessageData implements Message.Data, Serializable {
+public class MessageData extends InMemoryActiveData<MessageKey> implements Message.Data {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public Property<MessageKey> key() {
-        return new ConvertingProperty<String, MessageKey>(key) {
+        return new Property<MessageKey>() {
             @Override
-            protected MessageKey convertFrom(String from) {
-                return new MessageKey(from);
+            public MessageKey get() {
+                return new MessageKey(key);
             }
 
             @Override
-            protected String convertTo(MessageKey to) {
-                return to.getValue();
+            public void set(MessageKey value) {
+                key = value.getValue();
             }
         };
     }
 
-    private InlineProperty<String> key = new InlineProperty<>(String.class);
+    private String key;
 
     @Override
     public void setCustomerKey(CustomerKey customerKey) {
-        this.customerKey.set(customerKey.getValue());
+        this.customerKey = customerKey.getValue();
     }
 
-    private InlineProperty<String> customerKey = new InlineProperty<>(String.class);
+    private String customerKey;
 
     @Override
     public CustomerKey getCustomerKey() {
-        return new CustomerKey(customerKey.get());
+        return new CustomerKey(customerKey);
     }
 
     @Override
     public void setContentType(ContentType type) {
-        contentType.set(type.name());
+        contentType = type;
     }
 
-    private InlineProperty<String> contentType = new InlineProperty<>(String.class);
+    private ContentType contentType;
 
     @Override
     public ContentType getContentType() {
-        return ContentType.valueOf(contentType.get());
+        return contentType;
     }
 
 }

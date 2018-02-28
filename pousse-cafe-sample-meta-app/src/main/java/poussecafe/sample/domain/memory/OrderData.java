@@ -3,41 +3,40 @@ package poussecafe.sample.domain.memory;
 import java.io.Serializable;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderKey;
-import poussecafe.storable.ConvertingProperty;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InlineProperty;
+import poussecafe.storage.memory.InMemoryActiveData;
 
-public class OrderData implements Order.Data, Serializable {
+public class OrderData extends InMemoryActiveData<OrderKey> implements Order.Data, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public Property<OrderKey> key() {
-        return new ConvertingProperty<SerializableOrderKey, OrderKey>(productKey) {
+        return new Property<OrderKey>() {
             @Override
-            protected OrderKey convertFrom(SerializableOrderKey from) {
-                return from.toOrderKey();
+            public OrderKey get() {
+                return productKey.toOrderKey();
             }
 
             @Override
-            protected SerializableOrderKey convertTo(OrderKey to) {
-                return new SerializableOrderKey(to);
+            public void set(OrderKey value) {
+                productKey = new SerializableOrderKey(value);
             }
         };
     }
 
-    private InlineProperty<SerializableOrderKey> productKey = new InlineProperty<>(SerializableOrderKey.class);
+    private SerializableOrderKey productKey;
 
     @Override
     public void setUnits(int units) {
-        this.units.set(units);
+        this.units = units;
     }
 
-    private InlineProperty<Integer> units = new InlineProperty<>(Integer.class);
+    private int units;
 
     @Override
     public int getUnits() {
-        return units.get();
+        return units;
     }
 
 }

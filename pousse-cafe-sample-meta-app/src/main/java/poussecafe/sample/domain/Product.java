@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.sample.domain.Product.Data;
-import poussecafe.storable.IdentifiedStorableData;
+import poussecafe.storable.ActiveStorableData;
 
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
@@ -43,7 +43,7 @@ public class Product extends AggregateRoot<ProductKey, Data> {
         }
     }
 
-    public static interface Data extends IdentifiedStorableData<ProductKey> {
+    public static interface Data extends ActiveStorableData<ProductKey> {
 
         void setTotalUnits(int units);
 

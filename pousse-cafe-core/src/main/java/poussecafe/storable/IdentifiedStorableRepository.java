@@ -35,10 +35,10 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     }
 
     protected A newStorableWithData(D data) {
-        A storable = newPrimitive(
-                new PrimitiveSpecification.Builder<A>().withPrimitiveClass(storableClass).withData(false).build());
-        storable.setData(data);
-        return storable;
+        return newPrimitive(new PrimitiveSpecification.Builder<A>()
+                .withPrimitiveClass(storableClass)
+                .withExistingData(data)
+                .build());
     }
 
     public A get(K key) {

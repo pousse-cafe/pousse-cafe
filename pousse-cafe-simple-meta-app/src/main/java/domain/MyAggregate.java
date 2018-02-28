@@ -1,7 +1,7 @@
 package domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.IdentifiedStorableData;
+import poussecafe.storable.ActiveStorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -18,7 +18,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
     public void doSomeAction(int x) {
         checkThat(value(x).verifies(greaterThan(0)).because("X cannot be <=0"));
         getData().setX(x);
-        getMessageCollection().addMessage(new MyDomainEvent(getKey()));
+        addDomainEvent(new MyDomainEvent(getKey()));
     }
 
     /*
@@ -32,7 +32,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
      * This interface defines the data model without exposing implementation details (JPA Entity, Mongo document, POJO,
      * etc).
      */
-    public interface Data extends IdentifiedStorableData<MyAggregateKey> {
+    public interface Data extends ActiveStorableData<MyAggregateKey> {
 
         void setX(int x);
 

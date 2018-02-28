@@ -1,6 +1,6 @@
 package poussecafe.storable;
 
 public class SimpleStorableRepository
-        extends ActiveStorableRepository<SimpleStorable, SimpleStorableKey, SimpleStorable.Data> {
+        extends IdentifiedStorableRepository<SimpleStorable, SimpleStorableKey, SimpleStorable.Data> {
 
 }

@@ -234,11 +234,18 @@ public class MetaApplicationContext {
     }
 
     public <T extends DomainProcess> T getDomainProcess(Class<T> processClass) {
-        return (T) processes.get(processClass);
+        T domainProcess = (T) processes.get(processClass);
+        if(domainProcess == null) {
+            throw new PousseCafeException("Domain process not found");
+        }
+        return domainProcess;
     }
 
     public <T extends IdentifiedStorableRepository<A, K, D>, A extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T getRepository(Class<A> storableClass) {
         StorableServices services = getStorableServices(storableClass);
+        if(services == null) {
+            throw new PousseCafeException("Storable services not found");
+        }
         return (T) services.getRepository();
     }
 
