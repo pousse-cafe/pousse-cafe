@@ -34,6 +34,7 @@ public abstract class MetaApplicationTest {
         context = new MetaApplicationContext();
         context.loadBundle(testBundle());
         context.start();
+        context.injectDependencies(this);
     }
 
     protected abstract MetaApplicationBundle testBundle();

@@ -171,6 +171,7 @@ public class MetaApplicationContext {
             DomainProcess process = (DomainProcess) newInstance(processClass);
             processExplorer.discoverListeners(process);
             injector.addInjectionCandidate(process);
+            injector.registerInjectableService(process);
             processes.put(processClass, process);
         }
     }
@@ -259,5 +260,9 @@ public class MetaApplicationContext {
 
     public Collection<Object> getAllServices() {
         return unmodifiableCollection(services.values());
+    }
+
+    public void injectDependencies(Object service) {
+        injector.injectDependencies(service);
     }
 }
