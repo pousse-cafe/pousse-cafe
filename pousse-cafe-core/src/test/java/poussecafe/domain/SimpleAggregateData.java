@@ -1,10 +1,8 @@
 package poussecafe.domain;
 
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InMemoryActiveData;
 
-@SuppressWarnings("serial")
-public class SimpleAggregateData extends InMemoryActiveData<SimpleAggregateKey> implements SimpleAggregate.Data {
+public class SimpleAggregateData implements SimpleAggregate.Data {
 
     @Override
     public Property<SimpleAggregateKey> key() {

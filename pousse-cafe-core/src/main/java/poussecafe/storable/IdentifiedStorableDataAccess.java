@@ -9,4 +9,6 @@ public interface IdentifiedStorableDataAccess<K, D extends IdentifiedStorableDat
     void updateData(D data);
 
     void deleteData(K key);
+
+    void deleteAll();
 }

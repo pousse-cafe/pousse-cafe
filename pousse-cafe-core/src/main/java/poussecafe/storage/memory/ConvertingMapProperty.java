@@ -97,4 +97,8 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
         }
     }
 
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
 }

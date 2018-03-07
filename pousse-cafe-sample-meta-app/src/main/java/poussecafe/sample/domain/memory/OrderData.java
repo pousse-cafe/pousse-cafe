@@ -4,11 +4,9 @@ import java.io.Serializable;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InMemoryActiveData;
 
-public class OrderData extends InMemoryActiveData<OrderKey> implements Order.Data, Serializable {
-
-    private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public class OrderData implements Order.Data, Serializable {
 
     @Override
     public Property<OrderKey> key() {

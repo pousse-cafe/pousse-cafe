@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.sample.domain.Order.Data;
-import poussecafe.storable.ActiveStorableData;
+import poussecafe.storable.IdentifiedStorableData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -23,7 +23,7 @@ public class Order extends AggregateRoot<OrderKey, Data> {
         addDomainEvent(new OrderReadyForShipping(getKey()));
     }
 
-    public static interface Data extends ActiveStorableData<OrderKey> {
+    public static interface Data extends IdentifiedStorableData<OrderKey> {
 
         void setUnits(int units);
 

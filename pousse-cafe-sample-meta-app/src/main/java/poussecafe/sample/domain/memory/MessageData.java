@@ -1,15 +1,14 @@
 package poussecafe.sample.domain.memory;
 
+import java.io.Serializable;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InMemoryActiveData;
 
-public class MessageData extends InMemoryActiveData<MessageKey> implements Message.Data {
-
-    private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public class MessageData implements Message.Data, Serializable {
 
     @Override
     public Property<MessageKey> key() {

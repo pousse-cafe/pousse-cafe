@@ -9,7 +9,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class ActiveStorableFactoryTest<K, D extends ActiveStorableData<K>, A extends ActiveStorable<K, D>, F extends ActiveStorableFactory<K, A, D>> {
+public abstract class ActiveStorableFactoryTest<K, D extends IdentifiedStorableData<K>, A extends ActiveStorable<K, D>, F extends ActiveStorableFactory<K, A, D>> {
 
     private PrimitiveFactory primitiveFactory = mock(PrimitiveFactory.class);
 

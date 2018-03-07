@@ -58,7 +58,11 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     private void index(D data) {
         K key = data.key().get();
         List<Object> indexedData = extractIndexedData(data);
-        indexedData.forEach(indexed -> index.put(indexed, key));
+        indexedData.forEach(indexed -> {
+            if(indexed != null) {
+                index.put(indexed, key);
+            }
+        });
     }
 
     protected List<Object> extractIndexedData(D data) {
@@ -106,5 +110,11 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
 
     protected List<D> findBy(Object indexed) {
         return new ArrayList<>(index.get(indexed).stream().map(this::findData).collect(toList()));
+    }
+
+    @Override
+    public synchronized void deleteAll() {
+        storage.clear();
+        index.clear();
     }
 }

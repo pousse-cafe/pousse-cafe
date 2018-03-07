@@ -23,20 +23,21 @@ public class PrimitiveFactory {
                 storable.setData(specification.getExistingData());
             }
 
+            if(storable instanceof ActiveStorable) {
+                @SuppressWarnings("rawtypes")
+                ActiveStorable activeStorable = (ActiveStorable) storable;
+                Storage storage = environment.getStorage(primitiveClass);
+                if(storage != null) {
+                    activeStorable.storage(storage);
+                    activeStorable.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
+                }
+            }
+
             if(environment.hasImplementation(primitiveClass)) {
                 Object data = null;
                 if(specification.isWithData()) {
                     data = supplyDataImplementation(primitiveClass);
                     storable.setData(data);
-                } else {
-                    data = specification.getExistingData();
-                }
-                if(data != null && data instanceof ActiveStorableData) {
-                    @SuppressWarnings("rawtypes")
-                    ActiveStorableData activeStorableData = (ActiveStorableData) data;
-                    Storage storage = environment.getStorage(primitiveClass);
-                    activeStorableData.storage(storage);
-                    activeStorableData.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
                 }
             }
         }

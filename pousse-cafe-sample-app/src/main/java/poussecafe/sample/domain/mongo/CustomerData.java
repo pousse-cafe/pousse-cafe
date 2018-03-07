@@ -3,10 +3,9 @@ package poussecafe.sample.domain.mongo;
 import org.springframework.data.annotation.Id;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
-import poussecafe.spring.mongo.storage.MongoData;
 import poussecafe.storable.Property;
 
-public class CustomerData extends MongoData<CustomerKey> implements Customer.Data {
+public class CustomerData implements Customer.Data {
 
     @Override
     public Property<CustomerKey> key() {

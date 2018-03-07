@@ -44,4 +44,8 @@ public class Multimap<K, V> {
         getForUpdate(key).addAll(values);
     }
 
+    public void clear() {
+        map.clear();
+    }
+
 }

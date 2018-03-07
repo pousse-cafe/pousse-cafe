@@ -13,4 +13,6 @@ public interface MapProperty<K, V> extends Property<Map<K, V>> {
     Collection<V> values();
 
     V remove(K key);
+
+    boolean isEmpty();
 }

@@ -2,11 +2,11 @@ package domain.data;
 
 import domain.MyAggregate;
 import domain.MyAggregateKey;
+import java.io.Serializable;
 import poussecafe.storable.Property;
-import poussecafe.storage.memory.InMemoryActiveData;
 
 @SuppressWarnings("serial")
-public class MyAggregateData extends InMemoryActiveData<MyAggregateKey> implements MyAggregate.Data {
+public class MyAggregateData implements MyAggregate.Data, Serializable {
 
     @Override
     public Property<MyAggregateKey> key() {

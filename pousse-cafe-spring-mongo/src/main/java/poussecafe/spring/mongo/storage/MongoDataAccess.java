@@ -31,4 +31,8 @@ public abstract class MongoDataAccess<K, D extends IdentifiedStorableData<K>, M 
         mongoRepository().delete(convertKey(key));
     }
 
+    @Override
+    public void deleteAll() {
+        mongoRepository().deleteAll();
+    }
 }

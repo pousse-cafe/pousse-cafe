@@ -71,7 +71,7 @@ public class StorableImplementation {
         protected void checkProduct(StorableImplementation product) {
             checkThat(value(product.storableClass).notNull().because("Storable class cannot be null"));
             checkThat(value(product.dataFactory).notNull().because("Storable data factory cannot be null"));
-            if(ActiveStorable.class.isAssignableFrom(product.storableClass)) {
+            if(product.dataAccessFactory != null) {
                 checkThat(value(product.storage).notNull().because("Storage cannot be null"));
             }
         }
