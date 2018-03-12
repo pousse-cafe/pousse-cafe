@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.journal.ConsumptionFailureRepository;
 import poussecafe.journal.MessageReplayer;
@@ -29,6 +30,7 @@ import poussecafe.storage.Storage;
 import poussecafe.util.IdGenerator;
 
 import static java.util.Collections.unmodifiableCollection;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class MetaApplicationContext {
 
@@ -98,6 +100,11 @@ public class MetaApplicationContext {
 
     public void start() {
         if(environment.isAbstract()) {
+            Set<Class<?>> abstractStorables = environment.getAbstractStorables();
+            logger.error("{} abstract storable(s):", abstractStorables.size());
+            for(Class<?> abstractStorableClass : abstractStorables) {
+                logger.error("- {}", abstractStorableClass.getName());
+            }
             throw new PousseCafeException("Cannot start meta-application with an abstract environment");
         }
 
@@ -112,6 +119,8 @@ public class MetaApplicationContext {
         injector.injectDependencies();
         startMessageHandling();
     }
+
+    private Logger logger = getLogger(getClass());
 
     private void configureContext() {
         configureStorables();
