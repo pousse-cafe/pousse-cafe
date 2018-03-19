@@ -1,6 +1,7 @@
 package poussecafe.storable;
 
 import java.util.List;
+import java.util.Objects;
 import poussecafe.exception.NotFoundException;
 
 import static java.util.stream.Collectors.toList;
@@ -21,11 +22,7 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     public A find(K key) {
         checkKey(key);
         D data = dataAccess.findData(key);
-        if (data == null) {
-            return null;
-        } else {
-            return newStorableWithData(data);
-        }
+        return newStorableWithData(data);
     }
 
     protected IdentifiedStorableDataAccess<K, D> dataAccess;
@@ -35,10 +32,14 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     }
 
     protected A newStorableWithData(D data) {
-        return newPrimitive(new PrimitiveSpecification.Builder<A>()
-                .withPrimitiveClass(storableClass)
-                .withExistingData(data)
-                .build());
+        if(data == null) {
+            return null;
+        } else {
+            return newPrimitive(new PrimitiveSpecification.Builder<A>()
+                    .withPrimitiveClass(storableClass)
+                    .withExistingData(data)
+                    .build());
+        }
     }
 
     public A get(K key) {
@@ -88,7 +89,7 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     }
 
     protected List<A> newStorablesWithData(List<D> data) {
-        return data.stream().map(this::newStorableWithData).collect(toList());
+        return data.stream().map(this::newStorableWithData).filter(Objects::nonNull).collect(toList());
     }
 
     @SuppressWarnings("unchecked")
