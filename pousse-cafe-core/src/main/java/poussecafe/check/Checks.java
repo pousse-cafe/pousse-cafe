@@ -6,4 +6,7 @@ public class Checks {
         new Check<>(specification).run();
     }
 
+    public static <T> CheckBuilder<T> checkThatValue(T value) {
+        return new CheckBuilder<>(value);
+    }
 }
