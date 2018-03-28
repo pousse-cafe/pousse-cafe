@@ -12,6 +12,7 @@ import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.test.MetaApplicationTest;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -24,8 +25,8 @@ public class MessagingTest extends MetaApplicationTest {
     private OrderDescription orderDescription;
 
     @Override
-    protected MetaApplicationBundle testBundle() {
-        return new SampleMetaAppBundle();
+    protected List<MetaApplicationBundle> testBundle() {
+        return asList(new SampleMetaAppBundle());
     }
 
     @Test

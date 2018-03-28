@@ -1,5 +1,6 @@
 package poussecafe.sample;
 
+import java.util.List;
 import org.junit.Test;
 import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.command.PlaceOrder;
@@ -11,6 +12,7 @@ import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.process.OrderPlacement;
 import poussecafe.test.MetaApplicationTest;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -24,8 +26,8 @@ public class OrderManagementTest extends MetaApplicationTest {
     private OrderDescription description;
 
     @Override
-    protected MetaApplicationBundle testBundle() {
-        return new SampleMetaAppBundle();
+    protected List<MetaApplicationBundle> testBundle() {
+        return asList(new SampleMetaAppBundle());
     }
 
     @Test

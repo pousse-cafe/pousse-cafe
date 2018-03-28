@@ -1,5 +1,6 @@
 package poussecafe.sample;
 
+import java.util.List;
 import org.junit.Test;
 import poussecafe.context.MetaApplicationBundle;
 import poussecafe.sample.command.CreateCustomer;
@@ -8,6 +9,7 @@ import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.process.CustomerCreation;
 import poussecafe.test.MetaApplicationTest;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -16,8 +18,8 @@ public class CustomerCreationTest extends MetaApplicationTest {
     private CustomerKey customerKey;
 
     @Override
-    protected MetaApplicationBundle testBundle() {
-        return new SampleMetaAppBundle();
+    protected List<MetaApplicationBundle> testBundle() {
+        return asList(new SampleMetaAppBundle());
     }
 
     @Test

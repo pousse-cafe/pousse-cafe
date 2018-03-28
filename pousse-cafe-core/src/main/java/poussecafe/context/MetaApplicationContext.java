@@ -1,7 +1,9 @@
 package poussecafe.context;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -27,10 +29,10 @@ import poussecafe.storable.PrimitiveSpecification;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.Storage;
-import poussecafe.util.IdGenerator;
 
 import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
+import static poussecafe.check.Checks.checkThatValue;
 
 public class MetaApplicationContext {
 
@@ -60,6 +62,10 @@ public class MetaApplicationContext {
 
     private MessageAdapter messageAdapter;
 
+    private CoreBundle coreBundle = new MemoryCoreBundle();
+
+    private List<MetaApplicationBundle> appBundles = new ArrayList<>();
+
     public MetaApplicationContext() {
         environment = new Environment();
 
@@ -83,6 +89,38 @@ public class MetaApplicationContext {
         return environment;
     }
 
+    public void setCoreBundle(CoreBundle coreBundle) {
+        checkThatValue(coreBundle).notNull();
+        this.coreBundle = coreBundle;
+    }
+
+    public void addBundle(MetaApplicationBundle bundle) {
+        checkThatValue(bundle).notNull();
+        appBundles.add(bundle);
+    }
+
+    public void start() {
+        loadBundles();
+        checkEnvironment();
+
+        injector = new Injector();
+        injector.registerInjectableService(environment);
+        injector.registerInjectableService(MessageAdapter.class, messageAdapter);
+        injector.registerInjectableService(storageServiceLocator);
+        injector.registerInjectableService(messageListenerRegistry);
+
+        configureContext();
+        injector.injectDependencies();
+        startMessageHandling();
+    }
+
+    private void loadBundles() {
+        loadBundle(coreBundle);
+        for(MetaApplicationBundle appBundle : appBundles) {
+            loadBundle(appBundle);
+        }
+    }
+
     public void loadBundle(MetaApplicationBundle bundle) {
         for(StorableDefinition definition : bundle.getDefinitions()) {
             environment.defineStorable(definition);
@@ -98,7 +136,7 @@ public class MetaApplicationContext {
         }
     }
 
-    public void start() {
+    private void checkEnvironment() {
         if(environment.isAbstract()) {
             Set<Class<?>> abstractStorables = environment.getAbstractStorables();
             logger.error("{} abstract storable(s):", abstractStorables.size());
@@ -107,17 +145,6 @@ public class MetaApplicationContext {
             }
             throw new PousseCafeException("Cannot start meta-application with an abstract environment");
         }
-
-        injector = new Injector();
-        injector.registerInjectableService(new IdGenerator());
-        injector.registerInjectableService(environment);
-        injector.registerInjectableService(MessageAdapter.class, messageAdapter);
-        injector.registerInjectableService(storageServiceLocator);
-        injector.registerInjectableService(messageListenerRegistry);
-
-        configureContext();
-        injector.injectDependencies();
-        startMessageHandling();
     }
 
     private Logger logger = getLogger(getClass());
@@ -243,6 +270,7 @@ public class MetaApplicationContext {
         return inMemoryMessageQueue;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends DomainProcess> T getDomainProcess(Class<T> processClass) {
         T domainProcess = (T) processes.get(processClass);
         if(domainProcess == null) {
@@ -251,6 +279,7 @@ public class MetaApplicationContext {
         return domainProcess;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiedStorableRepository<A, K, D>, A extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T getRepository(Class<A> storableClass) {
         StorableServices services = getStorableServices(storableClass);
         if(services == null) {

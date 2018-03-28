@@ -1,7 +1,6 @@
 package poussecafe.sample.app;
 
 import java.util.Set;
-import poussecafe.journal.JournalEntry;
 import poussecafe.sample.SampleMetaAppBundle;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.Message;
@@ -15,22 +14,10 @@ import poussecafe.sample.domain.mongo.OrderData;
 import poussecafe.sample.domain.mongo.OrderDataAccess;
 import poussecafe.sample.domain.mongo.ProductData;
 import poussecafe.sample.domain.mongo.ProductDataAccess;
-import poussecafe.spring.mongo.journal.JournalEntryData;
-import poussecafe.spring.mongo.journal.JournalEntryDataAccess;
 import poussecafe.spring.mongo.storage.MongoDbStorage;
 import poussecafe.storable.StorableImplementation;
 
 public class SampleMetaAppMongoBundle extends SampleMetaAppBundle {
-
-    @Override
-    protected void loadCoreImplementations(Set<StorableImplementation> coreImplementations) {
-        coreImplementations.add(new StorableImplementation.Builder()
-                .withStorableClass(JournalEntry.class)
-                .withDataFactory(JournalEntryData::new)
-                .withDataAccessFactory(JournalEntryDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
-                .build());
-    }
 
     @Override
     protected void loadImplementations(Set<StorableImplementation> implementations) {

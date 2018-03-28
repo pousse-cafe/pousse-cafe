@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +33,14 @@ public abstract class MetaApplicationTest {
     @Before
     public void configureContext() {
         context = new MetaApplicationContext();
-        context.loadBundle(testBundle());
+        for(MetaApplicationBundle bundle : testBundle()) {
+            context.loadBundle(bundle);
+        }
         context.start();
         context.injectDependencies(this);
     }
 
-    protected abstract MetaApplicationBundle testBundle();
+    protected abstract List<MetaApplicationBundle> testBundle();
 
     protected MetaApplicationContext context() {
         return context;

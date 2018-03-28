@@ -3,10 +3,12 @@ package process;
 import configuration.MyMetaApplicationBundle;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
+import java.util.List;
 import org.junit.Test;
 import poussecafe.context.MetaApplicationBundle;
 import poussecafe.test.MetaApplicationTest;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -26,8 +28,8 @@ public class MyProcessTest extends MetaApplicationTest {
      * The context will be configured with provided actors (Domain Components and Work Flows).
      */
     @Override
-    protected MetaApplicationBundle testBundle() {
-        return new MyMetaApplicationBundle();
+    protected List<MetaApplicationBundle> testBundle() {
+        return asList(new MyMetaApplicationBundle());
     }
 
     /*
