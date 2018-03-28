@@ -25,6 +25,10 @@ public class Predicates {
         return string -> string == null || string.isEmpty();
     }
 
+    public static Predicate<String> notEmptyOrNullString() {
+        return not(emptyOrNullString());
+    }
+
     public static <T> Predicate<T> instanceOf(Class<?> objectClass) {
         return objectClass::isInstance;
     }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import poussecafe.collection.Multimap;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
@@ -116,5 +117,9 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     public synchronized void deleteAll() {
         storage.clear();
         index.clear();
+    }
+
+    protected synchronized List<D> findByPredicate(Predicate<D> predicate) {
+        return storage.values().stream().map(this::deserialize).filter(predicate).collect(toList());
     }
 }
