@@ -44,6 +44,6 @@ public class StringKey {
 
     @Override
     public String toString() {
-        return getClass().getName() + " [id=" + id + "]";
+        return id;
     }
 }
