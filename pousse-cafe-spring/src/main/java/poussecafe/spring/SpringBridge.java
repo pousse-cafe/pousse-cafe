@@ -40,7 +40,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private String beanName(Object instance) {
-        return BEAN_NAME_PREFIX + instance.getClass().getSimpleName();
+        return BEAN_NAME_PREFIX + instance.getClass().getName();
     }
 
     private static final String BEAN_NAME_PREFIX = "pousseCafe";
