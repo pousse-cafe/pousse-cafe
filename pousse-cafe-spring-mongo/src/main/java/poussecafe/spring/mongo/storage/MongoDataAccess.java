@@ -9,7 +9,7 @@ public abstract class MongoDataAccess<K, D extends IdentifiedStorableData<K>, M 
 
     @Override
     public D findData(K key) {
-        return mongoRepository().findOne(convertKey(key));
+        return mongoRepository().findById(convertKey(key)).orElse(null);
     }
 
     protected abstract M convertKey(K key);
@@ -28,7 +28,7 @@ public abstract class MongoDataAccess<K, D extends IdentifiedStorableData<K>, M 
 
     @Override
     public void deleteData(K key) {
-        mongoRepository().delete(convertKey(key));
+        mongoRepository().deleteById(convertKey(key));
     }
 
     @Override
