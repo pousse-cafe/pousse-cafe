@@ -109,7 +109,7 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
         indexedData.forEach(indexed -> index.remove(indexed, key));
     }
 
-    protected List<D> findBy(Object indexed) {
+    protected synchronized List<D> findBy(Object indexed) {
         return new ArrayList<>(index.get(indexed).stream().map(this::findData).collect(toList()));
     }
 
