@@ -1,10 +1,13 @@
 package poussecafe.util;
 
+import static poussecafe.check.Checks.checkThatValue;
+
 public class StringKey {
 
     private String id;
 
     public StringKey(String value) {
+        checkThatValue(value).notNull();
         id = value;
     }
 
