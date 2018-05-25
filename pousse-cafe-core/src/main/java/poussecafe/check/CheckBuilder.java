@@ -23,4 +23,8 @@ public class CheckBuilder<T> {
     public void run() {
         new Check<>(specificiation).run();
     }
+
+    public void is(Object expectedValue) {
+        verifies(value -> (expectedValue == null && value == null) || value.equals(expectedValue)).run();
+    }
 }
