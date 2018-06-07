@@ -39,7 +39,7 @@ public class Injector {
     }
 
     void injectDependencies(Object service) {
-        logger.info("Injecting dependencies in " + service.getClass().getName());
+        logger.debug("Injecting dependencies in " + service.getClass().getName());
         tryUsingSetters(service);
         tryUsingMembers(service);
     }

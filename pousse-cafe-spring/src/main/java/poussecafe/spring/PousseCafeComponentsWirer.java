@@ -21,17 +21,17 @@ public class PousseCafeComponentsWirer implements ApplicationListener<ContextRef
     public void onApplicationEvent(ContextRefreshedEvent event) {
         AutowireCapableBeanFactory beanFactory = event.getApplicationContext().getAutowireCapableBeanFactory();
         for(StorableServices services : pousseCafeContext.getAllStorableServices()) {
-            logger.info("Wiring services for storable {}", services.getStorableClass().getSimpleName());
+            logger.debug("Wiring services for storable {}", services.getStorableClass().getSimpleName());
             beanFactory.autowireBean(services.getRepository());
             beanFactory.autowireBean(services.getRepository().getDataAccess());
             beanFactory.autowireBean(services.getFactory());
         }
         for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {
-            logger.info("Wiring domain process {}", process.getClass().getSimpleName());
+            logger.debug("Wiring domain process {}", process.getClass().getSimpleName());
             beanFactory.autowireBean(process);
         }
         for(Object service : pousseCafeContext.getAllServices()) {
-            logger.info("Wiring service {}", service.getClass().getSimpleName());
+            logger.debug("Wiring service {}", service.getClass().getSimpleName());
             beanFactory.autowireBean(service);
         }
     }

@@ -51,4 +51,14 @@ public abstract class Storable<D extends StorableData> extends Primitive {
         }
         return true;
     }
+
+    protected void dontPersist(boolean value) {
+        dontPersist = value;
+    }
+
+    private boolean dontPersist;
+
+    public boolean dontPersist() {
+        return dontPersist;
+    }
 }

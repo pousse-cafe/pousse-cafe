@@ -57,8 +57,10 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     }
 
     protected void addData(A storable) {
-        D data = storable.getData();
-        dataAccess.addData(data);
+        if(!storable.dontPersist()) {
+            D data = storable.getData();
+            dataAccess.addData(data);
+        }
     }
 
     private void checkStorable(A storable) {
@@ -72,8 +74,10 @@ public abstract class IdentifiedStorableRepository<A extends IdentifiedStorable<
     }
 
     protected void updateData(A storable) {
-        D data = storable.getData();
-        dataAccess.updateData(data);
+        if(!storable.dontPersist()) {
+            D data = storable.getData();
+            dataAccess.updateData(data);
+        }
     }
 
     public void delete(K key) {

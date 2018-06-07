@@ -35,7 +35,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
 
     private void registeringFactory(StorableServices services) {
         String beanName = beanName(services.getFactory());
-        logger.info("Registering factory {}", services.getFactory().getClass().getSimpleName());
+        logger.debug("Registering factory {}", services.getFactory().getClass().getSimpleName());
         registerInstance(beanName, services.getFactory());
     }
 
@@ -52,14 +52,14 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     private void registeringRepository(StorableServices services) {
         IdentifiedStorableRepository<?, ?, ?> repository = services.getRepository();
         String beanName = beanName(repository);
-        logger.info("Registering repository {}", repository.getClass().getSimpleName());
+        logger.debug("Registering repository {}", repository.getClass().getSimpleName());
         registerInstance(beanName, repository);
     }
 
     private void registerDomainProcesses() {
         for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {
             String beanName = beanName(process);
-            logger.info("Registering domain process {}", process.getClass().getSimpleName());
+            logger.debug("Registering domain process {}", process.getClass().getSimpleName());
             registerInstance(beanName, process);
         }
     }
@@ -67,7 +67,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     private void registerServices() {
         for(Object service : pousseCafeContext.getAllServices()) {
             String beanName = beanName(service);
-            logger.info("Registering service {}", service.getClass().getSimpleName());
+            logger.debug("Registering service {}", service.getClass().getSimpleName());
             registerInstance(beanName, service);
         }
     }
