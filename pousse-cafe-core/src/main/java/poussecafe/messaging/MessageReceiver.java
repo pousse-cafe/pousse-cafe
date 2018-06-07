@@ -17,7 +17,7 @@ public abstract class MessageReceiver {
     private boolean started;
 
     protected void onMessage(Message receivedMessage) {
-        logger.info("Handling received message {}", receivedMessage);
+        logger.debug("Handling received message {}", receivedMessage);
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
         for (MessageListener listener : listenerRegistry
                 .getListeners(new MessageListenerRoutingKey(receivedMessage.getClass()))) {
@@ -27,7 +27,7 @@ public abstract class MessageReceiver {
                 ignoreMessage(receivedMessage, listener);
             }
         }
-        logger.info("Message {} handled", receivedMessage);
+        logger.debug("Message {} handled", receivedMessage);
     }
 
     private void consumeMessage(Message receivedMessage,

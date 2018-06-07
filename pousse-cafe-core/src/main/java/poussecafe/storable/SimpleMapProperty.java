@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -33,9 +35,9 @@ public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
     }
 
     @Override
-    public void put(K key,
+    public V put(K key,
             V value) {
-        wrappedMap.put(key, value);
+        return wrappedMap.put(key, value);
     }
 
     @Override
@@ -53,4 +55,18 @@ public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
         return wrappedMap.isEmpty();
     }
 
+    @Override
+    public boolean containsKey(K key) {
+        return wrappedMap.containsKey(key);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return wrappedMap.keySet();
+    }
+
+    @Override
+    public Stream<V> valuesStream() {
+        return wrappedMap.values().stream();
+    }
 }

@@ -12,6 +12,7 @@ public class CheckBuilder<T> {
     private CheckSpecification<T> specificiation;
 
     public void notNull() {
+        specificiation.because("Value cannot be null");
         verifies(Objects::nonNull).run();
     }
 

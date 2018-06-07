@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -55,7 +57,7 @@ public abstract class MapPropertyCollectionWrapper<K, D, E extends D> implements
 
     @SuppressWarnings("unchecked")
     @Override
-    public void put(K key,
+    public D put(K key,
             D value) {
         if(map.containsKey(key)) {
             remove(key);
@@ -64,8 +66,8 @@ public abstract class MapPropertyCollectionWrapper<K, D, E extends D> implements
         if(!extractedKey.equals(key)) {
             throw new IllegalArgumentException("Key does not match value");
         }
-        map.put(key, value);
         wrappedCollection.add((E) value);
+        return map.put(key, value);
     }
 
     @Override
@@ -89,4 +91,18 @@ public abstract class MapPropertyCollectionWrapper<K, D, E extends D> implements
         return wrappedCollection.isEmpty();
     }
 
+    @Override
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return Collections.unmodifiableSet(map.keySet());
+    }
+
+    @Override
+    public Stream<D> valuesStream() {
+        return map.values().stream();
+    }
 }

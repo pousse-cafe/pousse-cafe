@@ -64,6 +64,6 @@ public abstract class Message {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " [id=" + id + "]";
+        return getClass().getSimpleName();
     }
 }

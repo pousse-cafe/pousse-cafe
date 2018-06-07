@@ -4,11 +4,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 import poussecafe.storable.MapProperty;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
@@ -75,11 +78,16 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
     }
 
     @Override
-    public void put(K key,
+    public V put(K key,
             V value) {
         L fromKey = convertToKey(key);
         U fromValue = convertToValue(value);
-        map.put(fromKey, fromValue);
+        U oldValue = map.put(fromKey, fromValue);
+        if(oldValue == null) {
+            return null;
+        } else {
+            return convertFromValue(oldValue);
+        }
     }
 
     @Override
@@ -100,5 +108,20 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
     @Override
     public boolean isEmpty() {
         return map.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        return map.containsKey(convertToKey(key));
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return map.keySet().stream().map(this::convertFromKey).collect(toSet());
+    }
+
+    @Override
+    public Stream<V> valuesStream() {
+        return map.values().stream().map(this::convertFromValue);
     }
 }

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import poussecafe.collection.Multimap;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
@@ -120,6 +121,14 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     }
 
     protected synchronized List<D> findByPredicate(Predicate<D> predicate) {
-        return storage.values().stream().map(this::deserialize).filter(predicate).collect(toList());
+        return streamAll().filter(predicate).collect(toList());
+    }
+
+    public synchronized Stream<D> streamAll() {
+        return storage.values().stream().map(this::deserialize);
+    }
+
+    public List<D> findAll() {
+        return streamAll().collect(toList());
     }
 }

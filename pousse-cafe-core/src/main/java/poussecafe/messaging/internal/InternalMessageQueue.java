@@ -21,7 +21,7 @@ public class InternalMessageQueue extends MessageReceiver implements MessageSend
 
     @Override
     public void sendMessage(Message message) {
-        logger.info("Sending message {}", message);
+        logger.debug("Sending message {}", message);
         queue.add(message);
         available.release();
     }

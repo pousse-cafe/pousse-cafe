@@ -3,6 +3,7 @@ package poussecafe.storage.memory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import poussecafe.storable.ListProperty;
 
 import static java.util.stream.Collectors.toList;
@@ -36,8 +37,12 @@ public class BaseListProperty<T> implements ListProperty<T> {
 
     @Override
     public void filter(Predicate<T> predicate) {
-        List<T> filteredList = get().stream().filter(predicate).collect(toList());
-        set(filteredList);
+        set(stream().filter(predicate).collect(toList()));
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return list.stream();
     }
 
 }
