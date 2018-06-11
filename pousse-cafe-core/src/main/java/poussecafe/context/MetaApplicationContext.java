@@ -200,9 +200,7 @@ public class MetaApplicationContext {
     }
 
     protected void configureProcesses() {
-        DomainProcessExplorer processExplorer = new DomainProcessExplorer();
-        processExplorer.setMessageListenerRegistry(messageListenerRegistry);
-
+        DomainProcessExplorer processExplorer = processExplorer();
         for (Class<?> processClass : environment.getDefinedProcesses()) {
             DomainProcess process = (DomainProcess) newInstance(processClass);
             processExplorer.discoverListeners(process);
@@ -210,6 +208,12 @@ public class MetaApplicationContext {
             injector.registerInjectableService(process);
             processes.put(processClass, process);
         }
+    }
+
+    private DomainProcessExplorer processExplorer() {
+        DomainProcessExplorer processExplorer = new DomainProcessExplorer();
+        processExplorer.setMessageListenerRegistry(messageListenerRegistry);
+        return processExplorer;
     }
 
     private Map<Class<?>, DomainProcess> processes = new HashMap<>();
@@ -302,5 +306,9 @@ public class MetaApplicationContext {
 
     public void injectDependencies(Object service) {
         injector.injectDependencies(service);
+    }
+
+    public void registerListeners(Object service) {
+        processExplorer().discoverListeners(service);
     }
 }

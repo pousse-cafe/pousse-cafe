@@ -1,8 +1,9 @@
 package poussecafe.storable;
 
-public abstract class IntegerProperty implements Property<Integer> {
+public abstract class IntegerProperty implements NumberProperty<Integer> {
 
-    public void add(int term) {
+    @Override
+    public void add(Integer term) {
         set(get() + term);
     }
 }

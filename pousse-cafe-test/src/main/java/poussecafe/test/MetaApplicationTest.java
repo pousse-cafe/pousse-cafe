@@ -38,6 +38,7 @@ public abstract class MetaApplicationTest {
         }
         context.start();
         context.injectDependencies(this);
+        context.registerListeners(this);
     }
 
     protected abstract List<MetaApplicationBundle> testBundle();

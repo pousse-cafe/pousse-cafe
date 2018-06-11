@@ -48,7 +48,7 @@ public class Poller {
             }
         }
 
-        throw new PousseCafeException("Condition did not get true after " + maxRetries + " retries");
+        throw new PollerTimeoutException("Condition did not get true after " + maxRetries + " retries");
     }
 
     private Logger logger = getLogger(getClass());
