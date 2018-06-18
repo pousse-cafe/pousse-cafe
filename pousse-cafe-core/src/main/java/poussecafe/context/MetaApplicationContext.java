@@ -99,7 +99,12 @@ public class MetaApplicationContext {
         appBundles.add(bundle);
     }
 
-    public void start() {
+    public synchronized void start() {
+        load();
+        startMessageHandling();
+    }
+
+    public synchronized void load() {
         loadBundles();
         checkEnvironment();
 
@@ -111,7 +116,6 @@ public class MetaApplicationContext {
 
         configureContext();
         injector.injectDependencies();
-        startMessageHandling();
     }
 
     private void loadBundles() {
@@ -242,7 +246,7 @@ public class MetaApplicationContext {
         injector.addInjectionCandidate(messageReplayer);
     }
 
-    private void startMessageHandling() {
+    public synchronized void startMessageHandling() {
         messageReceiver.startReceiving();
     }
 
@@ -304,11 +308,11 @@ public class MetaApplicationContext {
         return unmodifiableCollection(services.values());
     }
 
-    public void injectDependencies(Object service) {
+    public synchronized void injectDependencies(Object service) {
         injector.injectDependencies(service);
     }
 
-    public void registerListeners(Object service) {
+    public synchronized void registerListeners(Object service) {
         processExplorer().discoverListeners(service);
     }
 }
