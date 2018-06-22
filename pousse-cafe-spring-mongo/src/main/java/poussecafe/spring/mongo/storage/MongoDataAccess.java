@@ -1,6 +1,7 @@
 package poussecafe.spring.mongo.storage;
 
 import java.io.Serializable;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
@@ -34,5 +35,10 @@ public abstract class MongoDataAccess<K, D extends IdentifiedStorableData<K>, M 
     @Override
     public void deleteAll() {
         mongoRepository().deleteAll();
+    }
+
+    @Override
+    public List<D> findAll() {
+        return mongoRepository().findAll();
     }
 }

@@ -128,6 +128,7 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
         return storage.values().stream().map(this::deserialize);
     }
 
+    @Override
     public synchronized List<D> findAll() {
         return streamAll().collect(toList());
     }

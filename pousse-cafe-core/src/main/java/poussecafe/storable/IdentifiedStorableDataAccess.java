@@ -1,5 +1,7 @@
 package poussecafe.storable;
 
+import java.util.List;
+
 public interface IdentifiedStorableDataAccess<K, D extends IdentifiedStorableData<K>> {
 
     D findData(K key);
@@ -11,4 +13,6 @@ public interface IdentifiedStorableDataAccess<K, D extends IdentifiedStorableDat
     void deleteData(K key);
 
     void deleteAll();
+
+    List<D> findAll();
 }
