@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.StorableServices;
+import poussecafe.messaging.MessageSender;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.IdentifiedStorableRepository;
 
@@ -17,9 +18,15 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
         pousseCafeContext = beanFactory.getBean(MetaApplicationContext.class);
+        registerCoreComponents();
         registerStorableServices();
         registerDomainProcesses();
         registerServices();
+    }
+
+    private void registerCoreComponents() {
+        MessageSender messageSender = pousseCafeContext.getMessageSender();
+        registerInstance(beanName(messageSender), messageSender);
     }
 
     private ConfigurableListableBeanFactory beanFactory;
