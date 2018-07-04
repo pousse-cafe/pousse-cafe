@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import poussecafe.storable.MapProperty;
+import poussecafe.util.ReadOnlyEntry;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -123,5 +124,14 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
     @Override
     public Stream<V> valuesStream() {
         return map.values().stream().map(this::convertFromValue);
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        return map.entrySet().stream().map(this::convertEntry).collect(toSet());
+    }
+
+    private Entry<K, V> convertEntry(Entry<L, U> entry) {
+        return new ReadOnlyEntry<>(convertFromKey(entry.getKey()), convertFromValue(entry.getValue()));
     }
 }

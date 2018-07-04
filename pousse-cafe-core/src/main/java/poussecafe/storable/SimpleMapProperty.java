@@ -3,6 +3,7 @@ package poussecafe.storable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -68,5 +69,10 @@ public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
     @Override
     public Stream<V> valuesStream() {
         return wrappedMap.values().stream();
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        return Collections.unmodifiableSet(wrappedMap.entrySet());
     }
 }

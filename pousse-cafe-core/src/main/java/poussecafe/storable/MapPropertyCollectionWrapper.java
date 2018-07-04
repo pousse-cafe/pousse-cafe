@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -104,5 +105,10 @@ public abstract class MapPropertyCollectionWrapper<K, D, E extends D> implements
     @Override
     public Stream<D> valuesStream() {
         return map.values().stream();
+    }
+
+    @Override
+    public Set<Entry<K, D>> entrySet() {
+        return Collections.unmodifiableSet(map.entrySet());
     }
 }
