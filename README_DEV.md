@@ -33,3 +33,9 @@ After that:
 1. Go to [SonaType Nexus Repository Manager](https://oss.sonatype.org/)
 2. In the Staging Repositories screen, locate the uploaded artifacts
 3. Close the staging repository and, finally, release
+
+# Check for dependency updates
+
+Run the following command:
+
+    mvn versions:display-dependency-updates

@@ -55,6 +55,9 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <version>2.3</version>
+        <configuration>
+          <processDependencyManagement>false</processDependencyManagement>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-scm-plugin</artifactId>
@@ -141,6 +144,7 @@
   <modules>
     <module>pousse-cafe-core</module>
     <module>pousse-cafe-test</module>
+    <module>pousse-cafe-doc</module>
     <module>pousse-cafe-simple-meta-app</module>
     <module>pousse-cafe-sample-meta-app</module>
     <module>pousse-cafe-spring</module>

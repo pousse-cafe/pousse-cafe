@@ -20,7 +20,7 @@
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-mongodb</artifactId>
       <!-- This should be kept in sync from time to time -->
-      <version>2.0.6.RELEASE</version>
+      <version>2.0.8.RELEASE</version>
       <scope>provided</scope>
     </dependency>
 

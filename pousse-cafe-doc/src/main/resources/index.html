@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="style.css"/>
+<title>${domain.name} Domain Model</title>
+<bookmarks>
+<bookmark name="Table of Contents" href="#toc"></bookmark>
+<bookmark name="Domain ${domain.name}" href="#domain">
+    <#list domain.boundedContexts as context>
+    <bookmark name="${context.name()}" href="#${context.id()}"></bookmark>
+    </#list>
+</bookmark>
+<bookmark name="Ubiquitous Language" href="#ubiquitous_language"></bookmark>
+</bookmarks>
+</head>
+<body>
+
+<div class="cover">
+    <p>${domain.name} Domain Model</p>
+    <p class="version">Version ${domain.version}</p>
+    <p class="generatedDate">Generated on ${generationDate?datetime?iso_utc}</p>
+</div>
+
+<div class="header">
+${domain.name} Domain Model
+</div>
+
+<div class="footer">
+    <span class="footerPagePlaceholder"></span>
+</div>
+
+<h1 id="toc">Table of Contents</h1>
+<ol class="toc">
+    <li><a href="#toc">Table of Contents</a></li>
+    <li><a href="#domain">${domain.name} Domain</a></li>
+    <ol>
+        <#list domain.boundedContexts as context>
+        <li><a href="#${context.id()}">${context.name()} Bounded Context</a></li>
+        </#list>
+    </ol>
+    <li><a href="#ubiquitous_language">Ubiquitous Language</a></li>
+</ol>
+
+<h1 id="domain">${domain.name} Domain</h1>
+<img src="all_entities.png"/>
+
+<#list domain.boundedContexts as context>
+<h2 id="${context.id()}">${context.name()} Bounded Context</h2>
+<#if context.hasDescription()>
+<p>${context.description()}</p>
+</#if>
+<img src="${context.id()}.png"/>
+</#list>
+
+<h1 id="ubiquitous_language">Ubiquitous Language</h1>
+<ol class="ubiquitousLanguage">
+<#list ubiquitousLanguage as entry>
+<#if entry.description??>
+<li><span class="entryName">${entry.name}</span>, ${entry.type}, ${entry.description}</li>
+</#if>
+</#list>
+</ol>
+
+</body>
+</html>

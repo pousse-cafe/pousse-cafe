@@ -13,7 +13,7 @@
   
   <properties>
     <!-- This should be kept in sync from time to time -->
-    <spring.version>5.0.5.RELEASE</spring.version>
+    <spring.version>5.0.7.RELEASE</spring.version>
   </properties>
 
   <dependencies>
