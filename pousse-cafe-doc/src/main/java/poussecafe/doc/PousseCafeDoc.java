@@ -2,11 +2,11 @@ package poussecafe.doc;
 
 import java.util.Set;
 import poussecafe.context.MetaApplicationBundle;
-import poussecafe.doc.data.BoundedContextDocData;
-import poussecafe.doc.data.InMemoryBoundedContextDocDataAccess;
-import poussecafe.doc.model.BoundedContextDoc;
-import poussecafe.doc.model.BoundedContextDocFactory;
-import poussecafe.doc.model.BoundedContextDocRepository;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocData;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.boundedcontextdoc.InMemoryBoundedContextDocDataAccess;
 import poussecafe.doc.process.BoundedContextDocCreation;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;

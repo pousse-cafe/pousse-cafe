@@ -3,8 +3,8 @@ package poussecafe.doc;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import poussecafe.doc.model.BoundedContextDoc;
-import poussecafe.doc.model.BoundedContextDocRepository;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 
 public class GraphsWriter {
 

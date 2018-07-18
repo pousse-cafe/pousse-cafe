@@ -1,4 +1,4 @@
-package poussecafe.doc.model;
+package poussecafe.doc.model.boundedcontextdoc;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.storable.IdentifiedStorableData;

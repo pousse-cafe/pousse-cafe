@@ -1,4 +1,4 @@
-package poussecafe.doc.model;
+package poussecafe.doc.model.boundedcontextdoc;
 
 import com.sun.javadoc.PackageDoc;
 import org.apache.commons.lang3.StringUtils;

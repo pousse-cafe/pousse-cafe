@@ -1,26 +1,26 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.PackageDoc;
-import poussecafe.doc.model.BoundedContextDocFactory;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.process.BoundedContextDocCreation;
 
-public class SourceCodeAnalyzer {
+public class BoundedContextCodeAnalyzer {
 
     public static class Builder {
 
-        private SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
+        private BoundedContextCodeAnalyzer analyzer = new BoundedContextCodeAnalyzer();
 
         public Builder rootDocWrapper(RootDocWrapper rootDocWrapper) {
             analyzer.rootDocWrapper = rootDocWrapper;
             return this;
         }
 
-        public SourceCodeAnalyzer build() {
+        public BoundedContextCodeAnalyzer build() {
             return analyzer;
         }
     }
 
-    private SourceCodeAnalyzer() {
+    private BoundedContextCodeAnalyzer() {
 
     }
 

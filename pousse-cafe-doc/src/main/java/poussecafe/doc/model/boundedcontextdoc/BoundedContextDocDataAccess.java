@@ -1,4 +1,4 @@
-package poussecafe.doc.model;
+package poussecafe.doc.model.boundedcontextdoc;
 
 import poussecafe.storable.IdentifiedStorableDataAccess;
 

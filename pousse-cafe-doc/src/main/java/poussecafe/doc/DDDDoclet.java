@@ -14,7 +14,8 @@ public class DDDDoclet {
         context.start();
 
         RootDocWrapper rootDocWrapper = new RootDocWrapper(root);
-        SourceCodeAnalyzer sourceCodeAnalyzer = new SourceCodeAnalyzer.Builder()
+
+        BoundedContextCodeAnalyzer sourceCodeAnalyzer = new BoundedContextCodeAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
                 .build();
         context.injectDependencies(sourceCodeAnalyzer);

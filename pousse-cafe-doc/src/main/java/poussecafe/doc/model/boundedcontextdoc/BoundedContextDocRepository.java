@@ -1,7 +1,7 @@
-package poussecafe.doc.model;
+package poussecafe.doc.model.boundedcontextdoc;
 
 import java.util.List;
-import poussecafe.doc.model.BoundedContextDoc.Data;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc.Data;
 import poussecafe.domain.Repository;
 
 public class BoundedContextDocRepository extends Repository<BoundedContextDoc, String, BoundedContextDoc.Data> {

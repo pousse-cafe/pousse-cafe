@@ -1,7 +1,6 @@
-package poussecafe.doc.data;
+package poussecafe.doc.model.boundedcontextdoc;
 
 import java.io.Serializable;
-import poussecafe.doc.model.BoundedContextDoc;
 import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")

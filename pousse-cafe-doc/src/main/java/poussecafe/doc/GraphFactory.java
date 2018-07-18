@@ -3,7 +3,7 @@ package poussecafe.doc;
 import java.util.List;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.graph.UndirectedSubGraph;
-import poussecafe.doc.model.BoundedContextDoc;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 
 public class GraphFactory {
 

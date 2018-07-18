@@ -1,6 +1,5 @@
-package poussecafe.doc.data;
+package poussecafe.doc.model.boundedcontextdoc;
 
-import poussecafe.doc.model.BoundedContextDocDataAccess;
 import poussecafe.storage.memory.InMemoryDataAccess;
 
 public class InMemoryBoundedContextDocDataAccess extends InMemoryDataAccess<String, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {

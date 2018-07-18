@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import poussecafe.doc.model.BoundedContextDoc;
-import poussecafe.doc.model.BoundedContextDocRepository;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 
 import static poussecafe.check.Checks.checkThatValue;
 
