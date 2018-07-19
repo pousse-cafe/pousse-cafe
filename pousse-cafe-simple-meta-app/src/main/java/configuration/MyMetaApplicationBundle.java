@@ -6,6 +6,7 @@ import domain.MyRepository;
 import domain.data.MyAggregateData;
 import java.util.Set;
 import poussecafe.context.MetaApplicationBundle;
+import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
@@ -40,7 +41,7 @@ public class MyMetaApplicationBundle extends MetaApplicationBundle {
     }
 
     @Override
-    protected void loadServices(Set<Class<?>> services) {
+    protected void loadServices(Set<Class<? extends Service>> services) {
         // None in this example
     }
 

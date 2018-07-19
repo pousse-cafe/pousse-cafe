@@ -24,23 +24,6 @@ public class BoundedContextDocData implements BoundedContextDoc.Data, Serializab
     private String key;
 
     @Override
-    public Property<String> name() {
-        return new Property<String>() {
-            @Override
-            public String get() {
-                return name;
-            }
-
-            @Override
-            public void set(String value) {
-                name = value;
-            }
-        };
-    }
-
-    private String name;
-
-    @Override
     public Property<String> description() {
         return new Property<String>() {
             @Override

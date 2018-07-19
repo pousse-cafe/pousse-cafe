@@ -2,12 +2,19 @@ package poussecafe.doc;
 
 import java.util.Set;
 import poussecafe.context.MetaApplicationBundle;
+import poussecafe.doc.model.aggregatedoc.AggregateDoc;
+import poussecafe.doc.model.aggregatedoc.AggregateDocData;
+import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
+import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
+import poussecafe.doc.model.aggregatedoc.InMemoryAggregateDocDataAccess;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocData;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.InMemoryBoundedContextDocDataAccess;
+import poussecafe.doc.process.AggregateDocCreation;
 import poussecafe.doc.process.BoundedContextDocCreation;
+import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
@@ -22,6 +29,12 @@ public class PousseCafeDoc extends MetaApplicationBundle {
                 .withFactoryClass(BoundedContextDocFactory.class)
                 .withRepositoryClass(BoundedContextDocRepository.class)
                 .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(AggregateDoc.class)
+                .withFactoryClass(AggregateDocFactory.class)
+                .withRepositoryClass(AggregateDocRepository.class)
+                .build());
     }
 
     @Override
@@ -32,16 +45,24 @@ public class PousseCafeDoc extends MetaApplicationBundle {
                 .withDataAccessFactory(InMemoryBoundedContextDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(AggregateDoc.class)
+                .withDataFactory(AggregateDocData::new)
+                .withDataAccessFactory(InMemoryAggregateDocDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
     }
 
     @Override
     protected void loadProcesses(Set<Class<? extends DomainProcess>> processes) {
         processes.add(BoundedContextDocCreation.class);
+        processes.add(AggregateDocCreation.class);
     }
 
     @Override
-    protected void loadServices(Set<Class<?>> services) {
-
+    protected void loadServices(Set<Class<? extends Service>> services) {
+        services.add(GraphFactory.class);
     }
 
 }

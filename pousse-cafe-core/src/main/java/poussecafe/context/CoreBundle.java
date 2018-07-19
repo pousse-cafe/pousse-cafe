@@ -1,6 +1,7 @@
 package poussecafe.context;
 
 import java.util.Set;
+import poussecafe.domain.Service;
 import poussecafe.journal.JournalEntry;
 import poussecafe.journal.JournalEntryFactory;
 import poussecafe.journal.JournalEntryRepository;
@@ -25,7 +26,7 @@ public abstract class CoreBundle extends MetaApplicationBundle {
     }
 
     @Override
-    protected void loadServices(Set<Class<?>> services) {
+    protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(IdGenerator.class);
     }
 

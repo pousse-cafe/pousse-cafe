@@ -15,7 +15,6 @@ public class BoundedContextDocFactory extends Factory<String, BoundedContextDoc,
 
         String boundedContextKey = getBoundedContextKey(packageDoc);
         BoundedContextDoc boundedContextDoc = newAggregateWithKey(boundedContextKey);
-        boundedContextDoc.name(boundedContextKey);
         boundedContextDoc.description(packageDoc.commentText());
         boundedContextDoc.packageName(packageDoc.name());
         return boundedContextDoc;

@@ -1,5 +1,6 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
+import poussecafe.doc.StringNormalizer;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.Property;
@@ -18,11 +19,7 @@ public class BoundedContextDoc extends AggregateRoot<String, BoundedContextDoc.D
     }
 
     public String name() {
-        return getData().name().get();
-    }
-
-    void name(String name) {
-        getData().name().set(name);
+        return getKey();
     }
 
     public String description() {
@@ -34,7 +31,7 @@ public class BoundedContextDoc extends AggregateRoot<String, BoundedContextDoc.D
     }
 
     public String id() {
-        return name().toLowerCase().replaceAll("\\s+", "-");
+        return StringNormalizer.normalizeString(name());
     }
 
     public boolean hasDescription() {
@@ -42,8 +39,6 @@ public class BoundedContextDoc extends AggregateRoot<String, BoundedContextDoc.D
     }
 
     public static interface Data extends IdentifiedStorableData<String> {
-
-        Property<String> name();
 
         Property<String> description();
 

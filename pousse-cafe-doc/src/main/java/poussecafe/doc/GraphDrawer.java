@@ -5,16 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 import org.apache.commons.io.IOUtils;
-
 import poussecafe.doc.graph.UndirectedGraph;
 
 public class GraphDrawer {
-
-    public GraphDrawer() {
-
-    }
 
     public void drawGraph(UndirectedGraph graph, File outputDirectory,
             String graphName) throws IOException {

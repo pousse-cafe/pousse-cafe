@@ -27,12 +27,10 @@ public class BoundedContextCodeAnalyzer {
     private RootDocWrapper rootDocWrapper;
 
     public void analyzeCode() {
-        String outputPath = rootDocWrapper.outputPath();
-        rootDocWrapper.rootDoc().printNotice("Writing output to folder " + outputPath);
-
         PackageDoc[] packages = rootDocWrapper.rootDoc().specifiedPackages();
         for (PackageDoc packageDoc : packages) {
             if (BoundedContextDocFactory.isBoundedContextDoc(packageDoc)) {
+                rootDocWrapper.debug("Adding bounded context with package " + packageDoc.name());
                 boundedContextDocCreation.addBoundedContextDoc(packageDoc);
             }
         }

@@ -15,11 +15,17 @@ public class DDDDoclet {
 
         RootDocWrapper rootDocWrapper = new RootDocWrapper(root);
 
-        BoundedContextCodeAnalyzer sourceCodeAnalyzer = new BoundedContextCodeAnalyzer.Builder()
+        BoundedContextCodeAnalyzer boundedContextCodeAnalyzer = new BoundedContextCodeAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
                 .build();
-        context.injectDependencies(sourceCodeAnalyzer);
-        sourceCodeAnalyzer.analyzeCode();
+        context.injectDependencies(boundedContextCodeAnalyzer);
+        boundedContextCodeAnalyzer.analyzeCode();
+
+        AggregateCodeAnalyzer aggregateCodeAnalyzer = new AggregateCodeAnalyzer.Builder()
+                .rootDocWrapper(rootDocWrapper)
+                .build();
+        context.injectDependencies(aggregateCodeAnalyzer);
+        aggregateCodeAnalyzer.analyzeCode();
 
         File outputDirectory = new File(rootDocWrapper.outputPath());
         outputDirectory.mkdirs();

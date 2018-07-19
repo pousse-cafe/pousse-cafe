@@ -1,31 +1,40 @@
 package poussecafe.doc;
 
-import java.util.List;
+import poussecafe.doc.graph.Node;
+import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedGraph;
-import poussecafe.doc.graph.UndirectedSubGraph;
+import poussecafe.doc.model.aggregatedoc.AggregateDoc;
+import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.domain.Service;
 
-public class GraphFactory {
-
-    public UndirectedGraph buildFullGraph(List<BoundedContextDoc> boundedContextDocs) {
-        UndirectedGraph graph = new UndirectedGraph();
-        for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
-            addBoundedContextSubGraph(graph, boundedContextDoc);
-        }
-        return graph;
-    }
+public class GraphFactory implements Service {
 
     public UndirectedGraph buildBoundedContextGraph(
             BoundedContextDoc boundedContextDoc) {
         UndirectedGraph graph = new UndirectedGraph();
-        addBoundedContextSubGraph(graph, boundedContextDoc);
+        addAggregates(graph, boundedContextDoc);
         return graph;
     }
 
-    private void addBoundedContextSubGraph(UndirectedGraph graph,
+    private void addAggregates(UndirectedGraph graph,
             BoundedContextDoc boundedContextDoc) {
-        UndirectedSubGraph boundedContextGraph = new UndirectedSubGraph();
-        boundedContextGraph.setName(boundedContextDoc.name());
-        graph.addSubGraph(boundedContextGraph);
+        for (AggregateDoc aggregateDoc : aggregateDocRepository.findByBoundedContextKey(boundedContextDoc.getKey())) {
+            addAggregate(graph, aggregateDoc);
+        }
+    }
+
+    private AggregateDocRepository aggregateDocRepository;
+
+    public UndirectedGraph buildAggregateGraph(AggregateDoc aggregateDoc) {
+        UndirectedGraph graph = new UndirectedGraph();
+        addAggregate(graph, aggregateDoc);
+        return graph;
+    }
+
+    private void addAggregate(UndirectedGraph graph, AggregateDoc aggregateDoc) {
+        Node node = Node.box(aggregateDoc.name());
+        node.setStyle(NodeStyle.BOLD);
+        graph.getNodesAndEdges().addNode(node);
     }
 }

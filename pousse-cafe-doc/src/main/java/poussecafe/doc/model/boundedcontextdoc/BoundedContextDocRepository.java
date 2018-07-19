@@ -13,4 +13,8 @@ public class BoundedContextDocRepository extends Repository<BoundedContextDoc, S
     private BoundedContextDocDataAccess<BoundedContextDoc.Data> dataAccess() {
         return (BoundedContextDocDataAccess<Data>) dataAccess;
     }
+
+    public BoundedContextDoc findByPackageNamePrefixing(String name) {
+        return newStorableWithData(dataAccess().findByPackageNamePrefixing(name));
+    }
 }

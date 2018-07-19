@@ -9,7 +9,7 @@
 <bookmark name="Table of Contents" href="#toc"></bookmark>
 <bookmark name="Domain ${domain.name}" href="#domain">
     <#list domain.boundedContexts as context>
-    <bookmark name="${context.name()}" href="#${context.id()}"></bookmark>
+    <bookmark name="${context.name}" href="#${context.id}"></bookmark>
     </#list>
 </bookmark>
 <bookmark name="Ubiquitous Language" href="#ubiquitous_language"></bookmark>
@@ -37,21 +37,28 @@ ${domain.name} Domain Model
     <li><a href="#domain">${domain.name} Domain</a></li>
     <ol>
         <#list domain.boundedContexts as context>
-        <li><a href="#${context.id()}">${context.name()} Bounded Context</a></li>
+        <li><a href="#${context.id}">${context.name} Bounded Context</a></li>
         </#list>
     </ol>
     <li><a href="#ubiquitous_language">Ubiquitous Language</a></li>
 </ol>
 
 <h1 id="domain">${domain.name} Domain</h1>
-<img src="all_entities.png"/>
 
 <#list domain.boundedContexts as context>
-<h2 id="${context.id()}">${context.name()} Bounded Context</h2>
-<#if context.hasDescription()>
-<p>${context.description()}</p>
+<h2 id="${context.id}">${context.name} Bounded Context</h2>
+<#if context.description??>
+<p>${context.description}</p>
 </#if>
-<img src="${context.id()}.png"/>
+<img src="${context.id}.png"/>
+
+<#list context.aggregates as aggregate>
+<h3>${aggregate.name} Aggregate</h3>
+<#if aggregate.description??>
+<p>${aggregate.description}</p>
+</#if>
+<img src="${context.id}_${aggregate.id}.png"/>
+</#list>
 </#list>
 
 <h1 id="ubiquitous_language">Ubiquitous Language</h1>

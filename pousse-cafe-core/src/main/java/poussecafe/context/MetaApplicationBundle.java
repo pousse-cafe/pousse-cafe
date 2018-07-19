@@ -2,6 +2,7 @@ package poussecafe.context;
 
 import java.util.HashSet;
 import java.util.Set;
+import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
@@ -29,9 +30,9 @@ public abstract class MetaApplicationBundle {
 
     protected abstract void loadProcesses(Set<Class<? extends DomainProcess>> processes);
 
-    private Set<Class<?>> services = new HashSet<>();
+    private Set<Class<? extends Service>> services = new HashSet<>();
 
-    protected abstract void loadServices(Set<Class<?>> services);
+    protected abstract void loadServices(Set<Class<? extends Service>> services);
 
     public Set<StorableDefinition> getDefinitions() {
         return unmodifiableSet(definitions);
@@ -45,7 +46,7 @@ public abstract class MetaApplicationBundle {
         return unmodifiableSet(processes);
     }
 
-    public Set<Class<?>> getServices() {
+    public Set<Class<? extends Service>> getServices() {
         return unmodifiableSet(services);
     }
 }
