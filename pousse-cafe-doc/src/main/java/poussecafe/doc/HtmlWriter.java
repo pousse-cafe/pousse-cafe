@@ -15,6 +15,8 @@ import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.servicedoc.ServiceDoc;
+import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.Checks.checkThatValue;
@@ -63,7 +65,14 @@ public class HtmlWriter {
         view.put("id", boundedContextDoc.id());
         view.put("name", boundedContextDoc.name());
         view.put("description", boundedContextDoc.description());
+
         view.put("aggregates", aggregateDocRepository
+                .findByBoundedContextKey(boundedContextDoc.getKey())
+                .stream()
+                .map(this::adapt)
+                .collect(toList()));
+
+        view.put("services", serviceDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())
                 .stream()
                 .map(this::adapt)
@@ -73,11 +82,21 @@ public class HtmlWriter {
 
     private AggregateDocRepository aggregateDocRepository;
 
+    private ServiceDocRepository serviceDocRepository;
+
     private HashMap<String, Object> adapt(AggregateDoc aggregateDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", aggregateDoc.id());
         view.put("name", aggregateDoc.name());
         view.put("description", aggregateDoc.description());
+        return view;
+    }
+
+    private HashMap<String, Object> adapt(ServiceDoc serviceDoc) {
+        HashMap<String, Object> view = new HashMap<>();
+        view.put("id", serviceDoc.id());
+        view.put("name", serviceDoc.name());
+        view.put("description", serviceDoc.description());
         return view;
     }
 

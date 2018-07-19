@@ -33,18 +33,34 @@ public class PousseCafeDoclet {
     }
 
     private void analyzeCode() {
+        detectBoundedContexts();
+        detectBoundedContextComponents();
+    }
+
+    private void detectBoundedContexts() {
         BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator(rootDocWrapper);
         context.injectDependencies(boundedContextCreator);
 
+        ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
+                .rootDocWrapper(rootDocWrapper)
+                .classDocConsumer(boundedContextCreator)
+                .build();
+        codeAnalyzer.analyzeCode();
+    }
+
+    private void detectBoundedContextComponents() {
         AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(rootDocWrapper);
         context.injectDependencies(aggregateDocCreator);
 
-        ClassesAnalyzer analyzer = new ClassesAnalyzer.Builder()
+        ServiceDocCreator serviceDocCreator = new ServiceDocCreator(rootDocWrapper);
+        context.injectDependencies(serviceDocCreator);
+
+        ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
-                .classDocConsumer(boundedContextCreator)
                 .classDocConsumer(aggregateDocCreator)
+                .classDocConsumer(serviceDocCreator)
                 .build();
-        analyzer.analyzeCode();
+        codeAnalyzer.analyzeCode();
     }
 
     private void createOutputFolder() {

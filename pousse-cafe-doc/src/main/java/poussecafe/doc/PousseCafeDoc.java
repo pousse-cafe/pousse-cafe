@@ -13,8 +13,14 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocData;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.InMemoryBoundedContextDocDataAccess;
+import poussecafe.doc.model.servicedoc.InMemoryServiceDocDataAccess;
+import poussecafe.doc.model.servicedoc.ServiceDoc;
+import poussecafe.doc.model.servicedoc.ServiceDocData;
+import poussecafe.doc.model.servicedoc.ServiceDocFactory;
+import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 import poussecafe.doc.process.AggregateDocCreation;
 import poussecafe.doc.process.BoundedContextDocCreation;
+import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
@@ -36,6 +42,12 @@ public class PousseCafeDoc extends BoundedContext {
                 .withFactoryClass(AggregateDocFactory.class)
                 .withRepositoryClass(AggregateDocRepository.class)
                 .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(ServiceDoc.class)
+                .withFactoryClass(ServiceDocFactory.class)
+                .withRepositoryClass(ServiceDocRepository.class)
+                .build());
     }
 
     @Override
@@ -53,12 +65,20 @@ public class PousseCafeDoc extends BoundedContext {
                 .withDataAccessFactory(InMemoryAggregateDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(ServiceDoc.class)
+                .withDataFactory(ServiceDocData::new)
+                .withDataAccessFactory(InMemoryServiceDocDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
     }
 
     @Override
     protected void loadProcesses(Set<Class<? extends DomainProcess>> processes) {
         processes.add(BoundedContextDocCreation.class);
         processes.add(AggregateDocCreation.class);
+        processes.add(ServiceDocCreation.class);
     }
 
     @Override

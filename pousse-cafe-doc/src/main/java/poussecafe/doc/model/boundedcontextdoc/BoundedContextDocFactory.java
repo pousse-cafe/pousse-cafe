@@ -2,6 +2,7 @@ package poussecafe.doc.model.boundedcontextdoc;
 
 import com.sun.javadoc.ClassDoc;
 import poussecafe.context.BoundedContext;
+import poussecafe.doc.ClassDocPredicates;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
@@ -20,7 +21,7 @@ public class BoundedContextDocFactory extends Factory<String, BoundedContextDoc,
     }
 
     public static boolean isBoundedContextDoc(ClassDoc classDoc) {
-        return classDoc.superclass() != null && classDoc.superclass().qualifiedName().equals(BoundedContext.class.getName());
+        return ClassDocPredicates.documentsWithSuperclass(classDoc, BoundedContext.class);
     }
 
 }

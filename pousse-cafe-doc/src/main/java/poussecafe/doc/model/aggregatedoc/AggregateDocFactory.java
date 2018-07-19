@@ -1,6 +1,7 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import com.sun.javadoc.ClassDoc;
+import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.domain.AggregateRoot;
@@ -27,7 +28,7 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
     }
 
     public static boolean isAggregateDoc(ClassDoc classDoc) {
-        return classDoc.superclass() != null && classDoc.superclass().qualifiedName().equals(AggregateRoot.class.getName());
+        return ClassDocPredicates.documentsWithSuperclass(classDoc, AggregateRoot.class);
     }
 
     private BoundedContextDocRepository boundedContextDocRepository;

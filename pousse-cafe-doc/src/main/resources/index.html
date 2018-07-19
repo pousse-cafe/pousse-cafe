@@ -37,7 +37,21 @@ ${domain.name} Domain Model
     <li><a href="#domain">${domain.name} Domain</a></li>
     <ol>
         <#list domain.boundedContexts as context>
-        <li><a href="#${context.id}">${context.name} Bounded Context</a></li>
+        <li><a href="#${context.id}">${context.name}</a></li>
+        <ol>
+          <li><a href="#${context.id}_aggregates">Aggregates</a></li>
+          <ol>
+            <#list context.aggregates as aggregate>
+            <li><a href="#${context.id}_${aggregate.id}">${aggregate.name}</a></li>
+            </#list>
+          </ol>
+          <li><a href="#${context.id}_services">Services</a></li>
+          <ol>
+            <#list context.services as service>
+            <li><a href="#${context.id}_${service.id}">${service.name}</a></li>
+            </#list>
+          </ol>
+        </ol>
         </#list>
     </ol>
     <li><a href="#ubiquitous_language">Ubiquitous Language</a></li>
@@ -46,19 +60,31 @@ ${domain.name} Domain Model
 <h1 id="domain">${domain.name} Domain</h1>
 
 <#list domain.boundedContexts as context>
-<h2 id="${context.id}">${context.name} Bounded Context</h2>
+<h2 id="${context.id}">${context.name}</h2>
 <#if context.description??>
 <p>${context.description}</p>
 </#if>
 <img src="${context.id}.png"/>
 
+<h3 id="${context.id}_aggregates">Aggregates</h3>
+
 <#list context.aggregates as aggregate>
-<h3>${aggregate.name} Aggregate</h3>
+<h4 id="${context.id}_${aggregate.id}">${aggregate.name}</h4>
 <#if aggregate.description??>
 <p>${aggregate.description}</p>
 </#if>
 <img src="${context.id}_${aggregate.id}.png"/>
 </#list>
+
+<h3 id="${context.id}_services">Services</h3>
+
+<#list context.services as service>
+<h4 id="${context.id}_${service.id}">${service.name}</h4>
+<#if service.description??>
+<p>${service.description}</p>
+</#if>
+</#list>
+
 </#list>
 
 <h1 id="ubiquitous_language">Ubiquitous Language</h1>
