@@ -64,7 +64,7 @@ public class MetaApplicationContext {
 
     private CoreBundle coreBundle = new MemoryCoreBundle();
 
-    private List<MetaApplicationBundle> appBundles = new ArrayList<>();
+    private List<BoundedContext> appBundles = new ArrayList<>();
 
     public MetaApplicationContext() {
         environment = new Environment();
@@ -94,7 +94,7 @@ public class MetaApplicationContext {
         this.coreBundle = coreBundle;
     }
 
-    public void addBundle(MetaApplicationBundle bundle) {
+    public void addBundle(BoundedContext bundle) {
         checkThatValue(bundle).notNull();
         appBundles.add(bundle);
     }
@@ -119,13 +119,13 @@ public class MetaApplicationContext {
     }
 
     private void loadBundles() {
-        loadBundle(coreBundle);
-        for(MetaApplicationBundle appBundle : appBundles) {
-            loadBundle(appBundle);
+        loadBoundedContext(coreBundle);
+        for(BoundedContext appBundle : appBundles) {
+            loadBoundedContext(appBundle);
         }
     }
 
-    public void loadBundle(MetaApplicationBundle bundle) {
+    public void loadBoundedContext(BoundedContext bundle) {
         for(StorableDefinition definition : bundle.getDefinitions()) {
             environment.defineStorable(definition);
         }

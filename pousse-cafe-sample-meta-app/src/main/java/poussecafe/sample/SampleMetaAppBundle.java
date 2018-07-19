@@ -1,7 +1,8 @@
 package poussecafe.sample;
 
 import java.util.Set;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
+import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.Customer;
@@ -32,7 +33,7 @@ import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;
 
-public class SampleMetaAppBundle extends MetaApplicationBundle {
+public class SampleMetaAppBundle extends BoundedContext {
 
     @Override
     protected void loadDefinitions(Set<StorableDefinition> definitions) {
@@ -95,7 +96,7 @@ public class SampleMetaAppBundle extends MetaApplicationBundle {
     }
 
     @Override
-    protected void loadServices(Set<Class<?>> services) {
+    protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(ContentChooser.class);
     }
 

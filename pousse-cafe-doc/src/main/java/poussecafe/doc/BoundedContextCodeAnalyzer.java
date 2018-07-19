@@ -1,6 +1,6 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.process.BoundedContextDocCreation;
 
@@ -27,11 +27,11 @@ public class BoundedContextCodeAnalyzer {
     private RootDocWrapper rootDocWrapper;
 
     public void analyzeCode() {
-        PackageDoc[] packages = rootDocWrapper.rootDoc().specifiedPackages();
-        for (PackageDoc packageDoc : packages) {
-            if (BoundedContextDocFactory.isBoundedContextDoc(packageDoc)) {
-                rootDocWrapper.debug("Adding bounded context with package " + packageDoc.name());
-                boundedContextDocCreation.addBoundedContextDoc(packageDoc);
+        ClassDoc[] classes = rootDocWrapper.rootDoc().classes();
+        for (ClassDoc classDoc : classes) {
+            if (!AnnotationsResolver.isIgnored(classDoc) && BoundedContextDocFactory.isBoundedContextDoc(classDoc)) {
+                rootDocWrapper.debug("Adding bounded context with package " + classDoc.name());
+                boundedContextDocCreation.addBoundedContextDoc(classDoc);
             }
         }
     }

@@ -2,8 +2,9 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.DomainException;
+import poussecafe.domain.Service;
 
-public class ContentChooser {
+public class ContentChooser implements Service {
 
     public ContentType chooseContent(DomainEvent event) {
         if (event instanceof OrderRejected) {

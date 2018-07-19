@@ -2,7 +2,7 @@ package poussecafe.test;
 
 import java.util.List;
 import org.junit.Before;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.DomainEvent;
 import poussecafe.storable.IdentifiedStorable;
@@ -15,8 +15,8 @@ public abstract class MetaApplicationTest {
     @Before
     public void configureContext() {
         MetaApplicationContext context = new MetaApplicationContext();
-        for(MetaApplicationBundle bundle : testBundle()) {
-            context.loadBundle(bundle);
+        for(BoundedContext bundle : testBundle()) {
+            context.loadBoundedContext(bundle);
         }
         context.load();
         context.injectDependencies(this);
@@ -25,7 +25,7 @@ public abstract class MetaApplicationTest {
         wrapper = new MetaApplicationWrapper(context);
     }
 
-    protected abstract List<MetaApplicationBundle> testBundle();
+    protected abstract List<BoundedContext> testBundle();
 
     protected MetaApplicationContext context() {
         return wrapper.context();

@@ -31,7 +31,7 @@ public class AggregateCodeAnalyzer {
     public void analyzeCode() {
         ClassDoc[] classDocs = rootDocWrapper.rootDoc().classes();
         for (ClassDoc classDoc : classDocs) {
-            if (AggregateDocFactory.isAggregateDoc(classDoc)) {
+            if (!AnnotationsResolver.isIgnored(classDoc) && AggregateDocFactory.isAggregateDoc(classDoc)) {
                 BoundedContextDoc boundedContextDoc = boundedContextDocRepository.findByPackageNamePrefixing(classDoc.qualifiedName());
                 if(boundedContextDoc != null) {
                     rootDocWrapper.debug("Adding aggregate with class " + classDoc.name());

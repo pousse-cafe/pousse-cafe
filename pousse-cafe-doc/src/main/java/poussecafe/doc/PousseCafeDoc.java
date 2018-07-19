@@ -1,7 +1,7 @@
 package poussecafe.doc;
 
 import java.util.Set;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocData;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
@@ -20,7 +20,7 @@ import poussecafe.storable.StorableDefinition;
 import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;
 
-public class PousseCafeDoc extends MetaApplicationBundle {
+public class PousseCafeDoc extends BoundedContext {
 
     @Override
     protected void loadDefinitions(Set<StorableDefinition> definitions) {

@@ -9,7 +9,7 @@ import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
 import poussecafe.util.IdGenerator;
 
-public abstract class CoreBundle extends MetaApplicationBundle {
+public abstract class CoreBundle extends BoundedContext {
 
     @Override
     protected void loadDefinitions(Set<StorableDefinition> definitions) {

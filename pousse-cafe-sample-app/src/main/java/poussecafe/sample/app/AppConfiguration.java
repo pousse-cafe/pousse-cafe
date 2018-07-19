@@ -14,7 +14,7 @@ public class AppConfiguration {
     public MetaApplicationContext pousseCafeApplicationContext() {
         MetaApplicationContext context = new MetaApplicationContext();
         context.setCoreBundle(new MongoCoreBundle());
-        context.loadBundle(new SampleMetaAppMongoBundle());
+        context.loadBoundedContext(new SampleMetaAppMongoBundle());
         context.start();
         return context;
     }

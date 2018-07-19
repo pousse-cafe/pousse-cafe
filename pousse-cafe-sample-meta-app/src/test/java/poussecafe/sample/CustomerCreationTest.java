@@ -2,7 +2,7 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
@@ -18,7 +18,7 @@ public class CustomerCreationTest extends MetaApplicationTest {
     private CustomerKey customerKey;
 
     @Override
-    protected List<MetaApplicationBundle> testBundle() {
+    protected List<BoundedContext> testBundle() {
         return asList(new SampleMetaAppBundle());
     }
 

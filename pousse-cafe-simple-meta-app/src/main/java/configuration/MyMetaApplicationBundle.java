@@ -5,7 +5,7 @@ import domain.MyFactory;
 import domain.MyRepository;
 import domain.data.MyAggregateData;
 import java.util.Set;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
@@ -14,7 +14,7 @@ import poussecafe.storage.memory.InMemoryDataAccess;
 import poussecafe.storage.memory.InMemoryStorage;
 import process.MyProcess;
 
-public class MyMetaApplicationBundle extends MetaApplicationBundle {
+public class MyMetaApplicationBundle extends BoundedContext {
 
     @Override
     protected void loadDefinitions(Set<StorableDefinition> definitions) {

@@ -9,9 +9,9 @@ import poussecafe.storable.StorableImplementation;
 
 import static java.util.Collections.unmodifiableSet;
 
-public abstract class MetaApplicationBundle {
+public abstract class BoundedContext {
 
-    protected MetaApplicationBundle() {
+    protected BoundedContext() {
         loadDefinitions(definitions);
         loadImplementations(implementations);
         loadProcesses(processes);

@@ -5,7 +5,7 @@ import domain.MyAggregate;
 import domain.MyAggregateKey;
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.MetaApplicationBundle;
+import poussecafe.context.BoundedContext;
 import poussecafe.test.MetaApplicationTest;
 
 import static java.util.Arrays.asList;
@@ -28,7 +28,7 @@ public class MyProcessTest extends MetaApplicationTest {
      * The context will be configured with provided actors (Domain Components and Work Flows).
      */
     @Override
-    protected List<MetaApplicationBundle> testBundle() {
+    protected List<BoundedContext> testBundle() {
         return asList(new MyMetaApplicationBundle());
     }
 
