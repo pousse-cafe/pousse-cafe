@@ -2,6 +2,7 @@ package poussecafe.doc;
 
 import java.util.Set;
 import poussecafe.context.BoundedContext;
+import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocData;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
@@ -63,6 +64,7 @@ public class PousseCafeDoc extends BoundedContext {
     @Override
     protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(GraphFactory.class);
+        services.add(UbiquitousLanguageFactory.class);
     }
 
 }

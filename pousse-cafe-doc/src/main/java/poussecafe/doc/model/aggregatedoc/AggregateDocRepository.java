@@ -12,4 +12,8 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
     private AggregateDocDataAccess<AggregateDoc.Data> dataAccess() {
         return (AggregateDocDataAccess<AggregateDoc.Data>) dataAccess;
     }
+
+    public List<AggregateDoc> findAll() {
+        return newStorablesWithData(dataAccess().findAll());
+    }
 }

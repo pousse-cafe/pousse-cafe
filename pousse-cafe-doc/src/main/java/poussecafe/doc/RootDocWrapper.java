@@ -59,4 +59,8 @@ public class RootDocWrapper {
         }
         return false;
     }
+
+    public void info(String message) {
+        rootDoc.printNotice(message);
+    }
 }

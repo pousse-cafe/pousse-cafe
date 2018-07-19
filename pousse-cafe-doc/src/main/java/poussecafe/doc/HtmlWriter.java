@@ -6,12 +6,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
+import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
@@ -48,7 +47,7 @@ public class HtmlWriter {
             HashMap<String, Object> model = new HashMap<>();
             model.put("domain", domain);
             model.put("generationDate", new Date());
-            model.put("ubiquitousLanguage", buildUbiquitousLanguage());
+            model.put("ubiquitousLanguage", ubitquitousLanguageFactory.buildUbiquitousLanguage());
             template.process(model, stream);
 
             stream.close();
@@ -88,14 +87,5 @@ public class HtmlWriter {
                         new FileOutputStream(new File(rootDocWrapper.outputPath(), "style.css")));
     }
 
-    private List<UbiquitousLanguageEntry> buildUbiquitousLanguage() {
-        List<UbiquitousLanguageEntry> language = new ArrayList<>();
-        for (BoundedContextDoc boundedContext : boundedContextDocRepository.findAll()) {
-            language
-                    .add(new UbiquitousLanguageEntry(boundedContext.name(), "Bounded Context",
-                            boundedContext.description()));
-        }
-        Collections.sort(language);
-        return language;
-    }
+    private UbiquitousLanguageFactory ubitquitousLanguageFactory;
 }

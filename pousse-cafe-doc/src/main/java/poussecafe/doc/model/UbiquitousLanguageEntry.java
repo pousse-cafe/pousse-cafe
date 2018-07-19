@@ -1,4 +1,4 @@
-package poussecafe.doc;
+package poussecafe.doc.model;
 
 public class UbiquitousLanguageEntry
         implements Comparable<UbiquitousLanguageEntry> {
