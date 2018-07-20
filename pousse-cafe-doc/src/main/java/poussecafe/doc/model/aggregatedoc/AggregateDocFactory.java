@@ -20,11 +20,15 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
             throw new DomainException("Unable to locate bounded context for package " + classDoc.containingPackage().name());
         }
 
-        String name = classDoc.simpleTypeName();
+        String name = name(classDoc);
         AggregateDocKey key = new AggregateDocKey(boundedContextDoc.name(), name);
         AggregateDoc aggregateDoc = newStorableWithKey(key);
         aggregateDoc.description(classDoc.commentText());
         return aggregateDoc;
+    }
+
+    public static String name(ClassDoc classDoc) {
+        return classDoc.simpleTypeName();
     }
 
     public static boolean isAggregateDoc(ClassDoc classDoc) {

@@ -1,5 +1,6 @@
 package poussecafe.doc;
 
+import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import java.io.File;
 import poussecafe.context.MetaApplicationContext;
@@ -35,6 +36,7 @@ public class PousseCafeDoclet {
     private void analyzeCode() {
         detectBoundedContexts();
         detectBoundedContextComponents();
+        detectAggregateComponents();
     }
 
     private void detectBoundedContexts() {
@@ -59,6 +61,17 @@ public class PousseCafeDoclet {
                 .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(aggregateDocCreator)
                 .classDocConsumer(serviceDocCreator)
+                .build();
+        codeAnalyzer.analyzeCode();
+    }
+
+    private void detectAggregateComponents() {
+        EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
+        context.injectDependencies(entityDocCreator);
+
+        ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
+                .rootDocWrapper(rootDocWrapper)
+                .classDocConsumer(entityDocCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }
@@ -104,6 +117,13 @@ public class PousseCafeDoclet {
         if ("-domain".equals(option)) {
             return 2;
         }
+        if ("-basePackage".equals(option)) {
+            return 2;
+        }
         return 0;
     }
+
+    public static LanguageVersion languageVersion() {
+        return LanguageVersion.JAVA_1_5;
+     }
 }

@@ -2,6 +2,7 @@ package poussecafe.doc;
 
 import java.util.Set;
 import poussecafe.context.BoundedContext;
+import poussecafe.doc.model.AggregateDocLocator;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocData;
@@ -13,6 +14,11 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocData;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.InMemoryBoundedContextDocDataAccess;
+import poussecafe.doc.model.entitydoc.EntityDoc;
+import poussecafe.doc.model.entitydoc.EntityDocData;
+import poussecafe.doc.model.entitydoc.EntityDocFactory;
+import poussecafe.doc.model.entitydoc.EntityDocRepository;
+import poussecafe.doc.model.entitydoc.InMemoryEntityDocDataAccess;
 import poussecafe.doc.model.servicedoc.InMemoryServiceDocDataAccess;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocData;
@@ -20,6 +26,7 @@ import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 import poussecafe.doc.process.AggregateDocCreation;
 import poussecafe.doc.process.BoundedContextDocCreation;
+import poussecafe.doc.process.EntityDocCreation;
 import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
@@ -48,6 +55,12 @@ public class PousseCafeDoc extends BoundedContext {
                 .withFactoryClass(ServiceDocFactory.class)
                 .withRepositoryClass(ServiceDocRepository.class)
                 .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(EntityDoc.class)
+                .withFactoryClass(EntityDocFactory.class)
+                .withRepositoryClass(EntityDocRepository.class)
+                .build());
     }
 
     @Override
@@ -72,6 +85,13 @@ public class PousseCafeDoc extends BoundedContext {
                 .withDataAccessFactory(InMemoryServiceDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(EntityDoc.class)
+                .withDataFactory(EntityDocData::new)
+                .withDataAccessFactory(InMemoryEntityDocDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
     }
 
     @Override
@@ -79,12 +99,14 @@ public class PousseCafeDoc extends BoundedContext {
         processes.add(BoundedContextDocCreation.class);
         processes.add(AggregateDocCreation.class);
         processes.add(ServiceDocCreation.class);
+        processes.add(EntityDocCreation.class);
     }
 
     @Override
     protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(GraphFactory.class);
         services.add(UbiquitousLanguageFactory.class);
+        services.add(AggregateDocLocator.class);
     }
 
 }

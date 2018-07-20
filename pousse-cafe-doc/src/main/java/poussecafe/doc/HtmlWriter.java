@@ -15,6 +15,8 @@ import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.entitydoc.EntityDoc;
+import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 
@@ -89,6 +91,23 @@ public class HtmlWriter {
         view.put("id", aggregateDoc.id());
         view.put("name", aggregateDoc.name());
         view.put("description", aggregateDoc.description());
+
+        view.put("entities", entityDocRepository
+                .findByAggregateDocKey(aggregateDoc.getKey())
+                .stream()
+                .map(this::adapt)
+                .collect(toList()));
+
+        return view;
+    }
+
+    private EntityDocRepository entityDocRepository;
+
+    private HashMap<String, Object> adapt(EntityDoc entityDoc) {
+        HashMap<String, Object> view = new HashMap<>();
+        view.put("id", entityDoc.id());
+        view.put("name", entityDoc.name());
+        view.put("description", entityDoc.description());
         return view;
     }
 

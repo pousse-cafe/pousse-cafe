@@ -36,6 +36,10 @@ public class RootDocWrapper {
         return readOptionValue("domain").orElse("Undefined");
     }
 
+    public String basePackage() {
+        return readOptionValue("basePackage").orElseThrow(RuntimeException::new);
+    }
+
     public void debug(String message) {
         if(isDebug()) {
             rootDoc.printNotice(message);

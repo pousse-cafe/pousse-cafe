@@ -74,6 +74,17 @@ ${domain.name} Domain Model
 <p>${aggregate.description}</p>
 </#if>
 <img src="${context.id}_${aggregate.id}.png"/>
+
+<#if aggregate.entities?size gt 0>
+<h5>Entities</h5>
+<ul>
+<#list aggregate.entities as entity>
+<#if entity.description??>
+  <li><strong>${entity.name}:</strong> ${entity.description}</li>
+</#if>
+</#list>
+</ul>
+</#if>
 </#list>
 
 <h3 id="${context.id}_services">Services</h3>
