@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import org.apache.commons.io.IOUtils;
 import poussecafe.doc.graph.UndirectedGraph;
 
-public class GraphDrawer {
+public class GraphWriter {
 
     public void drawGraph(UndirectedGraph graph, File outputDirectory,
             String graphName) throws IOException {

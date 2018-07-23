@@ -1,43 +1,66 @@
 package poussecafe.doc.model;
 
+import java.util.Optional;
+
+import static poussecafe.check.Checks.checkThatValue;
+
 public class UbiquitousLanguageEntry
         implements Comparable<UbiquitousLanguageEntry> {
 
-    private String name;
+    public static class Builder {
+
+        private UbiquitousLanguageEntry entry = new UbiquitousLanguageEntry();
+
+        public Builder boundedContextName(String boundedContextName) {
+            entry.boundedContextName = Optional.of(boundedContextName);
+            return this;
+        }
+
+        public Builder componentDoc(ComponentDoc componentDoc) {
+            entry.componentDoc = componentDoc;
+            return this;
+        }
+
+        public Builder type(String type) {
+            entry.type = type;
+            return this;
+        }
+
+        public UbiquitousLanguageEntry build() {
+            checkThatValue(entry.type).notNull();
+            checkThatValue(entry.componentDoc).notNull();
+            return entry;
+        }
+    }
+
+    private UbiquitousLanguageEntry() {
+
+    }
+
+    private Optional<String> boundedContextName = Optional.empty();
+
+    public Optional<String> boundedContextName() {
+        return boundedContextName;
+    }
+
+    private ComponentDoc componentDoc;
+
+    public ComponentDoc componentDoc() {
+        return componentDoc;
+    }
 
     private String type;
-
-    private String description;
-
-    public UbiquitousLanguageEntry(String name, String type,
-            String description) {
-        setName(name);
-        setType(type);
-        setDescription(description);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public String qualifiedName() {
+        if(boundedContextName().isPresent()) {
+            return componentDoc().name() + " (" + boundedContextName().get() + ")";
+        } else {
+            return componentDoc().name();
+        }
     }
 
     @Override
@@ -46,6 +69,6 @@ public class UbiquitousLanguageEntry
     }
 
     private String comparisonIndex() {
-        return name + type;
+        return qualifiedName() + type;
     }
 }

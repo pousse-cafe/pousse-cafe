@@ -4,7 +4,7 @@ import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc.Data;
 import poussecafe.domain.Repository;
 
-public class BoundedContextDocRepository extends Repository<BoundedContextDoc, String, BoundedContextDoc.Data> {
+public class BoundedContextDocRepository extends Repository<BoundedContextDoc, BoundedContextDocKey, BoundedContextDoc.Data> {
 
     public List<BoundedContextDoc> findAll() {
         return newStorablesWithData(dataAccess().findAll());

@@ -1,11 +1,12 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.Repository;
 
 public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Data> {
 
-    public List<AggregateDoc> findByBoundedContextKey(String key) {
+    public List<AggregateDoc> findByBoundedContextKey(BoundedContextDocKey key) {
         return newStorablesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
@@ -15,5 +16,9 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
 
     public List<AggregateDoc> findAll() {
         return newStorablesWithData(dataAccess().findAll());
+    }
+
+    public List<AggregateDoc> findByKeyClassName(String qualifiedName) {
+        return newStorablesWithData(dataAccess().findByKeyClassName(qualifiedName));
     }
 }

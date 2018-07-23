@@ -1,6 +1,7 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import poussecafe.doc.StringNormalizer;
+import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.Property;
@@ -9,29 +10,36 @@ import static poussecafe.check.Checks.checkThatValue;
 
 public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Data> {
 
-    void description(String description) {
-        checkThatValue(description).notNull();
-        getData().description().set(description);
+    void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
+        checkThatValue(boundedContextComponentDoc).notNull();
+        getData().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 
-    public String description() {
-        return getData().description().get();
+    public BoundedContextComponentDoc boundedContextComponentDoc() {
+        return getData().boundedContextComponentDoc().get();
     }
 
-    public String boundedContextKey() {
-        return getKey().boundedContextKey();
+    void keyClassName(String keyClassName) {
+        checkThatValue(keyClassName).notNull();
+        getData().keyClassName().set(keyClassName);
     }
 
-    public String name() {
-        return getKey().name();
+    public String keyClassName() {
+        return getData().keyClassName().get();
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(name());
+        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+    }
+
+    public String className() {
+        return getKey().getValue();
     }
 
     public static interface Data extends IdentifiedStorableData<AggregateDocKey> {
 
-        Property<String> description();
+        Property<BoundedContextComponentDoc> boundedContextComponentDoc();
+
+        Property<String> keyClassName();
     }
 }

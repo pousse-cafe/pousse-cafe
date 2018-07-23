@@ -1,7 +1,7 @@
 package poussecafe.doc.model.entitydoc;
 
 import poussecafe.doc.StringNormalizer;
-import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
+import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.Property;
@@ -10,29 +10,21 @@ import static poussecafe.check.Checks.checkThatValue;
 
 public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
 
-    void description(String description) {
-        checkThatValue(description).notNull();
-        getData().description().set(description);
+    void componentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
+        checkThatValue(boundedContextComponentDoc).notNull();
+        getData().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 
-    public String description() {
-        return getData().description().get();
-    }
-
-    public AggregateDocKey aggregateDocKey() {
-        return getKey().aggregateDocKey();
-    }
-
-    public String name() {
-        return getKey().name();
+    public BoundedContextComponentDoc boundedContextComponentDoc() {
+        return getData().boundedContextComponentDoc().get();
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(name());
+        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
     }
 
     public static interface Data extends IdentifiedStorableData<EntityDocKey> {
 
-        Property<String> description();
+        Property<BoundedContextComponentDoc> boundedContextComponentDoc();
     }
 }

@@ -2,7 +2,7 @@ package poussecafe.doc.model.boundedcontextdoc;
 
 import poussecafe.storage.memory.InMemoryDataAccess;
 
-public class InMemoryBoundedContextDocDataAccess extends InMemoryDataAccess<String, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
+public class InMemoryBoundedContextDocDataAccess extends InMemoryDataAccess<BoundedContextDocKey, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
 
     @Override
     public BoundedContextDocData findByPackageNamePrefixing(String packageName) {

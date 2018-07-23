@@ -1,71 +1,15 @@
 package poussecafe.doc.model.servicedoc;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import poussecafe.domain.ValueObject;
+import poussecafe.util.StringKey;
 
-import static poussecafe.check.Checks.checkThatValue;
+public class ServiceDocKey extends StringKey implements ValueObject {
 
-public class ServiceDocKey {
-
-    public ServiceDocKey(String boundedContextKey, String name) {
-        boundedContextKey(boundedContextKey);
-        name(name);
+    public static ServiceDocKey ofClassName(String className) {
+        return new ServiceDocKey(className);
     }
 
-    private void boundedContextKey(String boundedContextKey) {
-        checkThatValue(boundedContextKey).notNull();
-        this.boundedContextKey = boundedContextKey;
-    }
-
-    private String boundedContextKey;
-
-    public String boundedContextKey() {
-        return boundedContextKey;
-    }
-
-    private void name(String name) {
-        checkThatValue(name).notNull();
-        this.name = name;
-    }
-
-    private String name;
-
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append(boundedContextKey)
-                .append(name)
-                .build();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(this == obj) {
-            return true;
-        }
-        if(obj == null) {
-            return false;
-        }
-        if(getClass() != obj.getClass()) {
-            return false;
-        }
-        ServiceDocKey other = (ServiceDocKey) obj;
-        return new EqualsBuilder()
-                .append(boundedContextKey, other.boundedContextKey)
-                .append(name, other.name)
-                .build();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(boundedContextKey)
-                .append(name)
-                .build();
+    private ServiceDocKey(String className) {
+        super(className);
     }
 }

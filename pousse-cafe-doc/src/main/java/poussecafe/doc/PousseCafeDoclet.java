@@ -36,7 +36,7 @@ public class PousseCafeDoclet {
     private void analyzeCode() {
         detectBoundedContexts();
         detectBoundedContextComponents();
-        detectAggregateComponents();
+        detectRelations();
     }
 
     private void detectBoundedContexts() {
@@ -57,21 +57,29 @@ public class PousseCafeDoclet {
         ServiceDocCreator serviceDocCreator = new ServiceDocCreator(rootDocWrapper);
         context.injectDependencies(serviceDocCreator);
 
+        EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
+        context.injectDependencies(entityDocCreator);
+
+        ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
+        context.injectDependencies(valueObjectDocCreator);
+
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(aggregateDocCreator)
                 .classDocConsumer(serviceDocCreator)
+                .classDocConsumer(entityDocCreator)
+                .classDocConsumer(valueObjectDocCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }
 
-    private void detectAggregateComponents() {
-        EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
-        context.injectDependencies(entityDocCreator);
+    private void detectRelations() {
+        RelationCreator relationCreator = new RelationCreator(rootDocWrapper);
+        context.injectDependencies(relationCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
-                .classDocConsumer(entityDocCreator)
+                .classDocConsumer(relationCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }

@@ -1,13 +1,23 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
 import poussecafe.doc.StringNormalizer;
+import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
-public class BoundedContextDoc extends AggregateRoot<String, BoundedContextDoc.Data> {
+public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, BoundedContextDoc.Data> {
+
+    void componentDoc(ComponentDoc componentDoc) {
+        checkThatValue(componentDoc).notNull();
+        getData().componentDoc().set(componentDoc);
+    }
+
+    public ComponentDoc componentDoc() {
+        return getData().componentDoc().get();
+    }
 
     void packageName(String packageName) {
         checkThatValue(packageName).notNull();
@@ -18,29 +28,13 @@ public class BoundedContextDoc extends AggregateRoot<String, BoundedContextDoc.D
         return getData().packageName().get();
     }
 
-    public String name() {
-        return getKey();
-    }
-
-    public String description() {
-        return getData().description().get();
-    }
-
-    void description(String description) {
-        getData().description().set(description);
-    }
-
     public String id() {
-        return StringNormalizer.normalizeString(name());
+        return StringNormalizer.normalizeString(componentDoc().name());
     }
 
-    public boolean hasDescription() {
-        return getData().description() != null;
-    }
+    public static interface Data extends IdentifiedStorableData<BoundedContextDocKey> {
 
-    public static interface Data extends IdentifiedStorableData<String> {
-
-        Property<String> description();
+        Property<ComponentDoc> componentDoc();
 
         Property<String> packageName();
     }

@@ -21,8 +21,8 @@ public class GraphsWriter {
             File outputDirectory = outputDirectory();
             List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
             for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
-                rootDocWrapper.debug("Drawing BC " + boundedContextDoc.name() + " graph...");
-                graphDrawer
+                rootDocWrapper.debug("Drawing BC " + boundedContextDoc.componentDoc().name() + " graph...");
+                graphWriter
                         .drawGraph(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
                                 boundedContextDoc.id());
 
@@ -37,14 +37,14 @@ public class GraphsWriter {
         return new File(rootDocWrapper.outputPath());
     }
 
-    private GraphDrawer graphDrawer = new GraphDrawer();
+    private GraphWriter graphWriter = new GraphWriter();
 
     private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())) {
-            rootDocWrapper.debug("Drawing aggregate " + aggregateDoc.name() + " graph...");
-            graphDrawer
+            rootDocWrapper.debug("Drawing aggregate " + aggregateDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+            graphWriter
                     .drawGraph(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + aggregateDoc.id());
         }

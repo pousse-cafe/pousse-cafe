@@ -1,44 +1,46 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
 import java.io.Serializable;
+import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocData;
 import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")
 public class BoundedContextDocData implements BoundedContextDoc.Data, Serializable {
 
     @Override
-    public Property<String> key() {
-        return new Property<String>() {
+    public Property<BoundedContextDocKey> key() {
+        return new Property<BoundedContextDocKey>() {
             @Override
-            public String get() {
-                return key;
+            public BoundedContextDocKey get() {
+                return BoundedContextDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(String value) {
-                key = value;
+            public void set(BoundedContextDocKey value) {
+                className = value.getValue();
             }
         };
     }
 
-    private String key;
+    private String className;
 
     @Override
-    public Property<String> description() {
-        return new Property<String>() {
+    public Property<ComponentDoc> componentDoc() {
+        return new Property<ComponentDoc>() {
             @Override
-            public String get() {
-                return description;
+            public ComponentDoc get() {
+                return componentDoc.toModel();
             }
 
             @Override
-            public void set(String value) {
-                description = value;
+            public void set(ComponentDoc value) {
+                componentDoc = ComponentDocData.of(value);
             }
         };
     }
 
-    private String description;
+    private ComponentDocData componentDoc;
 
     @Override
     public Property<String> packageName() {

@@ -85,6 +85,18 @@ ${domain.name} Domain Model
 </#list>
 </ul>
 </#if>
+
+<#if aggregate.valueObjects?size gt 0>
+<h5>Value Objects</h5>
+<ul>
+<#list aggregate.valueObjects as valueObject>
+<#if valueObject.description??>
+  <li><strong>${valueObject.name}:</strong> ${valueObject.description}</li>
+</#if>
+</#list>
+</ul>
+</#if>
+
 </#list>
 
 <h3 id="${context.id}_services">Services</h3>
@@ -101,9 +113,7 @@ ${domain.name} Domain Model
 <h1 id="ubiquitous_language">Ubiquitous Language</h1>
 <ol class="ubiquitousLanguage">
 <#list ubiquitousLanguage as entry>
-<#if entry.description??>
 <li><span class="entryName">${entry.name}</span>, ${entry.type}, ${entry.description}</li>
-</#if>
 </#list>
 </ol>
 

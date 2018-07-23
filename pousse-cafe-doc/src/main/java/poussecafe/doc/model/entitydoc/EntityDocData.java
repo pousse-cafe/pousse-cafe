@@ -1,7 +1,8 @@
 package poussecafe.doc.model.entitydoc;
 
 import java.io.Serializable;
-import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
+import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.BoundedContextComponentDocData;
 import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")
@@ -12,38 +13,32 @@ public class EntityDocData implements EntityDoc.Data, Serializable {
         return new Property<EntityDocKey>() {
             @Override
             public EntityDocKey get() {
-                return new EntityDocKey(new AggregateDocKey(boundedContextKey, aggretateName), entityName);
+                return EntityDocKey.ofClassName(className);
             }
 
             @Override
             public void set(EntityDocKey value) {
-                boundedContextKey = value.aggregateDocKey().boundedContextKey();
-                aggretateName = value.aggregateDocKey().name();
-                entityName = value.name();
+                className = value.getValue();
             }
         };
     }
 
-    private String boundedContextKey;
-
-    private String aggretateName;
-
-    private String entityName;
+    private String className;
 
     @Override
-    public Property<String> description() {
-        return new Property<String>() {
+    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Property<BoundedContextComponentDoc>() {
             @Override
-            public String get() {
-                return description;
+            public BoundedContextComponentDoc get() {
+                return boundedContextComponentDoc.toModel();
             }
 
             @Override
-            public void set(String value) {
-                description = value;
+            public void set(BoundedContextComponentDoc value) {
+                boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
             }
         };
     }
 
-    private String description;
+    private BoundedContextComponentDocData boundedContextComponentDoc;
 }

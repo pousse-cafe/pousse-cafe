@@ -1,27 +1,30 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
-import java.util.function.Consumer;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.process.ServiceDocCreation;
 
-import static poussecafe.check.Checks.checkThatValue;
-
-public class ServiceDocCreator implements Consumer<ClassDoc> {
+public class ServiceDocCreator extends BoundedContextComponentDocCreator {
 
     public ServiceDocCreator(RootDocWrapper rootDocWrapper) {
-        checkThatValue(rootDocWrapper).notNull();
-        this.rootDocWrapper = rootDocWrapper;
+        super(rootDocWrapper);
     }
 
-    private RootDocWrapper rootDocWrapper;
+    @Override
+    protected boolean isComponentDoc(ClassDoc classDoc) {
+        return ServiceDocFactory.isServiceDoc(classDoc);
+    }
 
     @Override
-    public void accept(ClassDoc classDoc) {
-        if (ServiceDocFactory.isServiceDoc(classDoc)) {
-            rootDocWrapper.debug("Adding service with class " + classDoc.name());
-            serviceDocCreation.addServiceDoc(classDoc);
-        }
+    protected String componentName() {
+        return "service";
+    }
+
+    @Override
+    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+            ClassDoc componentClassDoc) {
+        serviceDocCreation.addServiceDoc(boundedContextDocKey, componentClassDoc);
     }
 
     private ServiceDocCreation serviceDocCreation;

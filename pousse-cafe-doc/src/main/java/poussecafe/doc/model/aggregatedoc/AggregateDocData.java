@@ -1,6 +1,8 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.io.Serializable;
+import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.BoundedContextComponentDocData;
 import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")
@@ -11,35 +13,49 @@ public class AggregateDocData implements AggregateDoc.Data, Serializable {
         return new Property<AggregateDocKey>() {
             @Override
             public AggregateDocKey get() {
-                return new AggregateDocKey(boundedContextKey, name);
+                return AggregateDocKey.ofClassName(className);
             }
 
             @Override
             public void set(AggregateDocKey value) {
-                boundedContextKey = value.boundedContextKey();
-                name = value.name();
+                className = value.getValue();
             }
         };
     }
 
-    private String boundedContextKey;
-
-    private String name;
+    private String className;
 
     @Override
-    public Property<String> description() {
+    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Property<BoundedContextComponentDoc>() {
+            @Override
+            public BoundedContextComponentDoc get() {
+                return componentDoc.toModel();
+            }
+
+            @Override
+            public void set(BoundedContextComponentDoc value) {
+                componentDoc = BoundedContextComponentDocData.of(value);
+            }
+        };
+    }
+
+    private BoundedContextComponentDocData componentDoc;
+
+    @Override
+    public Property<String> keyClassName() {
         return new Property<String>() {
             @Override
             public String get() {
-                return description;
+                return keyClassName;
             }
 
             @Override
             public void set(String value) {
-                description = value;
+                keyClassName = value;
             }
         };
     }
 
-    private String description;
+    private String keyClassName;
 }

@@ -1,11 +1,12 @@
 package poussecafe.doc.model.servicedoc;
 
 import java.util.List;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.Repository;
 
 public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocKey, ServiceDoc.Data> {
 
-    public List<ServiceDoc> findByBoundedContextKey(String key) {
+    public List<ServiceDoc> findByBoundedContextKey(BoundedContextDocKey key) {
         return newStorablesWithData(dataAccess().findByBoundedContextKey(key));
     }
 

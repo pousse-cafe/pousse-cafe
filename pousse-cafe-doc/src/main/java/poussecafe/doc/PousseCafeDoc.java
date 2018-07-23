@@ -2,7 +2,6 @@ package poussecafe.doc;
 
 import java.util.Set;
 import poussecafe.context.BoundedContext;
-import poussecafe.doc.model.AggregateDocLocator;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocData;
@@ -19,15 +18,27 @@ import poussecafe.doc.model.entitydoc.EntityDocData;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.entitydoc.InMemoryEntityDocDataAccess;
+import poussecafe.doc.model.relation.InMemoryRelationDataAccess;
+import poussecafe.doc.model.relation.Relation;
+import poussecafe.doc.model.relation.RelationData;
+import poussecafe.doc.model.relation.RelationFactory;
+import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.servicedoc.InMemoryServiceDocDataAccess;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocData;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
+import poussecafe.doc.model.vodoc.InMemoryValueObjectDocDataAccess;
+import poussecafe.doc.model.vodoc.ValueObjectDoc;
+import poussecafe.doc.model.vodoc.ValueObjectDocData;
+import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
+import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.doc.process.AggregateDocCreation;
 import poussecafe.doc.process.BoundedContextDocCreation;
+import poussecafe.doc.process.ComponentLinking;
 import poussecafe.doc.process.EntityDocCreation;
 import poussecafe.doc.process.ServiceDocCreation;
+import poussecafe.doc.process.ValueObjectDocCreation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storable.StorableDefinition;
@@ -61,6 +72,18 @@ public class PousseCafeDoc extends BoundedContext {
                 .withFactoryClass(EntityDocFactory.class)
                 .withRepositoryClass(EntityDocRepository.class)
                 .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(ValueObjectDoc.class)
+                .withFactoryClass(ValueObjectDocFactory.class)
+                .withRepositoryClass(ValueObjectDocRepository.class)
+                .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(Relation.class)
+                .withFactoryClass(RelationFactory.class)
+                .withRepositoryClass(RelationRepository.class)
+                .build());
     }
 
     @Override
@@ -92,6 +115,20 @@ public class PousseCafeDoc extends BoundedContext {
                 .withDataAccessFactory(InMemoryEntityDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(ValueObjectDoc.class)
+                .withDataFactory(ValueObjectDocData::new)
+                .withDataAccessFactory(InMemoryValueObjectDocDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(Relation.class)
+                .withDataFactory(RelationData::new)
+                .withDataAccessFactory(InMemoryRelationDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
     }
 
     @Override
@@ -100,13 +137,14 @@ public class PousseCafeDoc extends BoundedContext {
         processes.add(AggregateDocCreation.class);
         processes.add(ServiceDocCreation.class);
         processes.add(EntityDocCreation.class);
+        processes.add(ValueObjectDocCreation.class);
+        processes.add(ComponentLinking.class);
     }
 
     @Override
     protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(GraphFactory.class);
         services.add(UbiquitousLanguageFactory.class);
-        services.add(AggregateDocLocator.class);
     }
 
 }

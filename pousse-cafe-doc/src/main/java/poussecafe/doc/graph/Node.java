@@ -14,6 +14,12 @@ public class Node implements Comparable<Node> {
         return node;
     }
 
+    public static Node ellipse(String name) {
+        Node node = new Node(name);
+        node.setShape(Shape.ELLIPSE);
+        return node;
+    }
+
     public Node(String name) {
         setName(name);
     }

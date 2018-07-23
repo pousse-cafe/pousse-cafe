@@ -3,9 +3,7 @@ package poussecafe.doc;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.Shape;
@@ -73,6 +71,8 @@ public class DotPrinter {
         List<String> attributes = new ArrayList<>();
         if (node.getShape() == Shape.BOX) {
             attributes.add("shape=box");
+        } else if (node.getShape() == Shape.ELLIPSE) {
+            attributes.add("shape=ellipse");
         }
         if (node.getStyle() == NodeStyle.BOLD) {
             attributes.add("style=bold");
