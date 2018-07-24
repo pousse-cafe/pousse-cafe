@@ -7,6 +7,8 @@ import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 
 public class GraphsWriter {
 
@@ -27,6 +29,7 @@ public class GraphsWriter {
                                 boundedContextDoc.id());
 
                 writeAggregatesGraphs(boundedContextDoc);
+                writeDomainProcessesGraphs(boundedContextDoc);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error while writing graphs", e);
@@ -55,4 +58,17 @@ public class GraphsWriter {
     private AggregateDocRepository aggregateDocRepository;
 
     private GraphFactory graphFactory;
+
+    private void writeDomainProcessesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
+        File outputDirectory = outputDirectory();
+        for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
+                .findByBoundedContextKey(boundedContextDoc.getKey())) {
+            rootDocWrapper.debug("Drawing domain process " + domainProcessDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+            graphWriter
+                    .drawGraph(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
+                            boundedContextDoc.id() + "_" + domainProcessDoc.id());
+        }
+    }
+
+    private DomainProcessDocRepository domainProcessDocRepository;
 }

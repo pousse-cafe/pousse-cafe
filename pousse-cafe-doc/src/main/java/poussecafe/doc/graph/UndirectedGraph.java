@@ -3,20 +3,22 @@ package poussecafe.doc.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UndirectedGraph {
+public class UndirectedGraph implements Graph {
 
     private List<UndirectedSubGraph> subGraphs = new ArrayList<>();
 
     private UndirectedGraphNodesAndEdges nodesAndEdges = new UndirectedGraphNodesAndEdges();
 
-    public List<UndirectedSubGraph> getSubGraphs() {
+    @Override
+    public List<SubGraph> getSubGraphs() {
         return new ArrayList<>(subGraphs);
     }
 
     public void addSubGraph(UndirectedSubGraph subGraph) {
-        this.subGraphs.add(subGraph);
+        subGraphs.add(subGraph);
     }
 
+    @Override
     public UndirectedGraphNodesAndEdges getNodesAndEdges() {
         return nodesAndEdges;
     }

@@ -116,6 +116,12 @@ ${domain.name} Domain Model
 <#list context.domainProcesses as process>
 <h4 id="${context.id}_${process.id}">${process.name}</h4>
 <p>${process.description}</p>
+<img src="${context.id}_${process.id}.png"/>
+<ul>
+<#list process.steps as step>
+  <li><strong>${step.name}:</strong> ${step.description}</li>
+</#list>
+</ul>
 </#list>
 </#if>
 

@@ -1,9 +1,12 @@
 package poussecafe.doc.model.domainprocessdoc;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
+import poussecafe.storable.MapProperty;
 import poussecafe.storable.Property;
+import poussecafe.storage.memory.ConvertingMapProperty;
 
 @SuppressWarnings("serial")
 public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable {
@@ -41,4 +44,31 @@ public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable
     }
 
     private BoundedContextComponentDocData componentDoc;
+
+    @Override
+    public MapProperty<String, Step> steps() {
+        return new ConvertingMapProperty<String, StepData, String, Step>(steps) {
+            @Override
+            protected String convertFromKey(String from) {
+                return from;
+            }
+
+            @Override
+            protected Step convertFromValue(StepData from) {
+                return from.toModel();
+            }
+
+            @Override
+            protected String convertToKey(String from) {
+                return from;
+            }
+
+            @Override
+            protected StepData convertToValue(Step from) {
+                return StepData.of(from);
+            }
+        };
+    }
+
+    private HashMap<String, StepData> steps = new HashMap<>();
 }

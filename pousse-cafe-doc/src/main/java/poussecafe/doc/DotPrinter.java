@@ -2,15 +2,23 @@ package poussecafe.doc;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import poussecafe.doc.graph.DirectedEdge;
+import poussecafe.doc.graph.DirectedGraphNodesAndEdges;
+import poussecafe.doc.graph.DirectedSubGraph;
+import poussecafe.doc.graph.Graph;
 import poussecafe.doc.graph.Node;
-import poussecafe.doc.graph.NodeStyle;
-import poussecafe.doc.graph.Shape;
+import poussecafe.doc.graph.NodesAndEdges;
+import poussecafe.doc.graph.SubGraph;
 import poussecafe.doc.graph.UndirectedEdge;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.graph.UndirectedGraphNodesAndEdges;
 import poussecafe.doc.graph.UndirectedSubGraph;
+
+import static java.util.stream.Collectors.joining;
 
 public class DotPrinter {
 
@@ -22,20 +30,44 @@ public class DotPrinter {
         this.stream = stream;
     }
 
-    public void print(UndirectedGraph graph) {
-        printGraphHeader();
+    public void print(Graph graph) {
+        printGraphHeader(graph);
         printNodesAndEdges(graph.getNodesAndEdges());
         printSubGraphs(graph.getSubGraphs());
         printGraphFooter();
     }
 
-    private void printSubGraphs(List<UndirectedSubGraph> subGraphs) {
-        for (UndirectedSubGraph subGraph : subGraphs) {
+    private void printGraphHeader(Graph graph) {
+        if(graph instanceof UndirectedGraph) {
+            printUndirectedGraphHeader();
+        } else {
+            printDirectedGraphHeader();
+        }
+    }
+
+    private void printNodesAndEdges(NodesAndEdges nodesAndEdges) {
+        if(nodesAndEdges instanceof UndirectedGraphNodesAndEdges) {
+            printUndirectedNodesAndEdges((UndirectedGraphNodesAndEdges) nodesAndEdges);
+        } else {
+            printDirectedNodesAndEdges((DirectedGraphNodesAndEdges) nodesAndEdges);
+        }
+    }
+
+    private void printSubGraphs(List<SubGraph> subGraphs) {
+        for (SubGraph subGraph : subGraphs) {
             printSubGraph(subGraph);
         }
     }
 
-    private void printGraphHeader() {
+    private void printSubGraph(SubGraph subGraph) {
+        if(subGraph instanceof UndirectedSubGraph) {
+            printUndirectedSubGraph((UndirectedSubGraph) subGraph);
+        } else {
+            printDirectedSubGraph((DirectedSubGraph) subGraph);
+        }
+    }
+
+    private void printUndirectedGraphHeader() {
         stream.println("graph {");
         stream.println("splines=ortho;");
     }
@@ -44,20 +76,20 @@ public class DotPrinter {
         stream.println("}");
     }
 
-    private void printSubGraph(UndirectedSubGraph subGraph) {
+    private void printUndirectedSubGraph(UndirectedSubGraph subGraph) {
         stream.println("subgraph cluster_" + (subGraphCount++) + " {");
         if (subGraph.hasName()) {
             stream.println("label=\"" + subGraph.getName() + "\";");
         }
-        printNodesAndEdges(subGraph.getNodesAndEdges());
+        printUndirectedNodesAndEdges(subGraph.getNodesAndEdges());
         printSubGraphs(subGraph.getSubGraphs());
         stream.println("}");
     }
 
-    private void printNodesAndEdges(
+    private void printUndirectedNodesAndEdges(
             UndirectedGraphNodesAndEdges nodesAndEdges) {
         for (UndirectedEdge edge : nodesAndEdges.edges()) {
-            printEdge(edge);
+            printUndirectedEdge(edge);
         }
         for (Node node : nodesAndEdges.nodes()) {
             printNode(node);
@@ -68,15 +100,16 @@ public class DotPrinter {
         stream.print("\"");
         stream.print(node.getName());
         stream.print("\"");
+
         List<String> attributes = new ArrayList<>();
-        if (node.getShape() == Shape.BOX) {
-            attributes.add("shape=box");
-        } else if (node.getShape() == Shape.ELLIPSE) {
-            attributes.add("shape=ellipse");
+        if(node.getShape() != null) {
+            attributes.add("shape=" + node.getShape().name().toLowerCase());
         }
-        if (node.getStyle() == NodeStyle.BOLD) {
-            attributes.add("style=bold");
+
+        if (node.getStyle() != null) {
+            attributes.add("style=" + node.getStyle().name().toLowerCase());
         }
+
         if (attributes.size() > 0) {
             stream.print("[");
             stream.print(StringUtils.join(attributes, ','));
@@ -85,7 +118,7 @@ public class DotPrinter {
         stream.println(";");
     }
 
-    private void printEdge(UndirectedEdge edge) {
+    private void printUndirectedEdge(UndirectedEdge edge) {
         stream.print("\"");
         stream.print(edge.getNode1());
         stream.print("\" -- ");
@@ -96,4 +129,55 @@ public class DotPrinter {
         stream.println(";");
     }
 
+    private void printDirectedGraphHeader() {
+        stream.println("digraph {");
+        stream.println("splines=spline;");
+    }
+
+    private void printDirectedSubGraph(DirectedSubGraph subGraph) {
+        stream.println("subgraph cluster_" + (subGraphCount++) + " {");
+        if (subGraph.hasName()) {
+            stream.println("label=\"" + subGraph.getName() + "\";");
+        }
+        printDirectedNodesAndEdges(subGraph.getNodesAndEdges());
+        printSubGraphs(subGraph.getSubGraphs());
+        stream.println("}");
+    }
+
+    private void printDirectedNodesAndEdges(
+            DirectedGraphNodesAndEdges nodesAndEdges) {
+        for (DirectedEdge edge : nodesAndEdges.edges()) {
+            printDirectedEdge(edge);
+        }
+        for (Node node : nodesAndEdges.nodes()) {
+            printNode(node);
+        }
+    }
+
+    private void printDirectedEdge(DirectedEdge edge) {
+        stream.print("\"");
+        stream.print(edge.getNode1());
+        stream.print("\" -> ");
+        stream.print("\"");
+        stream.print(edge.getNode2());
+        stream.print("\"");
+
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("style", edge.getStyle().name().toLowerCase());
+        if(edge.getLabel().isPresent()) {
+            attributes.put("label", quote(edge.getLabel().get()));
+        }
+        stream.print(" [" + nodeOrEdgeAttributes(attributes) + "]");
+        stream.println(";");
+    }
+
+    private String quote(String string) {
+        return "\"" + string + "\"";
+    }
+
+    private String nodeOrEdgeAttributes(Map<String, String> attributes) {
+        return attributes.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(joining(","));
+    }
 }

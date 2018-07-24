@@ -1,9 +1,11 @@
 package poussecafe.doc;
 
+import poussecafe.doc.graph.DirectedGraph;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
@@ -39,4 +41,9 @@ public class GraphFactory implements Service {
     private EntityDocRepository entityDocRepository;
 
     private ValueObjectDocRepository valueObjectDocRepository;
+
+    public DirectedGraph buildDomainProcessGraph(DomainProcessDoc domainProcessDoc) {
+        return new DomainProcessGraphFactory(domainProcessDoc)
+                .buildGraph();
+    }
 }

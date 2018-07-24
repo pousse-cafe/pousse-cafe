@@ -7,6 +7,8 @@ import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
@@ -58,6 +60,14 @@ public class UbiquitousLanguageFactory implements Service {
                             .type("Value Object")
                             .build());
         }
+        for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository.findAll()) {
+            language
+                    .add(new UbiquitousLanguageEntry.Builder()
+                            .boundedContextName(boundedContextName(domainProcessDoc.boundedContextComponentDoc()))
+                            .componentDoc(domainProcessDoc.boundedContextComponentDoc().componentDoc())
+                            .type("Domain Process")
+                            .build());
+        }
         Collections.sort(language);
         return language;
     }
@@ -75,4 +85,6 @@ public class UbiquitousLanguageFactory implements Service {
     private EntityDocRepository entityDocRepository;
 
     private ValueObjectDocRepository valueObjectDocRepository;
+
+    private DomainProcessDocRepository domainProcessDocRepository;
 }

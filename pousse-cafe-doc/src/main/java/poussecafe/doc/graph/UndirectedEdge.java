@@ -1,6 +1,6 @@
 package poussecafe.doc.graph;
 
-public class UndirectedEdge {
+public class UndirectedEdge implements Edge {
 
     private String node1;
 

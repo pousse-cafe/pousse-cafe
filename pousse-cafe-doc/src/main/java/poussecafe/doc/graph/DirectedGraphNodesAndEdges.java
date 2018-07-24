@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class UndirectedGraphNodesAndEdges implements NodesAndEdges {
+public class DirectedGraphNodesAndEdges implements NodesAndEdges {
 
     private Map<String, Node> nodes = new HashMap<>();
 
-    private Set<UndirectedEdge> edges = new HashSet<>();
+    private Set<DirectedEdge> edges = new HashSet<>();
 
     @Override
     public void addEdge(Edge edge) {
-        edges.add((UndirectedEdge) edge);
+        edges.add((DirectedEdge) edge);
     }
 
-    public List<UndirectedEdge> edges() {
+    public List<DirectedEdge> edges() {
         return new ArrayList<>(edges);
     }
 

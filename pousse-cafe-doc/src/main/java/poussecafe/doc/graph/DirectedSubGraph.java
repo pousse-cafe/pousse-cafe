@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
-public class UndirectedSubGraph implements SubGraph {
+public class DirectedSubGraph implements SubGraph {
 
-    private List<UndirectedSubGraph> subGraphs = new ArrayList<>();
+    private List<DirectedSubGraph> subGraphs = new ArrayList<>();
 
-    private UndirectedGraphNodesAndEdges nodesAndEdges = new UndirectedGraphNodesAndEdges();
+    private DirectedGraphNodesAndEdges nodesAndEdges = new DirectedGraphNodesAndEdges();
 
     private String name;
 
@@ -17,15 +17,15 @@ public class UndirectedSubGraph implements SubGraph {
         return new ArrayList<>(subGraphs);
     }
 
-    public void addSubGraph(UndirectedSubGraph subGraph) {
+    public void addSubGraph(DirectedSubGraph subGraph) {
         subGraphs.add(subGraph);
     }
 
-    public UndirectedGraphNodesAndEdges getNodesAndEdges() {
+    public DirectedGraphNodesAndEdges getNodesAndEdges() {
         return nodesAndEdges;
     }
 
-    public void setNodesAndEdges(UndirectedGraphNodesAndEdges nodesAndEdges) {
+    public void setNodesAndEdges(DirectedGraphNodesAndEdges nodesAndEdges) {
         this.nodesAndEdges = nodesAndEdges;
     }
 

@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import org.apache.commons.io.IOUtils;
-import poussecafe.doc.graph.UndirectedGraph;
+import poussecafe.doc.graph.Graph;
 
 public class GraphWriter {
 
-    public void drawGraph(UndirectedGraph graph, File outputDirectory,
+    public void drawGraph(Graph graph, File outputDirectory,
             String graphName) throws IOException {
         File dotFile = new File(outputDirectory, graphName + ".dot");
         PrintStream printStream = new PrintStream(dotFile);

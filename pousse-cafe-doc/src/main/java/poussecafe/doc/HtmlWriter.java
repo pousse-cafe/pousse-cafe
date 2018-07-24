@@ -21,6 +21,7 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
+import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocKey;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
@@ -191,6 +192,14 @@ public class HtmlWriter {
         view.put("id", domainProcessDoc.id());
         view.put("name", domainProcessDoc.boundedContextComponentDoc().componentDoc().name());
         view.put("description", domainProcessDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("steps", domainProcessDoc.orderedSteps().stream().filter(step -> !step.external()).map(this::adapt).collect(toList()));
+        return view;
+    }
+
+    private HashMap<String, Object> adapt(Step step) {
+        HashMap<String, Object> view = new HashMap<>();
+        view.put("name", step.componentDoc().name());
+        view.put("description", step.componentDoc().description());
         return view;
     }
 

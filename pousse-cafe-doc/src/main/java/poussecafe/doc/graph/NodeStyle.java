@@ -1,5 +1,5 @@
 package poussecafe.doc.graph;
 
 public enum NodeStyle {
-    SOLID, BOLD
+    SOLID, BOLD, DASHED
 }
