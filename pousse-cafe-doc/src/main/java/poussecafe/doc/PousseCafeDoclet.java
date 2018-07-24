@@ -63,12 +63,16 @@ public class PousseCafeDoclet {
         ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
         context.injectDependencies(valueObjectDocCreator);
 
+        DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
+        context.injectDependencies(domainProcessDocCreator);
+
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(aggregateDocCreator)
                 .classDocConsumer(serviceDocCreator)
                 .classDocConsumer(entityDocCreator)
                 .classDocConsumer(valueObjectDocCreator)
+                .classDocConsumer(domainProcessDocCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }

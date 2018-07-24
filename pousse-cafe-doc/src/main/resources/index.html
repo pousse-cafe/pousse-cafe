@@ -45,12 +45,22 @@ ${domain.name} Domain Model
             <li><a href="#${context.id}_${aggregate.id}">${aggregate.name}</a></li>
             </#list>
           </ol>
+          <#if context.services?size gt 0>
           <li><a href="#${context.id}_services">Services</a></li>
           <ol>
             <#list context.services as service>
             <li><a href="#${context.id}_${service.id}">${service.name}</a></li>
             </#list>
           </ol>
+          </#if>
+          <#if context.domainProcesses?size gt 0>
+          <li><a href="#${context.id}_processes">Domain Processes</a></li>
+          <ol>
+            <#list context.domainProcesses as process>
+            <li><a href="#${context.id}_${process.id}">${process.name}</a></li>
+            </#list>
+          </ol>
+          </#if>
         </ol>
         </#list>
     </ol>
@@ -70,18 +80,14 @@ ${domain.name} Domain Model
 
 <#list context.aggregates as aggregate>
 <h4 id="${context.id}_${aggregate.id}">${aggregate.name}</h4>
-<#if aggregate.description??>
 <p>${aggregate.description}</p>
-</#if>
 <img src="${context.id}_${aggregate.id}.png"/>
 
 <#if aggregate.entities?size gt 0>
 <h5>Entities</h5>
 <ul>
 <#list aggregate.entities as entity>
-<#if entity.description??>
   <li><strong>${entity.name}:</strong> ${entity.description}</li>
-</#if>
 </#list>
 </ul>
 </#if>
@@ -90,23 +96,28 @@ ${domain.name} Domain Model
 <h5>Value Objects</h5>
 <ul>
 <#list aggregate.valueObjects as valueObject>
-<#if valueObject.description??>
   <li><strong>${valueObject.name}:</strong> ${valueObject.description}</li>
-</#if>
 </#list>
 </ul>
 </#if>
 
 </#list>
 
+<#if context.services?size gt 0>
 <h3 id="${context.id}_services">Services</h3>
-
 <#list context.services as service>
 <h4 id="${context.id}_${service.id}">${service.name}</h4>
-<#if service.description??>
 <p>${service.description}</p>
-</#if>
 </#list>
+</#if>
+
+<#if context.domainProcesses?size gt 0>
+<h3 id="${context.id}_processes">Domain Processes</h3>
+<#list context.domainProcesses as process>
+<h4 id="${context.id}_${process.id}">${process.name}</h4>
+<p>${process.description}</p>
+</#list>
+</#if>
 
 </#list>
 

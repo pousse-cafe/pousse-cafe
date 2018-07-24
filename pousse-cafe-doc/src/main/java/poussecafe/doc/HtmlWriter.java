@@ -19,6 +19,8 @@ import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocKey;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
@@ -95,12 +97,21 @@ public class HtmlWriter {
                 .stream()
                 .map(this::adapt)
                 .collect(toList()));
+
+        view.put("domainProcesses", domainProcessDocRepository
+                .findByBoundedContextKey(boundedContextDoc.getKey())
+                .stream()
+                .map(this::adapt)
+                .collect(toList()));
+
         return view;
     }
 
     private AggregateDocRepository aggregateDocRepository;
 
     private ServiceDocRepository serviceDocRepository;
+
+    private DomainProcessDocRepository domainProcessDocRepository;
 
     private HashMap<String, Object> adapt(AggregateDoc aggregateDoc) {
         HashMap<String, Object> view = new HashMap<>();
@@ -172,6 +183,14 @@ public class HtmlWriter {
         view.put("id", serviceDoc.id());
         view.put("name", serviceDoc.boundedContextComponentDoc().componentDoc().name());
         view.put("description", serviceDoc.boundedContextComponentDoc().componentDoc().description());
+        return view;
+    }
+
+    private HashMap<String, Object> adapt(DomainProcessDoc domainProcessDoc) {
+        HashMap<String, Object> view = new HashMap<>();
+        view.put("id", domainProcessDoc.id());
+        view.put("name", domainProcessDoc.boundedContextComponentDoc().componentDoc().name());
+        view.put("description", domainProcessDoc.boundedContextComponentDoc().componentDoc().description());
         return view;
     }
 
