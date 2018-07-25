@@ -3,7 +3,7 @@ package poussecafe.doc.model.entitydoc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
@@ -18,16 +18,24 @@ public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc
 
         String name = name(entityClassDoc);
         EntityDocKey key = EntityDocKey.ofClassName(entityClassDoc.qualifiedTypeName());
-        EntityDoc serviceDoc = newStorableWithKey(key);
-        serviceDoc.componentDoc(new BoundedContextComponentDoc.Builder()
+        EntityDoc entityDoc = newStorableWithKey(key);
+        entityDoc.componentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextKey)
-                .componentDoc(new ComponentDoc.Builder()
-                        .name(name)
-                        .description(entityClassDoc.commentText())
-                        .build())
+                .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))
                 .build());
-        return serviceDoc;
+
+        entityDoc.keyClassName(keyClassName(entityClassDoc));
+
+        return entityDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
+
+    private String keyClassName(ClassDoc entityClassDoc) {
+        return entityClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();
+    }
+
+    private static final int KEY_TYPE_INDEX = 0;
 
     public static boolean isEntityDoc(ClassDoc classDoc) {
         return ClassDocPredicates.documentsWithSuperclass(classDoc, Entity.class);

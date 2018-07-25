@@ -94,9 +94,9 @@ public class PousseCafeDoclet {
     }
 
     private void writeGraphs() {
-        GraphsWriter graphsWriter = new GraphsWriter(rootDocWrapper);
+        GraphImagesWriter graphsWriter = new GraphImagesWriter(rootDocWrapper);
         context.injectDependencies(graphsWriter);
-        graphsWriter.writeGraphs();
+        graphsWriter.writeImages();
     }
 
     private void writeHtml() {

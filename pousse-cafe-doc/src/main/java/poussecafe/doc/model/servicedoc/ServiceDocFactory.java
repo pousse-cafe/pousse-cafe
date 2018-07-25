@@ -3,7 +3,7 @@ package poussecafe.doc.model.servicedoc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
@@ -21,13 +21,12 @@ public class ServiceDocFactory extends Factory<ServiceDocKey, ServiceDoc, Servic
         ServiceDoc serviceDoc = newStorableWithKey(key);
         serviceDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
-                .componentDoc(new ComponentDoc.Builder()
-                        .name(name)
-                        .description(classDoc.commentText())
-                        .build())
+                .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());
         return serviceDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
 
     public static boolean isServiceDoc(ClassDoc classDoc) {
         return ClassDocPredicates.documentsWithSuperinterface(classDoc, Service.class);

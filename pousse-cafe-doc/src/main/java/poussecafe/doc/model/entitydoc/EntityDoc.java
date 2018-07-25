@@ -19,6 +19,14 @@ public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
         return getData().boundedContextComponentDoc().get();
     }
 
+    void keyClassName(String keyClassName) {
+        getData().keyClassName().set(keyClassName);
+    }
+
+    public String keyClassName() {
+        return getData().keyClassName().get();
+    }
+
     public String id() {
         return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
     }
@@ -26,5 +34,7 @@ public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
     public static interface Data extends IdentifiedStorableData<EntityDocKey> {
 
         Property<BoundedContextComponentDoc> boundedContextComponentDoc();
+
+        Property<String> keyClassName();
     }
 }

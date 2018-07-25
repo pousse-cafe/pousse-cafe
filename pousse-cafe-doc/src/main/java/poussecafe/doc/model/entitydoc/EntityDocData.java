@@ -41,4 +41,21 @@ public class EntityDocData implements EntityDoc.Data, Serializable {
     }
 
     private BoundedContextComponentDocData boundedContextComponentDoc;
+
+    @Override
+    public Property<String> keyClassName() {
+        return new Property<String>() {
+            @Override
+            public String get() {
+                return keyClassName;
+            }
+
+            @Override
+            public void set(String value) {
+                keyClassName = value;
+            }
+        };
+    }
+
+    private String keyClassName;
 }

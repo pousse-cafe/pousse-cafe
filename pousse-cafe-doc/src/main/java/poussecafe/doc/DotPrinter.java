@@ -69,7 +69,8 @@ public class DotPrinter {
 
     private void printUndirectedGraphHeader() {
         stream.println("graph {");
-        stream.println("splines=ortho;");
+        stream.println("splines=spline;");
+        stream.println("overlap=false;");
     }
 
     private void printGraphFooter() {

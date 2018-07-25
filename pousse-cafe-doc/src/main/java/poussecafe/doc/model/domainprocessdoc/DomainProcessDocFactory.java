@@ -11,6 +11,7 @@ import poussecafe.doc.AnnotationsResolver;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.DomainException;
@@ -31,16 +32,15 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         DomainProcessDoc domainProcessDoc = newStorableWithKey(key);
         domainProcessDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
-                .componentDoc(new ComponentDoc.Builder()
-                        .name(name)
-                        .description(doc.commentText())
-                        .build())
+                .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());
 
         domainProcessDoc.steps(extractSteps(doc));
 
         return domainProcessDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
 
     public static boolean isDomainProcessDoc(ClassDoc doc) {
         return ClassDocPredicates.documentsWithSuperclass(doc, DomainProcess.class);

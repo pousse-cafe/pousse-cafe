@@ -3,7 +3,7 @@ package poussecafe.doc.model.aggregatedoc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
@@ -19,18 +19,18 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
         AggregateDocKey key = AggregateDocKey.ofClassName(aggregateClassDoc.qualifiedTypeName());
         AggregateDoc aggregateDoc = newStorableWithKey(key);
 
+        String name = name(aggregateClassDoc);
         aggregateDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
-                .componentDoc(new ComponentDoc.Builder()
-                        .name(name(aggregateClassDoc))
-                        .description(aggregateClassDoc.commentText())
-                        .build())
+                .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 
         aggregateDoc.keyClassName(keyClassName(aggregateClassDoc));
 
         return aggregateDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
 
     private String keyClassName(ClassDoc aggregateClassDoc) {
         return aggregateClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();

@@ -10,22 +10,22 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 
-public class GraphsWriter {
+public class GraphImagesWriter {
 
-    public GraphsWriter(RootDocWrapper rootDocWrapper) {
+    public GraphImagesWriter(RootDocWrapper rootDocWrapper) {
         this.rootDocWrapper = rootDocWrapper;
     }
 
     private RootDocWrapper rootDocWrapper;
 
-    public void writeGraphs() {
+    public void writeImages() {
         try {
             File outputDirectory = outputDirectory();
             List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
             for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
                 rootDocWrapper.debug("Drawing BC " + boundedContextDoc.componentDoc().name() + " graph...");
-                graphWriter
-                        .drawGraph(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
+                graphImageWriter
+                        .writeImage(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
                                 boundedContextDoc.id());
 
                 writeAggregatesGraphs(boundedContextDoc);
@@ -40,15 +40,15 @@ public class GraphsWriter {
         return new File(rootDocWrapper.outputPath());
     }
 
-    private GraphWriter graphWriter = new GraphWriter();
+    private GraphImageWriter graphImageWriter = new GraphImageWriter();
 
     private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())) {
             rootDocWrapper.debug("Drawing aggregate " + aggregateDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
-            graphWriter
-                    .drawGraph(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
+            graphImageWriter
+                    .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + aggregateDoc.id());
         }
     }
@@ -64,8 +64,8 @@ public class GraphsWriter {
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())) {
             rootDocWrapper.debug("Drawing domain process " + domainProcessDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
-            graphWriter
-                    .drawGraph(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
+            graphImageWriter
+                    .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + domainProcessDoc.id());
         }
     }

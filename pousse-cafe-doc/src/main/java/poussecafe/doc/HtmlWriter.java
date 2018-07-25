@@ -69,6 +69,7 @@ public class HtmlWriter {
                             ubitquitousLanguageFactory
                                     .buildUbiquitousLanguage()
                                     .stream()
+                                    .filter(doc -> !doc.componentDoc().trivial())
                                     .map(this::adapt)
                                     .collect(toList()));
             template.process(model, stream);
@@ -128,7 +129,10 @@ public class HtmlWriter {
     }
 
     private List<EntityDoc> findEntities(AggregateDocKey aggregateDocKey) {
-        return findEntities(aggregateDocKey.getValue()).stream().map(entityDocRepository::get).collect(toList());
+        return findEntities(aggregateDocKey.getValue()).stream()
+                .map(entityDocRepository::get)
+                .filter(doc -> !doc.boundedContextComponentDoc().componentDoc().trivial())
+                .collect(toList());
     }
 
     private Set<EntityDocKey> findEntities(String fromClassName) {
@@ -136,6 +140,8 @@ public class HtmlWriter {
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.ENTITY) {
                 keys.add(EntityDocKey.ofClassName(relation.toComponent().className()));
+            }
+            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
                 keys.addAll(findEntities(relation.toComponent().className()));
             }
         }
@@ -155,7 +161,10 @@ public class HtmlWriter {
     }
 
     private List<ValueObjectDoc> findValueObjects(AggregateDocKey aggregateDocKey) {
-        return findValueObjects(aggregateDocKey.getValue()).stream().map(valueObjectDocRepository::get).collect(toList());
+        return findValueObjects(aggregateDocKey.getValue()).stream()
+                .map(valueObjectDocRepository::get)
+                .filter(doc -> !doc.boundedContextComponentDoc().componentDoc().trivial())
+                .collect(toList());
     }
 
     private Set<ValueObjectDocKey> findValueObjects(String fromClassName) {
@@ -163,6 +172,8 @@ public class HtmlWriter {
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
                 keys.add(ValueObjectDocKey.ofClassName(relation.toComponent().className()));
+            }
+            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
                 keys.addAll(findValueObjects(relation.toComponent().className()));
             }
         }
@@ -207,7 +218,7 @@ public class HtmlWriter {
         HashMap<String, Object> view = new HashMap<>();
         view.put("name", entry.qualifiedName());
         view.put("type", entry.getType());
-        view.put("description", entry.componentDoc().description());
+        view.put("description", entry.componentDoc().shortDescription().orElse(entry.componentDoc().description()));
         return view;
     }
 

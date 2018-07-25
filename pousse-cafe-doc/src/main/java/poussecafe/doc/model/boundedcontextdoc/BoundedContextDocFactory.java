@@ -3,7 +3,7 @@ package poussecafe.doc.model.boundedcontextdoc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.context.BoundedContext;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
@@ -16,13 +16,12 @@ public class BoundedContextDocFactory extends Factory<BoundedContextDocKey, Boun
 
         String name = classDoc.simpleTypeName();
         BoundedContextDoc boundedContextDoc = newAggregateWithKey(BoundedContextDocKey.ofClassName(classDoc.qualifiedTypeName()));
-        boundedContextDoc.componentDoc(new ComponentDoc.Builder()
-                .name(name)
-                .description(classDoc.commentText())
-                .build());
+        boundedContextDoc.componentDoc(componentDocFactory.buildDoc(name, classDoc));
         boundedContextDoc.packageName(classDoc.containingPackage().name());
         return boundedContextDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
 
     public static boolean isBoundedContextDoc(ClassDoc classDoc) {
         return ClassDocPredicates.documentsWithSuperclass(classDoc, BoundedContext.class);

@@ -1,5 +1,6 @@
 package poussecafe.doc.model;
 
+import java.util.Optional;
 import poussecafe.domain.ValueObject;
 
 import static poussecafe.check.Checks.checkThatValue;
@@ -20,9 +21,20 @@ public class ComponentDoc implements ValueObject {
             return this;
         }
 
+        public Builder shortDescription(Optional<String> shortDescription) {
+            doc.shortDescription = shortDescription;
+            return this;
+        }
+
+        public Builder trivial(boolean trivial) {
+            doc.trivial = trivial;
+            return this;
+        }
+
         public ComponentDoc build() {
             checkThatValue(doc.name).notNull();
             checkThatValue(doc.description).notNull();
+            checkThatValue(doc.shortDescription).notNull();
             return doc;
         }
     }
@@ -41,5 +53,17 @@ public class ComponentDoc implements ValueObject {
 
     public String description() {
         return description;
+    }
+
+    private Optional<String> shortDescription = Optional.empty();
+
+    public Optional<String> shortDescription() {
+        return shortDescription;
+    }
+
+    private boolean trivial;
+
+    public boolean trivial() {
+        return trivial;
     }
 }

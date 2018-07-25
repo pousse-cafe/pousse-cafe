@@ -7,6 +7,7 @@
 <title>${domain.name} Domain Model</title>
 <bookmarks>
 <bookmark name="Table of Contents" href="#toc"></bookmark>
+<bookmark name="Introduction" href="#intro"></bookmark>
 <bookmark name="Domain ${domain.name}" href="#domain">
     <#list domain.boundedContexts as context>
     <bookmark name="${context.name}" href="#${context.id}"></bookmark>
@@ -34,6 +35,7 @@ ${domain.name} Domain Model
 <h1 id="toc">Table of Contents</h1>
 <ol class="toc">
     <li><a href="#toc">Table of Contents</a></li>
+    <li><a href="#intro">Introduction</a></li>
     <li><a href="#domain">${domain.name} Domain</a></li>
     <ol>
         <#list domain.boundedContexts as context>
@@ -67,6 +69,36 @@ ${domain.name} Domain Model
     <li><a href="#ubiquitous_language">Ubiquitous Language</a></li>
 </ol>
 
+<h1 id="intro">Introduction</h1>
+
+<p>This document describes ${domain.name} domain using concepts defined by
+<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain-Driven Design</a> methodology. It was generated
+directly from source code and can be considered as a close summary of what is actually implemented.</p>
+
+<p>The following conventions are being used:</p>
+<ul>
+  <li>As this document is generated directly from code, the domain is described by a set of bounded contexts.
+  Each bounded context is composed of a set of aggregates, services and domain processes.</li>
+  <li>An undirected graph representing a bounded context is composed of boxes representing the aggregates. Edges represent relations
+  between aggregates i.e. the fact that one aggregate makes reference to another one.</li>
+  <li>Value objects and entities are presented in the context of their aggregate. An undirected graph representing an aggregate
+  is composed of boxes (Entities) and ellipses (Value Objects). The aggregate root has thicker borders. Edges
+  represent relations between the different components. Dashed edges represent a reference made to another aggregate
+  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in bounded context
+  graph.</li>
+  <li>Domain processes are represented using directed graphs, each node being a step of the process. Entering a step of
+  a domain process generally implies the creation of a new aggregate or the update of an existing one. External steps
+  (i.e. steps executed outside of the process) are represented as dashed boxes. Edges are labeled with the name of the
+  domain event which implies the transition from one node to another.</li>
+</ul>
+
+<p>The rest of the document is split in two parts:</p>
+<ol>
+  <li>the description of the different bounded contexts and their components,</li>
+  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the bounded
+  context (if relevant), the type of component and a short description.</li>
+</ol>
+
 <h1 id="domain">${domain.name} Domain</h1>
 
 <#list domain.boundedContexts as context>
@@ -74,14 +106,20 @@ ${domain.name} Domain Model
 <#if context.description??>
 <p>${context.description}</p>
 </#if>
-<img src="${context.id}.png"/>
+
+<div class="figure">
+  <img src="${context.id}.png"/>
+</div>
 
 <h3 id="${context.id}_aggregates">Aggregates</h3>
 
 <#list context.aggregates as aggregate>
 <h4 id="${context.id}_${aggregate.id}">${aggregate.name}</h4>
 <p>${aggregate.description}</p>
-<img src="${context.id}_${aggregate.id}.png"/>
+
+<div class="figure">
+  <img src="${context.id}_${aggregate.id}.png"/>
+</div>
 
 <#if aggregate.entities?size gt 0>
 <h5>Entities</h5>
@@ -116,7 +154,11 @@ ${domain.name} Domain Model
 <#list context.domainProcesses as process>
 <h4 id="${context.id}_${process.id}">${process.name}</h4>
 <p>${process.description}</p>
-<img src="${context.id}_${process.id}.png"/>
+
+<div class="figure">
+  <img src="${context.id}_${process.id}.png"/>
+</div>
+
 <ul>
 <#list process.steps as step>
   <li><strong>${step.name}:</strong> ${step.description}</li>

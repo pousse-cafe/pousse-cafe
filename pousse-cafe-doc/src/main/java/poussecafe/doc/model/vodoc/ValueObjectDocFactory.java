@@ -5,7 +5,7 @@ import com.sun.javadoc.ProgramElementDoc;
 import poussecafe.doc.AnnotationsResolver;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
@@ -23,13 +23,12 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjec
         ValueObjectDoc valueObjectDoc = newStorableWithKey(key);
         valueObjectDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
-                .componentDoc(new ComponentDoc.Builder()
-                        .name(name)
-                        .description(doc.commentText())
-                        .build())
+                .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());
         return valueObjectDoc;
     }
+
+    private ComponentDocFactory componentDocFactory;
 
     public static boolean isValueObjectDoc(ProgramElementDoc doc) {
         if(doc instanceof ClassDoc) {
@@ -45,7 +44,7 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjec
             ClassDoc classDoc = (ClassDoc) doc;
             return classDoc.simpleTypeName();
         } else {
-            return capitalizeFirst(doc.name());
+            return doc.containingClass().name() + " " + capitalizeFirst(doc.name());
         }
     }
 

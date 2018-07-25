@@ -1,3 +1,7 @@
+body {
+  text-align: justify;
+}
+
 @page {
     size: A4;
     margin: 2cm;
@@ -13,10 +17,6 @@
 
 .toc a::after {
     content: leader('.') target-counter(attr(href), page);
-}
-
-h1 {
-    page-break-before: always;
 }
 
 .cover {
@@ -52,11 +52,14 @@ ol.ubiquitousLanguage li {
     font-weight: bold;
 }
 
-img {
-    display: block;
-    max-width: 100%;
+div.figure {
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+}
+
+div.figure img {
+  max-width: 100%;
 }
 
 body {counter-reset: h1}
@@ -76,9 +79,8 @@ h6:before {counter-increment: h6; content: counter(h2) "." counter(h3) "." count
 h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before { content: ""; counter-increment: none } 
 
 @media print {
-    html, body {
-        width: 168mm; /* 210 - 42*/
-        height: 255mm; /* 297 - 42 */
+    h1, h2 {
+        page-break-before: always;
     }
 
     div.header, div.footer {
@@ -104,11 +106,16 @@ h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.n
         content: counter(page);
     }
 
-    img {
+    div.figure {
         page-break-before: auto;
         page-break-after: auto;
         page-break-inside: avoid;
-        -fs-fit-images-to-width: 100%;
+        padding-top: 2mm;
+        padding-bottom: 2mm;
+    }
+
+    div.figure img {
+      -fs-fit-images-to-width: 100%;
     }
 
     .cover {

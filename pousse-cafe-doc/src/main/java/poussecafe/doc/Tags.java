@@ -15,4 +15,8 @@ public interface Tags {
     String TO_EXTERNAL = "to_external";
 
     String FROM_EXTERNAL = "from_external";
+
+    String TRIVIAL = "trivial";
+
+    String SHORT = "short";
 }
