@@ -73,13 +73,22 @@ public class BoundedContextGraphFactory {
     }
 
     private void addAggregateRelations(AggregateDoc aggregateDoc) {
-        for(Relation relation : relationRepository.findWithFromClassName(aggregateDoc.className())) {
+        addAggregateRelations(aggregateDoc, aggregateDoc.className());
+    }
+
+    private void addAggregateRelations(AggregateDoc aggregateDoc, String fromClassName) {
+        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.AGGREGATE) {
                 AggregateDoc otherAggregate = aggregateDocRepository.get(AggregateDocKey.ofClassName(relation.toComponent().className()));
-                if(otherAggregate.boundedContextComponentDoc().boundedContextDocKey().equals(boundedContextDoc.getKey())) {
-                    UndirectedEdge edge = UndirectedEdge.solidEdge(name(relation.fromComponent()), name(relation.toComponent()));
+                if(!aggregateDoc.className().equals(otherAggregate.className()) &&
+                        otherAggregate.boundedContextComponentDoc().boundedContextDocKey().equals(boundedContextDoc.getKey())) {
+                    UndirectedEdge edge = UndirectedEdge
+                            .solidEdge(aggregateDoc.boundedContextComponentDoc().componentDoc().name(),
+                                    name(relation.toComponent()));
                     graph.getNodesAndEdges().addEdge(edge);
                 }
+            } else {
+                addAggregateRelations(aggregateDoc, relation.toComponent().className());
             }
         }
     }

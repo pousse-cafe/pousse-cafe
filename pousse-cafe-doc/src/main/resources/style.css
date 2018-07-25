@@ -55,6 +55,8 @@ ol.ubiquitousLanguage li {
 img {
     display: block;
     max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 body {counter-reset: h1}
@@ -74,6 +76,11 @@ h6:before {counter-increment: h6; content: counter(h2) "." counter(h3) "." count
 h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before { content: ""; counter-increment: none } 
 
 @media print {
+    html, body {
+        width: 168mm; /* 210 - 42*/
+        height: 255mm; /* 297 - 42 */
+    }
+
     div.header, div.footer {
         display: block;
         text-align: center;

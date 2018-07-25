@@ -2,7 +2,6 @@ package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ProgramElementDoc;
-import java.util.List;
 import java.util.function.Consumer;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
@@ -51,11 +50,16 @@ public class RelationCreator implements Consumer<ClassDoc> {
         if(aggregateDoc != null) {
             ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.keyClassName()));
             if(keyDoc != null) {
-                rootDocWrapper.debug("Building relation between aggregate " + classDoc.qualifiedTypeName() + " and its key");
-                NewRelationParameters parameters = new NewRelationParameters();
-                parameters.fromComponent = component(classDoc);
-                parameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.keyClassName());
-                componentLinking.linkComponents(parameters);
+                rootDocWrapper.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.keyClassName());
+                NewRelationParameters aggregateKeyparameters = new NewRelationParameters();
+                aggregateKeyparameters.fromComponent = component(classDoc);
+                aggregateKeyparameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.keyClassName());
+                componentLinking.linkComponents(aggregateKeyparameters);
+
+                NewRelationParameters keyAggregateParameters = new NewRelationParameters();
+                keyAggregateParameters.fromComponent = aggregateKeyparameters.toComponent;
+                keyAggregateParameters.toComponent = aggregateKeyparameters.fromComponent;
+                componentLinking.linkComponents(keyAggregateParameters);
             }
         }
     }
@@ -85,7 +89,6 @@ public class RelationCreator implements Consumer<ClassDoc> {
     private void classRelationBuilder(ClassDoc from, ClassDoc to) {
         if(from != to) {
             linkComponents(from, to);
-            tryAggregateRelation(from, to);
         }
     }
 
@@ -96,21 +99,6 @@ public class RelationCreator implements Consumer<ClassDoc> {
         parameters.fromComponent = component(from);
         parameters.toComponent = component(to);
         componentLinking.linkComponents(parameters);
-    }
-
-    private void tryAggregateRelation(ClassDoc from, ClassDoc to) {
-        if(AggregateDocFactory.isAggregateDoc(from) && ValueObjectDocFactory.isValueObjectDoc(to)) {
-            List<AggregateDoc> otherAggregates = aggregateDocRepository.findByKeyClassName(to.qualifiedTypeName());
-            for(AggregateDoc otherAggregate : otherAggregates) {
-                if(!from.qualifiedTypeName().equals(otherAggregate.className())) {
-                    rootDocWrapper.debug("Building relation between " + from.qualifiedName() + " and " + otherAggregate.getKey());
-                    NewRelationParameters parameters = new NewRelationParameters();
-                    parameters.fromComponent = component(from);
-                    parameters.toComponent = new Component(ComponentType.AGGREGATE, otherAggregate.className());
-                    componentLinking.linkComponents(parameters);
-                }
-            }
-        }
     }
 
     private void programElementRelationBuilder(ProgramElementDoc to) {
