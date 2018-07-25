@@ -21,7 +21,7 @@ public class Primitive {
                 new PrimitiveSpecification.Builder<T>().withPrimitiveClass(primitiveClass).withData(true).build());
     }
 
-    protected <T, D> T newPrimitive(Class<T> primitiveClass,
+    <T, D> T newPrimitive(Class<T> primitiveClass,
             D data) {
         return newPrimitive(new PrimitiveSpecification.Builder<T>()
                 .withPrimitiveClass(primitiveClass)
@@ -29,7 +29,7 @@ public class Primitive {
                 .build());
     }
 
-    protected <T> T newPrimitive(PrimitiveSpecification<T> specification) {
+    <T> T newPrimitive(PrimitiveSpecification<T> specification) {
         return primitiveFactory.newPrimitive(specification);
     }
 }
