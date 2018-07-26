@@ -1,5 +1,8 @@
 package poussecafe.doc;
 
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedEdge;
@@ -13,7 +16,6 @@ import poussecafe.doc.model.relation.Component;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
-import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 
@@ -68,51 +70,86 @@ public class AggregateGraphFactory {
 
     private UndirectedGraph graph = new UndirectedGraph();
 
+    private Set<String> exploredPaths = new HashSet<>();
+
     public UndirectedGraph buildGraph() {
-        addAggregate();
-        addAllRelations(aggregateDoc.className());
+        String aggregateNodeName = addAggregate();
+        AggregateGraphPath path = new AggregateGraphPath().with(aggregateNodeName, aggregateNodeName);
+        addAllRelations(path, aggregateDoc.className());
         return graph;
     }
 
-    private void addAggregate() {
-        Node node = Node.box(aggregateDoc.boundedContextComponentDoc().componentDoc().name());
+    private String addAggregate() {
+        Logger.debug("Aggregate " + aggregateDoc.className());
+        String nodeName = aggregateDoc.boundedContextComponentDoc().componentDoc().name();
+        Node node = Node.box(nodeName);
         node.setStyle(NodeStyle.BOLD);
         graph.getNodesAndEdges().addNode(node);
+        return nodeName;
     }
 
-    private void addAllRelations(String fromClassName) {
+    private void addAllRelations(AggregateGraphPath path, String fromClassName) {
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             Component toComponent = relation.toComponent();
+
+            Logger.debug("Relation " + fromClassName + " -> " + toComponent.className());
             if(toComponent.type() != ComponentType.AGGREGATE) {
-                addNonAggregateRelation(relation);
-                addAllRelations(relation.toComponent().className());
+                String newNodeName = name(toComponent);
+
+                String formattedNewPath = path.formatNamesWith(newNodeName);
+                if(!exploredPaths.contains(formattedNewPath)) {
+                    Logger.debug("New path: " + formattedNewPath);
+                    exploredPaths.add(formattedNewPath);
+
+                    String newUniqueNodeName = uniqueNodeName(path, toComponent);
+                    AggregateGraphPath newPath = path.with(newNodeName, newUniqueNodeName);
+                    addNonAggregateRelation(path, toComponent, newUniqueNodeName);
+                    addAllRelations(newPath, relation.toComponent().className());
+                } else {
+                    Logger.debug("Ignored known path: " + formattedNewPath);
+                }
             } else {
-                addAggregateRelation(toComponent);
+                Logger.debug("New path to aggregate");
+                addAggregateRelation(path, toComponent);
             }
         }
     }
 
-    private void addAggregateRelation(Component toComponent) {
-        AggregateDoc aggregateDoc = aggregateDocRepository.get(AggregateDocKey.ofClassName(toComponent.className()));
-        ValueObjectDoc keyDoc = valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(aggregateDoc.keyClassName()));
-        String fromName = keyDoc.boundedContextComponentDoc().componentDoc().name();
-        String toName = aggregateDoc.boundedContextComponentDoc().componentDoc().name();
-
-        if(tryAddRelationNode(toComponent, toName)) {
-            UndirectedEdge edge = UndirectedEdge.dashedEdge(fromName, toName);
-            graph.getNodesAndEdges().addEdge(edge);
+    private String uniqueNodeName(AggregateGraphPath path,
+            Component component) {
+        String candidateName = name(component);
+        ListIterator<String> iterator = path.uniqueNamesEndIterator();
+        while(iterator.hasPrevious() && graph.getNodesAndEdges().getNode(candidateName) != null) {
+            String pathName = iterator.previous();
+            candidateName = pathName + " " + candidateName;
         }
+        if(graph.getNodesAndEdges().getNode(candidateName) != null) {
+            throw new IllegalArgumentException("Ambiguous path detected: " + candidateName);
+        }
+        return candidateName;
+    }
+
+    private void addAggregateRelation(AggregateGraphPath path, Component toComponent) {
+        if(toComponent.className().equals(aggregateDoc.className())) {
+            return;
+        }
+
+        String toName = name(toComponent);
+        if(graph.getNodesAndEdges().getNode(toName) == null) {
+            Node aggregateNode = node(toComponent, toName);
+            graph.getNodesAndEdges().addNode(aggregateNode);
+        }
+        UndirectedEdge edge = UndirectedEdge.dashedEdge(path.lastUniqueName(), toName);
+        graph.getNodesAndEdges().addEdge(edge);
     }
 
     private RelationRepository relationRepository;
 
-    private void addNonAggregateRelation(Relation relation) {
-        String fromName = name(relation.fromComponent());
-        String toName = name(relation.toComponent());
-        if(tryAddRelationNode(relation.fromComponent(), fromName) || tryAddRelationNode(relation.toComponent(), toName)) {
-            UndirectedEdge edge = UndirectedEdge.solidEdge(fromName, toName);
-            graph.getNodesAndEdges().addEdge(edge);
-        }
+    private String addNonAggregateRelation(AggregateGraphPath path, Component toComponent, String toName) {
+        addNode(toComponent, toName);
+        UndirectedEdge edge = UndirectedEdge.solidEdge(path.lastUniqueName(), toName);
+        graph.getNodesAndEdges().addEdge(edge);
+        return toName;
     }
 
     private String name(Component component) {
@@ -134,19 +171,9 @@ public class AggregateGraphFactory {
 
     private ValueObjectDocRepository valueObjectDocRepository;
 
-    private boolean tryAddRelationNode(Component component,
-            String componentName) {
-        if(graph.getNodesAndEdges().getNode(componentName) != null) {
-            return false;
-        } else {
-            Node node = node(component, componentName);
-            if(node != null) {
-                graph.getNodesAndEdges().addNode(node);
-                return true;
-            } else {
-                return false;
-            }
-        }
+    private void addNode(Component component, String candidateName) {
+        Node node = node(component, candidateName);
+        graph.getNodesAndEdges().addNode(node);
     }
 
     private Node node(Component component,

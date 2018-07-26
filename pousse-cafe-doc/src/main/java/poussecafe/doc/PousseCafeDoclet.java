@@ -12,6 +12,7 @@ public class PousseCafeDoclet {
     public PousseCafeDoclet(RootDoc rootDoc) {
         checkThatValue(rootDoc).notNull();
         rootDocWrapper = new RootDocWrapper(rootDoc);
+        Logger.setRootDoc(rootDocWrapper);
 
         context = new MetaApplicationContext();
         context.addBundle(new PousseCafeDoc());
