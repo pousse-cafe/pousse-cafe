@@ -1,14 +1,11 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.ProgramElementDoc;
 import java.util.function.Consumer;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.entitydoc.EntityDocKey;
@@ -21,7 +18,6 @@ import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.doc.process.ComponentLinking;
-import poussecafe.doc.process.ValueObjectDocCreation;
 
 public class RelationCreator implements Consumer<ClassDoc> {
 
@@ -45,7 +41,6 @@ public class RelationCreator implements Consumer<ClassDoc> {
                     .basePackage(rootDocWrapper.basePackage())
                     .rootClassDoc(classDoc)
                     .classRelationBuilder(this::classRelationBuilder)
-                    .programElementRelationBuilder(this::programElementRelationBuilder)
                     .build();
             codeExplorer.explore();
         }
@@ -122,22 +117,4 @@ public class RelationCreator implements Consumer<ClassDoc> {
         parameters.toComponent = component(to);
         componentLinking.linkComponents(parameters);
     }
-
-    private void programElementRelationBuilder(ProgramElementDoc to) {
-        rootDocWrapper.debug("Building relation between " + to.containingClass() + " and " + to.qualifiedName());
-
-        BoundedContextDoc boundedContextDoc = boundedContextDocRepository.findByPackageNamePrefixing(to.qualifiedName());
-        if(boundedContextDoc != null) {
-            valueObjectCreation.addValueObjectDoc(boundedContextDoc.getKey(), to);
-
-            NewRelationParameters parameters = new NewRelationParameters();
-            parameters.fromComponent = component(to.containingClass());
-            parameters.toComponent = new Component(ComponentType.VALUE_OBJECT, to.qualifiedName());
-            componentLinking.linkComponents(parameters);
-        }
-    }
-
-    private BoundedContextDocRepository boundedContextDocRepository;
-
-    private ValueObjectDocCreation valueObjectCreation;
 }

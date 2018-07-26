@@ -1,6 +1,6 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
@@ -9,8 +9,8 @@ import poussecafe.process.DomainProcess;
 
 public class ValueObjectDocCreation extends DomainProcess {
 
-    public void addValueObjectDoc(BoundedContextDocKey boundedContextKey, ProgramElementDoc entityClassDoc) {
-        ValueObjectDoc entityDoc = valueObjectDocFactory.newValueObjectDoc(boundedContextKey, entityClassDoc);
+    public void addValueObjectDoc(BoundedContextDocKey boundedContextKey, ClassDoc valueObjectClassDoc) {
+        ValueObjectDoc entityDoc = valueObjectDocFactory.newValueObjectDoc(boundedContextKey, valueObjectClassDoc);
         runInTransaction(ValueObjectDoc.class, () -> valueObjectDocRepository.add(entityDoc));
     }
 

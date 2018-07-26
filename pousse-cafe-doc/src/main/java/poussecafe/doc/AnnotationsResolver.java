@@ -18,10 +18,6 @@ public class AnnotationsResolver {
         return doc.tags(tag).length > 0;
     }
 
-    public static boolean isVo(Doc doc) {
-        return hasTag(doc, Tags.VALUE_OBJECT);
-    }
-
     public static boolean isStep(MethodDoc methodDoc) {
         return hasTag(methodDoc, Tags.STEP);
     }

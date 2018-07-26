@@ -1,7 +1,6 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.ProgramElementDoc;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
@@ -30,16 +29,10 @@ public class CodeExplorer {
             return this;
         }
 
-        public Builder programElementRelationBuilder(ProgramElementRelationBuilder programElementRelationBuilder) {
-            codeExplorer.programElementRelationBuilder = programElementRelationBuilder;
-            return this;
-        }
-
         public CodeExplorer build() {
             checkThatValue(codeExplorer.rootClassDoc).notNull();
             checkThatValue(codeExplorer.basePackage).notNull();
             checkThatValue(codeExplorer.classRelationBuilder).notNull();
-            checkThatValue(codeExplorer.programElementRelationBuilder).notNull();
             return codeExplorer;
         }
     }
@@ -56,8 +49,6 @@ public class CodeExplorer {
                 .basePackage(basePackage)
                 .classMatcher(this::classMatcher)
                 .pathHandler(this::pathHandler)
-                .programElementMatcher(this::programElementMatcher)
-                .programElementHandler(this::programElementHandler)
                 .build();
         finder.start();
     }
@@ -75,23 +66,9 @@ public class CodeExplorer {
         }
     }
 
-    private boolean programElementMatcher(ProgramElementDoc candidateDoc) {
-        return ValueObjectDocFactory.isValueObjectDoc(candidateDoc);
-    }
-
-    private void programElementHandler(ProgramElementDoc componentTo) {
-        String relation = rootClassDoc.name() + "_" + componentTo.name();
-        if(!alreadyMatched.contains(relation)) {
-            alreadyMatched.add(relation);
-            programElementRelationBuilder.programElementRelationBuilder(componentTo);
-        }
-    }
-
     private String basePackage;
 
     private RelationBuilder classRelationBuilder;
-
-    private ProgramElementRelationBuilder programElementRelationBuilder;
 
     private Set<String> alreadyMatched = new HashSet<>();
 }

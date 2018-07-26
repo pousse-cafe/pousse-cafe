@@ -4,8 +4,6 @@ public interface Tags {
 
     String IGNORE = "ignore";
 
-    String VALUE_OBJECT = "vo";
-
     String STEP = "step";
 
     String TO = "to";
