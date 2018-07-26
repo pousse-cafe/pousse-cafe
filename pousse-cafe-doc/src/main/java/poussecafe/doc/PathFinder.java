@@ -86,13 +86,15 @@ public class PathFinder {
         return methodDoc.isPublic() &&
                 methodDoc.overriddenMethod() == null &&
                 !methodDoc.isSynthetic() &&
-                methodDoc.containingClass() == classDoc;
+                methodDoc.containingClass() == classDoc &&
+                !AnnotationsResolver.isIgnored(methodDoc);
     }
 
     private boolean isCrawlableField(ClassDoc classDoc, FieldDoc methodDoc) {
         return methodDoc.isPublic() &&
                 !methodDoc.isSynthetic() &&
-                methodDoc.containingClass() == classDoc;
+                methodDoc.containingClass() == classDoc &&
+                !AnnotationsResolver.isIgnored(methodDoc);
     }
 
     private void tryType(Type type) {

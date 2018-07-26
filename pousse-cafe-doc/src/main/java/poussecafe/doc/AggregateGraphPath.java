@@ -2,27 +2,22 @@ package poussecafe.doc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import static java.util.stream.Collectors.joining;
 
 public class AggregateGraphPath {
 
-    public AggregateGraphPath with(String name, String uniqueName) {
+    public AggregateGraphPath with(String name) {
         AggregateGraphPath newPath = new AggregateGraphPath();
         newPath.names = new ArrayList<>(names);
-        newPath.uniqueNames = new ArrayList<>(uniqueNames);
-        newPath.addNames(name, uniqueName);
+        newPath.addName(name);
         return newPath;
     }
 
     private List<String> names = new ArrayList<>();
 
-    private List<String> uniqueNames = new ArrayList<>();
-
-    private void addNames(String name, String uniqueName) {
+    private void addName(String name) {
         names.add(name);
-        uniqueNames.add(uniqueName);
     }
 
     public String formatNames() {
@@ -33,12 +28,8 @@ public class AggregateGraphPath {
         return newPath.stream().collect(joining(" -> "));
     }
 
-    public ListIterator<String> uniqueNamesEndIterator() {
-        return uniqueNames.listIterator(uniqueNames.size());
-    }
-
-    public String lastUniqueName() {
-        return uniqueNames.get(uniqueNames.size() - 1);
+    public String lastName() {
+        return names.get(names.size() - 1);
     }
 
     public String formatNamesWith(String newNodeName) {

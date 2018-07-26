@@ -1,7 +1,6 @@
 package poussecafe.doc;
 
 import java.util.HashSet;
-import java.util.ListIterator;
 import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
@@ -74,7 +73,7 @@ public class AggregateGraphFactory {
 
     public UndirectedGraph buildGraph() {
         String aggregateNodeName = addAggregate();
-        AggregateGraphPath path = new AggregateGraphPath().with(aggregateNodeName, aggregateNodeName);
+        AggregateGraphPath path = new AggregateGraphPath().with(aggregateNodeName);
         addAllRelations(path, aggregateDoc.className());
         return graph;
     }
@@ -101,9 +100,8 @@ public class AggregateGraphFactory {
                     Logger.debug("New path: " + formattedNewPath);
                     exploredPaths.add(formattedNewPath);
 
-                    String newUniqueNodeName = uniqueNodeName(path, toComponent);
-                    AggregateGraphPath newPath = path.with(newNodeName, newUniqueNodeName);
-                    addNonAggregateRelation(path, toComponent, newUniqueNodeName);
+                    AggregateGraphPath newPath = path.with(newNodeName);
+                    addNonAggregateRelation(path, toComponent, newNodeName);
                     addAllRelations(newPath, relation.toComponent().className());
                 } else {
                     Logger.debug("Ignored known path: " + formattedNewPath);
@@ -115,31 +113,14 @@ public class AggregateGraphFactory {
         }
     }
 
-    private String uniqueNodeName(AggregateGraphPath path,
-            Component component) {
-        String candidateName = name(component);
-        ListIterator<String> iterator = path.uniqueNamesEndIterator();
-        while(iterator.hasPrevious() && graph.getNodesAndEdges().getNode(candidateName) != null) {
-            String pathName = iterator.previous();
-            candidateName = pathName + " " + candidateName;
-        }
-        if(graph.getNodesAndEdges().getNode(candidateName) != null) {
-            throw new IllegalArgumentException("Ambiguous path detected: " + candidateName);
-        }
-        return candidateName;
-    }
-
     private void addAggregateRelation(AggregateGraphPath path, Component toComponent) {
         if(toComponent.className().equals(aggregateDoc.className())) {
             return;
         }
 
         String toName = name(toComponent);
-        if(graph.getNodesAndEdges().getNode(toName) == null) {
-            Node aggregateNode = node(toComponent, toName);
-            graph.getNodesAndEdges().addNode(aggregateNode);
-        }
-        UndirectedEdge edge = UndirectedEdge.dashedEdge(path.lastUniqueName(), toName);
+        addNode(toComponent, toName);
+        UndirectedEdge edge = UndirectedEdge.dashedEdge(path.lastName(), toName);
         graph.getNodesAndEdges().addEdge(edge);
     }
 
@@ -147,7 +128,7 @@ public class AggregateGraphFactory {
 
     private String addNonAggregateRelation(AggregateGraphPath path, Component toComponent, String toName) {
         addNode(toComponent, toName);
-        UndirectedEdge edge = UndirectedEdge.solidEdge(path.lastUniqueName(), toName);
+        UndirectedEdge edge = UndirectedEdge.solidEdge(path.lastName(), toName);
         graph.getNodesAndEdges().addEdge(edge);
         return toName;
     }
@@ -172,8 +153,10 @@ public class AggregateGraphFactory {
     private ValueObjectDocRepository valueObjectDocRepository;
 
     private void addNode(Component component, String candidateName) {
-        Node node = node(component, candidateName);
-        graph.getNodesAndEdges().addNode(node);
+        if(graph.getNodesAndEdges().getNode(candidateName) == null) {
+            Node node = node(component, candidateName);
+            graph.getNodesAndEdges().addNode(node);
+        }
     }
 
     private Node node(Component component,
