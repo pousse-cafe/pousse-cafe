@@ -1,4 +1,4 @@
-package poussecafe.doc.model.aggregatedoc;
+package poussecafe.doc.model.factorydoc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,18 +11,18 @@ import poussecafe.storable.Property;
 import poussecafe.storage.memory.ConvertingListProperty;
 
 @SuppressWarnings("serial")
-public class AggregateDocData implements AggregateDoc.Data, Serializable {
+public class FactoryDocData implements FactoryDoc.Data, Serializable {
 
     @Override
-    public Property<AggregateDocKey> key() {
-        return new Property<AggregateDocKey>() {
+    public Property<FactoryDocKey> key() {
+        return new Property<FactoryDocKey>() {
             @Override
-            public AggregateDocKey get() {
-                return AggregateDocKey.ofClassName(className);
+            public FactoryDocKey get() {
+                return FactoryDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(AggregateDocKey value) {
+            public void set(FactoryDocKey value) {
                 className = value.getValue();
             }
         };
@@ -35,34 +35,17 @@ public class AggregateDocData implements AggregateDoc.Data, Serializable {
         return new Property<BoundedContextComponentDoc>() {
             @Override
             public BoundedContextComponentDoc get() {
-                return componentDoc.toModel();
+                return boundedContextComponentDoc.toModel();
             }
 
             @Override
             public void set(BoundedContextComponentDoc value) {
-                componentDoc = BoundedContextComponentDocData.of(value);
+                boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
             }
         };
     }
 
-    private BoundedContextComponentDocData componentDoc;
-
-    @Override
-    public Property<String> keyClassName() {
-        return new Property<String>() {
-            @Override
-            public String get() {
-                return keyClassName;
-            }
-
-            @Override
-            public void set(String value) {
-                keyClassName = value;
-            }
-        };
-    }
-
-    private String keyClassName;
+    private BoundedContextComponentDocData boundedContextComponentDoc;
 
     @Override
     public ListProperty<StepDoc> stepDocs() {

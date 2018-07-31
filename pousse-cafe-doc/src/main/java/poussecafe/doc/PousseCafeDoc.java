@@ -24,6 +24,11 @@ import poussecafe.doc.model.entitydoc.EntityDocData;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.entitydoc.InMemoryEntityDocDataAccess;
+import poussecafe.doc.model.factorydoc.FactoryDoc;
+import poussecafe.doc.model.factorydoc.FactoryDocData;
+import poussecafe.doc.model.factorydoc.FactoryDocFactory;
+import poussecafe.doc.model.factorydoc.FactoryDocRepository;
+import poussecafe.doc.model.factorydoc.InMemoryFactoryDocDataAccess;
 import poussecafe.doc.model.relation.InMemoryRelationDataAccess;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationData;
@@ -34,6 +39,7 @@ import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocData;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
+import poussecafe.doc.model.step.StepDocExtractor;
 import poussecafe.doc.model.vodoc.InMemoryValueObjectDocDataAccess;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocData;
@@ -44,6 +50,7 @@ import poussecafe.doc.process.BoundedContextDocCreation;
 import poussecafe.doc.process.ComponentLinking;
 import poussecafe.doc.process.DomainProcessDocCreation;
 import poussecafe.doc.process.EntityDocCreation;
+import poussecafe.doc.process.FactoryDocCreation;
 import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.doc.process.ValueObjectDocCreation;
 import poussecafe.domain.Service;
@@ -97,6 +104,12 @@ public class PousseCafeDoc extends BoundedContext {
                 .withFactoryClass(DomainProcessDocFactory.class)
                 .withRepositoryClass(DomainProcessDocRepository.class)
                 .build());
+
+        definitions.add(new StorableDefinition.Builder()
+                .withStorableClass(FactoryDoc.class)
+                .withFactoryClass(FactoryDocFactory.class)
+                .withRepositoryClass(FactoryDocRepository.class)
+                .build());
     }
 
     @Override
@@ -149,6 +162,13 @@ public class PousseCafeDoc extends BoundedContext {
                 .withDataAccessFactory(InMemoryDomainProcessDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+
+        implementations.add(new StorableImplementation.Builder()
+                .withStorableClass(FactoryDoc.class)
+                .withDataFactory(FactoryDocData::new)
+                .withDataAccessFactory(InMemoryFactoryDocDataAccess::new)
+                .withStorage(InMemoryStorage.instance())
+                .build());
     }
 
     @Override
@@ -160,6 +180,7 @@ public class PousseCafeDoc extends BoundedContext {
         processes.add(ValueObjectDocCreation.class);
         processes.add(ComponentLinking.class);
         processes.add(DomainProcessDocCreation.class);
+        processes.add(FactoryDocCreation.class);
     }
 
     @Override
@@ -167,6 +188,7 @@ public class PousseCafeDoc extends BoundedContext {
         services.add(GraphFactory.class);
         services.add(UbiquitousLanguageFactory.class);
         services.add(ComponentDocFactory.class);
+        services.add(StepDocExtractor.class);
     }
 
 }

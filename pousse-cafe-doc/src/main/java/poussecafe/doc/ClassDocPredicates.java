@@ -5,6 +5,9 @@ import com.sun.javadoc.ClassDoc;
 public class ClassDocPredicates {
 
     public static boolean documentsWithSuperclass(ClassDoc classDoc, Class<?> expectedSuperclass) {
+        if(expectedSuperclass.isInterface()) {
+            throw new IllegalArgumentException("Given expected class is an interface");
+        }
         return classDoc.superclass() != null && documents(classDoc.superclass(), expectedSuperclass);
     }
 
@@ -14,6 +17,9 @@ public class ClassDocPredicates {
     }
 
     public static boolean documentsWithSuperinterface(ClassDoc classDoc, Class<?> expectedInterface) {
+        if(!expectedInterface.isInterface()) {
+            throw new IllegalArgumentException("Given expected class is not an interface");
+        }
         return documents(classDoc.interfaces(), expectedInterface);
     }
 

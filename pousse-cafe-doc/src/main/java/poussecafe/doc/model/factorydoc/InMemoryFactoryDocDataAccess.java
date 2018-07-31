@@ -1,4 +1,4 @@
-package poussecafe.doc.model.aggregatedoc;
+package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
@@ -6,25 +6,19 @@ import poussecafe.storage.memory.InMemoryDataAccess;
 
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryAggregateDocDataAccess extends InMemoryDataAccess<AggregateDocKey, AggregateDocData> implements AggregateDocDataAccess<AggregateDocData> {
+public class InMemoryFactoryDocDataAccess extends InMemoryDataAccess<FactoryDocKey, FactoryDocData> implements FactoryDocDataAccess<FactoryDocData> {
 
     @Override
-    public List<AggregateDocData> findByBoundedContextKey(BoundedContextDocKey key) {
+    public List<FactoryDocData> findByBoundedContextKey(BoundedContextDocKey key) {
         return findAll().stream().filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(key)).collect(toList());
     }
 
     @Override
-    public List<AggregateDocData> findByKeyClassName(String qualifiedName) {
-        return findAll().stream().filter(data -> data.keyClassName().get().equals(qualifiedName)).collect(toList());
-    }
-
-    @Override
-    public AggregateDocData findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
+    public FactoryDocData findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String aggregateName) {
         return findAll().stream()
                 .filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(boundedContextDocKey))
                 .filter(data -> data.boundedContextComponentDoc().get().componentDoc().name().equals(aggregateName))
                 .findFirst().orElse(null);
     }
-
 }

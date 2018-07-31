@@ -6,8 +6,6 @@ public interface Tags {
 
     String STEP = "step";
 
-    String TO = "to";
-
     String EVENTUALLY = "eventually";
 
     String TO_EXTERNAL = "to_external";
@@ -17,4 +15,6 @@ public interface Tags {
     String TRIVIAL = "trivial";
 
     String SHORT = "short";
+
+    String EVENT = "event";
 }

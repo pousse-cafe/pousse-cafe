@@ -1,4 +1,4 @@
-package poussecafe.doc.model.aggregatedoc;
+package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import poussecafe.storable.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
-public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Data> {
+public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
         checkThatValue(boundedContextComponentDoc).notNull();
@@ -24,21 +24,8 @@ public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Da
         return getData().boundedContextComponentDoc().get();
     }
 
-    void keyClassName(String keyClassName) {
-        checkThatValue(keyClassName).notNull();
-        getData().keyClassName().set(keyClassName);
-    }
-
-    public String keyClassName() {
-        return getData().keyClassName().get();
-    }
-
     public String id() {
         return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
-    }
-
-    public String className() {
-        return getKey().getValue();
     }
 
     void stepDocs(List<StepDoc> stepDocs) {
@@ -57,11 +44,9 @@ public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Da
         return getData().stepDocs().get();
     }
 
-    public static interface Data extends IdentifiedStorableData<AggregateDocKey> {
+    public static interface Data extends IdentifiedStorableData<FactoryDocKey> {
 
         Property<BoundedContextComponentDoc> boundedContextComponentDoc();
-
-        Property<String> keyClassName();
 
         ListProperty<StepDoc> stepDocs();
     }

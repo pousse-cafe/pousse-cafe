@@ -23,7 +23,7 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Clas
             BoundedContextDoc boundedContextDoc = boundedContextDocRepository
                     .findByPackageNamePrefixing(classDoc.qualifiedName());
             if (boundedContextDoc != null) {
-                rootDocWrapper.debug("Adding " + componentName() + " with class " + classDoc.qualifiedTypeName());
+                Logger.debug("Adding " + componentName() + " with class " + classDoc.qualifiedTypeName());
                 addDoc(boundedContextDoc.getKey(), classDoc);
             }
         }

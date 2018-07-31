@@ -23,7 +23,7 @@ public class GraphImagesWriter {
             File outputDirectory = outputDirectory();
             List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
             for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
-                rootDocWrapper.debug("Drawing BC " + boundedContextDoc.componentDoc().name() + " graph...");
+                Logger.debug("Drawing BC " + boundedContextDoc.componentDoc().name() + " graph...");
                 graphImageWriter
                         .writeImage(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
                                 boundedContextDoc.id());
@@ -46,7 +46,7 @@ public class GraphImagesWriter {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())) {
-            rootDocWrapper.debug("Drawing aggregate " + aggregateDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+            Logger.debug("Drawing aggregate " + aggregateDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + aggregateDoc.id());
@@ -63,7 +63,7 @@ public class GraphImagesWriter {
         File outputDirectory = outputDirectory();
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
                 .findByBoundedContextKey(boundedContextDoc.getKey())) {
-            rootDocWrapper.debug("Drawing domain process " + domainProcessDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+            Logger.debug("Drawing domain process " + domainProcessDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + domainProcessDoc.id());

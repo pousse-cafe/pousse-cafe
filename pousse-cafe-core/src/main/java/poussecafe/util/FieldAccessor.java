@@ -55,7 +55,7 @@ public class FieldAccessor {
             try {
                 return currentClass.getDeclaredField(fieldName);
             } catch (NoSuchFieldException e) {
-                currentClass = targetClass.getSuperclass();
+                currentClass = currentClass.getSuperclass();
             }
         }
         throw new NoSuchFieldException();

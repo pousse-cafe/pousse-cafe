@@ -19,7 +19,7 @@ public class BoundedContextDocCreator implements Consumer<ClassDoc> {
     @Override
     public void accept(ClassDoc classDoc) {
         if (BoundedContextDocFactory.isBoundedContextDoc(classDoc)) {
-            rootDocWrapper.debug("Adding bounded context with class " + classDoc.name());
+            Logger.debug("Adding bounded context with class " + classDoc.name());
             boundedContextDocCreation.addBoundedContextDoc(classDoc);
         }
     }

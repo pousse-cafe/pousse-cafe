@@ -1,16 +1,13 @@
-package poussecafe.doc.model.aggregatedoc;
+package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.storable.IdentifiedStorableDataAccess;
 
-public interface AggregateDocDataAccess<D extends AggregateDoc.Data> extends IdentifiedStorableDataAccess<AggregateDocKey, D> {
+public interface FactoryDocDataAccess<D extends FactoryDoc.Data> extends IdentifiedStorableDataAccess<FactoryDocKey, D> {
 
     List<D> findByBoundedContextKey(BoundedContextDocKey key);
 
-    List<D> findByKeyClassName(String qualifiedName);
-
     D findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
-            String aggregateName);
-
+            String factoryName);
 }

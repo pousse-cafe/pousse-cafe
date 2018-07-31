@@ -23,7 +23,7 @@ public class PdfWriter {
                 XRLog.setLoggingEnabled(true);
             }
 
-            rootDocWrapper.debug("Writing PDF...");
+            Logger.debug("Writing PDF...");
             ITextRenderer pdfRenderer = new ITextRenderer();
             pdfRenderer.setDocument(new File(rootDocWrapper.outputPath(), "index.html"));
             pdfRenderer.layout();
@@ -36,5 +36,4 @@ public class PdfWriter {
             throw new RuntimeException("Error while writing PDF", e);
         }
     }
-
 }

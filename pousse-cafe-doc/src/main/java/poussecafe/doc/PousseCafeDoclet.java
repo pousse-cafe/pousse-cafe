@@ -23,7 +23,7 @@ public class PousseCafeDoclet {
     private MetaApplicationContext context;
 
     public void start() {
-        rootDocWrapper.info("Starting Pousse-Café doclet...");
+        Logger.info("Starting Pousse-Café doclet...");
         context.start();
 
         analyzeCode();
@@ -37,6 +37,7 @@ public class PousseCafeDoclet {
     private void analyzeCode() {
         detectBoundedContexts();
         detectBoundedContextComponents();
+        detectDomainProcesses();
         detectRelations();
     }
 
@@ -64,8 +65,8 @@ public class PousseCafeDoclet {
         ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
         context.injectDependencies(valueObjectDocCreator);
 
-        DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
-        context.injectDependencies(domainProcessDocCreator);
+        FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
+        context.injectDependencies(factoryDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -73,6 +74,17 @@ public class PousseCafeDoclet {
                 .classDocConsumer(serviceDocCreator)
                 .classDocConsumer(entityDocCreator)
                 .classDocConsumer(valueObjectDocCreator)
+                .classDocConsumer(factoryDocCreator)
+                .build();
+        codeAnalyzer.analyzeCode();
+    }
+
+    private void detectDomainProcesses() {
+        DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
+        context.injectDependencies(domainProcessDocCreator);
+
+        ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
+                .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(domainProcessDocCreator)
                 .build();
         codeAnalyzer.analyzeCode();

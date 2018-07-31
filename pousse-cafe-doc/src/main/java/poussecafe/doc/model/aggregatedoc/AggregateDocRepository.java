@@ -21,4 +21,9 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
     public List<AggregateDoc> findByKeyClassName(String qualifiedName) {
         return newStorablesWithData(dataAccess().findByKeyClassName(qualifiedName));
     }
+
+    public AggregateDoc findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
+            String aggregateName) {
+        return newStorableWithData(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
+    }
 }

@@ -51,7 +51,7 @@ public class RelationCreator implements Consumer<ClassDoc> {
         if(aggregateDoc != null) {
             ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.keyClassName()));
             if(keyDoc != null) {
-                rootDocWrapper.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.keyClassName());
+                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.keyClassName());
                 NewRelationParameters aggregateKeyParameters = new NewRelationParameters();
                 aggregateKeyParameters.fromComponent = component(classDoc);
                 aggregateKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.keyClassName());
@@ -74,7 +74,7 @@ public class RelationCreator implements Consumer<ClassDoc> {
         if(entityDoc != null) {
             ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(entityDoc.keyClassName()));
             if(keyDoc != null) {
-                rootDocWrapper.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.keyClassName());
+                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.keyClassName());
                 NewRelationParameters entityKeyParameters = new NewRelationParameters();
                 entityKeyParameters.fromComponent = component(classDoc);
                 entityKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.keyClassName());
@@ -111,7 +111,7 @@ public class RelationCreator implements Consumer<ClassDoc> {
 
     private void linkComponents(ClassDoc from,
             ClassDoc to) {
-        rootDocWrapper.debug("Building relation between " + from.qualifiedName() + " and " + to.qualifiedName());
+        Logger.debug("Building relation between " + from.qualifiedName() + " and " + to.qualifiedName());
         NewRelationParameters parameters = new NewRelationParameters();
         parameters.fromComponent = component(from);
         parameters.toComponent = component(to);

@@ -22,6 +22,7 @@ public class DomainProcessGraphFactory {
     private DomainProcessDoc domainProcessDoc;
 
     public DirectedGraph buildGraph() {
+        Logger.info("Building graph for process {}", domainProcessDoc.boundedContextComponentDoc().componentDoc().name());
         DirectedGraph graph = new DirectedGraph();
         Map<String, Step> steps = domainProcessDoc.steps();
         for(Step step : domainProcessDoc.orderedSteps()) {

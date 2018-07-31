@@ -22,8 +22,8 @@ public class AnnotationsResolver {
         return hasTag(methodDoc, Tags.STEP);
     }
 
-    public static String step(MethodDoc methodDoc) {
-        return optionalTag(methodDoc, Tags.STEP).orElseThrow(() -> new IllegalArgumentException("No step tag"));
+    public static List<String> step(MethodDoc methodDoc) {
+        return tags(methodDoc, Tags.STEP);
     }
 
     private static Optional<String> optionalTag(ProgramElementDoc doc,
@@ -37,10 +37,6 @@ public class AnnotationsResolver {
         } else {
             return Optional.of(tags[0].text());
         }
-    }
-
-    public static List<String> to(MethodDoc methodDoc) {
-        return tags(methodDoc, Tags.TO);
     }
 
     private static List<String> tags(Doc doc, String tagName) {
@@ -70,5 +66,9 @@ public class AnnotationsResolver {
 
     public static Optional<String> shortDescription(ProgramElementDoc doc) {
         return optionalTag(doc, Tags.SHORT);
+    }
+
+    public static List<String> event(MethodDoc methodDoc) {
+        return tags(methodDoc, Tags.EVENT);
     }
 }
