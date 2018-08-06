@@ -1,6 +1,7 @@
 package poussecafe.storage.memory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
 
     @Override
     public Map<K, V> get() {
-        return map.entrySet().stream().collect(toConvertedFromMap());
+        return Collections.unmodifiableMap(map.entrySet().stream().collect(toConvertedFromMap()));
     }
 
     private Collector<Entry<L, U>, ?, Map<K, V>> toConvertedFromMap() {

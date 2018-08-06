@@ -8,32 +8,42 @@ import static java.util.stream.Collectors.toSet;
 public abstract class ConvertingSetProperty<F, T> implements SetProperty<T> {
 
     public ConvertingSetProperty(Set<F> list) {
-        listProperty = new BaseSetProperty<>(list);
+        setProperty = new BaseSetProperty<>(list);
     }
 
-    private BaseSetProperty<F> listProperty;
+    private BaseSetProperty<F> setProperty;
 
     @Override
     public Set<T> get() {
-        return listProperty.stream().map(this::convertFrom).collect(toSet());
+        return setProperty.stream().map(this::convertFrom).collect(toSet());
     }
 
     protected abstract T convertFrom(F from);
 
     @Override
     public void set(Set<T> value) {
-        listProperty.set(value.stream().map(this::convertTo).collect(toSet()));
+        setProperty.set(value.stream().map(this::convertTo).collect(toSet()));
     }
 
     protected abstract F convertTo(T from);
 
     @Override
     public void add(T item) {
-        listProperty.add(convertTo(item));
+        setProperty.add(convertTo(item));
     }
 
     @Override
     public Stream<T> stream() {
-        return listProperty.stream().map(this::convertFrom);
+        return setProperty.stream().map(this::convertFrom);
+    }
+
+    @Override
+    public boolean contains(T item) {
+        return setProperty.contains(convertTo(item));
+    }
+
+    @Override
+    public int size() {
+        return setProperty.size();
     }
 }

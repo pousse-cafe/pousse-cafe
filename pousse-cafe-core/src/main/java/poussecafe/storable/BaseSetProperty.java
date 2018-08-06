@@ -42,4 +42,9 @@ public class BaseSetProperty<T> implements SetProperty<T> {
         return set.stream();
     }
 
+    @Override
+    public int size() {
+        return set.size();
+    }
+
 }

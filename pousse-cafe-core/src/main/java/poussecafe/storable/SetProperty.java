@@ -10,4 +10,6 @@ public interface SetProperty<T> extends Property<Set<T>> {
     boolean contains(T item);
 
     Stream<T> stream();
+
+    int size();
 }
