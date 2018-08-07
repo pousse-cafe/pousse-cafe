@@ -72,8 +72,30 @@ ${domain.name} Domain Model
 <h1 id="intro">Introduction</h1>
 
 <p>This document describes ${domain.name} domain using concepts defined by
-<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain-Driven Design</a> methodology. It was generated
+<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain-Driven Design (DDD)</a> methodology. It was generated
 directly from source code and can be considered as a close summary of what is actually implemented.</p>
+
+<p>The following DDD elements are described in the remainder and shortly defined below. For more precise and complete
+definitions, please refer to the litterature:</p>
+
+<ul>
+  <li>Value Object: an object fully described by its attributes and with no identity nor life-cycle,</li>
+  <li>Entity: an object with a life-cycle and an identity;</li>
+  <li>Aggregate: a group of related value objects and entities, one of which being called the root of the aggregate;</li>
+  <li>Service: an object representing an operation that is not naturally part of a value object or an entity;</li>
+  <li>Domain Event: an object representing an event and used to communicate information between aggregates potentially
+  located in different bounded contexts;</li>
+  <li>Bounded Contexts: they describe boundaries inside of which each component has a unique name and a given definition.
+  Some concepts might appear in different bounded contexts with the same name but with a slightly or completely different
+  definition.</li>
+</ul>
+
+<p>The identity of an entity is generally represented by a special value object called the key. An aggregate is identified
+by its root's key.</p>
+
+<p>An additional non-DDD component is also described in next sections: the Domain Process. Domain processes are responsible
+for calling commands on aggregates (and therefore, starting transactions when necessary). Expect for some commands initiating
+a process, most of them are called when handling a Domain Event.</p>
 
 <p>The following conventions are being used:</p>
 <ul>
@@ -115,11 +137,16 @@ directly from source code and can be considered as a close summary of what is ac
 
 <#list context.aggregates as aggregate>
 <h4 id="${context.id}_${aggregate.id}">${aggregate.name}</h4>
-<p>${aggregate.description}</p>
+${aggregate.description}
 
-<div class="figure">
-  <img src="${context.id}_${aggregate.id}.png"/>
-</div>
+<#if aggregate.valueObjects?size gt 0>
+<h5>Value Objects</h5>
+<ul>
+<#list aggregate.valueObjects as valueObject>
+  <li><strong>${valueObject.name}:</strong> ${valueObject.description}</li>
+</#list>
+</ul>
+</#if>
 
 <#if aggregate.entities?size gt 0>
 <h5>Entities</h5>
@@ -130,14 +157,9 @@ directly from source code and can be considered as a close summary of what is ac
 </ul>
 </#if>
 
-<#if aggregate.valueObjects?size gt 0>
-<h5>Value Objects</h5>
-<ul>
-<#list aggregate.valueObjects as valueObject>
-  <li><strong>${valueObject.name}:</strong> ${valueObject.description}</li>
-</#list>
-</ul>
-</#if>
+<div class="figure">
+  <img src="${context.id}_${aggregate.id}.png"/>
+</div>
 
 </#list>
 
