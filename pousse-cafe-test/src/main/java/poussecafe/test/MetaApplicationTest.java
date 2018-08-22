@@ -47,4 +47,8 @@ public abstract class MetaApplicationTest {
     protected void loadDataFile(String path) {
         wrapper.loadDataFile(path);
     }
+
+    protected MetaApplicationWrapper wrapper() {
+        return wrapper;
+    }
 }
