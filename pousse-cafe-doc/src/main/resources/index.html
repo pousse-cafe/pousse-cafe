@@ -167,7 +167,7 @@ ${aggregate.description}
 <h3 id="${context.id}_services">Services</h3>
 <#list context.services as service>
 <h4 id="${context.id}_${service.id}">${service.name}</h4>
-<p>${service.description}</p>
+${service.description}
 </#list>
 </#if>
 
@@ -175,7 +175,7 @@ ${aggregate.description}
 <h3 id="${context.id}_processes">Domain Processes</h3>
 <#list context.domainProcesses as process>
 <h4 id="${context.id}_${process.id}">${process.name}</h4>
-<p>${process.description}</p>
+${process.description}
 
 <div class="figure">
   <img src="${context.id}_${process.id}.png"/>

@@ -32,7 +32,9 @@ public abstract class ConvertingEntityMapProperty<L, F extends IdentifiedStorabl
 
             @Override
             protected E convertFromValue(F from) {
-                return primitive.newPrimitive(primitiveClass, from);
+                E entity = primitive.newPrimitive(primitiveClass, from);
+                entity.parent(primitive);
+                return entity;
             }
 
             @Override
@@ -54,6 +56,8 @@ public abstract class ConvertingEntityMapProperty<L, F extends IdentifiedStorabl
 
     @Override
     public E newInContextOf(Primitive primitive) {
-        return primitive.newPrimitive(primitiveClass);
+        E entity = primitive.newPrimitive(primitiveClass);
+        entity.parent(primitive);
+        return entity;
     }
 }

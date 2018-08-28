@@ -12,11 +12,13 @@ public abstract class EntityPropertyData<D extends IdentifiedStorableData<?>, E 
     private Class<E> primitiveClass;
 
     @Override
-    public Property<E> with(Primitive primitive) {
+    public Property<E> inContextOf(Primitive primitive) {
         return new Property<E>() {
             @Override
             public E get() {
-                return primitive.newPrimitive(primitiveClass, EntityPropertyData.this.getData());
+                E entity = primitive.newPrimitive(primitiveClass, EntityPropertyData.this.getData());
+                entity.parent(primitive);
+                return entity;
             }
 
             @Override
@@ -29,4 +31,11 @@ public abstract class EntityPropertyData<D extends IdentifiedStorableData<?>, E 
     protected abstract D getData();
 
     protected abstract void setData(D data);
+
+    @Override
+    public E newInContextOf(Primitive primitive) {
+        E entity = primitive.newPrimitive(primitiveClass);
+        entity.parent(primitive);
+        return entity;
+    }
 }

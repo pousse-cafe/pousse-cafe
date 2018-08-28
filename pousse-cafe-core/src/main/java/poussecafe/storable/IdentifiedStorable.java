@@ -1,5 +1,7 @@
 package poussecafe.storable;
 
+import static poussecafe.check.Checks.checkThatValue;
+
 public abstract class IdentifiedStorable<K, D extends IdentifiedStorableData<K>> extends Storable<D> {
 
     public K getKey() {
@@ -8,5 +10,16 @@ public abstract class IdentifiedStorable<K, D extends IdentifiedStorableData<K>>
 
     public void setKey(K key) {
         getData().key().set(key);
+    }
+
+    public void parent(Primitive parent) {
+        checkThatValue(parent).notNull();
+        this.parent = parent;
+    }
+
+    private Primitive parent;
+
+    public Primitive parent() {
+        return parent;
     }
 }

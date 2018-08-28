@@ -2,5 +2,7 @@ package poussecafe.storable;
 
 public interface EntityProperty<E extends IdentifiedStorable<?, ?>> {
 
-    Property<E> with(Primitive primitive);
+    Property<E> inContextOf(Primitive primitive);
+
+    E newInContextOf(Primitive primitive);
 }
