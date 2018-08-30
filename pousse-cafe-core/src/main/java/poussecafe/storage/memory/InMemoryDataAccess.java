@@ -9,11 +9,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import poussecafe.collection.Multimap;
 import poussecafe.storable.IdentifiedStorableData;
 import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.storage.memory.uniqueindex.AdditionPlan;
+import poussecafe.storage.memory.uniqueindex.Plan;
+import poussecafe.storage.memory.uniqueindex.UniqueIndex;
+import poussecafe.storage.memory.uniqueindex.UpdatePlan;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -23,6 +28,8 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     private Map<K, byte[]> storage;
 
     private Multimap<Object, K> index = new Multimap<>();
+
+    private Map<String, UniqueIndex<D>> uniqueIndexes = new HashMap<>();
 
     public InMemoryDataAccess() {
         storage = new HashMap<>();
@@ -53,8 +60,16 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
         if (storage.containsKey(key)) {
             throw new InMemoryDataException("Duplicate key");
         }
+        List<AdditionPlan> additionPlans = prepareAddition(data);
         storage.put(key, serialize(data));
         index(data);
+        commitPlans(additionPlans);
+    }
+
+    private List<AdditionPlan> prepareAddition(D data) {
+        return uniqueIndexes.values().stream()
+            .map(index -> index.prepareAddition(data))
+            .collect(toList());
     }
 
     private void index(D data) {
@@ -65,6 +80,10 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
                 index.put(indexed, key);
             }
         });
+    }
+
+    private void commitPlans(List<? extends Plan> plans) {
+        plans.forEach(Plan::commit);
     }
 
     protected List<Object> extractIndexedData(D data) {
@@ -84,15 +103,25 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     }
 
     @Override
-    public synchronized void updateData(D data) {
-        K key = data.key().get();
+    public synchronized void updateData(D newData) {
+        K key = newData.key().get();
         if (!storage.containsKey(key)) {
             throw new InMemoryDataException("No entry with key " + key);
         }
-        D old = findData(key);
-        unindex(old);
-        storage.put(key, serialize(data));
-        index(data);
+        D oldData = findData(key);
+
+        List<UpdatePlan> updatePlans = prepareUpdate(Optional.ofNullable(oldData), newData);
+        unindex(oldData);
+        storage.put(key, serialize(newData));
+        index(newData);
+        commitPlans(updatePlans);
+    }
+
+    private List<UpdatePlan> prepareUpdate(Optional<D> oldData,
+            D newData) {
+        return uniqueIndexes.values().stream()
+                .map(index -> index.prepareUpdate(oldData, newData))
+                .collect(toList());
     }
 
     @Override
@@ -104,7 +133,7 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
         }
     }
 
-    private void unindex(D data) {
+    private synchronized void unindex(D data) {
         K key = data.key().get();
         List<Object> indexedData = extractIndexedData(data);
         indexedData.forEach(indexed -> index.remove(indexed, key));
@@ -131,5 +160,12 @@ public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implemen
     @Override
     public synchronized List<D> findAll() {
         return streamAll().collect(toList());
+    }
+
+    protected void registerUniqueIndex(UniqueIndex<D> uniqueIndex) {
+        if(uniqueIndexes.containsKey(uniqueIndex.name())) {
+            throw new IllegalArgumentException("A unique index with name " + uniqueIndex.name() + " already exists");
+        }
+        uniqueIndexes.put(uniqueIndex.name(), uniqueIndex);
     }
 }
