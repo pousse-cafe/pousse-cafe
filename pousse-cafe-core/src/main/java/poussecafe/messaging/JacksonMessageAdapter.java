@@ -3,6 +3,7 @@ package poussecafe.messaging;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.journal.SerializedMessage;
 
@@ -24,6 +25,7 @@ public class JacksonMessageAdapter implements MessageAdapter {
 
     protected ObjectMapper initObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.setConfig(mapper.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS));
         mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
