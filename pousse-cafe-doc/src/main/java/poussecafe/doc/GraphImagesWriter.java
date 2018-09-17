@@ -12,6 +12,8 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 
 public class GraphImagesWriter {
 
+    private static final String IMAGES_SUB_DIRECTORY = "img";
+
     public GraphImagesWriter(RootDocWrapper rootDocWrapper) {
         this.rootDocWrapper = rootDocWrapper;
     }
@@ -37,7 +39,9 @@ public class GraphImagesWriter {
     }
 
     private File outputDirectory() {
-        return new File(rootDocWrapper.outputPath());
+        File outputDirectory = new File(rootDocWrapper.outputPath(), IMAGES_SUB_DIRECTORY);
+        outputDirectory.mkdirs();
+        return outputDirectory;
     }
 
     private GraphImageWriter graphImageWriter = new GraphImageWriter();

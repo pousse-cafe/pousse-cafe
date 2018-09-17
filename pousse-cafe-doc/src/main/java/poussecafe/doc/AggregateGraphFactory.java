@@ -118,6 +118,11 @@ public class AggregateGraphFactory {
             return;
         }
 
+        AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocKey.ofClassName(toComponent.className()));
+        if(!toAggregateDoc.boundedContextComponentDoc().boundedContextDocKey().equals(aggregateDoc.boundedContextComponentDoc().boundedContextDocKey())) {
+            return;
+        }
+
         String toName = name(toComponent);
         addNode(toComponent, toName);
         UndirectedEdge edge = UndirectedEdge.dashedEdge(path.lastName(), toName);
