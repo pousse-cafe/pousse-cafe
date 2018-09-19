@@ -1,6 +1,6 @@
 package poussecafe.storable;
 
-import java.util.HashMap;
+import java.util.Map;
 import poussecafe.storage.memory.ConvertingMapProperty;
 
 import static poussecafe.check.Checks.checkThatValue;
@@ -8,7 +8,7 @@ import static poussecafe.check.Checks.checkThatValue;
 public abstract class ConvertingEntityMapProperty<L, F extends IdentifiedStorableData<K>, K, E extends IdentifiedStorable<K, ?>> implements
         EntityMapProperty<K, E> {
 
-    public ConvertingEntityMapProperty(HashMap<L, F> data, Class<E> primitiveClass) {
+    public ConvertingEntityMapProperty(Map<L, F> data, Class<E> primitiveClass) {
         checkThatValue(data).notNull();
         this.data = data;
 
@@ -16,7 +16,7 @@ public abstract class ConvertingEntityMapProperty<L, F extends IdentifiedStorabl
         this.primitiveClass = primitiveClass;
     }
 
-    private HashMap<L, F> data;
+    private Map<L, F> data;
 
     private Class<E> primitiveClass;
 
