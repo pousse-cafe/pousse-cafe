@@ -31,10 +31,10 @@ public class ReadOnlyNumberPropertyBuilder<T extends Number> {
         };
     }
 
-    public ReadWriteNumberPropertyBuilder<T> set(Consumer<T> setter) {
+    public OperatorLessReadWriteNumberPropertyBuilder<T> set(Consumer<T> setter) {
         CompositeProperty<T, T> newCompositeProperty = new CompositeProperty<>();
         newCompositeProperty.getter = compositeProperty.getter;
         newCompositeProperty.setter = setter;
-        return new ReadWriteNumberPropertyBuilder<>(newCompositeProperty);
+        return new OperatorLessReadWriteNumberPropertyBuilder<>(newCompositeProperty);
     }
 }

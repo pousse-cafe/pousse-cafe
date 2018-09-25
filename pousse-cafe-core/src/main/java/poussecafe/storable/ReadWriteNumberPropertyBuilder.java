@@ -4,17 +4,13 @@ import static poussecafe.check.Checks.checkThatValue;
 
 public class ReadWriteNumberPropertyBuilder<T extends Number> {
 
-    ReadWriteNumberPropertyBuilder(CompositeProperty<T, T> compositeProperty) {
+    ReadWriteNumberPropertyBuilder(CompositeProperty<T, T> compositeProperty,
+            AddOperator<T> addOperator) {
         this.compositeProperty = compositeProperty;
+        this.addOperator = addOperator;
     }
 
     private CompositeProperty<T, T> compositeProperty;
-
-    public ReadWriteNumberPropertyBuilder<T> addOperator(AddOperator<T> addOperator) {
-        checkThatValue(addOperator).notNull();
-        this.addOperator = addOperator;
-        return this;
-    }
 
     private AddOperator<T> addOperator;
 
