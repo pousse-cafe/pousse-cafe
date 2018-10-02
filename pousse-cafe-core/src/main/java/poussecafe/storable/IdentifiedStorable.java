@@ -9,6 +9,7 @@ public abstract class IdentifiedStorable<K, D extends IdentifiedStorableData<K>>
     }
 
     public void setKey(K key) {
+        checkThatValue(key).notNull();
         getData().key().set(key);
     }
 

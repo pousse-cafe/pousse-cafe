@@ -8,7 +8,7 @@ import java.time.ZoneOffset;
 @SuppressWarnings("serial")
 public class OffsetDateTimeData implements Serializable {
 
-    public static OffsetDateTimeData of(OffsetDateTime dateTime) {
+    public static OffsetDateTimeData adapt(OffsetDateTime dateTime) {
         if(dateTime == null) {
             return null;
         } else {
@@ -23,7 +23,7 @@ public class OffsetDateTimeData implements Serializable {
 
     private String offsetId;
 
-    public OffsetDateTime offsetDateTime() {
+    public OffsetDateTime adapt() {
         return dateTime.atOffset(ZoneOffset.of(offsetId));
     }
 }
