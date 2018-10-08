@@ -135,4 +135,9 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
     private Entry<K, V> convertEntry(Entry<L, U> entry) {
         return new ReadOnlyEntry<>(convertFromKey(entry.getKey()), convertFromValue(entry.getValue()));
     }
+
+    @Override
+    public int size() {
+        return map.size();
+    }
 }

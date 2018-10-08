@@ -19,6 +19,13 @@ public class AdaptingReadOnlyOptionalPropertyBuilder<U, T> {
 
     public AdaptedReadOnlyOptionalPropertyBuilder<U, T> get(Supplier<U> getter) {
         checkThatValue(getter).notNull();
-        return new AdaptedReadOnlyOptionalPropertyBuilder<>(() -> adapter.apply(getter.get()));
+        return new AdaptedReadOnlyOptionalPropertyBuilder<>(() -> {
+            U value = getter.get();
+            if(value != null) {
+                return adapter.apply(value);
+            } else {
+                return null;
+            }
+        });
     }
 }

@@ -26,4 +26,6 @@ public interface MapProperty<K, V> extends Property<Map<K, V>> {
     Stream<V> valuesStream();
 
     Set<Entry<K, V>> entrySet();
+
+    int size();
 }

@@ -24,6 +24,10 @@ public class OffsetDateTimeData implements Serializable {
     private String offsetId;
 
     public OffsetDateTime adapt() {
-        return dateTime.atOffset(ZoneOffset.of(offsetId));
+        if(dateTime == null && offsetId == null) {
+            return null;
+        } else {
+            return dateTime.atOffset(ZoneOffset.of(offsetId));
+        }
     }
 }

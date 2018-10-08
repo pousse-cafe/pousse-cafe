@@ -75,4 +75,9 @@ public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
     public Set<Entry<K, V>> entrySet() {
         return Collections.unmodifiableSet(wrappedMap.entrySet());
     }
+
+    @Override
+    public int size() {
+        return wrappedMap.size();
+    }
 }

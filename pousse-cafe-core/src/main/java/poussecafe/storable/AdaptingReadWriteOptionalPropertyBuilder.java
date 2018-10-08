@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static poussecafe.check.Checks.checkThatValue;
+
 /**
  * @param <U> Stored type
  * @param <T> Property type
@@ -20,9 +22,17 @@ public class AdaptingReadWriteOptionalPropertyBuilder<U, T> {
     private Function<T, U> adapter;
 
     public ReadWriteOptionalPropertyBuilder<T> set(Consumer<U> setter) {
+        checkThatValue(setter).notNull();
+
         CompositeProperty<T, T> compositeProperty = new CompositeProperty<>();
         compositeProperty.getter = getter;
-        compositeProperty.setter = value -> setter.accept(adapter.apply(value));
+        compositeProperty.setter = value -> {
+            if(value != null) {
+                setter.accept(adapter.apply(value));
+            } else {
+                setter.accept(null);
+            }
+        };
         return new ReadWriteOptionalPropertyBuilder<>(compositeProperty);
     }
 }
