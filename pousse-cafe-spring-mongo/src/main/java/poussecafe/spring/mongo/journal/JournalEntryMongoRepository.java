@@ -2,8 +2,8 @@ package poussecafe.spring.mongo.journal;
 
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import poussecafe.journal.JournalEntryStatus;
-import poussecafe.journal.memory.SerializableJournalEntryKey;
+import poussecafe.journal.data.SerializableJournalEntryKey;
+import poussecafe.journal.domain.JournalEntryStatus;
 
 public interface JournalEntryMongoRepository extends MongoRepository<JournalEntryData, SerializableJournalEntryKey> {
 

@@ -1,9 +1,9 @@
 package poussecafe.sample.domain.memory;
 
 import java.io.Serializable;
+import poussecafe.property.Property;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
-import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")
 public class CustomerData implements Customer.Data, Serializable {

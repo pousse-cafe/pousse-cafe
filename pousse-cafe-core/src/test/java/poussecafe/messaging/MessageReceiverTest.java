@@ -1,8 +1,6 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
-import poussecafe.journal.MessagingJournal;
-import poussecafe.journal.SuccessfulConsumption;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -10,8 +8,6 @@ import static org.mockito.Mockito.when;
 import static poussecafe.collection.Collections.asSet;
 
 public abstract class MessageReceiverTest {
-
-    private MessagingJournal messagingJournal;
 
     private MessageListenerRegistry listenerRegistry;
 
@@ -29,7 +25,6 @@ public abstract class MessageReceiverTest {
     }
 
     private void givenMessageQueue() {
-        messagingJournal = mock(MessagingJournal.class);
         listenerRegistry = mock(MessageListenerRegistry.class);
 
         listener = mock(MessageListener.class);
@@ -40,7 +35,6 @@ public abstract class MessageReceiverTest {
                 .thenReturn(asSet(listener));
 
         receiver = newMessageReceiver();
-        receiver.setMessagingJournal(messagingJournal);
         receiver.setListenerRegistry(listenerRegistry);
     }
 
@@ -53,16 +47,4 @@ public abstract class MessageReceiverTest {
     private void thenListenerConsumes() {
         verify(listener).consume(message);
     }
-
-    @Test
-    public void journalIsUpdatedUponSuccessfulConsumtion() {
-        givenMessageQueue();
-        whenConsumingMessage();
-        thenJournalUpdatedWithSuccess();
-    }
-
-    private void thenJournalUpdatedWithSuccess() {
-        verify(messagingJournal).logSuccessfulConsumption(listener.getListenerId(), new SuccessfulConsumption(message));
-    }
-
 }

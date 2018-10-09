@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.spring.mongo.context.MongoCoreBundle;
+import poussecafe.spring.mongo.context.MongoJournalBoundedContext;
 
 @Configuration
 @ComponentScan(basePackages = { "poussecafe.spring" })
@@ -13,8 +13,8 @@ public class AppConfiguration {
     @Bean
     public MetaApplicationContext pousseCafeApplicationContext() {
         MetaApplicationContext context = new MetaApplicationContext();
-        context.setCoreBundle(new MongoCoreBundle());
-        context.loadBoundedContext(new SampleMetaAppMongoBundle());
+        context.loadBoundedContext(new MongoJournalBoundedContext());
+        context.loadBoundedContext(new MongoSampleMetaAppBoundedContext());
         context.start();
         return context;
     }

@@ -1,7 +1,7 @@
 package poussecafe.doc.model.relation;
 
 import java.io.Serializable;
-import poussecafe.storable.Property;
+import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
 public class RelationData implements Relation.Data, Serializable {

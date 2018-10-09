@@ -6,9 +6,9 @@ import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepDocData;
-import poussecafe.storable.ListProperty;
-import poussecafe.storable.Property;
-import poussecafe.storage.memory.ConvertingListProperty;
+import poussecafe.property.ConvertingListProperty;
+import poussecafe.property.ListProperty;
+import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
 public class FactoryDocData implements FactoryDoc.Data, Serializable {

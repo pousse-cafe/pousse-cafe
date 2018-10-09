@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
+import poussecafe.domain.EntityData;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.storable.IdentifiedStorableData;
 
 public class JsonDataReader {
 
@@ -19,7 +19,7 @@ public class JsonDataReader {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    public <K, D extends IdentifiedStorableData<K>> void readJson(D dataImplementation,
+    public <K, D extends EntityData<K>> void readJson(D dataImplementation,
             JsonNode dataJson) {
         try {
             objectMapper.readerForUpdating(dataImplementation).readValue(dataJson);

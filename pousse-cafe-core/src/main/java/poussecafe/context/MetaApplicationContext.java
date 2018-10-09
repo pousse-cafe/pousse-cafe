@@ -7,10 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
+import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.ComponentFactory;
+import poussecafe.domain.ComponentSpecification;
+import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Factory;
+import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.journal.ConsumptionFailureRepository;
-import poussecafe.journal.MessageReplayer;
-import poussecafe.journal.MessagingJournal;
 import poussecafe.messaging.JacksonMessageAdapter;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageListener;
@@ -20,14 +25,6 @@ import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
 import poussecafe.messaging.internal.InternalMessageQueue;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.IdentifiedStorable;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.IdentifiedStorableFactory;
-import poussecafe.storable.IdentifiedStorableRepository;
-import poussecafe.storable.PrimitiveFactory;
-import poussecafe.storable.PrimitiveSpecification;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;
@@ -38,17 +35,11 @@ public class MetaApplicationContext {
 
     private Environment environment;
 
-    private PrimitiveFactory primitiveFactory;
+    private ComponentFactory primitiveFactory;
 
     private Injector injector;
 
     private MessageListenerRegistry messageListenerRegistry;
-
-    private ConsumptionFailureRepository consumptionFailureRepository;
-
-    private MessagingJournal messagingJournal;
-
-    private MessageReplayer messageReplayer;
 
     private TransactionRunnerLocator storageServiceLocator;
 
@@ -58,22 +49,19 @@ public class MetaApplicationContext {
 
     private MessageReceiver messageReceiver;
 
-    private Map<Class<?>, StorableServices> storableServices = new HashMap<>();
+    private Map<Class<?>, EntityServices> entityServices = new HashMap<>();
 
     private MessageAdapter messageAdapter;
-
-    private CoreBundle coreBundle = new MemoryCoreBundle();
 
     private List<BoundedContext> appBundles = new ArrayList<>();
 
     public MetaApplicationContext() {
         environment = new Environment();
 
-        primitiveFactory = new PrimitiveFactory();
+        primitiveFactory = new ComponentFactory();
         primitiveFactory.setEnvironment(environment);
 
         messageListenerRegistry = new MessageListenerRegistry();
-        messagingJournal = new MessagingJournal();
 
         storageServiceLocator = new TransactionRunnerLocator();
         storageServiceLocator.setEnvironment(environment);
@@ -87,11 +75,6 @@ public class MetaApplicationContext {
 
     public Environment environment() {
         return environment;
-    }
-
-    public void setCoreBundle(CoreBundle coreBundle) {
-        checkThatValue(coreBundle).notNull();
-        this.coreBundle = coreBundle;
     }
 
     public void addBundle(BoundedContext bundle) {
@@ -119,18 +102,17 @@ public class MetaApplicationContext {
     }
 
     private void loadBundles() {
-        loadBoundedContext(coreBundle);
         for(BoundedContext appBundle : appBundles) {
             loadBoundedContext(appBundle);
         }
     }
 
     public void loadBoundedContext(BoundedContext bundle) {
-        for(StorableDefinition definition : bundle.getDefinitions()) {
-            environment.defineStorable(definition);
+        for(EntityDefinition definition : bundle.getDefinitions()) {
+            environment.defineEntity(definition);
         }
-        for(StorableImplementation implementation : bundle.getImplementations()) {
-            environment.implementStorable(implementation);
+        for(EntityImplementation implementation : bundle.getImplementations()) {
+            environment.implementEntity(implementation);
         }
         for(Class<? extends DomainProcess> processClass : bundle.getProcesses()) {
             environment.defineProcess(processClass);
@@ -142,10 +124,10 @@ public class MetaApplicationContext {
 
     private void checkEnvironment() {
         if(environment.isAbstract()) {
-            Set<Class<?>> abstractStorables = environment.getAbstractStorables();
-            logger.error("{} abstract storable(s):", abstractStorables.size());
-            for(Class<?> abstractStorableClass : abstractStorables) {
-                logger.error("- {}", abstractStorableClass.getName());
+            Set<Class<?>> abstractEntities = environment.getAbstractEntities();
+            logger.error("{} abstract entities:", abstractEntities.size());
+            for(Class<?> abstractEntityClass : abstractEntities) {
+                logger.error("- {}", abstractEntityClass.getName());
             }
             throw new PousseCafeException("Cannot start meta-application with an abstract environment");
         }
@@ -154,33 +136,31 @@ public class MetaApplicationContext {
     private Logger logger = getLogger(getClass());
 
     private void configureContext() {
-        configureStorables();
+        configureEntities();
         configureServices();
         configureProcesses();
         configureMessageEmissionPolicies();
-        configureMessageJournal();
         configureMessageReceivers();
-        configureMessageReplayer();
     }
 
-    protected void configureStorables() {
-        for (Class<?> storableClass : environment.getDefinedStorables()) {
-            configureStorable(storableClass);
+    protected void configureEntities() {
+        for (Class<?> entityClass : environment.getDefinedEntities()) {
+            configureEntity(entityClass);
         }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void configureStorable(Class<?> storableClass) {
-        StorableDefinition definition = environment.getStorableDefinition(storableClass);
+    private void configureEntity(Class<?> entityClass) {
+        EntityDefinition definition = environment.getEntityDefinition(entityClass);
         if(definition.hasFactory() && definition.hasRepository()) {
-            IdentifiedStorableRepository repository = (IdentifiedStorableRepository) primitiveFactory.newPrimitive(PrimitiveSpecification.ofClass(definition.getRepositoryClass()));
-            IdentifiedStorableFactory factory = (IdentifiedStorableFactory) primitiveFactory.newPrimitive(PrimitiveSpecification.ofClass(definition.getFactoryClass()));
+            Repository repository = (Repository) primitiveFactory.newComponent(ComponentSpecification.ofClass(definition.getRepositoryClass()));
+            Factory factory = (Factory) primitiveFactory.newComponent(ComponentSpecification.ofClass(definition.getFactoryClass()));
 
             injector.registerInjectableService(repository);
             injector.registerInjectableService(factory);
             injector.addInjectionCandidate(factory);
 
-            storableServices.put(storableClass, new StorableServices(storableClass, repository, factory));
+            entityServices.put(entityClass, new EntityServices(entityClass, repository, factory));
         }
     }
 
@@ -228,22 +208,8 @@ public class MetaApplicationContext {
         }
     }
 
-    private void configureMessageJournal() {
-        injector.addInjectionCandidate(messagingJournal);
-        injector.registerInjectableService(messagingJournal);
-
-        consumptionFailureRepository = new ConsumptionFailureRepository();
-        injector.addInjectionCandidate(consumptionFailureRepository);
-        injector.registerInjectableService(consumptionFailureRepository);
-    }
-
     private void configureMessageReceivers() {
         injector.addInjectionCandidate(messageReceiver);
-    }
-
-    private void configureMessageReplayer() {
-        messageReplayer = new MessageReplayer();
-        injector.addInjectionCandidate(messageReplayer);
     }
 
     public synchronized void startMessageHandling() {
@@ -258,20 +224,12 @@ public class MetaApplicationContext {
         return messageSender;
     }
 
-    public ConsumptionFailureRepository getConsumptionFailureRepository() {
-        return consumptionFailureRepository;
-    }
-
-    public MessageReplayer getMessageReplayer() {
-        return messageReplayer;
-    }
-
     public MessageReceiver getMessageReceiver() {
         return messageReceiver;
     }
 
-    public StorableServices getStorableServices(Class<?> storableClass) {
-        return storableServices.get(storableClass);
+    public EntityServices getEntityServices(Class<?> entityClass) {
+        return entityServices.get(entityClass);
     }
 
     public InternalMessageQueue getInMemoryQueue() {
@@ -288,16 +246,16 @@ public class MetaApplicationContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IdentifiedStorableRepository<A, K, D>, A extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T getRepository(Class<A> storableClass) {
-        StorableServices services = getStorableServices(storableClass);
+    public <T extends Repository<A, K, D>, A extends AggregateRoot<K, D>, K, D extends EntityData<K>> T getRepository(Class<A> entityClass) {
+        EntityServices services = getEntityServices(entityClass);
         if(services == null) {
-            throw new PousseCafeException("Storable services not found");
+            throw new PousseCafeException("Entity services not found");
         }
         return (T) services.getRepository();
     }
 
-    public Collection<StorableServices> getAllStorableServices() {
-        return unmodifiableCollection(storableServices.values());
+    public Collection<EntityServices> getAllEntityServices() {
+        return unmodifiableCollection(entityServices.values());
     }
 
     public Collection<DomainProcess> getAllDomainProcesses() {

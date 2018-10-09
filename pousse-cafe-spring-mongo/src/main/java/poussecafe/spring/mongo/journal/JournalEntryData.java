@@ -1,12 +1,12 @@
 package poussecafe.spring.mongo.journal;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.journal.JournalEntry;
-import poussecafe.journal.JournalEntryKey;
-import poussecafe.journal.JournalEntryStatus;
-import poussecafe.journal.Logs;
-import poussecafe.journal.memory.SerializableJournalEntryKey;
-import poussecafe.storable.Property;
+import poussecafe.journal.data.SerializableJournalEntryKey;
+import poussecafe.journal.domain.JournalEntry;
+import poussecafe.journal.domain.JournalEntryKey;
+import poussecafe.journal.domain.JournalEntryStatus;
+import poussecafe.journal.domain.Logs;
+import poussecafe.property.Property;
 
 public class JournalEntryData implements JournalEntry.Data {
 

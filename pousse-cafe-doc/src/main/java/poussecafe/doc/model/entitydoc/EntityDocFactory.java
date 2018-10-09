@@ -18,7 +18,7 @@ public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc
 
         String name = name(entityClassDoc);
         EntityDocKey key = EntityDocKey.ofClassName(entityClassDoc.qualifiedTypeName());
-        EntityDoc entityDoc = newStorableWithKey(key);
+        EntityDoc entityDoc = newAggregateWithKey(key);
         entityDoc.componentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextKey)
                 .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))

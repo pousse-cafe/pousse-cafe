@@ -2,6 +2,7 @@ package poussecafe.journal;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import poussecafe.journal.domain.JournalEntry;
 import poussecafe.storage.NoTransactionRunner;
 import poussecafe.storage.TransactionRunner;
 

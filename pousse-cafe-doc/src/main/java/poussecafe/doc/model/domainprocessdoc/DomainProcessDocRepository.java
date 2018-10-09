@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class DomainProcessDocRepository extends Repository<DomainProcessDoc, DomainProcessDocKey, DomainProcessDoc.Data> {
 
     public List<DomainProcessDoc> findAll() {
-        return newStorablesWithData(dataAccess().findAll());
+        return newEntitiesWithData(dataAccess().findAll());
     }
 
     private DomainProcessDocDataAccess<DomainProcessDoc.Data> dataAccess() {
@@ -15,6 +15,6 @@ public class DomainProcessDocRepository extends Repository<DomainProcessDoc, Dom
     }
 
     public List<DomainProcessDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return newStorablesWithData(dataAccess().findByBoundedContextKey(key));
+        return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 }

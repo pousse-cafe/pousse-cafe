@@ -18,7 +18,7 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
         }
 
         AggregateDocKey key = AggregateDocKey.ofClassName(aggregateClassDoc.qualifiedTypeName());
-        AggregateDoc aggregateDoc = newStorableWithKey(key);
+        AggregateDoc aggregateDoc = newAggregateWithKey(key);
 
         String name = name(aggregateClassDoc);
         aggregateDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()

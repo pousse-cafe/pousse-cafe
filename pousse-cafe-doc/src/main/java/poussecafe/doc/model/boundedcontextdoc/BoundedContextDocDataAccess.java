@@ -1,8 +1,8 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityDataAccess;
 
-public interface BoundedContextDocDataAccess<D extends BoundedContextDoc.Data> extends IdentifiedStorableDataAccess<BoundedContextDocKey, D> {
+public interface BoundedContextDocDataAccess<D extends BoundedContextDoc.Data> extends EntityDataAccess<BoundedContextDocKey, D> {
 
     D findByPackageNamePrefixing(String name);
 

@@ -1,5 +1,8 @@
 package poussecafe.journal;
 
+import poussecafe.journal.domain.JournalEntryLog;
+import poussecafe.journal.domain.JournalEntryLogType;
+
 public class SuccessLogTest extends JournalEntryLogTest {
 
     @Override

@@ -4,6 +4,9 @@ import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import poussecafe.journal.domain.ConsumptionFailure;
+import poussecafe.journal.domain.ConsumptionFailureRepository;
+import poussecafe.journal.domain.MessageReplayer;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageSender;
 

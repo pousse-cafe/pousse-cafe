@@ -1,7 +1,7 @@
 package poussecafe.context;
 
 import org.junit.Test;
-import poussecafe.journal.SerializedMessage;
+import poussecafe.journal.data.SerializedMessage;
 import poussecafe.messaging.JacksonMessageAdapter;
 
 import static org.junit.Assert.assertTrue;

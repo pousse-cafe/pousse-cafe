@@ -23,7 +23,7 @@ public class ProductManagementTest extends MetaApplicationTest {
 
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new SampleMetaAppBundle());
+        return asList(new SampleMetaAppBoundedContext());
     }
 
     @Test

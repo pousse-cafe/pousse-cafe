@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.storable.MapProperty;
-import poussecafe.storable.Property;
-import poussecafe.storage.memory.ConvertingMapProperty;
+import poussecafe.property.ConvertingMapProperty;
+import poussecafe.property.MapProperty;
+import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
 public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable {

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.journal.SerializedMessage;
+import poussecafe.journal.data.SerializedMessage;
 
 public class JacksonMessageAdapter implements MessageAdapter {
 

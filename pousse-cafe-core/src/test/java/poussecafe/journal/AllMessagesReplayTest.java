@@ -3,6 +3,7 @@ package poussecafe.journal;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import poussecafe.journal.domain.ConsumptionFailure;
 import poussecafe.messaging.Message;
 
 import static org.mockito.Mockito.verify;

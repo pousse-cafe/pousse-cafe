@@ -1,8 +1,8 @@
 package poussecafe.doc.model.relation;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.Property;
+import poussecafe.domain.EntityData;
+import poussecafe.property.Property;
 
 public class Relation extends AggregateRoot<RelationKey, Relation.Data> {
 
@@ -22,7 +22,7 @@ public class Relation extends AggregateRoot<RelationKey, Relation.Data> {
         return new Component(getData().toType().get(), getKey().toClass());
     }
 
-    public static interface Data extends IdentifiedStorableData<RelationKey> {
+    public static interface Data extends EntityData<RelationKey> {
 
         Property<ComponentType> fromType();
 

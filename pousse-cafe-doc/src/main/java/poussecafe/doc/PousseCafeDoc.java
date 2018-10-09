@@ -53,118 +53,118 @@ import poussecafe.doc.process.EntityDocCreation;
 import poussecafe.doc.process.FactoryDocCreation;
 import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.doc.process.ValueObjectDocCreation;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;
 
 public class PousseCafeDoc extends BoundedContext {
 
     @Override
-    protected void loadDefinitions(Set<StorableDefinition> definitions) {
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(BoundedContextDoc.class)
+    protected void loadDefinitions(Set<EntityDefinition> definitions) {
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(BoundedContextDoc.class)
                 .withFactoryClass(BoundedContextDocFactory.class)
                 .withRepositoryClass(BoundedContextDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(AggregateDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(AggregateDoc.class)
                 .withFactoryClass(AggregateDocFactory.class)
                 .withRepositoryClass(AggregateDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(ServiceDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(ServiceDoc.class)
                 .withFactoryClass(ServiceDocFactory.class)
                 .withRepositoryClass(ServiceDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(EntityDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(EntityDoc.class)
                 .withFactoryClass(EntityDocFactory.class)
                 .withRepositoryClass(EntityDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(ValueObjectDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(ValueObjectDoc.class)
                 .withFactoryClass(ValueObjectDocFactory.class)
                 .withRepositoryClass(ValueObjectDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(Relation.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(Relation.class)
                 .withFactoryClass(RelationFactory.class)
                 .withRepositoryClass(RelationRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(DomainProcessDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(DomainProcessDoc.class)
                 .withFactoryClass(DomainProcessDocFactory.class)
                 .withRepositoryClass(DomainProcessDocRepository.class)
                 .build());
 
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(FactoryDoc.class)
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(FactoryDoc.class)
                 .withFactoryClass(FactoryDocFactory.class)
                 .withRepositoryClass(FactoryDocRepository.class)
                 .build());
     }
 
     @Override
-    protected void loadImplementations(Set<StorableImplementation> implementations) {
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(BoundedContextDoc.class)
+    protected void loadImplementations(Set<EntityImplementation> implementations) {
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(BoundedContextDoc.class)
                 .withDataFactory(BoundedContextDocData::new)
                 .withDataAccessFactory(InMemoryBoundedContextDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(AggregateDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(AggregateDoc.class)
                 .withDataFactory(AggregateDocData::new)
                 .withDataAccessFactory(InMemoryAggregateDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(ServiceDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(ServiceDoc.class)
                 .withDataFactory(ServiceDocData::new)
                 .withDataAccessFactory(InMemoryServiceDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(EntityDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(EntityDoc.class)
                 .withDataFactory(EntityDocData::new)
                 .withDataAccessFactory(InMemoryEntityDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(ValueObjectDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(ValueObjectDoc.class)
                 .withDataFactory(ValueObjectDocData::new)
                 .withDataAccessFactory(InMemoryValueObjectDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(Relation.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(Relation.class)
                 .withDataFactory(RelationData::new)
                 .withDataAccessFactory(InMemoryRelationDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(DomainProcessDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(DomainProcessDoc.class)
                 .withDataFactory(DomainProcessDocData::new)
                 .withDataAccessFactory(InMemoryDomainProcessDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
 
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(FactoryDoc.class)
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(FactoryDoc.class)
                 .withDataFactory(FactoryDocData::new)
                 .withDataAccessFactory(InMemoryFactoryDocDataAccess::new)
                 .withStorage(InMemoryStorage.instance())

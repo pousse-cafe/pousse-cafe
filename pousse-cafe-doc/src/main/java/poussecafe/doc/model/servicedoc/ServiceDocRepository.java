@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocKey, ServiceDoc.Data> {
 
     public List<ServiceDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return newStorablesWithData(dataAccess().findByBoundedContextKey(key));
+        return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
     private ServiceDocDataAccess<ServiceDoc.Data> dataAccess() {
@@ -15,6 +15,6 @@ public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocKey, 
     }
 
     public List<ServiceDoc> findAll() {
-        return newStorablesWithData(dataAccess().findAll());
+        return newEntitiesWithData(dataAccess().findAll());
     }
 }

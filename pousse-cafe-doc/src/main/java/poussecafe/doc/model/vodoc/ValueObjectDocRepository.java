@@ -6,7 +6,7 @@ import poussecafe.domain.Repository;
 public class ValueObjectDocRepository extends Repository<ValueObjectDoc, ValueObjectDocKey, ValueObjectDoc.Data> {
 
     public List<ValueObjectDoc> findAll() {
-        return newStorablesWithData(dataAccess().findAll());
+        return newEntitiesWithData(dataAccess().findAll());
     }
 
     private ValueObjectDocDataAccess<ValueObjectDoc.Data> dataAccess() {

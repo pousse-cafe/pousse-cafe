@@ -18,7 +18,7 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjec
 
         String name = name(doc);
         ValueObjectDocKey key = ValueObjectDocKey.ofClassName(doc.qualifiedName());
-        ValueObjectDoc valueObjectDoc = newStorableWithKey(key);
+        ValueObjectDoc valueObjectDoc = newAggregateWithKey(key);
         valueObjectDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))

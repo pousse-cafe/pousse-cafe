@@ -2,9 +2,9 @@ package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityDataAccess;
 
-public interface FactoryDocDataAccess<D extends FactoryDoc.Data> extends IdentifiedStorableDataAccess<FactoryDocKey, D> {
+public interface FactoryDocDataAccess<D extends FactoryDoc.Data> extends EntityDataAccess<FactoryDocKey, D> {
 
     List<D> findByBoundedContextKey(BoundedContextDocKey key);
 

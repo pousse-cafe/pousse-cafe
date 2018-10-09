@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class BoundedContextDocRepository extends Repository<BoundedContextDoc, BoundedContextDocKey, BoundedContextDoc.Data> {
 
     public List<BoundedContextDoc> findAll() {
-        return newStorablesWithData(dataAccess().findAll());
+        return newEntitiesWithData(dataAccess().findAll());
     }
 
     private BoundedContextDocDataAccess<BoundedContextDoc.Data> dataAccess() {
@@ -15,6 +15,6 @@ public class BoundedContextDocRepository extends Repository<BoundedContextDoc, B
     }
 
     public BoundedContextDoc findByPackageNamePrefixing(String name) {
-        return newStorableWithData(dataAccess().findByPackageNamePrefixing(name));
+        return newEntityWithData(dataAccess().findByPackageNamePrefixing(name));
     }
 }

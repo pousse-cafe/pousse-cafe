@@ -1,9 +1,9 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
+import poussecafe.property.Property;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
-import poussecafe.storable.Property;
 
 public class CustomerData implements Customer.Data {
 

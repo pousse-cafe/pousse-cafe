@@ -2,10 +2,10 @@ package poussecafe.context;
 
 import java.util.HashSet;
 import java.util.Set;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 
 import static java.util.Collections.unmodifiableSet;
 
@@ -18,13 +18,13 @@ public abstract class BoundedContext {
         loadServices(services);
     }
 
-    private Set<StorableDefinition> definitions = new HashSet<>();
+    private Set<EntityDefinition> definitions = new HashSet<>();
 
-    protected abstract void loadDefinitions(Set<StorableDefinition> definitions);
+    protected abstract void loadDefinitions(Set<EntityDefinition> definitions);
 
-    private Set<StorableImplementation> implementations = new HashSet<>();
+    private Set<EntityImplementation> implementations = new HashSet<>();
 
-    protected abstract void loadImplementations(Set<StorableImplementation> implementations);
+    protected abstract void loadImplementations(Set<EntityImplementation> implementations);
 
     private Set<Class<? extends DomainProcess>> processes = new HashSet<>();
 
@@ -34,11 +34,11 @@ public abstract class BoundedContext {
 
     protected abstract void loadServices(Set<Class<? extends Service>> services);
 
-    public Set<StorableDefinition> getDefinitions() {
+    public Set<EntityDefinition> getDefinitions() {
         return unmodifiableSet(definitions);
     }
 
-    public Set<StorableImplementation> getImplementations() {
+    public Set<EntityImplementation> getImplementations() {
         return unmodifiableSet(implementations);
     }
 

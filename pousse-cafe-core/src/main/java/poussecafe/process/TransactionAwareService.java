@@ -6,8 +6,8 @@ public abstract class TransactionAwareService {
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
-    protected void runInTransaction(Class<?> storableClass,
+    protected void runInTransaction(Class<?> entityClass,
             Runnable runnable) {
-        transactionRunnerLocator.locateTransactionRunner(storableClass).runInTransaction(runnable);
+        transactionRunnerLocator.locateTransactionRunner(entityClass).runInTransaction(runnable);
     }
 }

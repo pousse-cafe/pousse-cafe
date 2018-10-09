@@ -18,7 +18,7 @@ public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, Factor
 
         String name = classDoc.simpleTypeName();
         FactoryDocKey key = FactoryDocKey.ofClassName(classDoc.qualifiedName());
-        FactoryDoc factoryDoc = newStorableWithKey(key);
+        FactoryDoc factoryDoc = newAggregateWithKey(key);
         factoryDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))

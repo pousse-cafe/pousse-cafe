@@ -4,9 +4,9 @@ import java.util.List;
 import org.junit.Before;
 import poussecafe.context.BoundedContext;
 import poussecafe.context.MetaApplicationContext;
+import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
-import poussecafe.storable.IdentifiedStorable;
-import poussecafe.storable.IdentifiedStorableData;
+import poussecafe.domain.EntityData;
 
 public abstract class MetaApplicationTest {
 
@@ -31,9 +31,9 @@ public abstract class MetaApplicationTest {
         return wrapper.context();
     }
 
-    protected <T extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T find(Class<T> storableClass,
+    protected <T extends AggregateRoot<K, D>, K, D extends EntityData<K>> T find(Class<T> entityClass,
             K key) {
-        return wrapper.find(storableClass, key);
+        return wrapper.find(entityClass, key);
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {

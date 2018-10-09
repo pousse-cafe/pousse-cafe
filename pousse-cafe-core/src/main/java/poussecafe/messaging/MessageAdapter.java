@@ -1,6 +1,6 @@
 package poussecafe.messaging;
 
-import poussecafe.journal.SerializedMessage;
+import poussecafe.journal.data.SerializedMessage;
 
 public interface MessageAdapter {
 

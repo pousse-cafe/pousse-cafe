@@ -1,7 +1,6 @@
 package poussecafe.journal;
 
 import org.mockito.InOrder;
-import poussecafe.util.ExceptionUtils;
 
 public class EntryCreatedOrUpdatedOnFailureTest extends EntryCreatedOrUpdatedTest {
 
@@ -17,7 +16,7 @@ public class EntryCreatedOrUpdatedOnFailureTest extends EntryCreatedOrUpdatedTes
 
     @Override
     protected void verifyLog(InOrder sequence) {
-        sequence.verify(existingEntry).logFailure(ExceptionUtils.getStackTrace(exception));
+        sequence.verify(existingEntry).logFailure(exception);
     }
 
 }

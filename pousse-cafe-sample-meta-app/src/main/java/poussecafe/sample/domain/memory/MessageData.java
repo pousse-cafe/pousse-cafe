@@ -1,11 +1,11 @@
 package poussecafe.sample.domain.memory;
 
 import java.io.Serializable;
+import poussecafe.property.Property;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
-import poussecafe.storable.Property;
 
 @SuppressWarnings("serial")
 public class MessageData implements Message.Data, Serializable {

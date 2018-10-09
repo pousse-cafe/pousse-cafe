@@ -3,8 +3,8 @@ package poussecafe.doc.model.servicedoc;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.Property;
+import poussecafe.domain.EntityData;
+import poussecafe.property.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -23,7 +23,7 @@ public class ServiceDoc extends AggregateRoot<ServiceDocKey, ServiceDoc.Data> {
         return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
     }
 
-    public static interface Data extends IdentifiedStorableData<ServiceDocKey> {
+    public static interface Data extends EntityData<ServiceDocKey> {
 
         Property<BoundedContextComponentDoc> boundedContextComponentDoc();
     }

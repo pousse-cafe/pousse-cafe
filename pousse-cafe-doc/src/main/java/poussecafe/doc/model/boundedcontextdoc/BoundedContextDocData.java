@@ -3,7 +3,7 @@ package poussecafe.doc.model.boundedcontextdoc;
 import java.io.Serializable;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocData;
-import poussecafe.storable.Property;
+import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
 public class BoundedContextDocData implements BoundedContextDoc.Data, Serializable {

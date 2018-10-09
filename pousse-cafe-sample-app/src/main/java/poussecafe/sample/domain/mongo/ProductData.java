@@ -1,9 +1,9 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
+import poussecafe.property.Property;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
-import poussecafe.storable.Property;
 
 public class ProductData implements Product.Data {
 

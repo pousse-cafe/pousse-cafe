@@ -2,6 +2,8 @@ package poussecafe.context;
 
 import java.util.Set;
 import org.junit.Test;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.SimpleAggregate;
 import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
@@ -9,8 +11,6 @@ import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRoutingKey;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -24,21 +24,21 @@ public class MetaApplicationContextTest {
     private MetaApplicationContext context = new MetaApplicationContext();
 
     @Test
-    public void storableServicesConfiguration() {
+    public void entityServicesConfiguration() {
         givenApplicationConfiguration();
         whenCreatingContext();
-        thenStorableServicesAreConfigured();
+        thenEntityServicesAreConfigured();
     }
 
     private void givenApplicationConfiguration() {
-        context.environment().defineStorable(new StorableDefinition.Builder()
-                .withStorableClass(SimpleAggregate.class)
+        context.environment().defineEntity(new EntityDefinition.Builder()
+                .withEntityClass(SimpleAggregate.class)
                 .withFactoryClass(SimpleAggregateFactory.class)
                 .withRepositoryClass(SimpleAggregateRepository.class)
                 .build());
 
-        context.environment().implementStorable(new StorableImplementation.Builder()
-                .withStorableClass(SimpleAggregate.class)
+        context.environment().implementEntity(new EntityImplementation.Builder()
+                .withEntityClass(SimpleAggregate.class)
                 .withDataFactory(SimpleAggregateData::new)
                 .withDataAccessFactory(SimpleAggregateDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
@@ -51,11 +51,11 @@ public class MetaApplicationContextTest {
         context.start();
     }
 
-    private void thenStorableServicesAreConfigured() {
-        StorableServices services;
+    private void thenEntityServicesAreConfigured() {
+        EntityServices services;
 
-        services = context.getStorableServices(SimpleAggregate.class);
-        assertThat(services.getStorableClass(), equalTo(SimpleAggregate.class));
+        services = context.getEntityServices(SimpleAggregate.class);
+        assertThat(services.getEntityClass(), equalTo(SimpleAggregate.class));
         assertThat(services.getFactory(), notNullValue());
         assertThat(services.getRepository(), notNullValue());
     }

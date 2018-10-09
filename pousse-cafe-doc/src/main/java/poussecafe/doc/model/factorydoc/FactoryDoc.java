@@ -7,9 +7,9 @@ import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepMethodSignature;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.ListProperty;
-import poussecafe.storable.Property;
+import poussecafe.domain.EntityData;
+import poussecafe.property.ListProperty;
+import poussecafe.property.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -44,7 +44,7 @@ public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
         return getData().stepDocs().get();
     }
 
-    public static interface Data extends IdentifiedStorableData<FactoryDocKey> {
+    public static interface Data extends EntityData<FactoryDocKey> {
 
         Property<BoundedContextComponentDoc> boundedContextComponentDoc();
 

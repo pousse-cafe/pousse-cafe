@@ -1,0 +1,79 @@
+package poussecafe.messaging;
+
+import poussecafe.domain.DomainEvent;
+
+import static poussecafe.check.AssertionSpecification.value;
+import static poussecafe.check.Checks.checkThat;
+
+public class SuccessfulConsumption extends DomainEvent {
+
+    public SuccessfulConsumption(String listenerId, Message consumedMessage) {
+        setListenerId(listenerId);
+        setConsumedMessage(consumedMessage);
+    }
+
+    private void setListenerId(String listenerId) {
+        checkThat(value(listenerId).notNull().because("Listener ID cannot be null"));
+        this.listenerId = listenerId;
+    }
+
+    private String listenerId;
+
+    public String getListenerId() {
+        return listenerId;
+    }
+
+    private void setConsumedMessage(Message consumedMessage) {
+        checkThat(value(consumedMessage).notNull().because("Consumed message cannot be null"));
+        this.consumedMessage = consumedMessage;
+    }
+
+    private Message consumedMessage;
+
+    public Message getConsumedMessage() {
+        return consumedMessage;
+    }
+
+    @Override
+    public String toString() {
+        return "SuccessfulConsumption [listenerId=" + listenerId + ", consumedMessage=" + consumedMessage + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((consumedMessage == null) ? 0 : consumedMessage.hashCode());
+        result = prime * result + ((listenerId == null) ? 0 : listenerId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SuccessfulConsumption other = (SuccessfulConsumption) obj;
+        if (consumedMessage == null) {
+            if (other.consumedMessage != null) {
+                return false;
+            }
+        } else if (!consumedMessage.equals(other.consumedMessage)) {
+            return false;
+        }
+        if (listenerId == null) {
+            if (other.listenerId != null) {
+                return false;
+            }
+        } else if (!listenerId.equals(other.listenerId)) {
+            return false;
+        }
+        return true;
+    }
+}

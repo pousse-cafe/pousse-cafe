@@ -6,10 +6,10 @@ import domain.MyRepository;
 import domain.data.MyAggregateData;
 import java.util.Set;
 import poussecafe.context.BoundedContext;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryDataAccess;
 import poussecafe.storage.memory.InMemoryStorage;
 import process.MyProcess;
@@ -17,18 +17,18 @@ import process.MyProcess;
 public class MyMetaApplicationBundle extends BoundedContext {
 
     @Override
-    protected void loadDefinitions(Set<StorableDefinition> definitions) {
-        definitions.add(new StorableDefinition.Builder()
-                .withStorableClass(MyAggregate.class)
+    protected void loadDefinitions(Set<EntityDefinition> definitions) {
+        definitions.add(new EntityDefinition.Builder()
+                .withEntityClass(MyAggregate.class)
                 .withFactoryClass(MyFactory.class)
                 .withRepositoryClass(MyRepository.class)
                 .build());
     }
 
     @Override
-    protected void loadImplementations(Set<StorableImplementation> implementations) {
-        implementations.add(new StorableImplementation.Builder()
-                .withStorableClass(MyAggregate.class)
+    protected void loadImplementations(Set<EntityImplementation> implementations) {
+        implementations.add(new EntityImplementation.Builder()
+                .withEntityClass(MyAggregate.class)
                 .withDataFactory(MyAggregateData::new)
                 .withDataAccessFactory(InMemoryDataAccess::new)
                 .withStorage(InMemoryStorage.instance())

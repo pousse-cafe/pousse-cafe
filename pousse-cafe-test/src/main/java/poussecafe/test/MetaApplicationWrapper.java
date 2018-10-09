@@ -8,13 +8,13 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.context.StorableServices;
+import poussecafe.context.EntityServices;
+import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
+import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.storable.IdentifiedStorable;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.IdentifiedStorableRepository;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.memory.InMemoryDataAccess;
 import poussecafe.storage.memory.InMemoryStorage;
 
@@ -38,11 +38,11 @@ public class MetaApplicationWrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IdentifiedStorable<K, D>, K, D extends IdentifiedStorableData<K>> T find(Class<T> storableClass,
+    public <T extends AggregateRoot<K, D>, K, D extends EntityData<K>> T find(Class<T> entityClass,
             K key) {
         waitUntilAllMessageQueuesEmpty();
-        IdentifiedStorableRepository<IdentifiedStorable<K, D>, K, D> repository = (IdentifiedStorableRepository<IdentifiedStorable<K, D>, K, D>) context
-                .getStorableServices(storableClass)
+        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) context
+                .getEntityServices(entityClass)
                 .getRepository();
         return (T) repository.find(key);
     }
@@ -67,32 +67,32 @@ public class MetaApplicationWrapper {
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.reader().readTree(json);
-            jsonNode.fieldNames().forEachRemaining(storableClassName -> {
-                loadStorable(storableClassName, jsonNode);
+            jsonNode.fieldNames().forEachRemaining(entityClassName -> {
+                loadEntity(entityClassName, jsonNode);
             });
         } catch (Exception e) {
             throw new PousseCafeException("Unable to load data file", e);
         }
     }
 
-    private void loadStorable(String storableClassName, JsonNode jsonNode) {
-        logger.info("Loading data for storable " + storableClassName);
+    private void loadEntity(String entityClassName, JsonNode jsonNode) {
+        logger.info("Loading data for entity " + entityClassName);
         try {
-            Class<?> storableClass = Class.forName(storableClassName);
-            StorableImplementation storableImplementation = context.environment().getStorableImplementation(storableClass);
-            checkThat(value(storableImplementation.getStorage() == InMemoryStorage.instance()).isTrue());
+            Class<?> entityClass = Class.forName(entityClassName);
+            EntityImplementation entityImplementation = context.environment().getEntityImplementation(entityClass);
+            checkThat(value(entityImplementation.getStorage() == InMemoryStorage.instance()).isTrue());
 
-            StorableServices services = context.getStorableServices(storableClass);
+            EntityServices services = context.getEntityServices(entityClass);
             InMemoryDataAccess dataAccess = (InMemoryDataAccess) services.getRepository().getDataAccess();
-            logger.debug("Field value " + jsonNode.get(storableClassName));
-            jsonNode.get(storableClassName).elements().forEachRemaining(dataJson -> {
+            logger.debug("Field value " + jsonNode.get(entityClassName));
+            jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading " + dataJson.toString());
-                IdentifiedStorableData<?> dataImplementation = (IdentifiedStorableData<?>) storableImplementation.getDataFactory().get();
+                EntityData<?> dataImplementation = (EntityData<?>) entityImplementation.getDataFactory().get();
                 jsonDataReader.readJson(dataImplementation, dataJson);
                 dataAccess.addData(dataImplementation);
             });
         } catch (ClassNotFoundException e) {
-            throw new PousseCafeException("No storable with class " + storableClassName, e);
+            throw new PousseCafeException("No entity with class " + entityClassName, e);
         }
     }
 

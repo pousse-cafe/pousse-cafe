@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import poussecafe.collection.Multimap;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityDataAccess;
 import poussecafe.storage.memory.uniqueindex.AdditionPlan;
 import poussecafe.storage.memory.uniqueindex.Plan;
 import poussecafe.storage.memory.uniqueindex.UniqueIndex;
@@ -23,7 +23,7 @@ import poussecafe.storage.memory.uniqueindex.UpdatePlan;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryDataAccess<K, D extends IdentifiedStorableData<K>> implements IdentifiedStorableDataAccess<K, D> {
+public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDataAccess<K, D> {
 
     private Map<K, byte[]> storage;
 

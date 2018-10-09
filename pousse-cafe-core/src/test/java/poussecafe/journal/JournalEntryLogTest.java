@@ -1,6 +1,8 @@
 package poussecafe.journal;
 
 import org.junit.Test;
+import poussecafe.journal.domain.JournalEntryLog;
+import poussecafe.journal.domain.JournalEntryLogType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

@@ -34,7 +34,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
 
         String name = name(doc);
         DomainProcessDocKey key = DomainProcessDocKey.ofClassName(doc.qualifiedName());
-        DomainProcessDoc domainProcessDoc = newStorableWithKey(key);
+        DomainProcessDoc domainProcessDoc = newAggregateWithKey(key);
         domainProcessDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))

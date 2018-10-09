@@ -20,14 +20,6 @@ public class LogsRunInTransactionTest extends MessagingJournalTest {
     }
 
     @Test
-    public void logIgnoredConsumptionRunsInTransaction() {
-        givenConfiguredMessagingJournal();
-        givenIgnoredMessage();
-        whenLoggingIgnoredConsumption();
-        thenTransactionRunnerIsInvoked();
-    }
-
-    @Test
     public void logFailedConsumptionRunsInTransaction() {
         givenConfiguredMessagingJournal();
         givenMessageConsumptionFailed();

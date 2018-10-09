@@ -1,8 +1,8 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.Repository;
+import poussecafe.property.MessageCollection;
 import poussecafe.sample.domain.Order.Data;
-import poussecafe.storable.MessageCollection;
 
 public class OrderRepository extends Repository<Order, OrderKey, Data> {
 

@@ -1,6 +1,6 @@
 package poussecafe.domain;
 
-import poussecafe.storable.Property;
+import poussecafe.property.Property;
 
 public class SimpleAggregateData implements SimpleAggregate.Data {
 

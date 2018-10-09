@@ -1,7 +1,7 @@
 package poussecafe.doc.model.entitydoc;
 
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityDataAccess;
 
-public interface EntityDocDataAccess<D extends EntityDoc.Data> extends IdentifiedStorableDataAccess<EntityDocKey, D> {
+public interface EntityDocDataAccess<D extends EntityDoc.Data> extends EntityDataAccess<EntityDocKey, D> {
 
 }

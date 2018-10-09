@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.context.StorableServices;
+import poussecafe.context.EntityServices;
 import poussecafe.process.DomainProcess;
 
 @Component
@@ -20,8 +20,8 @@ public class PousseCafeComponentsWirer implements ApplicationListener<ContextRef
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         AutowireCapableBeanFactory beanFactory = event.getApplicationContext().getAutowireCapableBeanFactory();
-        for(StorableServices services : pousseCafeContext.getAllStorableServices()) {
-            logger.debug("Wiring services for storable {}", services.getStorableClass().getSimpleName());
+        for(EntityServices services : pousseCafeContext.getAllEntityServices()) {
+            logger.debug("Wiring services for entity {}", services.getEntityClass().getSimpleName());
             beanFactory.autowireBean(services.getRepository());
             beanFactory.autowireBean(services.getRepository().getDataAccess());
             beanFactory.autowireBean(services.getFactory());

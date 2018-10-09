@@ -1,7 +1,7 @@
 package poussecafe.doc.model.vodoc;
 
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityDataAccess;
 
-public interface ValueObjectDocDataAccess<D extends ValueObjectDoc.Data> extends IdentifiedStorableDataAccess<ValueObjectDocKey, D> {
+public interface ValueObjectDocDataAccess<D extends ValueObjectDoc.Data> extends EntityDataAccess<ValueObjectDocKey, D> {
 
 }

@@ -1,11 +1,11 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
+import poussecafe.property.Property;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
-import poussecafe.storable.Property;
 
 public class MessageData implements Message.Data {
 

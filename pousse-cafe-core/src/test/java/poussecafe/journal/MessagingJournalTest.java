@@ -4,9 +4,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.context.TransactionRunnerLocator;
+import poussecafe.domain.ComponentFactory;
+import poussecafe.journal.data.SerializedMessage;
+import poussecafe.journal.domain.JournalEntry;
+import poussecafe.journal.domain.JournalEntryFactory;
+import poussecafe.journal.domain.JournalEntryKey;
+import poussecafe.journal.domain.JournalEntryRepository;
+import poussecafe.journal.process.MessagingJournal;
+import poussecafe.messaging.FailedConsumption;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
-import poussecafe.storable.PrimitiveFactory;
+import poussecafe.messaging.SuccessfulConsumption;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.FieldAccessor;
 
@@ -22,7 +30,7 @@ public abstract class MessagingJournalTest {
     protected JournalEntryFactory entryFactory;
 
     @Mock
-    protected PrimitiveFactory primitiveFactory;
+    protected ComponentFactory primitiveFactory;
 
     @InjectMocks
     protected MessagingJournal journal;
@@ -38,7 +46,7 @@ public abstract class MessagingJournalTest {
 
     protected SerializedMessage serializedMessage;
 
-    protected Exception exception;
+    protected String exception;
 
     protected JournalEntryKey key;
 
@@ -100,19 +108,15 @@ public abstract class MessagingJournalTest {
 
     protected void givenMessageConsumptionFailed() {
         givenReceivedMessage();
-        exception = new Exception();
+        exception = "error";
     }
 
     protected void whenLoggingSuccessfulConsumption() {
-        journal.logSuccessfulConsumption(listenerId, new SuccessfulConsumption(message));
-    }
-
-    protected void whenLoggingIgnoredConsumption() {
-        journal.logIgnoredConsumption(listenerId, message);
+        journal.logSuccessfulConsumption(new SuccessfulConsumption(listenerId, message));
     }
 
     protected void whenLoggingFailedConsumption() {
-        journal.logFailedConsumption(listenerId, message, exception);
+        journal.logFailedConsumption(new FailedConsumption(listenerId, message, exception));
     }
 
 }

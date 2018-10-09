@@ -1,6 +1,7 @@
 package poussecafe.journal;
 
 import org.junit.Test;
+import poussecafe.journal.domain.ConsumptionFailure;
 import poussecafe.messaging.Message;
 
 import static java.util.Arrays.asList;

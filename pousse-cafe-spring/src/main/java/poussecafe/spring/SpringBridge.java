@@ -6,10 +6,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.context.StorableServices;
+import poussecafe.context.EntityServices;
+import poussecafe.domain.Repository;
 import poussecafe.messaging.MessageSender;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.IdentifiedStorableRepository;
 
 @Configuration
 public class SpringBridge implements BeanFactoryPostProcessor {
@@ -19,7 +19,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
         this.beanFactory = beanFactory;
         pousseCafeContext = beanFactory.getBean(MetaApplicationContext.class);
         registerCoreComponents();
-        registerStorableServices();
+        registerEntityServices();
         registerDomainProcesses();
         registerServices();
     }
@@ -33,14 +33,14 @@ public class SpringBridge implements BeanFactoryPostProcessor {
 
     private MetaApplicationContext pousseCafeContext;
 
-    private void registerStorableServices() {
-        for(StorableServices services : pousseCafeContext.getAllStorableServices()) {
+    private void registerEntityServices() {
+        for(EntityServices services : pousseCafeContext.getAllEntityServices()) {
             registeringFactory(services);
             registeringRepository(services);
         }
     }
 
-    private void registeringFactory(StorableServices services) {
+    private void registeringFactory(EntityServices services) {
         String beanName = beanName(services.getFactory());
         logger.debug("Registering factory {}", services.getFactory().getClass().getSimpleName());
         registerInstance(beanName, services.getFactory());
@@ -56,8 +56,8 @@ public class SpringBridge implements BeanFactoryPostProcessor {
         beanFactory.registerSingleton(beanName, instance);
     }
 
-    private void registeringRepository(StorableServices services) {
-        IdentifiedStorableRepository<?, ?, ?> repository = services.getRepository();
+    private void registeringRepository(EntityServices services) {
+        Repository<?, ?, ?> repository = services.getRepository();
         String beanName = beanName(repository);
         logger.debug("Registering repository {}", repository.getClass().getSimpleName());
         registerInstance(beanName, repository);

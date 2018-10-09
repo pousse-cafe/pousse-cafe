@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.process.DomainProcess;
-import poussecafe.storable.StorableDefinition;
-import poussecafe.storable.StorableImplementation;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableSet;
@@ -17,98 +17,98 @@ import static poussecafe.check.Checks.checkThat;
 
 public class Environment {
 
-    public void defineStorable(StorableDefinition definition) {
+    public void defineEntity(EntityDefinition definition) {
         checkThat(value(definition).notNull());
-        Class<?> storableClass = definition.getStorableClass();
-        if(definitions.containsKey(storableClass)) {
-            throw new PousseCafeException("Storable " + storableClass.getName() + " is already defined");
+        Class<?> entityClass = definition.getEntityClass();
+        if(definitions.containsKey(entityClass)) {
+            throw new PousseCafeException("Entity " + entityClass.getName() + " is already defined");
         }
-        definitions.put(storableClass, definition);
+        definitions.put(entityClass, definition);
 
         if(definition.hasFactory()) {
-            storableClassByRelated.put(definition.getFactoryClass(), storableClass);
+            entityClassByRelated.put(definition.getFactoryClass(), entityClass);
         }
 
         if(definition.hasRepository()) {
-            storableClassByRelated.put(definition.getRepositoryClass(), storableClass);
+            entityClassByRelated.put(definition.getRepositoryClass(), entityClass);
         }
     }
 
-    private Map<Class<?>, StorableDefinition> definitions = new HashMap<>();
+    private Map<Class<?>, EntityDefinition> definitions = new HashMap<>();
 
-    private Map<Class<?>, Class<?>> storableClassByRelated = new HashMap<>();
+    private Map<Class<?>, Class<?>> entityClassByRelated = new HashMap<>();
 
-    public void implementStorable(StorableImplementation implementation) {
+    public void implementEntity(EntityImplementation implementation) {
         checkThat(value(implementation).notNull());
-        Class<?> storableClass = implementation.getStorableClass();
-        implementations.put(storableClass, implementation);
+        Class<?> entityClass = implementation.getEntityClass();
+        implementations.put(entityClass, implementation);
 
         if(implementation.hasStorage()) {
             storages.add(implementation.getStorage());
         }
     }
 
-    private Map<Class<?>, StorableImplementation> implementations = new HashMap<>();
+    private Map<Class<?>, EntityImplementation> implementations = new HashMap<>();
 
     private Set<Storage> storages = new HashSet<>();
 
     public boolean isAbstract() {
-        return !getAbstractStorables().isEmpty();
+        return !getAbstractEntities().isEmpty();
     }
 
-    public Set<Class<?>> getAbstractStorables() {
-        Set<Class<?>> abstractStorables = new HashSet<>();
-        for(Class<?> storableClass : definitions.keySet()) {
-            if(!implementations.containsKey(storableClass)) {
-                abstractStorables.add(storableClass);
+    public Set<Class<?>> getAbstractEntities() {
+        Set<Class<?>> abstractEntities = new HashSet<>();
+        for(Class<?> entityClass : definitions.keySet()) {
+            if(!implementations.containsKey(entityClass)) {
+                abstractEntities.add(entityClass);
             }
         }
-        return abstractStorables;
+        return abstractEntities;
     }
 
-    public Storage getStorage(Class<?> storableClass) {
-        StorableImplementation implementation = getStorableImplementation(storableClass);
+    public Storage getStorage(Class<?> entityClass) {
+        EntityImplementation implementation = getEntityImplementation(entityClass);
         return implementation.getStorage();
     }
 
-    public StorableImplementation getStorableImplementation(Class<?> storableClass) {
-        StorableImplementation implementation = implementations.get(storableClass);
+    public EntityImplementation getEntityImplementation(Class<?> entityClass) {
+        EntityImplementation implementation = implementations.get(entityClass);
         if(implementation == null) {
-            throw new PousseCafeException("Storable " + storableClass.getName() + " is not implemented");
+            throw new PousseCafeException("Entity " + entityClass.getName() + " is not implemented");
         }
         return implementation;
     }
 
-    public Supplier<Object> getStorableDataFactory(Class<?> storableClass) {
-        StorableImplementation implementation = getStorableImplementation(storableClass);
+    public Supplier<Object> getEntityDataFactory(Class<?> entityClass) {
+        EntityImplementation implementation = getEntityImplementation(entityClass);
         return implementation.getDataFactory();
     }
 
-    public Class<?> getStorableClass(Class<?> relatedClass) {
-        Class<?> storableClass = storableClassByRelated.get(relatedClass);
-        if(storableClass == null) {
-            throw new PousseCafeException("No storable for related class " + relatedClass.getName());
+    public Class<?> getEntityClass(Class<?> relatedClass) {
+        Class<?> entityClass = entityClassByRelated.get(relatedClass);
+        if(entityClass == null) {
+            throw new PousseCafeException("No entity for related class " + relatedClass.getName());
         }
-        return storableClass;
+        return entityClass;
     }
 
-    public Supplier<Object> getStorableDataAccessFactory(Class<?> storableClass) {
-        StorableImplementation implementation = getStorableImplementation(storableClass);
+    public Supplier<Object> getEntityDataAccessFactory(Class<?> entityClass) {
+        EntityImplementation implementation = getEntityImplementation(entityClass);
         if(!implementation.hasDataAccess()) {
-            throw new PousseCafeException("Storable " + storableClass + " has no data access");
+            throw new PousseCafeException("Entity " + entityClass + " has no data access");
         }
         return implementation.getDataAccessFactory();
     }
 
-    public StorableDefinition getStorableDefinition(Class<?> storableClass) {
-        StorableDefinition definition = definitions.get(storableClass);
+    public EntityDefinition getEntityDefinition(Class<?> entityClass) {
+        EntityDefinition definition = definitions.get(entityClass);
         if(definition == null) {
-            throw new PousseCafeException("Storable " + storableClass + " is not defined");
+            throw new PousseCafeException("Entity " + entityClass + " is not defined");
         }
         return definition;
     }
 
-    public Set<Class<?>> getDefinedStorables() {
+    public Set<Class<?>> getDefinedEntities() {
         return unmodifiableSet(definitions.keySet());
     }
 

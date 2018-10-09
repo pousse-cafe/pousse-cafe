@@ -3,7 +3,7 @@ package domain.data;
 import domain.MyAggregate;
 import domain.MyAggregateKey;
 import java.io.Serializable;
-import poussecafe.storable.Property;
+import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
 public class MyAggregateData implements MyAggregate.Data, Serializable {

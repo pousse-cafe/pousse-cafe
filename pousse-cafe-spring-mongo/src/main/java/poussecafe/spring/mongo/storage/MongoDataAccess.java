@@ -3,10 +3,10 @@ package poussecafe.spring.mongo.storage;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.IdentifiedStorableDataAccess;
+import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityDataAccess;
 
-public abstract class MongoDataAccess<K, D extends IdentifiedStorableData<K>, M extends Serializable> implements IdentifiedStorableDataAccess<K, D> {
+public abstract class MongoDataAccess<K, D extends EntityData<K>, M extends Serializable> implements EntityDataAccess<K, D> {
 
     @Override
     public D findData(K key) {

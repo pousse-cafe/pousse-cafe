@@ -1,6 +1,6 @@
 package poussecafe.storage;
 
-import poussecafe.storable.MessageCollection;
+import poussecafe.property.MessageCollection;
 
 public class DirectMessageSending extends MessageSendingPolicy {
 

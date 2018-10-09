@@ -1,8 +1,8 @@
 package poussecafe.domain;
 
-import poussecafe.storable.Property;
-import poussecafe.storable.PropertyBuilder;
-import poussecafe.storable.SimpleEntity;
+import poussecafe.entity.SimpleEntity;
+import poussecafe.property.Property;
+import poussecafe.property.PropertyBuilder;
 import poussecafe.util.StringKey;
 
 public class SimpleEntityData implements SimpleEntity.Data {

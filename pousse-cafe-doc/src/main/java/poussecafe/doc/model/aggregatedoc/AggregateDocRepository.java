@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Data> {
 
     public List<AggregateDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return newStorablesWithData(dataAccess().findByBoundedContextKey(key));
+        return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
     private AggregateDocDataAccess<AggregateDoc.Data> dataAccess() {
@@ -15,15 +15,15 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
     }
 
     public List<AggregateDoc> findAll() {
-        return newStorablesWithData(dataAccess().findAll());
+        return newEntitiesWithData(dataAccess().findAll());
     }
 
     public List<AggregateDoc> findByKeyClassName(String qualifiedName) {
-        return newStorablesWithData(dataAccess().findByKeyClassName(qualifiedName));
+        return newEntitiesWithData(dataAccess().findByKeyClassName(qualifiedName));
     }
 
     public AggregateDoc findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String aggregateName) {
-        return newStorableWithData(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
+        return newEntityWithData(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
     }
 }

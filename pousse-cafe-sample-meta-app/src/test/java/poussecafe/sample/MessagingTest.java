@@ -3,6 +3,7 @@ package poussecafe.sample;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.context.BoundedContext;
+import poussecafe.journal.JournalBoundedContext;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
@@ -26,7 +27,7 @@ public class MessagingTest extends MetaApplicationTest {
 
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new SampleMetaAppBundle());
+        return asList(new SampleMetaAppBoundedContext(), new JournalBoundedContext());
     }
 
     @Test
@@ -50,7 +51,8 @@ public class MessagingTest extends MetaApplicationTest {
     }
 
     private void thenMessageCreatedWithContent(ContentType contentType) {
-        MessageRepository repository = (MessageRepository) context().getStorableServices(Message.class).getRepository();
+        waitUntilAllMessageQueuesEmpty();
+        MessageRepository repository = (MessageRepository) context().getEntityServices(Message.class).getRepository();
         List<Message> messages = repository.findByCustomer(customerKey);
         assertThat(messages.size(), is(1));
         assertThat(messages.get(0).getContentType(), is(contentType));

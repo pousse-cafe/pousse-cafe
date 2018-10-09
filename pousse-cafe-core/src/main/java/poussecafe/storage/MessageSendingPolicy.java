@@ -2,7 +2,7 @@ package poussecafe.storage;
 
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageSender;
-import poussecafe.storable.MessageCollection;
+import poussecafe.property.MessageCollection;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;

@@ -10,9 +10,9 @@ import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
-import poussecafe.storable.IdentifiedStorableData;
-import poussecafe.storable.MapProperty;
-import poussecafe.storable.Property;
+import poussecafe.domain.EntityData;
+import poussecafe.property.MapProperty;
+import poussecafe.property.Property;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.Checks.checkThatValue;
@@ -105,7 +105,7 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
         }
     }
 
-    public static interface Data extends IdentifiedStorableData<DomainProcessDocKey> {
+    public static interface Data extends EntityData<DomainProcessDocKey> {
 
         Property<BoundedContextComponentDoc> boundedContextComponentDoc();
 
