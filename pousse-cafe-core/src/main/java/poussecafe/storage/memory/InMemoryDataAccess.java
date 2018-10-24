@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import poussecafe.collection.Multimap;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.storage.memory.uniqueindex.AdditionPlan;
 import poussecafe.storage.memory.uniqueindex.Plan;
 import poussecafe.storage.memory.uniqueindex.UniqueIndex;
@@ -30,6 +31,8 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
     private Multimap<Object, K> index = new Multimap<>();
 
     private Map<String, UniqueIndex<D>> uniqueIndexes = new HashMap<>();
+
+    private Optional<OptimisticLocker> locker = Optional.empty();
 
     public InMemoryDataAccess() {
         storage = new HashMap<>();
@@ -61,6 +64,9 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
             throw new InMemoryDataException("Duplicate key");
         }
         List<AdditionPlan> additionPlans = prepareAddition(data);
+        if(locker.isPresent()) {
+            locker.get().initializeVersion(data);
+        }
         storage.put(key, serialize(data));
         index(data);
         commitPlans(additionPlans);
@@ -112,6 +118,10 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
 
         List<UpdatePlan> updatePlans = prepareUpdate(Optional.ofNullable(oldData), newData);
         unindex(oldData);
+        if(locker.isPresent()) {
+            Optional<Long> actualVersion = locker.get().getVersion(oldData);
+            locker.get().ensureAndIncrement(actualVersion.get(), newData);
+        }
         storage.put(key, serialize(newData));
         index(newData);
         commitPlans(updatePlans);
@@ -167,5 +177,12 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
             throw new IllegalArgumentException("A unique index with name " + uniqueIndex.name() + " already exists");
         }
         uniqueIndexes.put(uniqueIndex.name(), uniqueIndex);
+    }
+
+    protected void versionField(String versionField) {
+        if(locker.isPresent()) {
+            throw new PousseCafeException("Optistic locker has already been configured");
+        }
+        locker = Optional.of(new OptimisticLocker(versionField));
     }
 }

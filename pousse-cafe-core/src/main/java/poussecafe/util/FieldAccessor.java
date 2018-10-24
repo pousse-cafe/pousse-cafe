@@ -1,7 +1,6 @@
 package poussecafe.util;
 
 import java.lang.reflect.Field;
-import poussecafe.exception.PousseCafeException;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -34,7 +33,7 @@ public class FieldAccessor {
         try {
             return getUnprotectedField(fieldName).get(target);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new PousseCafeException("Unable to get value from field", e);
+            throw new ReflectionException("Unable to get value from field", e);
         }
     }
 
@@ -45,7 +44,7 @@ public class FieldAccessor {
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException e) {
-            throw new PousseCafeException("Unable to get field", e);
+            throw new ReflectionException("Unable to get field", e);
         }
     }
 
@@ -66,7 +65,7 @@ public class FieldAccessor {
         try {
             getUnprotectedField(fieldName).set(target, value);
         } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new PousseCafeException("Unable to set field value", e);
+            throw new ReflectionException("Unable to set field value", e);
         }
     }
 }
