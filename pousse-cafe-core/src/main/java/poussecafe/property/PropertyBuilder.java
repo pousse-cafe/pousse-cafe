@@ -6,15 +6,19 @@ import static poussecafe.check.Checks.checkThatValue;
 
 public class PropertyBuilder {
 
-    public static <T> SimplePropertyBuilder<T> simple(Class<T> valueClass) {
+    private PropertyBuilder() {
+
+    }
+
+    public static <T> SimplePropertyBuilder<T> simple(Class<T> valueClass) { // NOSONAR
         return new SimplePropertyBuilder<>();
     }
 
-    public static <T> ListPropertyBuilder<T> list(Class<T> elementClass) {
+    public static <T> ListPropertyBuilder<T> list(Class<T> elementClass) { // NOSONAR
         return new ListPropertyBuilder<>();
     }
 
-    public static <T> SetPropertyBuilder<T> set(Class<T> elementClass) {
+    public static <T> SetPropertyBuilder<T> set(Class<T> elementClass) { // NOSONAR
         return new SetPropertyBuilder<>();
     }
 
@@ -24,11 +28,11 @@ public class PropertyBuilder {
         return new MapPropertyBuilder<>();
     }
 
-    public static <T> OptionalPropertyBuilder<T> optional(Class<T> valueClass) {
+    public static <T> OptionalPropertyBuilder<T> optional(Class<T> valueClass) { // NOSONAR
         return new OptionalPropertyBuilder<>();
     }
 
-    public static <T extends Number> NumberPropertyBuilder<T> number(Class<T> valueClass) {
+    public static <T extends Number> NumberPropertyBuilder<T> number(Class<T> valueClass) { // NOSONAR
         return new NumberPropertyBuilder<>();
     }
 
@@ -36,5 +40,9 @@ public class PropertyBuilder {
         checkThatValue(entityKeyClass).notNull();
         checkThatValue(entityClass).notNull();
         return new EntityMapPropertyBuilder<>(entityClass);
+    }
+
+    public static IntegerPropertyBuilder integer() {
+        return new IntegerPropertyBuilder();
     }
 }

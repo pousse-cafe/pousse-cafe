@@ -61,7 +61,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
     public synchronized void addData(D data) {
         K key = data.key().get();
         if (storage.containsKey(key)) {
-            throw new InMemoryDataException("Duplicate key");
+            throw new InMemoryDataException("Duplicate key " + key);
         }
         List<AdditionPlan> additionPlans = prepareAddition(data);
         if(locker.isPresent()) {
@@ -74,7 +74,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
 
     private List<AdditionPlan> prepareAddition(D data) {
         return uniqueIndexes.values().stream()
-            .map(index -> index.prepareAddition(data))
+            .map(uniqueIndex -> uniqueIndex.prepareAddition(data))
             .collect(toList());
     }
 
@@ -92,7 +92,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
         plans.forEach(Plan::commit);
     }
 
-    protected List<Object> extractIndexedData(D data) {
+    protected List<Object> extractIndexedData(D data) { // NOSONAR
         return emptyList();
     }
 
@@ -119,8 +119,8 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
         List<UpdatePlan> updatePlans = prepareUpdate(Optional.ofNullable(oldData), newData);
         unindex(oldData);
         if(locker.isPresent()) {
-            Optional<Long> actualVersion = locker.get().getVersion(oldData);
-            locker.get().ensureAndIncrement(actualVersion.get(), newData);
+            long actualVersion = locker.get().getVersion(oldData).orElseThrow(InMemoryDataException::new);
+            locker.get().ensureAndIncrement(actualVersion, newData);
         }
         storage.put(key, serialize(newData));
         index(newData);
@@ -130,7 +130,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
     private List<UpdatePlan> prepareUpdate(Optional<D> oldData,
             D newData) {
         return uniqueIndexes.values().stream()
-                .map(index -> index.prepareUpdate(oldData, newData))
+                .map(uniqueIndex -> uniqueIndex.prepareUpdate(oldData, newData))
                 .collect(toList());
     }
 
