@@ -17,4 +17,19 @@ public abstract class Storage {
     private TransactionRunner transactionRunner = initTransactionRunner();
 
     protected abstract TransactionRunner initTransactionRunner();
+
+    protected abstract String name();
+
+    public StorageUnitBuilder newStorageUnit() {
+        return new StorageUnitBuilder(this);
+    }
+
+    public boolean nameIn(String[] array) {
+        for(String name : array) {
+            if(name().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

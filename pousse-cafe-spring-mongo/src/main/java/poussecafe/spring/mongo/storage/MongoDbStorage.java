@@ -8,6 +8,8 @@ import poussecafe.storage.TransactionRunner;
 
 public class MongoDbStorage extends Storage {
 
+    public static final String NAME = "mongo";
+
     public static MongoDbStorage instance() {
         return INSTANCE;
     }
@@ -26,5 +28,10 @@ public class MongoDbStorage extends Storage {
 
     private MongoDbStorage() {
 
+    }
+
+    @Override
+    protected String name() {
+        return NAME;
     }
 }

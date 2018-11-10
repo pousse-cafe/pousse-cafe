@@ -2,8 +2,8 @@ package poussecafe.context;
 
 import java.util.HashSet;
 import java.util.Set;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 
@@ -12,6 +12,16 @@ import static java.util.Collections.unmodifiableSet;
 public abstract class BoundedContext {
 
     protected BoundedContext() {
+        this(true);
+    }
+
+    protected BoundedContext(boolean loadAll) {
+        if(loadAll) {
+            loadAll();
+        }
+    }
+
+    protected void loadAll() {
         loadDefinitions(definitions);
         loadImplementations(implementations);
         loadProcesses(processes);

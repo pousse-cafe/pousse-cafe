@@ -8,6 +8,8 @@ import poussecafe.storage.TransactionRunner;
 
 public class InMemoryStorage extends Storage {
 
+    public static final String NAME = "in-memory";
+
     public static InMemoryStorage instance() {
         return SINGLETON;
     }
@@ -22,6 +24,11 @@ public class InMemoryStorage extends Storage {
     @Override
     protected TransactionRunner initTransactionRunner() {
         return new NoTransactionRunner();
+    }
+
+    @Override
+    protected String name() {
+        return NAME;
     }
 
 }
