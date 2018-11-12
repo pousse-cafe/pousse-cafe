@@ -15,7 +15,7 @@ import poussecafe.sample.domain.mongo.OrderData;
 import poussecafe.sample.domain.mongo.OrderDataAccess;
 import poussecafe.sample.domain.mongo.ProductData;
 import poussecafe.sample.domain.mongo.ProductDataAccess;
-import poussecafe.spring.mongo.storage.MongoDbStorage;
+import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 public class MongoSampleMetaAppBoundedContext extends SampleMetaAppBoundedContext {
 
@@ -25,25 +25,25 @@ public class MongoSampleMetaAppBoundedContext extends SampleMetaAppBoundedContex
                 .withEntityClass(Customer.class)
                 .withDataFactory(CustomerData::new)
                 .withDataAccessFactory(CustomerDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
+                .withStorage(SpringMongoDbStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Message.class)
                 .withDataFactory(MessageData::new)
                 .withDataAccessFactory(MessageDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
+                .withStorage(SpringMongoDbStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Product.class)
                 .withDataFactory(ProductData::new)
                 .withDataAccessFactory(ProductDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
+                .withStorage(SpringMongoDbStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Order.class)
                 .withDataFactory(OrderData::new)
                 .withDataAccessFactory(OrderDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
+                .withStorage(SpringMongoDbStorage.instance())
                 .build());
     }
 }

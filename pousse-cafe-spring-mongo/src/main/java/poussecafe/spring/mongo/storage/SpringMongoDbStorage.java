@@ -6,15 +6,15 @@ import poussecafe.storage.NoTransactionRunner;
 import poussecafe.storage.Storage;
 import poussecafe.storage.TransactionRunner;
 
-public class MongoDbStorage extends Storage {
+public class SpringMongoDbStorage extends Storage {
 
-    public static final String NAME = "mongo";
+    public static final String NAME = "spring-mongo";
 
-    public static MongoDbStorage instance() {
+    public static SpringMongoDbStorage instance() {
         return INSTANCE;
     }
 
-    private static final MongoDbStorage INSTANCE = new MongoDbStorage();
+    private static final SpringMongoDbStorage INSTANCE = new SpringMongoDbStorage();
 
     @Override
     protected MessageSendingPolicy initMessageSendingPolicy() {
@@ -26,7 +26,7 @@ public class MongoDbStorage extends Storage {
         return new NoTransactionRunner();
     }
 
-    private MongoDbStorage() {
+    private SpringMongoDbStorage() {
 
     }
 

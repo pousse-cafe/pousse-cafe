@@ -67,6 +67,13 @@
           <tag>v${project.version}</tag>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -150,5 +157,6 @@
     <module>pousse-cafe-spring</module>
     <module>pousse-cafe-spring-mongo</module>
     <module>pousse-cafe-sample-app</module>
+    <module>pousse-cafe-maven-plugin</module>
   </modules>
 </project>

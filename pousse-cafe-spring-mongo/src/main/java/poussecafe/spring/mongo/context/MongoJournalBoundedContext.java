@@ -6,7 +6,7 @@ import poussecafe.journal.JournalBoundedContext;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.spring.mongo.journal.JournalEntryData;
 import poussecafe.spring.mongo.journal.JournalEntryDataAccess;
-import poussecafe.spring.mongo.storage.MongoDbStorage;
+import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 public class MongoJournalBoundedContext extends JournalBoundedContext {
 
@@ -16,7 +16,7 @@ public class MongoJournalBoundedContext extends JournalBoundedContext {
                 .withEntityClass(JournalEntry.class)
                 .withDataFactory(JournalEntryData::new)
                 .withDataAccessFactory(JournalEntryDataAccess::new)
-                .withStorage(MongoDbStorage.instance())
+                .withStorage(SpringMongoDbStorage.instance())
                 .build());
     }
 
