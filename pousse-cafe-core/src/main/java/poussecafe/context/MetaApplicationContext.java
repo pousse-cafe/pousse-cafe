@@ -12,9 +12,10 @@ import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Repository;
+import poussecafe.domain.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.JacksonMessageAdapter;
 import poussecafe.messaging.MessageAdapter;
@@ -107,17 +108,20 @@ public class MetaApplicationContext {
         }
     }
 
-    public void loadBoundedContext(BoundedContext bundle) {
-        for(EntityDefinition definition : bundle.getDefinitions()) {
+    public void loadBoundedContext(BoundedContext boundedContext) {
+        for(EntityDefinition definition : boundedContext.getDefinitions()) {
             environment.defineEntity(definition);
         }
-        for(EntityImplementation implementation : bundle.getImplementations()) {
+        for(EntityImplementation implementation : boundedContext.getEntityImplementations()) {
             environment.implementEntity(implementation);
         }
-        for(Class<? extends DomainProcess> processClass : bundle.getProcesses()) {
+        for(MessageImplementation implementation : boundedContext.getMessageImplementations()) {
+            environment.implementMessage(implementation);
+        }
+        for(Class<? extends DomainProcess> processClass : boundedContext.getProcesses()) {
             environment.defineProcess(processClass);
         }
-        for(Class<?> serviceClass : bundle.getServices()) {
+        for(Class<?> serviceClass : boundedContext.getServices()) {
             environment.defineService(serviceClass);
         }
     }

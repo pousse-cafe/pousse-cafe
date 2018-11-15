@@ -1,21 +1,9 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.DomainEvent;
+import poussecafe.property.Property;
 
-public class OrderSettled implements DomainEvent {
+public interface OrderSettled extends DomainEvent {
 
-    private OrderKey orderKey;
-
-    public OrderSettled(OrderKey key) {
-        setOrderKey(key);
-    }
-
-    public OrderKey getOrderKey() {
-        return orderKey;
-    }
-
-    public void setOrderKey(OrderKey orderKey) {
-        this.orderKey = orderKey;
-    }
-
+    Property<OrderKey> orderKey();
 }

@@ -10,7 +10,7 @@ import poussecafe.storage.memory.InMemoryStorage;
 public class MemoryJournalBoundedContext extends JournalBoundedContext {
 
     @Override
-    protected void loadImplementations(Set<EntityImplementation> implementations) {
+    protected void loadEntityImplementations(Set<EntityImplementation> implementations) {
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(JournalEntry.class)
                 .withDataFactory(JournalEntryData::new)

@@ -3,6 +3,7 @@ package poussecafe.messaging;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.context.Environment;
 import poussecafe.util.ExceptionUtils;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -14,12 +15,17 @@ public abstract class MessageReceiver {
 
     private boolean started;
 
+    private Environment environment;
+
     protected void onMessage(Message receivedMessage) {
         logger.debug("Handling received message {}", receivedMessage);
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
         String consumptionId = UUID.randomUUID().toString();
-        for (MessageListener listener : listenerRegistry
-                .getListeners(new MessageListenerRoutingKey(receivedMessage.getClass()))) {
+        Class<? extends Message> messageClass = environment.getMessageClass(receivedMessage.getClass());
+        if(messageClass == null) {
+            logger.error("Unhandled message: {}", receivedMessage.getClass());
+        }
+        for (MessageListener listener : listenerRegistry.getListeners(new MessageListenerRoutingKey(messageClass))) {
             consumeMessage(consumptionId, receivedMessage, listener);
         }
         logger.debug("Message {} handled (consumption ID {})", receivedMessage, consumptionId);

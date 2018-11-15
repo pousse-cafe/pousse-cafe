@@ -3,6 +3,7 @@ package poussecafe.domain;
 import java.util.function.Supplier;
 import poussecafe.context.Environment;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.Message;
 import poussecafe.storage.Storage;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -12,7 +13,12 @@ public class ComponentFactory {
 
     public <T> T newComponent(ComponentSpecification<T> specification) {
         Class<T> primitiveClass = specification.getPrimitiveClass();
-        T primitive = newComponent(primitiveClass);
+        T primitive;
+        if(Message.class.isAssignableFrom(primitiveClass)) {
+            primitive = newMessage(primitiveClass);
+        } else {
+            primitive = newInstance(primitiveClass);
+        }
 
         if(Component.class.isAssignableFrom(primitiveClass)) {
             Component realPrimitive = (Component) primitive;
@@ -31,10 +37,10 @@ public class ComponentFactory {
                 entity.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
             }
 
-            if(environment.hasImplementation(primitiveClass)) {
+            if(environment.hasStorageImplementation(primitiveClass)) {
                 Object data = null;
                 if(specification.isWithData()) {
-                    data = supplyDataImplementation(primitiveClass);
+                    data = supplyEntityDataImplementation(primitiveClass);
                     entity.setData(data);
                 }
             }
@@ -55,7 +61,16 @@ public class ComponentFactory {
         return primitive;
     }
 
-    private <T> T newComponent(Class<T> entityClass) {
+    @SuppressWarnings("unchecked")
+    private <T> T newMessage(Class<T> primitiveClass) {
+        return (T) supplyMessageImplementation(primitiveClass);
+    }
+
+    private Object supplyMessageImplementation(Class<?> messageClass) {
+        return newInstance(environment.getMessageImplementationClass(messageClass));
+    }
+
+    private <T> T newInstance(Class<T> entityClass) {
         try {
             return entityClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -70,7 +85,7 @@ public class ComponentFactory {
 
     private Environment environment;
 
-    private Object supplyDataImplementation(Class<?> entityClass) {
+    private Object supplyEntityDataImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.getEntityDataFactory(entityClass);
         return factory.get();
     }

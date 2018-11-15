@@ -20,7 +20,7 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 public class MongoSampleMetaAppBoundedContext extends SampleMetaAppBoundedContext {
 
     @Override
-    protected void loadImplementations(Set<EntityImplementation> implementations) {
+    protected void loadEntityImplementations(Set<EntityImplementation> implementations) {
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Customer.class)
                 .withDataFactory(CustomerData::new)

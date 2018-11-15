@@ -9,7 +9,9 @@ public class OrderRepository extends Repository<Order, OrderKey, Data> {
     @Override
     protected void considerMessageSendingAfterAdd(Order order,
             MessageCollection messageCollection) {
-        messageCollection.addMessage(new OrderCreated(order.getKey()));
+        OrderCreated event = newComponent(OrderCreated.class);
+        event.orderKey().set(order.getKey());
+        messageCollection.addMessage(event);
         super.considerMessageSendingAfterAdd(order, messageCollection);
     }
 }

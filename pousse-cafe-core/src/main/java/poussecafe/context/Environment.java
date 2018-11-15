@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.Message;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
@@ -41,14 +43,14 @@ public class Environment {
     public void implementEntity(EntityImplementation implementation) {
         checkThat(value(implementation).notNull());
         Class<?> entityClass = implementation.getEntityClass();
-        implementations.put(entityClass, implementation);
+        entityImplementations.put(entityClass, implementation);
 
         if(implementation.hasStorage()) {
             storages.add(implementation.getStorage());
         }
     }
 
-    private Map<Class<?>, EntityImplementation> implementations = new HashMap<>();
+    private Map<Class<?>, EntityImplementation> entityImplementations = new HashMap<>();
 
     private Set<Storage> storages = new HashSet<>();
 
@@ -59,7 +61,7 @@ public class Environment {
     public Set<Class<?>> getAbstractEntities() {
         Set<Class<?>> abstractEntities = new HashSet<>();
         for(Class<?> entityClass : definitions.keySet()) {
-            if(!implementations.containsKey(entityClass)) {
+            if(!entityImplementations.containsKey(entityClass)) {
                 abstractEntities.add(entityClass);
             }
         }
@@ -72,7 +74,7 @@ public class Environment {
     }
 
     public EntityImplementation getEntityImplementation(Class<?> entityClass) {
-        EntityImplementation implementation = implementations.get(entityClass);
+        EntityImplementation implementation = entityImplementations.get(entityClass);
         if(implementation == null) {
             throw new PousseCafeException("Entity " + entityClass.getName() + " is not implemented");
         }
@@ -138,7 +140,36 @@ public class Environment {
         return unmodifiableSet(storages);
     }
 
-    public boolean hasImplementation(Class<?> primitiveClass) {
-        return implementations.containsKey(primitiveClass);
+    public boolean hasStorageImplementation(Class<?> primitiveClass) {
+        return entityImplementations.containsKey(primitiveClass);
+    }
+
+    public void implementMessage(MessageImplementation implementation) {
+        checkThat(value(implementation).notNull());
+        Class<?> messageClass = implementation.getMessageClass();
+        messageImplementations.put(messageClass, implementation);
+        messageClassesPerImplementation.put(implementation.getMessageImplementationClass(), messageClass);
+    }
+
+    private Map<Class<?>, MessageImplementation> messageImplementations = new HashMap<>();
+
+    private Map<Class<?>, Class<?>> messageClassesPerImplementation = new HashMap<>();
+
+    public Class<?> getMessageImplementationClass(Class<?> messageClass) {
+        MessageImplementation implementation = getMessageImplementation(messageClass);
+        return implementation.getMessageImplementationClass();
+    }
+
+    private MessageImplementation getMessageImplementation(Class<?> messageClass) {
+        MessageImplementation implementation = messageImplementations.get(messageClass);
+        if(implementation == null) {
+            throw new PousseCafeException("Message " + messageClass.getName() + " is not implemented");
+        }
+        return implementation;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends Message> getMessageClass(Class<? extends Message> implementationClass) {
+        return (Class<? extends Message>) messageClassesPerImplementation.get(implementationClass);
     }
 }

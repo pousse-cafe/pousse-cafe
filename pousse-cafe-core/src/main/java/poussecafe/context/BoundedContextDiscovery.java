@@ -14,6 +14,7 @@ import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.process.DomainProcess;
 
 import static java.util.stream.Collectors.toList;
@@ -87,5 +88,22 @@ public class BoundedContextDiscovery {
         Reflections reflections = new Reflections(packageName);
         Set<Class<? extends DomainProcess>> domainProcessClasses = reflections.getSubTypesOf(DomainProcess.class);
         return domainProcessClasses.stream().collect(toList());
+    }
+
+    public static List<poussecafe.domain.MessageImplementation> discoverMessageImplementations(String packageName) {
+        logger.info("Discovering message implementations in package {}", packageName);
+        Reflections reflections = new Reflections(packageName);
+        Set<Class<?>> messageImplementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
+        return messageImplementationClasses.stream()
+                .map(BoundedContextDiscovery::messageImplementation)
+                .collect(toList());
+    }
+
+    private static poussecafe.domain.MessageImplementation messageImplementation(Class<?> messageImplementationClass) {
+        MessageImplementation annotation = messageImplementationClass.getAnnotation(MessageImplementation.class);
+        return new poussecafe.domain.MessageImplementation.Builder()
+                .withMessageClass(annotation.message())
+                .withMessageImplementationClass(messageImplementationClass)
+                .build();
     }
 }

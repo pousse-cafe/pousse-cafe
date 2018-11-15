@@ -1,6 +1,8 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
+import poussecafe.context.Environment;
+import poussecafe.util.ReflectionUtils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,6 +19,8 @@ public abstract class MessageReceiverTest {
 
     private MessageListener listener;
 
+    private Environment environment;
+
     @Test
     public void receivedMessageIsConsumed() {
         givenMessageQueue();
@@ -24,6 +28,7 @@ public abstract class MessageReceiverTest {
         thenListenerConsumes();
     }
 
+    @SuppressWarnings("unchecked")
     private void givenMessageQueue() {
         listenerRegistry = mock(MessageListenerRegistry.class);
 
@@ -36,6 +41,12 @@ public abstract class MessageReceiverTest {
 
         receiver = newMessageReceiver();
         receiver.setListenerRegistry(listenerRegistry);
+
+        environment = mock(Environment.class);
+        ReflectionUtils.access(receiver).set("environment", environment);
+        @SuppressWarnings("rawtypes")
+        Class testMessageClass = TestMessage.class;
+        when(environment.getMessageClass(testMessageClass)).thenReturn(testMessageClass);
     }
 
     protected abstract MessageReceiver newMessageReceiver();

@@ -4,6 +4,7 @@ import java.util.List;
 import org.junit.Test;
 import poussecafe.context.BoundedContext;
 import poussecafe.journal.JournalBoundedContext;
+import poussecafe.sample.adapters.messaging.JacksonOrderRejected;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
@@ -47,7 +48,10 @@ public class MessagingTest extends MetaApplicationTest {
     }
 
     private void whenOrderRejected() {
-        addDomainEvent(new OrderRejected(productKey, orderDescription));
+        OrderRejected event = new JacksonOrderRejected();
+        event.productKey().set(productKey);
+        event.description().set(orderDescription);
+        addDomainEvent(event);
     }
 
     private void thenMessageCreatedWithContent(ContentType contentType) {

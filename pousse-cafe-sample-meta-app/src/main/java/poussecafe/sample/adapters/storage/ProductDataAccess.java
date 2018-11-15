@@ -1,4 +1,4 @@
-package poussecafe.sample.domain.memory;
+package poussecafe.sample.adapters.storage;
 
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;

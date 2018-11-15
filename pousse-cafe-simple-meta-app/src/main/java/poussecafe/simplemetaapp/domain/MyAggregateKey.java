@@ -1,4 +1,4 @@
-package domain;
+package poussecafe.simplemetaapp.domain;
 import poussecafe.util.StringKey;
 
 /*

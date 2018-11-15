@@ -1,4 +1,4 @@
-package poussecafe.sample.domain.memory;
+package poussecafe.sample.adapters.storage;
 
 import java.util.List;
 import poussecafe.sample.domain.CustomerKey;

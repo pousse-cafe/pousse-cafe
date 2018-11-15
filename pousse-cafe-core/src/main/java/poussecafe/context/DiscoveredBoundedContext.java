@@ -3,6 +3,7 @@ package poussecafe.context;
 import java.util.Set;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
@@ -31,7 +32,7 @@ public abstract class DiscoveredBoundedContext extends BoundedContext {
     }
 
     @Override
-    protected void loadImplementations(Set<EntityImplementation> implementations) {
+    protected void loadEntityImplementations(Set<EntityImplementation> implementations) {
         implementations.addAll(storage().newStorageUnit()
                 .withPackage(packageName)
                 .build()
@@ -50,4 +51,8 @@ public abstract class DiscoveredBoundedContext extends BoundedContext {
         services.addAll(BoundedContextDiscovery.discoverServices(packageName));
     }
 
+    @Override
+    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
+        implementations.addAll(BoundedContextDiscovery.discoverMessageImplementations(packageName));
+    }
 }

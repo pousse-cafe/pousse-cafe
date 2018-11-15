@@ -3,8 +3,9 @@ package poussecafe.context;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
+import poussecafe.domain.EntityImplementation;
 import poussecafe.process.DomainProcess;
 
 import static java.util.Collections.unmodifiableSet;
@@ -23,7 +24,8 @@ public abstract class BoundedContext {
 
     protected void loadAll() {
         loadDefinitions(definitions);
-        loadImplementations(implementations);
+        loadEntityImplementations(entityImplementations);
+        loadMessageImplementations(messageImplementations);
         loadProcesses(processes);
         loadServices(services);
     }
@@ -32,29 +34,37 @@ public abstract class BoundedContext {
 
     protected abstract void loadDefinitions(Set<EntityDefinition> definitions);
 
-    private Set<EntityImplementation> implementations = new HashSet<>();
+    public Set<EntityDefinition> getDefinitions() {
+        return unmodifiableSet(definitions);
+    }
 
-    protected abstract void loadImplementations(Set<EntityImplementation> implementations);
+    private Set<EntityImplementation> entityImplementations = new HashSet<>();
+
+    protected abstract void loadEntityImplementations(Set<EntityImplementation> implementations);
+
+    public Set<EntityImplementation> getEntityImplementations() {
+        return unmodifiableSet(entityImplementations);
+    }
+
+    private Set<MessageImplementation> messageImplementations = new HashSet<>();
+
+    protected abstract void loadMessageImplementations(Set<MessageImplementation> implementations);
+
+    public Set<MessageImplementation> getMessageImplementations() {
+        return unmodifiableSet(messageImplementations);
+    }
 
     private Set<Class<? extends DomainProcess>> processes = new HashSet<>();
 
     protected abstract void loadProcesses(Set<Class<? extends DomainProcess>> processes);
 
-    private Set<Class<? extends Service>> services = new HashSet<>();
-
-    protected abstract void loadServices(Set<Class<? extends Service>> services);
-
-    public Set<EntityDefinition> getDefinitions() {
-        return unmodifiableSet(definitions);
-    }
-
-    public Set<EntityImplementation> getImplementations() {
-        return unmodifiableSet(implementations);
-    }
-
     public Set<Class<? extends DomainProcess>> getProcesses() {
         return unmodifiableSet(processes);
     }
+
+    private Set<Class<? extends Service>> services = new HashSet<>();
+
+    protected abstract void loadServices(Set<Class<? extends Service>> services);
 
     public Set<Class<? extends Service>> getServices() {
         return unmodifiableSet(services);

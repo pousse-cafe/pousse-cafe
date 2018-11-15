@@ -9,7 +9,9 @@ public class MessageRepository extends Repository<Message, MessageKey, Message.D
     @Override
     protected void considerMessageSendingAfterAdd(Message message,
             MessageCollection messageCollection) {
-        messageCollection.addMessage(new MessageCreated(message.getKey()));
+        MessageCreated event = newComponent(MessageCreated.class);
+        event.messageKey().set(message.getKey());
+        messageCollection.addMessage(event);
         super.considerMessageSendingAfterAdd(message, messageCollection);
     }
 

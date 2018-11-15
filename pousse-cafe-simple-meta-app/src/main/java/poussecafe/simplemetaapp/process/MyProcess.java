@@ -1,12 +1,12 @@
-package process;
+package poussecafe.simplemetaapp.process;
 
-import domain.MyAggregate;
-import domain.MyDomainEvent;
-import domain.MyFactory;
-import domain.MyRepository;
 import org.slf4j.LoggerFactory;
 import poussecafe.messaging.DomainEventListener;
 import poussecafe.process.DomainProcess;
+import poussecafe.simplemetaapp.domain.MyAggregate;
+import poussecafe.simplemetaapp.domain.MyDomainEvent;
+import poussecafe.simplemetaapp.domain.MyAggregateFactory;
+import poussecafe.simplemetaapp.domain.MyAggregateRepository;
 
 /*
  * This work flow describes how Commands are related to Domain actions. A work flow also describes how Domain Events
@@ -14,9 +14,9 @@ import poussecafe.process.DomainProcess;
  */
 public class MyProcess extends DomainProcess {
 
-    private MyFactory factory;
+    private MyAggregateFactory factory;
 
-    private MyRepository repository;
+    private MyAggregateRepository repository;
 
     public void handle(CreateAggregate command) {
         MyAggregate aggregate = factory.buildAggregate(command.getKey());

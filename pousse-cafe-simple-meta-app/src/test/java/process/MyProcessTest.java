@@ -1,11 +1,14 @@
 package process;
 
-import configuration.MyMetaApplicationBundle;
-import domain.MyAggregate;
-import domain.MyAggregateKey;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.context.BoundedContext;
+import poussecafe.simplemetaapp.MyBoundedContext;
+import poussecafe.simplemetaapp.domain.MyAggregate;
+import poussecafe.simplemetaapp.domain.MyAggregateKey;
+import poussecafe.simplemetaapp.process.CreateAggregate;
+import poussecafe.simplemetaapp.process.MyCommand;
+import poussecafe.simplemetaapp.process.MyProcess;
 import poussecafe.test.MetaApplicationTest;
 
 import static java.util.Arrays.asList;
@@ -13,10 +16,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /*
- * MyWorkflowTest features the way of testing a work flow end-to-end. This means that a Pousse-Café context is actually
- * instantiated with data being stored in-memory (a default storage implementation is provided by the framework, it does
- * not need any additional code to be written). Commands and Domain Events are processed asynchronously and routed to
- * Workflow instances exactly as they will be in a production environment.
+ * This class features the way of testing a domain process end-to-end.
  */
 public class MyProcessTest extends MetaApplicationTest {
 
@@ -29,7 +29,7 @@ public class MyProcessTest extends MetaApplicationTest {
      */
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new MyMetaApplicationBundle());
+        return asList(new MyBoundedContext());
     }
 
     /*
@@ -55,6 +55,6 @@ public class MyProcessTest extends MetaApplicationTest {
 
     private void thenAggregateUpdated() {
         MyAggregate aggregate = find(MyAggregate.class, key);
-        assertThat(aggregate.getX(), equalTo(x));
+        assertThat(aggregate.x().let(this).get(), equalTo(x));
     }
 }

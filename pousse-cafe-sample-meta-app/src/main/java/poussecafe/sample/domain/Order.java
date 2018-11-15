@@ -1,8 +1,8 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.sample.domain.Order.Data;
 import poussecafe.domain.EntityData;
+import poussecafe.sample.domain.Order.Data;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -16,11 +16,15 @@ public class Order extends AggregateRoot<OrderKey, Data> {
     }
 
     public void settle() {
-        addDomainEvent(new OrderSettled(getKey()));
+        OrderSettled event = newDomainEvent(OrderSettled.class);
+        event.orderKey().set(getKey());
+        addDomainEvent(event);
     }
 
     public void ship() {
-        addDomainEvent(new OrderReadyForShipping(getKey()));
+        OrderReadyForShipping event = newDomainEvent(OrderReadyForShipping.class);
+        event.orderKey().set(getKey());
+        addDomainEvent(event);
     }
 
     public static interface Data extends EntityData<OrderKey> {

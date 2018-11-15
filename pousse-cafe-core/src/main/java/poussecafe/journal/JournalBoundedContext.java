@@ -4,6 +4,7 @@ import java.util.Set;
 import poussecafe.context.BoundedContext;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
 import poussecafe.journal.data.JournalEntryData;
 import poussecafe.journal.data.memory.InMemoryJournalEntryDataAccess;
@@ -29,7 +30,7 @@ public class JournalBoundedContext extends BoundedContext {
 
     @Override
     protected void loadProcesses(Set<Class<? extends DomainProcess>> processes) {
-        // No core process
+        // None
     }
 
     @Override
@@ -40,12 +41,17 @@ public class JournalBoundedContext extends BoundedContext {
     }
 
     @Override
-    protected void loadImplementations(Set<EntityImplementation> implementations) {
+    protected void loadEntityImplementations(Set<EntityImplementation> implementations) {
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(JournalEntry.class)
                 .withDataFactory(JournalEntryData::new)
                 .withDataAccessFactory(InMemoryJournalEntryDataAccess::new)
                 .withStorage(InMemoryStorage.instance())
                 .build());
+    }
+
+    @Override
+    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
+        // None
     }
 }

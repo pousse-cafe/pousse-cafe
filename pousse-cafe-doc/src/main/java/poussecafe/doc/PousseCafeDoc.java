@@ -53,8 +53,9 @@ import poussecafe.doc.process.EntityDocCreation;
 import poussecafe.doc.process.FactoryDocCreation;
 import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.doc.process.ValueObjectDocCreation;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.memory.InMemoryStorage;
@@ -113,7 +114,7 @@ public class PousseCafeDoc extends BoundedContext {
     }
 
     @Override
-    protected void loadImplementations(Set<EntityImplementation> implementations) {
+    protected void loadEntityImplementations(Set<EntityImplementation> implementations) {
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(BoundedContextDoc.class)
                 .withDataFactory(BoundedContextDocData::new)
@@ -189,6 +190,11 @@ public class PousseCafeDoc extends BoundedContext {
         services.add(UbiquitousLanguageFactory.class);
         services.add(ComponentDocFactory.class);
         services.add(StepDocExtractor.class);
+    }
+
+    @Override
+    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
+        // None
     }
 
 }

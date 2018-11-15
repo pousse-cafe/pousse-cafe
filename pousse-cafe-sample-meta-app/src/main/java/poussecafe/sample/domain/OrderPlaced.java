@@ -1,37 +1,11 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.DomainEvent;
+import poussecafe.property.Property;
 
-public class OrderPlaced implements DomainEvent {
+public interface OrderPlaced extends DomainEvent {
 
-    private ProductKey productKey;
+    Property<ProductKey> productKey();
 
-    private OrderDescription description;
-
-    public OrderPlaced(ProductKey key, OrderDescription description) {
-        setProductKey(key);
-        setOrderDescription(description);
-    }
-
-    public ProductKey getProductKey() {
-        return productKey;
-    }
-
-    private void setProductKey(ProductKey productKey) {
-        this.productKey = productKey;
-    }
-
-    public OrderDescription getOrderDescription() {
-        return description;
-    }
-
-    private void setOrderDescription(OrderDescription description) {
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderPlaced [productKey=" + productKey + ", description=" + description + "]";
-    }
-
+    Property<OrderDescription> description();
 }

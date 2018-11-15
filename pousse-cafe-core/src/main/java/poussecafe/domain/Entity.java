@@ -86,4 +86,8 @@ public abstract class Entity<K, D extends EntityData<K>> extends Component {
     protected void addDomainEvent(DomainEvent event) {
         messageCollection().addMessage(event);
     }
+
+    protected <E> E newDomainEvent(Class<E> eventClass) {
+        return newComponent(eventClass);
+    }
 }

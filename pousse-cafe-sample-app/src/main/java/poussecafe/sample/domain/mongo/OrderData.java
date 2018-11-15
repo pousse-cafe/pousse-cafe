@@ -2,9 +2,9 @@ package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
 import poussecafe.property.Property;
+import poussecafe.sample.adapters.storage.SerializableOrderKey;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderKey;
-import poussecafe.sample.domain.memory.SerializableOrderKey;
 
 public class OrderData implements Order.Data {
 

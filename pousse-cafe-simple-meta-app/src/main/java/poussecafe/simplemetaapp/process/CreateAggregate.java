@@ -1,6 +1,6 @@
-package process;
+package poussecafe.simplemetaapp.process;
 
-import domain.MyAggregateKey;
+import poussecafe.simplemetaapp.domain.MyAggregateKey;
 
 public class CreateAggregate {
 
