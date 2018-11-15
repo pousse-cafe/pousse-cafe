@@ -2,25 +2,25 @@ package poussecafe.journal.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import poussecafe.messaging.Message;
 
-public class ConsumptionFailureBuilder {
+import static poussecafe.check.Checks.checkThatValue;
 
-    private Message message;
+class ConsumptionFailureBuilder {
 
-    private List<String> listenerIds;
-
-    public ConsumptionFailureBuilder(Message message) {
-        this.message = message;
-        listenerIds = new ArrayList<>();
+    ConsumptionFailureBuilder(ConsumptionFailureKey key) {
+        checkThatValue(key).notNull();
+        this.key = key;
     }
 
-    public void addListener(String listenerId) {
+    private ConsumptionFailureKey key;
+
+    private List<String> listenerIds = new ArrayList<>();
+
+    void addListener(String listenerId) {
         listenerIds.add(listenerId);
     }
 
-    public ConsumptionFailure build() {
-        return new ConsumptionFailure(message, listenerIds);
+    ConsumptionFailure build() {
+        return new ConsumptionFailure(key, listenerIds);
     }
-
 }

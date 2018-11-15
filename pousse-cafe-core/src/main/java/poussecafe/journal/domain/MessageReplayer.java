@@ -13,13 +13,13 @@ public class MessageReplayer implements Service {
 
     private MessageSender messageSender;
 
-    public void replayMessage(String messageId) {
-        List<ConsumptionFailure> entries = consumptionFailureRepository.findConsumptionFailures(messageId);
+    public void replayMessage(String consumptionId) {
+        List<ConsumptionFailure> entries = consumptionFailureRepository.findConsumptionFailures(consumptionId);
         replayFailedConsumptions(entries);
     }
 
     private void replayFailedConsumptions(List<ConsumptionFailure> entries) {
-        replayMessages(entries.stream().map(ConsumptionFailure::getMessage).collect(toList()));
+        replayMessages(entries.stream().map(ConsumptionFailure::getKey).map(ConsumptionFailureKey::message).collect(toList()));
     }
 
     private void replayMessages(List<Message> messages) {

@@ -7,7 +7,7 @@ import poussecafe.journal.domain.JournalEntryKey;
 public class SerializableJournalEntryKey implements Serializable {
 
     public SerializableJournalEntryKey(JournalEntryKey to) {
-        messageId = to.getMessageId();
+        messageId = to.getConsumptionId();
         listenerId = to.getListenerId();
     }
 

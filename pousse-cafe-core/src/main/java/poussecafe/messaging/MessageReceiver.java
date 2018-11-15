@@ -1,5 +1,6 @@
 package poussecafe.messaging;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.util.ExceptionUtils;
@@ -16,24 +17,26 @@ public abstract class MessageReceiver {
     protected void onMessage(Message receivedMessage) {
         logger.debug("Handling received message {}", receivedMessage);
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
+        String consumptionId = UUID.randomUUID().toString();
         for (MessageListener listener : listenerRegistry
                 .getListeners(new MessageListenerRoutingKey(receivedMessage.getClass()))) {
-            consumeMessage(receivedMessage, listener);
+            consumeMessage(consumptionId, receivedMessage, listener);
         }
-        logger.debug("Message {} handled", receivedMessage);
+        logger.debug("Message {} handled (consumption ID {})", receivedMessage, consumptionId);
     }
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    private void consumeMessage(Message receivedMessage,
+    private void consumeMessage(String consumptionId,
+            Message receivedMessage,
             MessageListener listener) {
         logger.debug("Consumption of message {} by listener {}", receivedMessage, listener);
         try {
             listener.consume(receivedMessage);
-            handleLocalMessage(new SuccessfulConsumption(listener.getListenerId(), receivedMessage));
+            handleLocalMessage(new SuccessfulConsumption(consumptionId, listener.getListenerId(), receivedMessage));
         } catch (Exception e) {
             logger.warn("Consumption of message {} by listener {} failed", receivedMessage, listener, e);
-            handleLocalMessage(new FailedConsumption(listener.getListenerId(), receivedMessage, ExceptionUtils.getStackTrace(e)));
+            handleLocalMessage(new FailedConsumption(consumptionId, listener.getListenerId(), receivedMessage, ExceptionUtils.getStackTrace(e)));
         }
         logger.debug("Message {} consumed by listener {}", receivedMessage, listener);
     }

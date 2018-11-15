@@ -2,7 +2,7 @@ package poussecafe.journal;
 
 import org.junit.Test;
 import poussecafe.journal.domain.ConsumptionFailure;
-import poussecafe.messaging.Message;
+import poussecafe.journal.domain.ConsumptionFailureKey;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -11,54 +11,42 @@ import static org.mockito.Mockito.when;
 
 public class SingleMessageReplayTest extends MessageReplayTest {
 
-    private Message message;
-
     @Test
     public void failedMessageIsRoutedOnReplay() {
-        givenFailedMessage();
+        givenFailedConsumption();
         whenReplayingMessage();
         thenMessageIsRouted();
     }
 
-    private void givenFailedMessage() {
-        givenMessage();
-        givenFailedConsumption();
-    }
-
-    private void givenMessage() {
-        message = messageWithId("messageId");
-    }
-
     private void givenFailedConsumption() {
-        ConsumptionFailure failure = failureWithMessage(message);
-        when(consumptionFailureRepository.findConsumptionFailures(message.getId())).thenReturn(asList(failure));
+        key = consumptionFailureKey();
+        ConsumptionFailure failure = failureWithKey(key);
+        when(consumptionFailureRepository.findConsumptionFailures(key.consumptionId())).thenReturn(asList(failure));
     }
+
+    private ConsumptionFailureKey key;
 
     private void whenReplayingMessage() {
-        messageReplayer.replayMessage(message.getId());
+        messageReplayer.replayMessage(key.consumptionId());
     }
 
     private void thenMessageIsRouted() {
-        verify(messageSender).sendMessage(message);
+        verify(messageSender).sendMessage(key.message());
     }
 
     @Test
     public void successMessageIsNotRoutedOnReplay() {
         givenNoFailedMessage();
         whenReplayingMessage();
-        thenMessageIsNotRouted();
+        thenNoMessageIsRouted();
     }
 
     private void givenNoFailedMessage() {
-        givenMessage();
         givenNoFailedConsumption();
     }
 
     private void givenNoFailedConsumption() {
-        when(consumptionFailureRepository.findConsumptionFailures(message.getId())).thenReturn(emptyList());
-    }
-
-    private void thenMessageIsNotRouted() {
-        thenMessageIsNotRouted(message);
+        key = consumptionFailureKey();
+        when(consumptionFailureRepository.findConsumptionFailures(key.consumptionId())).thenReturn(emptyList());
     }
 }

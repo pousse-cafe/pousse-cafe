@@ -12,7 +12,7 @@ public class InMemoryJournalEntryDataAccess extends InMemoryDataAccess<JournalEn
 
     @Override
     protected List<Object> extractIndexedData(JournalEntryData data) {
-        return asList(data.getMessageId(), data.getStatus());
+        return asList(data.key().get().getConsumptionId(), data.getStatus());
     }
 
     @Override

@@ -1,35 +1,29 @@
 package poussecafe.journal.domain;
 
 import java.util.List;
-import poussecafe.messaging.Message;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
+import static poussecafe.check.Checks.checkThatValue;
 import static poussecafe.check.Predicates.emptyOrNullCollection;
 import static poussecafe.check.Predicates.not;
 
 public class ConsumptionFailure {
 
-    private Message message;
-
-    private List<String> listenerIds;
-
-    public ConsumptionFailure(Message message, List<String> listenerIds) {
-        setMessage(message);
+    public ConsumptionFailure(ConsumptionFailureKey key, List<String> listenerIds) {
+        setKey(key);
         setListenerIds(listenerIds);
     }
 
-    public Message getMessage() {
-        return message;
+    private void setKey(ConsumptionFailureKey key) {
+        checkThatValue(key).notNull();
+        this.key = key;
     }
 
-    private void setMessage(Message message) {
-        checkThat(value(message).notNull().because("Message cannot be null"));
-        this.message = message;
-    }
+    private ConsumptionFailureKey key;
 
-    public List<String> getListenerIds() {
-        return listenerIds;
+    public ConsumptionFailureKey getKey() {
+        return key;
     }
 
     private void setListenerIds(List<String> listenerIds) {
@@ -37,5 +31,11 @@ public class ConsumptionFailure {
                 .verifies(not(emptyOrNullCollection()))
                 .because("There must be at least 1 listener ID"));
         this.listenerIds = listenerIds;
+    }
+
+    private List<String> listenerIds;
+
+    public List<String> getListenerIds() {
+        return listenerIds;
     }
 }

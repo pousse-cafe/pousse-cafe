@@ -4,7 +4,7 @@ import poussecafe.domain.DomainEvent;
 /*
  * This Domain Event is emitted by a MyAggregate instance.
  */
-public class MyDomainEvent extends DomainEvent {
+public class MyDomainEvent implements DomainEvent {
 
     private MyAggregateKey key;
 

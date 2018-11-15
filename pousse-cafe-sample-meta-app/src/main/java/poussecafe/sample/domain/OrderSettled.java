@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.DomainEvent;
 
-public class OrderSettled extends DomainEvent {
+public class OrderSettled implements DomainEvent {
 
     private OrderKey orderKey;
 

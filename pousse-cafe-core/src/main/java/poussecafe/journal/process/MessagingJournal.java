@@ -25,7 +25,7 @@ public class MessagingJournal extends DomainProcess {
 
     @DomainEventListener
     public void logSuccessfulConsumption(SuccessfulConsumption consumption) {
-        JournalEntrySaver saver = buildSaver(consumption.getListenerId(), consumption.getConsumedMessage());
+        JournalEntrySaver saver = buildSaver(consumption.getConsumptionId(), consumption.getListenerId(), consumption.getConsumedMessage());
         runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logSuccess();
@@ -33,14 +33,16 @@ public class MessagingJournal extends DomainProcess {
         });
     }
 
-    private JournalEntrySaver buildSaver(String listenerId,
+    private JournalEntrySaver buildSaver(
+            String consumptionId,
+            String listenerId,
             Message message) {
         JournalEntrySaver saver = new JournalEntrySaver();
         saver.setMessage(messageAdapter.adaptMessage(message));
         saver.setEntryFactory(entryFactory);
         saver.setEntryRepository(entryRepository);
 
-        JournalEntryKey entryKey = new JournalEntryKey(message.getId(), listenerId);
+        JournalEntryKey entryKey = new JournalEntryKey(consumptionId, listenerId);
         saver.setEntryKey(entryKey);
 
         return saver;
@@ -49,7 +51,7 @@ public class MessagingJournal extends DomainProcess {
     @DomainEventListener
     public void logFailedConsumption(FailedConsumption event) {
         logger.error("Consumption of message {} by listener {} failed", event.getConsumedMessage(), event.getListenerId(), event.getError());
-        JournalEntrySaver saver = buildSaver(event.getListenerId(), event.getConsumedMessage());
+        JournalEntrySaver saver = buildSaver(event.getConsumptionId(), event.getListenerId(), event.getConsumedMessage());
         runInTransaction(JournalEntry.class, () -> {
             JournalEntry entry = saver.findOrBuild();
             entry.logFailure(event.getError());
@@ -60,7 +62,7 @@ public class MessagingJournal extends DomainProcess {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public JournalEntry findCommandEntry(String commandId) {
-        List<JournalEntry> entries = entryRepository.findByMessageId(commandId);
+        List<JournalEntry> entries = entryRepository.findByConsumptionId(commandId);
         if (entries.size() > 1) {
             throw new AssertionFailedException("Message was consumed by several listeners, cannot be a command");
         }

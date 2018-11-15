@@ -1,16 +1,33 @@
 package poussecafe.messaging;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import poussecafe.domain.DomainEvent;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
+import static poussecafe.check.Checks.checkThatValue;
+import static poussecafe.util.ReferenceEquals.referenceEquals;
 
-public class FailedConsumption extends DomainEvent {
+public class FailedConsumption implements DomainEvent {
 
-    public FailedConsumption(String listenerId, Message consumedMessage, String error) {
+    public FailedConsumption(String consumptionId, String listenerId, Message consumedMessage, String error) {
+        setConsumptionId(consumptionId);
         setListenerId(listenerId);
         setConsumedMessage(consumedMessage);
         setError(error);
+    }
+
+    private void setConsumptionId(String consumptionId) {
+        checkThatValue(consumptionId).notNull();
+        this.consumptionId = consumptionId;
+    }
+
+    private String consumptionId;
+
+    public String getConsumptionId() {
+        return consumptionId;
     }
 
     private void setListenerId(String listenerId) {
@@ -48,47 +65,31 @@ public class FailedConsumption extends DomainEvent {
 
     @Override
     public String toString() {
-        return "FailedConsumption [listenerId=" + listenerId + ", consumedMessage=" + consumedMessage  + ", error=" + error + "]";
+        return new ToStringBuilder(this)
+                .append(consumptionId)
+                .append(consumedMessage)
+                .append(listenerId)
+                .append(error)
+                .build();
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((consumedMessage == null) ? 0 : consumedMessage.hashCode());
-        result = prime * result + ((listenerId == null) ? 0 : listenerId.hashCode());
-        result = prime * result + ((error == null) ? 0 : error.hashCode());
-        return result;
+        return new HashCodeBuilder()
+                .append(consumptionId)
+                .append(consumedMessage)
+                .append(listenerId)
+                .append(error)
+                .build();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        FailedConsumption other = (FailedConsumption) obj;
-        if (consumedMessage == null) {
-            if (other.consumedMessage != null) {
-                return false;
-            }
-        } else if (!consumedMessage.equals(other.consumedMessage)) {
-            return false;
-        }
-        if (listenerId == null) {
-            if (other.listenerId != null) {
-                return false;
-            }
-        } else if (!listenerId.equals(other.listenerId)) {
-            return false;
-        } else if (!error.equals(other.error)) {
-            return false;
-        }
-        return true;
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(consumptionId, other.consumptionId)
+                .append(consumedMessage, other.consumedMessage)
+                .append(listenerId, other.listenerId)
+                .append(error, other.error)
+                .build());
     }
 }

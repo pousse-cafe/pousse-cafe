@@ -1,5 +1,5 @@
 package poussecafe.messaging;
 
-public class TestMessage extends Message {
+public class TestMessage implements Message {
 
 }

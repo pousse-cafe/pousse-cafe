@@ -44,18 +44,6 @@ public class JournalEntryData implements JournalEntry.Data, Serializable {
     }
 
     @Override
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    private String messageId;
-
-    @Override
-    public String getMessageId() {
-        return messageId;
-    }
-
-    @Override
     public void setMessageData(String messageData) {
         this.messageData = messageData;
     }
@@ -84,16 +72,18 @@ public class JournalEntryData implements JournalEntry.Data, Serializable {
         return new Property<JournalEntryKey>() {
             @Override
             public JournalEntryKey get() {
-                return new JournalEntryKey(messageId, listenerId);
+                return new JournalEntryKey(consumptionId, listenerId);
             }
 
             @Override
             public void set(JournalEntryKey value) {
-                messageId = value.getMessageId();
+                consumptionId = value.getConsumptionId();
                 listenerId = value.getListenerId();
             }
         };
     }
+
+    private String consumptionId;
 
     private String listenerId;
 

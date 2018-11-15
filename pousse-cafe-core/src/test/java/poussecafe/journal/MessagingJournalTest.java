@@ -87,19 +87,12 @@ public abstract class MessagingJournalTest {
     protected void givenReceivedMessage() {
         listenerId = "listenerId";
         message = mock(Message.class);
-
-        String messageId = "messageId";
-        when(message.getId()).thenReturn(messageId);
-        when(message.getType()).thenReturn(Message.class.getName());
-
         serializedMessage = mock(SerializedMessage.class);
-        when(serializedMessage.getId()).thenReturn(messageId);
-
         givenKey();
     }
 
     protected void givenKey() {
-        key = new JournalEntryKey(message.getId(), listenerId);
+        key = new JournalEntryKey("consumptionId", listenerId);
     }
 
     protected void givenIgnoredMessage() {
@@ -112,11 +105,11 @@ public abstract class MessagingJournalTest {
     }
 
     protected void whenLoggingSuccessfulConsumption() {
-        journal.logSuccessfulConsumption(new SuccessfulConsumption(listenerId, message));
+        journal.logSuccessfulConsumption(new SuccessfulConsumption(key.getConsumptionId(), listenerId, message));
     }
 
     protected void whenLoggingFailedConsumption() {
-        journal.logFailedConsumption(new FailedConsumption(listenerId, message, exception));
+        journal.logFailedConsumption(new FailedConsumption(key.getConsumptionId(), listenerId, message, exception));
     }
 
 }

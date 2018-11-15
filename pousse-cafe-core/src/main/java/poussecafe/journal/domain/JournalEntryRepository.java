@@ -5,7 +5,7 @@ import poussecafe.domain.Repository;
 
 public class JournalEntryRepository extends Repository<JournalEntry, JournalEntryKey, JournalEntry.Data> {
 
-    public List<JournalEntry> findByMessageId(String messageId) {
+    public List<JournalEntry> findByConsumptionId(String messageId) {
         return newEntitiesWithData(dataAccess().findByMessageId(messageId));
     }
 

@@ -37,11 +37,9 @@ public class JacksonMessageAdapter implements MessageAdapter {
     @Override
     public SerializedMessage adaptMessage(Message message) {
         try {
-            String messageId = message.getId();
             String type = message.getClass().getName();
             String data = objectMapper.writeValueAsString(message);
             return new SerializedMessage.Builder()
-                    .withId(messageId)
                     .withType(type)
                     .withData(data)
                     .build();

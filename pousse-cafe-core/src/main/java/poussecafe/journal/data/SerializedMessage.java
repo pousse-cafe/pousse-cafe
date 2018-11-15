@@ -7,12 +7,6 @@ import static poussecafe.check.Checks.checkThat;
 
 public class SerializedMessage {
 
-    public String getId() {
-        return id;
-    }
-
-    private String id;
-
     public String getType() {
         return type;
     }
@@ -33,14 +27,8 @@ public class SerializedMessage {
 
         @Override
         protected void checkProduct(SerializedMessage product) {
-            checkThat(value(product.id).notNull().because("ID cannot be null"));
             checkThat(value(product.type).notNull().because("Type cannot be null"));
             checkThat(value(product.data).notNull().because("Data cannot be null"));
-        }
-
-        public Builder withId(String id) {
-            product().id = id;
-            return this;
         }
 
         public Builder withType(String type) {

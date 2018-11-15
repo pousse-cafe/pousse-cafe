@@ -5,11 +5,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.journal.domain.ConsumptionFailure;
+import poussecafe.journal.domain.ConsumptionFailureKey;
 import poussecafe.journal.domain.ConsumptionFailureRepository;
 import poussecafe.journal.domain.MessageReplayer;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageSender;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,9 +33,21 @@ public abstract class MessageReplayTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    protected ConsumptionFailure failureWithMessage(Message message) {
+    protected ConsumptionFailureKey consumptionFailureKey() {
+        return consumptionFailureKey("an-id");
+    }
+
+    protected ConsumptionFailureKey consumptionFailureKey(String consumptionId) {
+        ConsumptionFailureKey key = mock(ConsumptionFailureKey.class);
+        when(key.consumptionId()).thenReturn(consumptionId);
+        Message message = mock(Message.class);
+        when(key.message()).thenReturn(message);
+        return key;
+    }
+
+    protected ConsumptionFailure failureWithKey(ConsumptionFailureKey key) {
         ConsumptionFailure failure = mock(ConsumptionFailure.class);
-        when(failure.getMessage()).thenReturn(message);
+        when(failure.getKey()).thenReturn(key);
         return failure;
     }
 
@@ -45,9 +59,7 @@ public abstract class MessageReplayTest {
         verify(messageSender, never()).sendMessage(message);
     }
 
-    protected Message messageWithId(String id) {
-        Message message = mock(Message.class);
-        when(message.getId()).thenReturn(id);
-        return message;
+    protected void thenNoMessageIsRouted() {
+        verify(messageSender, never()).sendMessage(any());
     }
 }

@@ -21,25 +21,12 @@ public class JournalEntryData implements JournalEntry.Data {
             @Override
             public void set(JournalEntryKey value) {
                 key = new SerializableJournalEntryKey(value);
-                messageId = value.getMessageId();
             }
         };
     }
 
     @Id
     private SerializableJournalEntryKey key;
-
-    @Override
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    private String messageId;
-
-    @Override
-    public String getMessageId() {
-        return messageId;
-    }
 
     @Override
     public void setMessageType(String messageType) {

@@ -1,28 +1,33 @@
 package poussecafe.journal.domain;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.emptyOrNullString;
 import static poussecafe.check.Predicates.not;
+import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class JournalEntryKey {
 
-    private String messageId;
+    private String consumptionId;
 
     private String listenerId;
 
-    public JournalEntryKey(String messageId, String listenerId) {
-        setMessageId(messageId);
+    public JournalEntryKey(String consumptionId, String listenerId) {
+        setConsumptionId(consumptionId);
         setListenerId(listenerId);
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getConsumptionId() {
+        return consumptionId;
     }
 
-    private void setMessageId(String messageId) {
-        checkThat(value(messageId).verifies(not(emptyOrNullString())).because("Message ID cannot be null"));
-        this.messageId = messageId;
+    private void setConsumptionId(String consumptionId) {
+        checkThat(value(consumptionId).verifies(not(emptyOrNullString())).because("Message ID cannot be null"));
+        this.consumptionId = consumptionId;
     }
 
     public String getListenerId() {
@@ -36,33 +41,26 @@ public class JournalEntryKey {
 
     @Override
     public int hashCode() {
-        return 31 * messageId.hashCode() + 31 * listenerId.hashCode();
+        return new HashCodeBuilder()
+                .append(consumptionId)
+                .append(listenerId)
+                .build();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        JournalEntryKey other = (JournalEntryKey) obj;
-        if (!messageId.equals(other.messageId)) {
-            return false;
-        }
-        if (!listenerId.equals(other.listenerId)) {
-            return false;
-        }
-        return true;
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(consumptionId, other.consumptionId)
+                .append(listenerId, other.listenerId)
+                .build());
     }
 
     @Override
     public String toString() {
-        return "JournalEntryKey [messageId=" + messageId + ", listenerId=" + listenerId + "]";
+        return new ToStringBuilder(this)
+                .append(consumptionId)
+                .append(listenerId)
+                .build();
     }
 
 }

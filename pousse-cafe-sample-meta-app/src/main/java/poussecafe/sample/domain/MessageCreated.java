@@ -5,7 +5,7 @@ import poussecafe.domain.DomainEvent;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class MessageCreated extends DomainEvent {
+public class MessageCreated implements DomainEvent {
 
     private MessageKey messageKey;
 

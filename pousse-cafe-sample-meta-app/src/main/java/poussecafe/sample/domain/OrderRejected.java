@@ -5,7 +5,7 @@ import poussecafe.domain.DomainEvent;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class OrderRejected extends DomainEvent {
+public class OrderRejected implements DomainEvent {
 
     private ProductKey key;
 
