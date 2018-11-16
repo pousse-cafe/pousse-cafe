@@ -10,11 +10,6 @@
 
   <artifactId>pousse-cafe-spring</artifactId>
   <name>Pousse-Café - Spring Bridge</name>
-  
-  <properties>
-    <!-- This should be kept in sync from time to time -->
-    <spring.version>5.0.7.RELEASE</spring.version>
-  </properties>
 
   <dependencies>
     <dependency>

@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.journal;
 
 import org.junit.Test;
 import poussecafe.journal.JacksonMessageAdapter;

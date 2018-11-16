@@ -6,13 +6,18 @@
     <version>0.3.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>pousse-cafe-spring-mongo</artifactId>
-  <name>Pousse Café - Spring Data MongoDB</name>
+  <artifactId>pousse-cafe-journal-spring-mongo</artifactId>
+  <name>Pousse-Café - Journal (Spring MongoDB)</name>
 
   <dependencies>
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
-      <artifactId>pousse-cafe-spring</artifactId>
+      <artifactId>pousse-cafe-journal</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pousse-cafe-framework</groupId>
+      <artifactId>pousse-cafe-spring-mongo</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -22,6 +27,5 @@
       <version>${spring.data.mongo.version}</version>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
 </project>

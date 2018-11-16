@@ -41,7 +41,10 @@
 
     <slf4j.version>1.7.22</slf4j.version>
     <junit.version>4.12</junit.version>
+    <mockito.version>1.10.19</mockito.version>
     <hamcrest.version>1.3</hamcrest.version>
+    <spring.version>5.0.7.RELEASE</spring.version>
+    <spring.data.mongo.version>2.0.8.RELEASE</spring.data.mongo.version>
   </properties>
 
   <build>
@@ -153,10 +156,12 @@
     <module>pousse-cafe-core</module>
     <module>pousse-cafe-test</module>
     <module>pousse-cafe-doc</module>
-    <module>pousse-cafe-simple-meta-app</module>
-    <module>pousse-cafe-sample-meta-app</module>
+    <module>pousse-cafe-journal</module>
     <module>pousse-cafe-spring</module>
     <module>pousse-cafe-spring-mongo</module>
+    <module>pousse-cafe-journal-spring-mongo</module>
+    <module>pousse-cafe-simple-meta-app</module>
+    <module>pousse-cafe-sample-meta-app</module>
     <module>pousse-cafe-sample-app</module>
     <module>pousse-cafe-maven-plugin</module>
   </modules>

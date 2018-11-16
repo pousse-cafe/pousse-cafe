@@ -1,11 +1,10 @@
-package poussecafe.spring.mongo.context;
+package poussecafe.journal;
 
 import java.util.Set;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.journal.JournalBoundedContext;
+import poussecafe.journal.adapters.JournalEntryData;
+import poussecafe.journal.adapters.JournalEntryDataAccess;
 import poussecafe.journal.domain.JournalEntry;
-import poussecafe.spring.mongo.journal.JournalEntryData;
-import poussecafe.spring.mongo.journal.JournalEntryDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 public class MongoJournalBoundedContext extends JournalBoundedContext {

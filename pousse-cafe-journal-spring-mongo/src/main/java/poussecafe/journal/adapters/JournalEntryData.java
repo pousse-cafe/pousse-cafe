@@ -1,4 +1,4 @@
-package poussecafe.spring.mongo.journal;
+package poussecafe.journal.adapters;
 
 import org.springframework.data.annotation.Id;
 import poussecafe.journal.data.SerializableJournalEntryKey;

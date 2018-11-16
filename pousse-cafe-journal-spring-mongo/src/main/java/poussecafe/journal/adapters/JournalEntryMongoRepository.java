@@ -1,4 +1,4 @@
-package poussecafe.spring.mongo.journal;
+package poussecafe.journal.adapters;
 
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;

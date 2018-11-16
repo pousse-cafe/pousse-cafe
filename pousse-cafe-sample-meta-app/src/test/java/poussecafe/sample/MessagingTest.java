@@ -3,7 +3,6 @@ package poussecafe.sample;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.context.BoundedContext;
-import poussecafe.journal.JournalBoundedContext;
 import poussecafe.sample.adapters.messaging.JacksonOrderRejected;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
@@ -28,7 +27,7 @@ public class MessagingTest extends MetaApplicationTest {
 
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new SampleMetaAppBoundedContext(), new JournalBoundedContext());
+        return asList(new SampleMetaAppBoundedContext());
     }
 
     @Test

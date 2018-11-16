@@ -14,7 +14,6 @@ import poussecafe.messaging.FailedConsumption;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.SuccessfulConsumption;
-import poussecafe.messaging.TestMessage;
 import poussecafe.messaging.TransparentMessageAdapter;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.FieldAccessor;
