@@ -3,14 +3,11 @@ package poussecafe.messaging.internal;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import poussecafe.context.MessageConsumer;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
 import poussecafe.messaging.Messaging;
-import poussecafe.messaging.TransparentMessageAdapter;
 
 public class InternalMessaging extends Messaging {
 
@@ -42,7 +39,7 @@ public class InternalMessaging extends Messaging {
         }
     }
 
-    private MessageAdapter messageAdapter = new TransparentMessageAdapter();
+    private MessageAdapter messageAdapter = new SerializingMessageAdapter();
 
     private Queue<Object> queue = new LinkedBlockingQueue<>();
 
@@ -58,12 +55,9 @@ public class InternalMessaging extends Messaging {
 
         @Override
         protected void sendMarshalledMessage(Object marshalledMessage) {
-            logger.debug("Sending message {}", marshalledMessage);
             queue.add(marshalledMessage);
             available.release();
         }
-
-        private Logger logger = LoggerFactory.getLogger(getClass());
     }
 
     public class InternalMessageReceiver extends MessageReceiver {

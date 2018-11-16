@@ -1,12 +1,14 @@
 package poussecafe.sample.adapters.messaging;
 
+import java.io.Serializable;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderDescription;
-import poussecafe.sample.domain.OrderPlaced;
+import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
 
-public class JacksonOrderPlaced implements OrderPlaced {
+@SuppressWarnings("serial")
+public class SerializableOrderRejected implements Serializable, OrderRejected {
 
     @Override
     public Property<ProductKey> productKey() {
@@ -24,10 +26,13 @@ public class JacksonOrderPlaced implements OrderPlaced {
     @Override
     public Property<OrderDescription> description() {
         return PropertyBuilder.simple(OrderDescription.class)
+                .from(SerializableOrderDescription.class)
+                .adapt(SerializableOrderDescription::adapt)
                 .get(() -> description)
+                .adapt(SerializableOrderDescription::adapt)
                 .set(value -> description = value)
                 .build();
     }
 
-    private OrderDescription description;
+    private SerializableOrderDescription description;
 }

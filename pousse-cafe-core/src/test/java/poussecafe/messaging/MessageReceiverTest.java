@@ -20,16 +20,20 @@ public abstract class MessageReceiverTest {
     }
 
     private void givenMessageConsumer() {
-        message = new TestMessage();
+        message = message();
         messageConsumer = mock(MessageConsumer.class);
         messaging().configure(messageConsumer);
     }
 
+    protected abstract Message message();
+
     protected abstract Messaging messaging();
 
     private void whenConsumingMessage() {
-        messaging().messageReceiver().onMessage(message);
+        messaging().messageReceiver().onMessage(serializedMessage(message));
     }
+
+    protected abstract Object serializedMessage(Message message);
 
     private void thenListenerConsumes() {
         verify(messageConsumer).consumeMessage(message);

@@ -1,11 +1,13 @@
 package poussecafe.sample.adapters.messaging;
 
+import java.io.Serializable;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.MessageCreated;
 import poussecafe.sample.domain.MessageKey;
 
-public class JacksonMessageCreated implements MessageCreated {
+@SuppressWarnings("serial")
+public class SerializableMessageCreated implements Serializable, MessageCreated {
 
     @Override
     public Property<MessageKey> messageKey() {

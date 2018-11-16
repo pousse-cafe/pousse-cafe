@@ -8,12 +8,12 @@ import poussecafe.domain.Service;
 import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.process.DomainProcess;
-import poussecafe.sample.adapters.messaging.JacksonMessageCreated;
-import poussecafe.sample.adapters.messaging.JacksonOrderCreated;
-import poussecafe.sample.adapters.messaging.JacksonOrderPlaced;
-import poussecafe.sample.adapters.messaging.JacksonOrderReadyForShipping;
-import poussecafe.sample.adapters.messaging.JacksonOrderRejected;
-import poussecafe.sample.adapters.messaging.JacksonOrderSettled;
+import poussecafe.sample.adapters.messaging.SerializableMessageCreated;
+import poussecafe.sample.adapters.messaging.SerializableOrderCreated;
+import poussecafe.sample.adapters.messaging.SerializableOrderPlaced;
+import poussecafe.sample.adapters.messaging.SerializableOrderReadyForShipping;
+import poussecafe.sample.adapters.messaging.SerializableOrderRejected;
+import poussecafe.sample.adapters.messaging.SerializableOrderSettled;
 import poussecafe.sample.adapters.storage.CustomerData;
 import poussecafe.sample.adapters.storage.CustomerDataAccess;
 import poussecafe.sample.adapters.storage.MessageInternalDataAccess;
@@ -106,37 +106,37 @@ public class SampleMetaAppBoundedContext extends BoundedContext {
     protected void loadMessageImplementations(Set<MessageImplementationConfiguration> implementations) {
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(MessageCreated.class)
-                .withMessageImplementationClass(JacksonMessageCreated.class)
+                .withMessageImplementationClass(SerializableMessageCreated.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
 
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderCreated.class)
-                .withMessageImplementationClass(JacksonOrderCreated.class)
+                .withMessageImplementationClass(SerializableOrderCreated.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
 
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderPlaced.class)
-                .withMessageImplementationClass(JacksonOrderPlaced.class)
+                .withMessageImplementationClass(SerializableOrderPlaced.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
 
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderReadyForShipping.class)
-                .withMessageImplementationClass(JacksonOrderReadyForShipping.class)
+                .withMessageImplementationClass(SerializableOrderReadyForShipping.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
 
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderRejected.class)
-                .withMessageImplementationClass(JacksonOrderRejected.class)
+                .withMessageImplementationClass(SerializableOrderRejected.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
 
         implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderSettled.class)
-                .withMessageImplementationClass(JacksonOrderSettled.class)
+                .withMessageImplementationClass(SerializableOrderSettled.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
     }

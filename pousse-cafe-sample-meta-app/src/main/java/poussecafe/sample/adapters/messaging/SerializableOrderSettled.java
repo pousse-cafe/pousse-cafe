@@ -1,22 +1,24 @@
 package poussecafe.sample.adapters.messaging;
 
+import java.io.Serializable;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.OrderSettled;
 
-public class JacksonOrderSettled implements OrderSettled {
+@SuppressWarnings("serial")
+public class SerializableOrderSettled implements Serializable, OrderSettled {
 
     @Override
     public Property<OrderKey> orderKey() {
         return PropertyBuilder.simple(OrderKey.class)
-                .from(JacksonOrderKey.class)
-                .adapt(JacksonOrderKey::adapt)
+                .from(SerializableOrderKey.class)
+                .adapt(SerializableOrderKey::adapt)
                 .get(() -> orderKey)
-                .adapt(JacksonOrderKey::adapt)
+                .adapt(SerializableOrderKey::adapt)
                 .set(value -> orderKey = value)
                 .build();
     }
 
-    private JacksonOrderKey orderKey;
+    private SerializableOrderKey orderKey;
 }

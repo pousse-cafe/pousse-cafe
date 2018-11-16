@@ -1,5 +1,6 @@
 package poussecafe.simplemetaapp.adapters;
 
+import java.io.Serializable;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
@@ -7,7 +8,8 @@ import poussecafe.simplemetaapp.domain.MyAggregateKey;
 import poussecafe.simplemetaapp.domain.MyDomainEvent;
 
 @MessageImplementation(message = MyDomainEvent.class)
-public class MyDomainEventData implements MyDomainEvent {
+@SuppressWarnings("serial")
+public class MyDomainEventData implements Serializable, MyDomainEvent {
 
     @Override
     public Property<MyAggregateKey> key() {
