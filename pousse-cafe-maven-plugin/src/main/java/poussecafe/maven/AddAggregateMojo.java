@@ -5,7 +5,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.collection.Collections.asSet;
 
@@ -33,7 +33,7 @@ public class AddAggregateMojo extends AbstractMojo {
     @Parameter(property = "aggregateName", required = true)
     private String aggregateName;
 
-    @Parameter(defaultValue = InMemoryStorage.NAME, property = "storageAdapters", required = true)
+    @Parameter(defaultValue = InternalStorage.NAME, property = "storageAdapters", required = true)
     private String[] storageAdapters;
 
     @Parameter(defaultValue = "false", property = "missingAdaptersOnly", required = true)

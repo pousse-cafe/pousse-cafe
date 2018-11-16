@@ -1,4 +1,4 @@
-package poussecafe.storage.memory;
+package poussecafe.storage.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,15 +16,15 @@ import poussecafe.collection.Multimap;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.storage.memory.uniqueindex.AdditionPlan;
-import poussecafe.storage.memory.uniqueindex.Plan;
-import poussecafe.storage.memory.uniqueindex.UniqueIndex;
-import poussecafe.storage.memory.uniqueindex.UpdatePlan;
+import poussecafe.storage.internal.uniqueindex.AdditionPlan;
+import poussecafe.storage.internal.uniqueindex.Plan;
+import poussecafe.storage.internal.uniqueindex.UniqueIndex;
+import poussecafe.storage.internal.uniqueindex.UpdatePlan;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDataAccess<K, D> {
+public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDataAccess<K, D> {
 
     private Map<K, byte[]> storage;
 
@@ -34,7 +34,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
 
     private Optional<OptimisticLocker> locker = Optional.empty();
 
-    public InMemoryDataAccess() {
+    public InternalDataAccess() {
         storage = new HashMap<>();
     }
 
@@ -53,7 +53,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
         try {
             return (D) new ObjectInputStream(new ByteArrayInputStream(serializedBytes)).readObject();
         } catch (ClassNotFoundException | IOException e) {
-            throw new InMemoryDataException("Unable to deserialize data", e);
+            throw new InternalStorageException("Unable to deserialize data", e);
         }
     }
 
@@ -61,7 +61,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
     public synchronized void addData(D data) {
         K key = data.key().get();
         if (storage.containsKey(key)) {
-            throw new InMemoryDataException("Duplicate key " + key);
+            throw new InternalStorageException("Duplicate key " + key);
         }
         List<AdditionPlan> additionPlans = prepareAddition(data);
         if(locker.isPresent()) {
@@ -104,7 +104,7 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
             oos.flush();
             return bytesBuffer.toByteArray();
         } catch (IOException e) {
-            throw new InMemoryDataException("Unable to serialize data", e);
+            throw new InternalStorageException("Unable to serialize data", e);
         }
     }
 
@@ -112,14 +112,14 @@ public class InMemoryDataAccess<K, D extends EntityData<K>> implements EntityDat
     public synchronized void updateData(D newData) {
         K key = newData.key().get();
         if (!storage.containsKey(key)) {
-            throw new InMemoryDataException("No entry with key " + key);
+            throw new InternalStorageException("No entry with key " + key);
         }
         D oldData = findData(key);
 
         List<UpdatePlan> updatePlans = prepareUpdate(Optional.ofNullable(oldData), newData);
         unindex(oldData);
         if(locker.isPresent()) {
-            long actualVersion = locker.get().getVersion(oldData).orElseThrow(InMemoryDataException::new);
+            long actualVersion = locker.get().getVersion(oldData).orElseThrow(InternalStorageException::new);
             locker.get().ensureAndIncrement(actualVersion, newData);
         }
         storage.put(key, serialize(newData));

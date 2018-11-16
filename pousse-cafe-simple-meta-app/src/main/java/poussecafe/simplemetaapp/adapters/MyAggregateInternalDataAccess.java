@@ -3,14 +3,14 @@ package poussecafe.simplemetaapp.adapters;
 import poussecafe.simplemetaapp.domain.MyAggregate;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;
 import poussecafe.storage.DataAccessImplementation;
-import poussecafe.storage.memory.InMemoryDataAccess;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalDataAccess;
+import poussecafe.storage.internal.InternalStorage;
 
 @DataAccessImplementation(
     aggregateRoot = MyAggregate.class,
     dataImplementation = MyAggregateData.class,
-    storageName = InMemoryStorage.NAME
+    storageName = InternalStorage.NAME
 )
-public class MyAggregateInMemoryDataAccess extends InMemoryDataAccess<MyAggregateKey, MyAggregateData> {
+public class MyAggregateInternalDataAccess extends InternalDataAccess<MyAggregateKey, MyAggregateData> {
 
 }

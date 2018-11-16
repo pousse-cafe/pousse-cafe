@@ -16,7 +16,7 @@ import poussecafe.sample.adapters.messaging.JacksonOrderRejected;
 import poussecafe.sample.adapters.messaging.JacksonOrderSettled;
 import poussecafe.sample.adapters.storage.CustomerData;
 import poussecafe.sample.adapters.storage.CustomerDataAccess;
-import poussecafe.sample.adapters.storage.InMemoryMessageDataAccess;
+import poussecafe.sample.adapters.storage.MessageInternalDataAccess;
 import poussecafe.sample.adapters.storage.MessageData;
 import poussecafe.sample.adapters.storage.OrderData;
 import poussecafe.sample.adapters.storage.OrderDataAccess;
@@ -45,7 +45,7 @@ import poussecafe.sample.process.CustomerCreation;
 import poussecafe.sample.process.Messaging;
 import poussecafe.sample.process.OrderPlacement;
 import poussecafe.sample.process.ProductManagement;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 import poussecafe.util.IdGenerator;
 
 public class SampleMetaAppBoundedContext extends BoundedContext {
@@ -80,25 +80,25 @@ public class SampleMetaAppBoundedContext extends BoundedContext {
                 .withEntityClass(Customer.class)
                 .withDataFactory(CustomerData::new)
                 .withDataAccessFactory(CustomerDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
+                .withStorage(InternalStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Message.class)
-                .withDataAccessFactory(InMemoryMessageDataAccess::new)
+                .withDataAccessFactory(MessageInternalDataAccess::new)
                 .withDataFactory(MessageData::new)
-                .withStorage(InMemoryStorage.instance())
+                .withStorage(InternalStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Product.class)
                 .withDataFactory(ProductData::new)
                 .withDataAccessFactory(ProductDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
+                .withStorage(InternalStorage.instance())
                 .build());
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(Order.class)
                 .withDataFactory(OrderData::new)
                 .withDataAccessFactory(OrderDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
+                .withStorage(InternalStorage.instance())
                 .build());
     }
 

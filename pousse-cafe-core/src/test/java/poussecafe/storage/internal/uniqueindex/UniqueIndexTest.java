@@ -1,8 +1,12 @@
-package poussecafe.storage.memory.uniqueindex;
+package poussecafe.storage.internal.uniqueindex;
 
 import java.util.Optional;
 import org.hamcrest.Matcher;
 import org.junit.Test;
+import poussecafe.storage.internal.uniqueindex.AdditionPlan;
+import poussecafe.storage.internal.uniqueindex.UniqueIndex;
+import poussecafe.storage.internal.uniqueindex.UniqueIndexException;
+import poussecafe.storage.internal.uniqueindex.UpdatePlan;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;

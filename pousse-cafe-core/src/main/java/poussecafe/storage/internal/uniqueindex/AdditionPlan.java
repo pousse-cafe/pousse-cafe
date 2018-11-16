@@ -1,4 +1,4 @@
-package poussecafe.storage.memory.uniqueindex;
+package poussecafe.storage.internal.uniqueindex;
 
 import static poussecafe.check.Checks.checkThatValue;
 

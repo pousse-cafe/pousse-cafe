@@ -1,11 +1,11 @@
 package poussecafe.doc.model.relation;
 
 import java.util.List;
-import poussecafe.storage.memory.InMemoryDataAccess;
+import poussecafe.storage.internal.InternalDataAccess;
 
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryRelationDataAccess extends InMemoryDataAccess<RelationKey, RelationData> implements RelationDataAccess<RelationData> {
+public class InternalRelationDataAccess extends InternalDataAccess<RelationKey, RelationData> implements RelationDataAccess<RelationData> {
 
     @Override
     public List<RelationData> findWithFromClass(String className) {

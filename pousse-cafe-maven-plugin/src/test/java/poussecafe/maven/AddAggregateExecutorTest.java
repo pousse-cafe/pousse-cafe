@@ -13,7 +13,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.Test;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -62,7 +62,7 @@ public class AddAggregateExecutorTest {
                 .sourceDirectory(sourceDirectory)
                 .packageName("sample")
                 .name("Sample")
-                .storageAdapters(asSet(InMemoryStorage.NAME, SpringMongoDbStorage.NAME))
+                .storageAdapters(asSet(InternalStorage.NAME, SpringMongoDbStorage.NAME))
                 .build();
         executor.execute();
     }

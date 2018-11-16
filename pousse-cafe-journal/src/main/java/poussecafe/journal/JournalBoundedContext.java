@@ -6,7 +6,7 @@ import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Service;
 import poussecafe.journal.data.JournalEntryData;
-import poussecafe.journal.data.memory.InMemoryJournalEntryDataAccess;
+import poussecafe.journal.data.memory.InternalJournalEntryDataAccess;
 import poussecafe.journal.domain.ConsumptionFailureRepository;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
@@ -14,7 +14,7 @@ import poussecafe.journal.domain.JournalEntryRepository;
 import poussecafe.journal.domain.MessageReplayer;
 import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.process.DomainProcess;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 import poussecafe.util.IdGenerator;
 
 public class JournalBoundedContext extends BoundedContext {
@@ -45,8 +45,8 @@ public class JournalBoundedContext extends BoundedContext {
         implementations.add(new EntityImplementation.Builder()
                 .withEntityClass(JournalEntry.class)
                 .withDataFactory(JournalEntryData::new)
-                .withDataAccessFactory(InMemoryJournalEntryDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
+                .withDataAccessFactory(InternalJournalEntryDataAccess::new)
+                .withStorage(InternalStorage.instance())
                 .build());
     }
 

@@ -11,7 +11,7 @@ import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.Messaging;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +41,7 @@ public class MetaApplicationContextTest {
                 .withEntityClass(SimpleAggregate.class)
                 .withDataFactory(SimpleAggregateData::new)
                 .withDataAccessFactory(SimpleAggregateDataAccess::new)
-                .withStorage(InMemoryStorage.instance())
+                .withStorage(InternalStorage.instance())
                 .build());
 
         context.environment().defineProcess(DummyProcess.class);

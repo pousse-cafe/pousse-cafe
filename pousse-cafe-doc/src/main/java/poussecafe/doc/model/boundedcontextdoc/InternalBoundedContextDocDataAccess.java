@@ -1,8 +1,8 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
-import poussecafe.storage.memory.InMemoryDataAccess;
+import poussecafe.storage.internal.InternalDataAccess;
 
-public class InMemoryBoundedContextDocDataAccess extends InMemoryDataAccess<BoundedContextDocKey, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
+public class InternalBoundedContextDocDataAccess extends InternalDataAccess<BoundedContextDocKey, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
 
     @Override
     public BoundedContextDocData findByPackageNamePrefixing(String packageName) {

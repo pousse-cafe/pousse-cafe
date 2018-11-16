@@ -1,4 +1,4 @@
-package poussecafe.storage.memory;
+package poussecafe.storage.internal;
 
 import poussecafe.storage.DirectMessageSending;
 import poussecafe.storage.MessageSendingPolicy;
@@ -6,15 +6,15 @@ import poussecafe.storage.NoTransactionRunner;
 import poussecafe.storage.Storage;
 import poussecafe.storage.TransactionRunner;
 
-public class InMemoryStorage extends Storage {
+public class InternalStorage extends Storage {
 
-    public static final String NAME = "in-memory";
+    public static final String NAME = "internal";
 
-    public static InMemoryStorage instance() {
+    public static InternalStorage instance() {
         return SINGLETON;
     }
 
-    private static final InMemoryStorage SINGLETON = new InMemoryStorage();
+    private static final InternalStorage SINGLETON = new InternalStorage();
 
     @Override
     protected MessageSendingPolicy initMessageSendingPolicy() {

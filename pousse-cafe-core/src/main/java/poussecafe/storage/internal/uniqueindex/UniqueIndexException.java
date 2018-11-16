@@ -1,9 +1,9 @@
-package poussecafe.storage.memory.uniqueindex;
+package poussecafe.storage.internal.uniqueindex;
 
-import poussecafe.storage.memory.InMemoryDataException;
+import poussecafe.storage.internal.InternalStorageException;
 
 @SuppressWarnings("serial")
-public class UniqueIndexException extends InMemoryDataException {
+public class UniqueIndexException extends InternalStorageException {
 
     public UniqueIndexException() {
     }

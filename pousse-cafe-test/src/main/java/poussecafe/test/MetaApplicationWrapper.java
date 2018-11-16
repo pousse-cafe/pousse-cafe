@@ -16,8 +16,8 @@ import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.internal.InternalMessaging;
-import poussecafe.storage.memory.InMemoryDataAccess;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalDataAccess;
+import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -81,10 +81,10 @@ public class MetaApplicationWrapper {
         try {
             Class<?> entityClass = Class.forName(entityClassName);
             EntityImplementation entityImplementation = context.environment().getEntityImplementation(entityClass);
-            checkThat(value(entityImplementation.getStorage() == InMemoryStorage.instance()).isTrue());
+            checkThat(value(entityImplementation.getStorage() == InternalStorage.instance()).isTrue());
 
             EntityServices services = context.getEntityServices(entityClass);
-            InMemoryDataAccess dataAccess = (InMemoryDataAccess) services.getRepository().getDataAccess();
+            InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().getDataAccess();
             logger.debug("Field value " + jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading " + dataJson.toString());

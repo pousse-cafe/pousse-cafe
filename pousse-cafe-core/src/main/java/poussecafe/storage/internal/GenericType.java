@@ -1,4 +1,4 @@
-package poussecafe.storage.memory;
+package poussecafe.storage.internal;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;

@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
-import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -161,7 +161,7 @@ public class AddAggregateExecutor {
 
     private Map<String, StorageSourceGeneratorBuilder> availableGenerators() {
         Map<String, StorageSourceGeneratorBuilder> availableGenerators = new HashMap<>();
-        availableGenerators.put(InMemoryStorage.NAME, new InMemoryStorageSourceGenerator.Builder());
+        availableGenerators.put(InternalStorage.NAME, new InternalStorageSourceGenerator.Builder());
         availableGenerators.put(SpringMongoDbStorage.NAME, new SpringMongoStorageSourceGenerator.Builder());
         return availableGenerators;
     }

@@ -4,11 +4,11 @@ import java.io.File;
 
 import static poussecafe.check.Checks.checkThatValue;
 
-public class InMemoryStorageSourceGenerator implements StorageSourceGenerator {
+public class InternalStorageSourceGenerator implements StorageSourceGenerator {
 
     public static class Builder implements StorageSourceGeneratorBuilder {
 
-        private InMemoryStorageSourceGenerator generator = new InMemoryStorageSourceGenerator();
+        private InternalStorageSourceGenerator generator = new InternalStorageSourceGenerator();
 
         @Override
         public Builder sourceWriter(SourceWriter sourceWriter) {
@@ -29,7 +29,7 @@ public class InMemoryStorageSourceGenerator implements StorageSourceGenerator {
         }
 
         @Override
-        public InMemoryStorageSourceGenerator build() {
+        public InternalStorageSourceGenerator build() {
             checkThatValue(generator.sourceWriter).notNull();
             checkThatValue(generator.aggregateName).notNull();
             checkThatValue(generator.adaptersDirectory).notNull();
@@ -37,7 +37,7 @@ public class InMemoryStorageSourceGenerator implements StorageSourceGenerator {
         }
     }
 
-    private InMemoryStorageSourceGenerator() {
+    private InternalStorageSourceGenerator() {
 
     }
 
@@ -49,11 +49,11 @@ public class InMemoryStorageSourceGenerator implements StorageSourceGenerator {
 
     @Override
     public void generate() {
-        writeInMemoryDataAccessSource();
+        writeInternalDataAccessSource();
     }
 
-    private void writeInMemoryDataAccessSource() {
-        File outputFile = new File(adaptersDirectory, aggregateName + "InMemoryDataAccess.java");
-        sourceWriter.writeSource(outputFile, "memory_data_access");
+    private void writeInternalDataAccessSource() {
+        File outputFile = new File(adaptersDirectory, aggregateName + "InternalDataAccess.java");
+        sourceWriter.writeSource(outputFile, "internal_data_access");
     }
 }

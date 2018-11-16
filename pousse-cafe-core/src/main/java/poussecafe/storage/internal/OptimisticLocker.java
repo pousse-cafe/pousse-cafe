@@ -1,4 +1,4 @@
-package poussecafe.storage.memory;
+package poussecafe.storage.internal;
 
 import java.util.Optional;
 import poussecafe.util.ReflectionException;
