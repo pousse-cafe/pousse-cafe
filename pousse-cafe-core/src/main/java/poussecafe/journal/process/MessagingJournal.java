@@ -4,6 +4,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.exception.AssertionFailedException;
+import poussecafe.journal.JacksonMessageAdapter;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
@@ -11,13 +12,10 @@ import poussecafe.journal.domain.JournalEntryRepository;
 import poussecafe.messaging.DomainEventListener;
 import poussecafe.messaging.FailedConsumption;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.SuccessfulConsumption;
 import poussecafe.process.DomainProcess;
 
 public class MessagingJournal extends DomainProcess {
-
-    private MessageAdapter messageAdapter;
 
     private JournalEntryRepository entryRepository;
 
@@ -38,7 +36,7 @@ public class MessagingJournal extends DomainProcess {
             String listenerId,
             Message message) {
         JournalEntrySaver saver = new JournalEntrySaver();
-        saver.setMessage(messageAdapter.adaptMessage(message));
+        saver.setMessage(jacksonMessageAdapter.adaptMessage(message));
         saver.setEntryFactory(entryFactory);
         saver.setEntryRepository(entryRepository);
 
@@ -47,6 +45,8 @@ public class MessagingJournal extends DomainProcess {
 
         return saver;
     }
+
+    private JacksonMessageAdapter jacksonMessageAdapter = new JacksonMessageAdapter();
 
     @DomainEventListener
     public void logFailedConsumption(FailedConsumption event) {

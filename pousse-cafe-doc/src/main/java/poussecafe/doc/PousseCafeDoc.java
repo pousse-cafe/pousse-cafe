@@ -55,8 +55,8 @@ import poussecafe.doc.process.ServiceDocCreation;
 import poussecafe.doc.process.ValueObjectDocCreation;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
+import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.memory.InMemoryStorage;
 
@@ -193,7 +193,7 @@ public class PousseCafeDoc extends BoundedContext {
     }
 
     @Override
-    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
+    protected void loadMessageImplementations(Set<MessageImplementationConfiguration> implementations) {
         // None
     }
 

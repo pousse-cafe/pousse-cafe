@@ -1,11 +1,11 @@
-package poussecafe.domain;
+package poussecafe.messaging;
 
 import poussecafe.util.AbstractBuilder;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class MessageImplementation {
+public class MessageImplementationConfiguration {
 
     public Class<?> getMessageClass() {
         return messageClass;
@@ -13,10 +13,10 @@ public class MessageImplementation {
 
     private Class<?> messageClass;
 
-    public static class Builder extends AbstractBuilder<MessageImplementation> {
+    public static class Builder extends AbstractBuilder<MessageImplementationConfiguration> {
 
         public Builder() {
-            super(new MessageImplementation());
+            super(new MessageImplementationConfiguration());
         }
 
         public Builder withMessageClass(Class<?> messageClass) {
@@ -29,14 +29,20 @@ public class MessageImplementation {
             return this;
         }
 
+        public Builder withMessaging(Messaging messaging) {
+            product().messaging = messaging;
+            return this;
+        }
+
         @Override
-        protected void checkProduct(MessageImplementation product) {
+        protected void checkProduct(MessageImplementationConfiguration product) {
             checkThat(value(product.messageClass).notNull().because("Message class cannot be null"));
             checkThat(value(product.messageImplementationClass).notNull().because("Message implementation class cannot be null"));
+            checkThat(value(product.messaging).notNull().because("Messaging cannot be null"));
         }
     }
 
-    private MessageImplementation() {
+    private MessageImplementationConfiguration() {
 
     }
 
@@ -44,5 +50,11 @@ public class MessageImplementation {
 
     public Class<?> getMessageImplementationClass() {
         return messageImplementationClass;
+    }
+
+    private Messaging messaging;
+
+    public Messaging getMessaging() {
+        return messaging;
     }
 }

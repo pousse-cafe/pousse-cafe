@@ -4,7 +4,6 @@ import java.util.Set;
 import poussecafe.context.BoundedContext;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
 import poussecafe.journal.data.JournalEntryData;
 import poussecafe.journal.data.memory.InMemoryJournalEntryDataAccess;
@@ -13,6 +12,7 @@ import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryRepository;
 import poussecafe.journal.domain.MessageReplayer;
+import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.memory.InMemoryStorage;
 import poussecafe.util.IdGenerator;
@@ -51,7 +51,7 @@ public class JournalBoundedContext extends BoundedContext {
     }
 
     @Override
-    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
+    protected void loadMessageImplementations(Set<MessageImplementationConfiguration> implementations) {
         // None
     }
 }

@@ -2,7 +2,6 @@ package poussecafe.journal.domain;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
-import poussecafe.journal.data.SerializedMessage;
 import poussecafe.property.Property;
 
 import static poussecafe.check.Checks.checkThat;
@@ -17,9 +16,12 @@ public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Da
         getData().setStatus(status);
     }
 
-    void setSerializedMessage(SerializedMessage serializedMessage) {
-        getData().setMessageType(serializedMessage.getType());
-        getData().setMessageData(serializedMessage.getData());
+    void setSerializedMessage(String serializedMessage) {
+        getData().setMessageData(serializedMessage);
+    }
+
+    public String getSerializedMessage() {
+        return getData().getMessageData();
     }
 
     public void logSuccess() {
@@ -55,18 +57,7 @@ public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Da
         return getData().logs().get().getLastFailureLog();
     }
 
-    public SerializedMessage getSerializedMessage() {
-        return new SerializedMessage.Builder()
-                .withType(getData().getMessageType())
-                .withData(getData().getMessageData())
-                .build();
-    }
-
     public static interface Data extends EntityData<JournalEntryKey> {
-
-        void setMessageType(String messageClassName);
-
-        String getMessageType();
 
         void setMessageData(String messageData);
 

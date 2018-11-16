@@ -2,15 +2,15 @@ package poussecafe.context;
 
 import java.util.Set;
 import org.junit.Test;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.SimpleAggregate;
 import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerRoutingKey;
+import poussecafe.messaging.Messaging;
 import poussecafe.storage.memory.InMemoryStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -70,7 +70,7 @@ public class MetaApplicationContextTest {
     private void thenMessageListenersAreConfigured() {
         Set<MessageListener> listeners;
 
-        listeners = context.getMessageListeners(new MessageListenerRoutingKey(TestDomainEvent.class));
+        listeners = context.getMessageListeners(TestDomainEvent.class);
         assertThat(listeners.size(), is(2));
     }
 
@@ -82,6 +82,8 @@ public class MetaApplicationContextTest {
     }
 
     private void thenMessageReceiversIsStarted() {
-        assertTrue(context.getMessageReceiver().isStarted());
+        for(Messaging messaging : context.environment().getMessagings()) {
+            assertTrue(messaging.messageReceiver().isStarted());
+        }
     }
 }

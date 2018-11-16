@@ -1,8 +1,7 @@
 package poussecafe.context;
 
 import org.junit.Test;
-import poussecafe.journal.data.SerializedMessage;
-import poussecafe.messaging.JacksonMessageAdapter;
+import poussecafe.journal.JacksonMessageAdapter;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +21,7 @@ public class JacksonMessageAdapterTest {
     private SimpleMessage initialMessage;
 
     private void whenAdaptingEndToEnd() {
-        SerializedMessage serializedMessage = adapter.adaptMessage(initialMessage);
+        String serializedMessage = adapter.adaptMessage(initialMessage);
         producedMessage = (SimpleMessage) adapter.adaptSerializedMessage(serializedMessage);
     }
 

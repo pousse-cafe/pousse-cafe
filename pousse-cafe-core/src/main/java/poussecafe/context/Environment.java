@@ -7,9 +7,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.domain.MessageImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
@@ -144,24 +145,34 @@ public class Environment {
         return entityImplementations.containsKey(primitiveClass);
     }
 
-    public void implementMessage(MessageImplementation implementation) {
+    public void implementMessage(MessageImplementationConfiguration implementation) {
         checkThat(value(implementation).notNull());
         Class<?> messageClass = implementation.getMessageClass();
         messageImplementations.put(messageClass, implementation);
         messageClassesPerImplementation.put(implementation.getMessageImplementationClass(), messageClass);
+        messagings.add(implementation.getMessaging());
+        messagingByMessageClass.put(messageClass, implementation.getMessaging());
     }
 
-    private Map<Class<?>, MessageImplementation> messageImplementations = new HashMap<>();
+    private Map<Class<?>, MessageImplementationConfiguration> messageImplementations = new HashMap<>();
 
     private Map<Class<?>, Class<?>> messageClassesPerImplementation = new HashMap<>();
 
+    private Map<Class<?>, Messaging> messagingByMessageClass = new HashMap<>();
+
+    private Set<Messaging> messagings = new HashSet<>();
+
+    public Set<Messaging> getMessagings() {
+        return unmodifiableSet(messagings);
+    }
+
     public Class<?> getMessageImplementationClass(Class<?> messageClass) {
-        MessageImplementation implementation = getMessageImplementation(messageClass);
+        MessageImplementationConfiguration implementation = getMessageImplementation(messageClass);
         return implementation.getMessageImplementationClass();
     }
 
-    private MessageImplementation getMessageImplementation(Class<?> messageClass) {
-        MessageImplementation implementation = messageImplementations.get(messageClass);
+    private MessageImplementationConfiguration getMessageImplementation(Class<?> messageClass) {
+        MessageImplementationConfiguration implementation = messageImplementations.get(messageClass);
         if(implementation == null) {
             throw new PousseCafeException("Message " + messageClass.getName() + " is not implemented");
         }
@@ -171,5 +182,9 @@ public class Environment {
     @SuppressWarnings("unchecked")
     public Class<? extends Message> getMessageClass(Class<? extends Message> implementationClass) {
         return (Class<? extends Message>) messageClassesPerImplementation.get(implementationClass);
+    }
+
+    public Messaging getMessaging(Class<? extends Message> messageClass) {
+        return messagingByMessageClass.get(messageClass);
     }
 }

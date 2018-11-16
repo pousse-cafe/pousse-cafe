@@ -1,12 +1,14 @@
 package poussecafe.test;
 
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import poussecafe.context.BoundedContext;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityData;
+import poussecafe.messaging.internal.InternalMessaging;
 
 public abstract class MetaApplicationTest {
 
@@ -50,5 +52,10 @@ public abstract class MetaApplicationTest {
 
     protected MetaApplicationWrapper wrapper() {
         return wrapper;
+    }
+
+    @After
+    public void tearDownInternalMessaging() {
+        InternalMessaging.tearDown();
     }
 }

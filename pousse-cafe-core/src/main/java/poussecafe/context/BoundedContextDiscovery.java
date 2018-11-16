@@ -90,7 +90,7 @@ public class BoundedContextDiscovery {
         return domainProcessClasses.stream().collect(toList());
     }
 
-    public static List<poussecafe.domain.MessageImplementation> discoverMessageImplementations(String packageName) {
+    public static List<poussecafe.messaging.MessageImplementationConfiguration> discoverMessageImplementations(String packageName) {
         logger.info("Discovering message implementations in package {}", packageName);
         Reflections reflections = new Reflections(packageName);
         Set<Class<?>> messageImplementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
@@ -99,9 +99,9 @@ public class BoundedContextDiscovery {
                 .collect(toList());
     }
 
-    private static poussecafe.domain.MessageImplementation messageImplementation(Class<?> messageImplementationClass) {
+    private static poussecafe.messaging.MessageImplementationConfiguration messageImplementation(Class<?> messageImplementationClass) {
         MessageImplementation annotation = messageImplementationClass.getAnnotation(MessageImplementation.class);
-        return new poussecafe.domain.MessageImplementation.Builder()
+        return new poussecafe.messaging.MessageImplementationConfiguration.Builder()
                 .withMessageClass(annotation.message())
                 .withMessageImplementationClass(messageImplementationClass)
                 .build();

@@ -7,9 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.context.Environment;
 import poussecafe.context.MessageListenerEntry;
 
 import static java.util.Collections.emptySet;
+import static poussecafe.check.AssertionSpecification.value;
+import static poussecafe.check.Checks.checkThat;
 
 public class MessageListenerRegistry {
 
@@ -33,7 +36,23 @@ public class MessageListenerRegistry {
         return messageListeners;
     }
 
-    public Set<MessageListener> getListeners(MessageListenerRoutingKey key) {
+    public Set<MessageListener> getListeners(Class<? extends Message> messageImplementationClass) {
+        Class<? extends Message> messageClass = environment.getMessageClass(messageImplementationClass);
+        if(messageClass == null) {
+            return getListeners(new MessageListenerRoutingKey(messageImplementationClass));
+        } else {
+            return getListeners(new MessageListenerRoutingKey(messageClass));
+        }
+    }
+
+    private Environment environment;
+
+    public void setEnvironment(Environment environment) {
+        checkThat(value(environment).notNull());
+        this.environment = environment;
+    }
+
+    private Set<MessageListener> getListeners(MessageListenerRoutingKey key) {
         return Optional.ofNullable(listeners.get(key)).orElse(emptySet());
     }
 }

@@ -4,8 +4,9 @@ import java.util.Set;
 import poussecafe.context.BoundedContext;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.domain.MessageImplementation;
 import poussecafe.domain.Service;
+import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.sample.adapters.messaging.JacksonMessageCreated;
 import poussecafe.sample.adapters.messaging.JacksonOrderCreated;
@@ -45,6 +46,7 @@ import poussecafe.sample.process.Messaging;
 import poussecafe.sample.process.OrderPlacement;
 import poussecafe.sample.process.ProductManagement;
 import poussecafe.storage.memory.InMemoryStorage;
+import poussecafe.util.IdGenerator;
 
 public class SampleMetaAppBoundedContext extends BoundedContext {
 
@@ -101,35 +103,41 @@ public class SampleMetaAppBoundedContext extends BoundedContext {
     }
 
     @Override
-    protected void loadMessageImplementations(Set<MessageImplementation> implementations) {
-        implementations.add(new MessageImplementation.Builder()
+    protected void loadMessageImplementations(Set<MessageImplementationConfiguration> implementations) {
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(MessageCreated.class)
                 .withMessageImplementationClass(JacksonMessageCreated.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
 
-        implementations.add(new MessageImplementation.Builder()
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderCreated.class)
                 .withMessageImplementationClass(JacksonOrderCreated.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
 
-        implementations.add(new MessageImplementation.Builder()
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderPlaced.class)
                 .withMessageImplementationClass(JacksonOrderPlaced.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
 
-        implementations.add(new MessageImplementation.Builder()
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderReadyForShipping.class)
                 .withMessageImplementationClass(JacksonOrderReadyForShipping.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
 
-        implementations.add(new MessageImplementation.Builder()
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderRejected.class)
                 .withMessageImplementationClass(JacksonOrderRejected.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
 
-        implementations.add(new MessageImplementation.Builder()
+        implementations.add(new MessageImplementationConfiguration.Builder()
                 .withMessageClass(OrderSettled.class)
                 .withMessageImplementationClass(JacksonOrderSettled.class)
+                .withMessaging(InternalMessaging.instance())
                 .build());
     }
 
@@ -144,6 +152,7 @@ public class SampleMetaAppBoundedContext extends BoundedContext {
     @Override
     protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(ContentChooser.class);
+        services.add(IdGenerator.class);
     }
 
 }

@@ -1,21 +1,21 @@
-package poussecafe.messaging;
+package poussecafe.journal;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.journal.data.SerializedMessage;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageAdapter;
 
 public class JacksonMessageAdapter implements MessageAdapter {
 
     @Override
-    public Message adaptSerializedMessage(SerializedMessage serializedMessage) {
-        String type = serializedMessage.getType();
+    public Message adaptSerializedMessage(Object serializedMessage) {
         try {
-            @SuppressWarnings("unchecked")
-            Class<? extends Message> messageClass = (Class<? extends Message>) Class.forName(type);
-            return objectMapper.readValue(serializedMessage.getData(), messageClass);
+            return objectMapper.readValue((String) serializedMessage, Message.class);
         } catch (Exception e) {
             throw new PousseCafeException("Unable to adapt serialized message " + serializedMessage, e);
         }
@@ -26,6 +26,7 @@ public class JacksonMessageAdapter implements MessageAdapter {
     protected ObjectMapper initObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setConfig(mapper.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS));
+        mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
         mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
@@ -35,14 +36,9 @@ public class JacksonMessageAdapter implements MessageAdapter {
     }
 
     @Override
-    public SerializedMessage adaptMessage(Message message) {
+    public String adaptMessage(Message message) {
         try {
-            String type = message.getClass().getName();
-            String data = objectMapper.writeValueAsString(message);
-            return new SerializedMessage.Builder()
-                    .withType(type)
-                    .withData(data)
-                    .build();
+            return objectMapper.writeValueAsString(message);
         } catch (JsonProcessingException e) {
             throw new PousseCafeException("Unable to adapt message " + message, e);
         }

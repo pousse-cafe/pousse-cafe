@@ -1,6 +1,5 @@
 package poussecafe.journal.process;
 
-import poussecafe.journal.data.SerializedMessage;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
@@ -13,7 +12,7 @@ class JournalEntrySaver {
 
     private JournalEntryKey entryKey;
 
-    private SerializedMessage message;
+    private String message;
 
     private JournalEntryRepository entryRepository;
 
@@ -47,7 +46,7 @@ class JournalEntrySaver {
         this.entryKey = entryKey;
     }
 
-    public void setMessage(SerializedMessage message) {
+    public void setMessage(String message) {
         checkThat(value(message).notNull().because("Message cannot be null"));
         this.message = message;
     }

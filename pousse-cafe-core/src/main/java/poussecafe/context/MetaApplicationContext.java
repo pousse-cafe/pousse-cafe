@@ -12,19 +12,15 @@ import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.Factory;
-import poussecafe.domain.MessageImplementation;
-import poussecafe.domain.Repository;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Factory;
+import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.messaging.JacksonMessageAdapter;
-import poussecafe.messaging.MessageAdapter;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
-import poussecafe.messaging.MessageListenerRoutingKey;
-import poussecafe.messaging.MessageReceiver;
-import poussecafe.messaging.MessageSender;
-import poussecafe.messaging.internal.InternalMessageQueue;
+import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
@@ -44,17 +40,13 @@ public class MetaApplicationContext {
 
     private TransactionRunnerLocator storageServiceLocator;
 
-    private InternalMessageQueue inMemoryMessageQueue;
+    private MessageConsumer messageConsumer;
 
-    private MessageSender messageSender;
-
-    private MessageReceiver messageReceiver;
+    private MessageSenderLocator messageSenderLocator;
 
     private Map<Class<?>, EntityServices> entityServices = new HashMap<>();
 
-    private MessageAdapter messageAdapter;
-
-    private List<BoundedContext> appBundles = new ArrayList<>();
+    private List<BoundedContext> boundedContexts = new ArrayList<>();
 
     public MetaApplicationContext() {
         environment = new Environment();
@@ -63,24 +55,23 @@ public class MetaApplicationContext {
         primitiveFactory.setEnvironment(environment);
 
         messageListenerRegistry = new MessageListenerRegistry();
+        messageListenerRegistry.setEnvironment(environment);
 
         storageServiceLocator = new TransactionRunnerLocator();
         storageServiceLocator.setEnvironment(environment);
 
-        inMemoryMessageQueue = new InternalMessageQueue();
-        messageSender = inMemoryMessageQueue;
-        messageReceiver = inMemoryMessageQueue;
+        messageConsumer = new MessageConsumer();
 
-        messageAdapter = new JacksonMessageAdapter();
+        messageSenderLocator = new MessageSenderLocator();
     }
 
     public Environment environment() {
         return environment;
     }
 
-    public void addBundle(BoundedContext bundle) {
-        checkThatValue(bundle).notNull();
-        appBundles.add(bundle);
+    public void addBoundedContext(BoundedContext boundedContext) {
+        checkThatValue(boundedContext).notNull();
+        boundedContexts.add(boundedContext);
     }
 
     public synchronized void start() {
@@ -94,7 +85,6 @@ public class MetaApplicationContext {
 
         injector = new Injector();
         injector.registerInjectableService(environment);
-        injector.registerInjectableService(MessageAdapter.class, messageAdapter);
         injector.registerInjectableService(storageServiceLocator);
         injector.registerInjectableService(messageListenerRegistry);
 
@@ -103,7 +93,7 @@ public class MetaApplicationContext {
     }
 
     private void loadBundles() {
-        for(BoundedContext appBundle : appBundles) {
+        for(BoundedContext appBundle : boundedContexts) {
             loadBoundedContext(appBundle);
         }
     }
@@ -115,7 +105,7 @@ public class MetaApplicationContext {
         for(EntityImplementation implementation : boundedContext.getEntityImplementations()) {
             environment.implementEntity(implementation);
         }
-        for(MessageImplementation implementation : boundedContext.getMessageImplementations()) {
+        for(MessageImplementationConfiguration implementation : boundedContext.getMessageImplementations()) {
             environment.implementMessage(implementation);
         }
         for(Class<? extends DomainProcess> processClass : boundedContext.getProcesses()) {
@@ -143,8 +133,10 @@ public class MetaApplicationContext {
         configureEntities();
         configureServices();
         configureProcesses();
+        configureMessageConsumer();
+        configureMessaging();
+        configureMessageSenderLocator();
         configureMessageEmissionPolicies();
-        configureMessageReceivers();
     }
 
     protected void configureEntities() {
@@ -208,36 +200,37 @@ public class MetaApplicationContext {
 
     protected void configureMessageEmissionPolicies() {
         for (Storage storage : environment.getStorages()) {
-            storage.getMessageSendingPolicy().setMessageSender(messageSender);
+            storage.getMessageSendingPolicy().setMessageSenderLocator(messageSenderLocator);
         }
     }
 
-    private void configureMessageReceivers() {
-        injector.addInjectionCandidate(messageReceiver);
+    private void configureMessageConsumer() {
+        injector.addInjectionCandidate(messageConsumer);
+    }
+
+    private void configureMessaging() {
+        for(Messaging messaging : environment.getMessagings()) {
+            messaging.configure(messageConsumer);
+        }
+    }
+
+    private void configureMessageSenderLocator() {
+        injector.addInjectionCandidate(messageSenderLocator);
+        injector.registerInjectableService(messageSenderLocator);
     }
 
     public synchronized void startMessageHandling() {
-        messageReceiver.startReceiving();
+        for(Messaging messaging : environment.getMessagings()) {
+            messaging.messageReceiver().startReceiving();
+        }
     }
 
-    public Set<MessageListener> getMessageListeners(MessageListenerRoutingKey key) {
-        return messageListenerRegistry.getListeners(key);
-    }
-
-    public MessageSender getMessageSender() {
-        return messageSender;
-    }
-
-    public MessageReceiver getMessageReceiver() {
-        return messageReceiver;
+    public Set<MessageListener> getMessageListeners(Class<? extends Message> messageClass) {
+        return messageListenerRegistry.getListeners(messageClass);
     }
 
     public EntityServices getEntityServices(Class<?> entityClass) {
         return entityServices.get(entityClass);
-    }
-
-    public InternalMessageQueue getInMemoryQueue() {
-        return inMemoryMessageQueue;
     }
 
     @SuppressWarnings("unchecked")
@@ -276,5 +269,9 @@ public class MetaApplicationContext {
 
     public synchronized void registerListeners(Object service) {
         processExplorer().discoverListeners(service);
+    }
+
+    public MessageSenderLocator getMessageSenderLocator() {
+        return messageSenderLocator;
     }
 }

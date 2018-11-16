@@ -1,12 +1,11 @@
 package poussecafe.messaging;
 
-import poussecafe.messaging.internal.InternalMessageQueue;
+import poussecafe.messaging.internal.InternalMessaging;
 
 public class InMemoryMessageQueueTest extends MessageReceiverTest {
 
     @Override
-    protected MessageReceiver newMessageReceiver() {
-        return new InternalMessageQueue();
+    protected Messaging messaging() {
+        return InternalMessaging.instance();
     }
-
 }

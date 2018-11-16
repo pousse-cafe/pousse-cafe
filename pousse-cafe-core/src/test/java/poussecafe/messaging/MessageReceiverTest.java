@@ -1,61 +1,37 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
-import poussecafe.context.Environment;
-import poussecafe.util.ReflectionUtils;
+import poussecafe.context.MessageConsumer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static poussecafe.collection.Collections.asSet;
 
 public abstract class MessageReceiverTest {
 
-    private MessageListenerRegistry listenerRegistry;
-
     private Message message;
 
-    private MessageReceiver receiver;
-
-    private MessageListener listener;
-
-    private Environment environment;
+    private MessageConsumer messageConsumer;
 
     @Test
     public void receivedMessageIsConsumed() {
-        givenMessageQueue();
+        givenMessageConsumer();
         whenConsumingMessage();
         thenListenerConsumes();
     }
 
-    @SuppressWarnings("unchecked")
-    private void givenMessageQueue() {
-        listenerRegistry = mock(MessageListenerRegistry.class);
-
-        listener = mock(MessageListener.class);
-        when(listener.getListenerId()).thenReturn("listenerId");
-
+    private void givenMessageConsumer() {
         message = new TestMessage();
-        when(listenerRegistry.getListeners(new MessageListenerRoutingKey(message.getClass())))
-                .thenReturn(asSet(listener));
-
-        receiver = newMessageReceiver();
-        receiver.setListenerRegistry(listenerRegistry);
-
-        environment = mock(Environment.class);
-        ReflectionUtils.access(receiver).set("environment", environment);
-        @SuppressWarnings("rawtypes")
-        Class testMessageClass = TestMessage.class;
-        when(environment.getMessageClass(testMessageClass)).thenReturn(testMessageClass);
+        messageConsumer = mock(MessageConsumer.class);
+        messaging().configure(messageConsumer);
     }
 
-    protected abstract MessageReceiver newMessageReceiver();
+    protected abstract Messaging messaging();
 
     private void whenConsumingMessage() {
-        receiver.onMessage(message);
+        messaging().messageReceiver().onMessage(message);
     }
 
     private void thenListenerConsumes() {
-        verify(listener).consume(message);
+        verify(messageConsumer).consumeMessage(message);
     }
 }

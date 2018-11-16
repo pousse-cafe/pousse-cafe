@@ -5,7 +5,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.context.TransactionRunnerLocator;
 import poussecafe.domain.ComponentFactory;
-import poussecafe.journal.data.SerializedMessage;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
@@ -15,6 +14,8 @@ import poussecafe.messaging.FailedConsumption;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.SuccessfulConsumption;
+import poussecafe.messaging.TestMessage;
+import poussecafe.messaging.TransparentMessageAdapter;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.FieldAccessor;
 
@@ -37,14 +38,11 @@ public abstract class MessagingJournalTest {
 
     protected MessageAdapter messageAdapter;
 
-
     protected TransactionRunner transactionRunner;
 
     protected String listenerId;
 
     protected Message message;
-
-    protected SerializedMessage serializedMessage;
 
     protected String exception;
 
@@ -56,18 +54,7 @@ public abstract class MessagingJournalTest {
         FieldAccessor journalAccessor = new FieldAccessor(journal);
         journalAccessor.set("transactionRunnerLocator", storageServiceLocator(transactionRunner));
 
-        messageAdapter = new MessageAdapter() {
-            @Override
-            public SerializedMessage adaptMessage(Message message) {
-                return serializedMessage;
-            }
-
-            @Override
-            public Message adaptSerializedMessage(SerializedMessage serializedMessage) {
-                return message;
-            }
-        };
-        journalAccessor.set("messageAdapter", messageAdapter);
+        messageAdapter = new TransparentMessageAdapter();
     }
 
     protected TransactionRunner transactionRunner() {
@@ -86,8 +73,7 @@ public abstract class MessagingJournalTest {
 
     protected void givenReceivedMessage() {
         listenerId = "listenerId";
-        message = mock(Message.class);
-        serializedMessage = mock(SerializedMessage.class);
+        message = new TestMessage();
         givenKey();
     }
 

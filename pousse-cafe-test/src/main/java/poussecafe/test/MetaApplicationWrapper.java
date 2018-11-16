@@ -7,14 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.EntityServices;
+import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.memory.InMemoryDataAccess;
 import poussecafe.storage.memory.InMemoryStorage;
 
@@ -49,14 +50,14 @@ public class MetaApplicationWrapper {
 
     public void waitUntilAllMessageQueuesEmpty() {
         try {
-            context.getInMemoryQueue().waitUntilEmpty();
+            InternalMessaging.instance().waitUntilEmpty();
         } catch (InterruptedException e) {
             return;
         }
     }
 
     public void addDomainEvent(DomainEvent event) {
-        context.getMessageSender().sendMessage(event);
+        context.getMessageSenderLocator().locate(event.getClass()).sendMessage(event);
         waitUntilAllMessageQueuesEmpty();
     }
 

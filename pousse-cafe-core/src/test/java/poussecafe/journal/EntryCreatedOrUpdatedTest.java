@@ -35,7 +35,7 @@ public abstract class EntryCreatedOrUpdatedTest extends MessagingJournalTest {
 
     protected void givenNoEntryYetInJournal() {
         newEntry = mock(JournalEntry.class);
-        when(entryFactory.buildEntryForSentMessage(key, serializedMessage)).thenReturn(newEntry);
+        when(entryFactory.buildEntryForSentMessage(key, "{\"@class\":\"" + message.getClass().getName() + "\"}")).thenReturn(newEntry);
     }
 
     protected abstract void whenLogging();

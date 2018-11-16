@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
-import poussecafe.context.MetaApplicationContext;
 import poussecafe.context.EntityServices;
+import poussecafe.context.MessageSenderLocator;
+import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.Repository;
-import poussecafe.messaging.MessageSender;
 import poussecafe.process.DomainProcess;
 
 @Configuration
@@ -25,8 +25,8 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private void registerCoreComponents() {
-        MessageSender messageSender = pousseCafeContext.getMessageSender();
-        registerInstance(beanName(messageSender), messageSender);
+        MessageSenderLocator messageSenderLocator = pousseCafeContext.getMessageSenderLocator();
+        registerInstance(beanName(messageSenderLocator), messageSenderLocator);
     }
 
     private ConfigurableListableBeanFactory beanFactory;
