@@ -14,6 +14,7 @@ import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
+import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.process.DomainProcess;
 
@@ -90,16 +91,19 @@ public class BoundedContextDiscovery {
         return domainProcessClasses.stream().collect(toList());
     }
 
+    @SuppressWarnings("unchecked")
     public static List<poussecafe.messaging.MessageImplementationConfiguration> discoverMessageImplementations(String packageName) {
         logger.info("Discovering message implementations in package {}", packageName);
         Reflections reflections = new Reflections(packageName);
         Set<Class<?>> messageImplementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
         return messageImplementationClasses.stream()
+                .filter(implementationClass -> implementationClass.isAssignableFrom(Message.class))
+                .map(implementationClass -> (Class<? extends Message>) implementationClass)
                 .map(BoundedContextDiscovery::messageImplementation)
                 .collect(toList());
     }
 
-    private static poussecafe.messaging.MessageImplementationConfiguration messageImplementation(Class<?> messageImplementationClass) {
+    private static poussecafe.messaging.MessageImplementationConfiguration messageImplementation(Class<? extends Message> messageImplementationClass) {
         MessageImplementation annotation = messageImplementationClass.getAnnotation(MessageImplementation.class);
         return new poussecafe.messaging.MessageImplementationConfiguration.Builder()
                 .withMessageClass(annotation.message())

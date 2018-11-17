@@ -6,6 +6,7 @@ import org.junit.Before;
 import poussecafe.context.BoundedContext;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityData;
 import poussecafe.messaging.internal.InternalMessaging;
@@ -40,6 +41,10 @@ public abstract class MetaApplicationTest {
 
     protected void waitUntilAllMessageQueuesEmpty() {
         wrapper.waitUntilAllMessageQueuesEmpty();
+    }
+
+    protected <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
+        return wrapper.context().getComponentFactory().newComponent(ComponentSpecification.ofClass(eventClass));
     }
 
     protected void addDomainEvent(DomainEvent event) {

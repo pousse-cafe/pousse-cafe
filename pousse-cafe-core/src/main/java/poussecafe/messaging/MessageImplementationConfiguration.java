@@ -7,11 +7,11 @@ import static poussecafe.check.Checks.checkThat;
 
 public class MessageImplementationConfiguration {
 
-    public Class<?> getMessageClass() {
+    public Class<? extends Message> getMessageClass() {
         return messageClass;
     }
 
-    private Class<?> messageClass;
+    private Class<? extends Message> messageClass;
 
     public static class Builder extends AbstractBuilder<MessageImplementationConfiguration> {
 
@@ -19,12 +19,12 @@ public class MessageImplementationConfiguration {
             super(new MessageImplementationConfiguration());
         }
 
-        public Builder withMessageClass(Class<?> messageClass) {
+        public Builder withMessageClass(Class<? extends Message> messageClass) {
             product().messageClass = messageClass;
             return this;
         }
 
-        public Builder withMessageImplementationClass(Class<?> messageImplementationClass) {
+        public Builder withMessageImplementationClass(Class<? extends Message> messageImplementationClass) {
             product().messageImplementationClass = messageImplementationClass;
             return this;
         }
@@ -46,9 +46,9 @@ public class MessageImplementationConfiguration {
 
     }
 
-    private Class<?> messageImplementationClass;
+    private Class<? extends Message> messageImplementationClass;
 
-    public Class<?> getMessageImplementationClass() {
+    public Class<? extends Message> getMessageImplementationClass() {
         return messageImplementationClass;
     }
 

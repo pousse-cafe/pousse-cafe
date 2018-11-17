@@ -6,8 +6,8 @@ import poussecafe.messaging.Messaging;
 
 public class MessageSenderLocator {
 
-    public MessageSender locate(Class<? extends Message> messageImplementationClass) {
-        Class<? extends Message> messageClass = environment.getMessageClass(messageImplementationClass);
+    public MessageSender locate(Class<? extends Message> messageClassOrImplementation) {
+        Class<? extends Message> messageClass = environment.getMessageClass(messageClassOrImplementation);
         Messaging messaging = environment.getMessaging(messageClass);
         return messaging.messageSender();
     }

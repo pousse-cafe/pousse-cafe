@@ -147,7 +147,7 @@ public class Environment {
 
     public void implementMessage(MessageImplementationConfiguration implementation) {
         checkThat(value(implementation).notNull());
-        Class<?> messageClass = implementation.getMessageClass();
+        Class<? extends Message> messageClass = implementation.getMessageClass();
         messageImplementations.put(messageClass, implementation);
         messageClassesPerImplementation.put(implementation.getMessageImplementationClass(), messageClass);
         messagings.add(implementation.getMessaging());
@@ -156,7 +156,7 @@ public class Environment {
 
     private Map<Class<?>, MessageImplementationConfiguration> messageImplementations = new HashMap<>();
 
-    private Map<Class<?>, Class<?>> messageClassesPerImplementation = new HashMap<>();
+    private Map<Class<? extends Message>, Class<? extends Message>> messageClassesPerImplementation = new HashMap<>();
 
     private Map<Class<?>, Messaging> messagingByMessageClass = new HashMap<>();
 
@@ -179,9 +179,13 @@ public class Environment {
         return implementation;
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends Message> getMessageClass(Class<? extends Message> implementationClass) {
-        return (Class<? extends Message>) messageClassesPerImplementation.get(implementationClass);
+    public Class<? extends Message> getMessageClass(Class<? extends Message> messageClassOrImplementation) {
+        Class<? extends Message> messageClass = messageClassesPerImplementation.get(messageClassOrImplementation);
+        if(messageClass == null) {
+            return messageClassOrImplementation;
+        } else {
+            return messageClass;
+        }
     }
 
     public Messaging getMessaging(Class<? extends Message> messageClass) {

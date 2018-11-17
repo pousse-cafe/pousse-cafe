@@ -32,7 +32,7 @@ public class MetaApplicationContext {
 
     private Environment environment;
 
-    private ComponentFactory primitiveFactory;
+    private ComponentFactory componentFactory;
 
     private Injector injector;
 
@@ -51,8 +51,8 @@ public class MetaApplicationContext {
     public MetaApplicationContext() {
         environment = new Environment();
 
-        primitiveFactory = new ComponentFactory();
-        primitiveFactory.setEnvironment(environment);
+        componentFactory = new ComponentFactory();
+        componentFactory.setEnvironment(environment);
 
         messageListenerRegistry = new MessageListenerRegistry();
         messageListenerRegistry.setEnvironment(environment);
@@ -149,8 +149,8 @@ public class MetaApplicationContext {
     private void configureEntity(Class<?> entityClass) {
         EntityDefinition definition = environment.getEntityDefinition(entityClass);
         if(definition.hasFactory() && definition.hasRepository()) {
-            Repository repository = (Repository) primitiveFactory.newComponent(ComponentSpecification.ofClass(definition.getRepositoryClass()));
-            Factory factory = (Factory) primitiveFactory.newComponent(ComponentSpecification.ofClass(definition.getFactoryClass()));
+            Repository repository = (Repository) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getRepositoryClass()));
+            Factory factory = (Factory) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getFactoryClass()));
 
             injector.registerInjectableService(repository);
             injector.registerInjectableService(factory);
@@ -273,5 +273,9 @@ public class MetaApplicationContext {
 
     public MessageSenderLocator getMessageSenderLocator() {
         return messageSenderLocator;
+    }
+
+    public ComponentFactory getComponentFactory() {
+        return componentFactory;
     }
 }
