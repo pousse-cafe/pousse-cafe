@@ -10,7 +10,7 @@ import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.Messaging;
+import poussecafe.messaging.MessagingConnection;
 import poussecafe.storage.internal.InternalStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -82,8 +82,8 @@ public class MetaApplicationContextTest {
     }
 
     private void thenMessageReceiversIsStarted() {
-        for(Messaging messaging : context.environment().getMessagings()) {
-            assertTrue(messaging.messageReceiver().isStarted());
+        for(MessagingConnection connection : context.messagingConnections()) {
+            assertTrue(connection.messageReceiver().isStarted());
         }
     }
 }

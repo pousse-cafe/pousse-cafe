@@ -22,15 +22,17 @@ public abstract class MessageReceiverTest {
     private void givenMessageConsumer() {
         message = message();
         messageConsumer = mock(MessageConsumer.class);
-        messaging().configure(messageConsumer);
+        connection = messaging().connect(messageConsumer);
     }
 
     protected abstract Message message();
 
     protected abstract Messaging messaging();
 
+    private MessagingConnection connection;
+
     private void whenConsumingMessage() {
-        messaging().messageReceiver().onMessage(serializedMessage(message));
+        connection.messageReceiver().onMessage(serializedMessage(message));
     }
 
     protected abstract Object serializedMessage(Message message);

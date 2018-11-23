@@ -13,12 +13,12 @@ import static poussecafe.check.Checks.checkThatValue;
 
 public class MessagingUnitBuilder {
 
-    MessagingUnitBuilder(Messaging storage) {
-        checkThatValue(storage).notNull();
-        this.storage = storage;
+    MessagingUnitBuilder(Messaging messaging) {
+        checkThatValue(messaging).notNull();
+        this.messaging = messaging;
     }
 
-    private Messaging storage;
+    private Messaging messaging;
 
     @SuppressWarnings({ "unchecked" })
     public MessagingUnitBuilder withPackage(String packageName) {
@@ -26,7 +26,7 @@ public class MessagingUnitBuilder {
 
         Set<Class<?>> implementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
         for(Class<?> messageImplementationClass : implementationClasses) {
-            if(storage.nameIn(messageImplementationClass.getAnnotation(MessageImplementation.class).messagingNames())) {
+            if(messaging.nameIn(messageImplementationClass.getAnnotation(MessageImplementation.class).messagingNames())) {
                 logger.debug("Adding message implementation {}", messageImplementationClass);
                 messageImplementationClasses.add((Class<Message>) messageImplementationClass);
             }
@@ -40,7 +40,7 @@ public class MessagingUnitBuilder {
 
     public MessagingUnit build() {
         MessagingUnit unit = new MessagingUnit();
-        unit.messaging = storage;
+        unit.messaging = messaging;
         unit.implementations = new ArrayList<>();
 
         List<poussecafe.messaging.MessageImplementationConfiguration> nonRootEntityImplementations = messageImplementationClasses.stream()
@@ -56,7 +56,7 @@ public class MessagingUnitBuilder {
         return new poussecafe.messaging.MessageImplementationConfiguration.Builder()
                 .withMessageClass(annotation.message())
                 .withMessageImplementationClass(entityDataClass)
-                .withMessaging(storage)
+                .withMessaging(messaging)
                 .build();
     }
 }

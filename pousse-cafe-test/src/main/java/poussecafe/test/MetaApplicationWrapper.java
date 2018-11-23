@@ -15,7 +15,9 @@ import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.messaging.internal.InternalMessaging;
+import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.MessagingConnection;
+import poussecafe.messaging.internal.InternalMessagingQueue.InternalMessageReceiver;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -50,7 +52,13 @@ public class MetaApplicationWrapper {
 
     public void waitUntilAllMessageQueuesEmpty() {
         try {
-            InternalMessaging.instance().waitUntilEmpty();
+            for(MessagingConnection connection : context.messagingConnections()) {
+                MessageReceiver receiver = connection.messageReceiver();
+                if(receiver instanceof InternalMessageReceiver) {
+                    InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
+                    internalMessageReceiver.queue().waitUntilEmpty();
+                }
+            }
         } catch (InterruptedException e) {
             return;
         }

@@ -2,6 +2,7 @@ package poussecafe.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
+import poussecafe.messaging.MessagingConnection;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
@@ -62,7 +64,7 @@ public class MetaApplicationContext {
 
         messageConsumer = new MessageConsumer();
 
-        messageSenderLocator = new MessageSenderLocator();
+        messageSenderLocator = new MessageSenderLocator(connections);
     }
 
     public Environment environment() {
@@ -210,9 +212,11 @@ public class MetaApplicationContext {
 
     private void configureMessaging() {
         for(Messaging messaging : environment.getMessagings()) {
-            messaging.configure(messageConsumer);
+            connections.add(messaging.connect(messageConsumer));
         }
     }
+
+    private List<MessagingConnection> connections = new ArrayList<>();
 
     private void configureMessageSenderLocator() {
         injector.addInjectionCandidate(messageSenderLocator);
@@ -220,8 +224,14 @@ public class MetaApplicationContext {
     }
 
     public synchronized void startMessageHandling() {
-        for(Messaging messaging : environment.getMessagings()) {
-            messaging.messageReceiver().startReceiving();
+        for(MessagingConnection connection : connections) {
+            connection.startReceiving();
+        }
+    }
+
+    public synchronized void stopMessageHandling() {
+        for(MessagingConnection connection : connections) {
+            connection.stopReceiving();
         }
     }
 
@@ -277,5 +287,9 @@ public class MetaApplicationContext {
 
     public ComponentFactory getComponentFactory() {
         return componentFactory;
+    }
+
+    public List<MessagingConnection> messagingConnections() {
+        return Collections.unmodifiableList(connections);
     }
 }

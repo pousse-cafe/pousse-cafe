@@ -46,4 +46,14 @@ public abstract class MessageReceiver {
     public boolean isStarted() {
         return started;
     }
+
+    public void stopReceiving() {
+        if(!started) {
+            return;
+        }
+        actuallyStopReceiving();
+        started = false;
+    }
+
+    protected abstract void actuallyStopReceiving();
 }

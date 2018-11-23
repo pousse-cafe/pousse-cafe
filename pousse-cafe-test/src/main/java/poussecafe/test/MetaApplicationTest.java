@@ -9,7 +9,6 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityData;
-import poussecafe.messaging.internal.InternalMessaging;
 
 public abstract class MetaApplicationTest {
 
@@ -61,6 +60,6 @@ public abstract class MetaApplicationTest {
 
     @After
     public void tearDownInternalMessaging() {
-        InternalMessaging.tearDown();
+        wrapper.context().stopMessageHandling();
     }
 }

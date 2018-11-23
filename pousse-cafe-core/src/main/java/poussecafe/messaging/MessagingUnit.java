@@ -15,9 +15,9 @@ public class MessagingUnit {
         return messaging;
     }
 
-    List<poussecafe.messaging.MessageImplementationConfiguration> implementations;
+    List<MessageImplementationConfiguration> implementations;
 
-    public List<poussecafe.messaging.MessageImplementationConfiguration> implementations() {
+    public List<MessageImplementationConfiguration> implementations() {
         return Collections.unmodifiableList(implementations);
     }
 }
