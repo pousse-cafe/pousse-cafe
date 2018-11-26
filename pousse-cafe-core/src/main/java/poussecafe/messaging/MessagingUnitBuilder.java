@@ -26,7 +26,9 @@ public class MessagingUnitBuilder {
 
         Set<Class<?>> implementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
         for(Class<?> messageImplementationClass : implementationClasses) {
-            if(messaging.nameIn(messageImplementationClass.getAnnotation(MessageImplementation.class).messagingNames())) {
+            MessageImplementation annotation = messageImplementationClass.getAnnotation(MessageImplementation.class);
+            if(annotation.messagingNames().length == 0 ||
+                    messaging.nameIn(annotation.messagingNames())) {
                 logger.debug("Adding message implementation {}", messageImplementationClass);
                 messageImplementationClasses.add((Class<Message>) messageImplementationClass);
             }

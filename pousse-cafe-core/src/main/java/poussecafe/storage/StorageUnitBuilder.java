@@ -37,7 +37,9 @@ public class StorageUnitBuilder {
 
         Set<Class<?>> dataImplementations = reflections.getTypesAnnotatedWith(DataImplementation.class);
         for(Class<?> entityDataClass : dataImplementations) {
-            if(storage.nameIn(entityDataClass.getAnnotation(DataImplementation.class).storageNames())) {
+            DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
+            if(annotation.storageNames().length == 0 ||
+                    storage.nameIn(annotation.storageNames())) {
                 logger.debug("Adding data implementation {}", entityDataClass);
                 entityDataClasses.add((Class<EntityData>) entityDataClass);
             }

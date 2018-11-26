@@ -164,5 +164,7 @@
     <module>pousse-cafe-sample-meta-app</module>
     <module>pousse-cafe-sample-app</module>
     <module>pousse-cafe-maven-plugin</module>
+    <module>pousse-cafe-spring-kafka</module>
+    <module>pousse-cafe-jackson</module>
   </modules>
 </project>

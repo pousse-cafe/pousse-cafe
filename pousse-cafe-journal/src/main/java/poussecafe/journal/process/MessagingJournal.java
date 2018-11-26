@@ -4,7 +4,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.exception.AssertionFailedException;
-import poussecafe.journal.JacksonMessageAdapter;
+import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;

@@ -136,7 +136,6 @@ public class MetaApplicationContext {
         configureServices();
         configureProcesses();
         configureMessageConsumer();
-        configureMessaging();
         configureMessageSenderLocator();
         configureMessageEmissionPolicies();
     }
@@ -210,12 +209,6 @@ public class MetaApplicationContext {
         injector.addInjectionCandidate(messageConsumer);
     }
 
-    private void configureMessaging() {
-        for(Messaging messaging : environment.getMessagings()) {
-            connections.add(messaging.connect(messageConsumer));
-        }
-    }
-
     private List<MessagingConnection> connections = new ArrayList<>();
 
     private void configureMessageSenderLocator() {
@@ -224,8 +217,15 @@ public class MetaApplicationContext {
     }
 
     public synchronized void startMessageHandling() {
+        connectMessaging();
         for(MessagingConnection connection : connections) {
             connection.startReceiving();
+        }
+    }
+
+    private void connectMessaging() {
+        for(Messaging messaging : environment.getMessagings()) {
+            connections.add(messaging.connect(messageConsumer));
         }
     }
 

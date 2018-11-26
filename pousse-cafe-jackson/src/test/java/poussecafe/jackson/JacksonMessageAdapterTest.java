@@ -1,7 +1,6 @@
-package poussecafe.journal;
+package poussecafe.jackson;
 
 import org.junit.Test;
-import poussecafe.journal.JacksonMessageAdapter;
 
 import static org.junit.Assert.assertTrue;
 

@@ -10,7 +10,7 @@ import poussecafe.domain.Entity;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataImplementation {
 
-    String[] storageNames();
+    String[] storageNames() default {};
 
     Class<? extends Entity<?, ?>> entity();
 
