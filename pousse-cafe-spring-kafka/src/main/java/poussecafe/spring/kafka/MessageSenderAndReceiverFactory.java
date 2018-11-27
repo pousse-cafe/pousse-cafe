@@ -7,22 +7,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
 import org.springframework.stereotype.Component;
 import poussecafe.context.MessageConsumer;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
 
 @Component
-public class MessageSenderAndReceiverFactory implements InitializingBean {
+public class MessageSenderAndReceiverFactory implements InitializingBean, MessageListener<String, String> {
 
     @Override
     public void afterPropertiesSet()
             throws Exception {
         logger.info("Configuring Spring Kafka messaging");
         SpringKafkaMessaging.setFactory(this);
+
+        listenerContainer.setupMessageListener(this);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -30,23 +32,19 @@ public class MessageSenderAndReceiverFactory implements InitializingBean {
     public MessageSender buildMessageSender() {
         return new KafkaMessageSender.Builder()
                 .kafkaTemplate(template)
-                .topic(DEFAULT_TOPIC)
+                .topic(listenerContainer.getContainerProperties().getTopics()[0])
                 .build();
     }
 
-    public static final String DEFAULT_TOPIC = "pousse-cafe";
+    @Autowired
+    private KafkaMessageListenerContainer<String, String> listenerContainer;
 
     @Autowired
     private KafkaTemplate<String, String> template;
 
     void startListenerContainer() {
-        registry.getListenerContainer(CONTAINER_ID).start();
+        listenerContainer.start();
     }
-
-    public static final String CONTAINER_ID = "pousse-cafe";
-
-    @Autowired
-    private KafkaListenerEndpointRegistry registry;
 
     public MessageReceiver buildMessageReceiver(MessageConsumer messageConsumer) {
         return new KafkaMessageReceiver.Builder()
@@ -55,9 +53,9 @@ public class MessageSenderAndReceiverFactory implements InitializingBean {
                 .build();
     }
 
-    @KafkaListener(id = CONTAINER_ID, topics = DEFAULT_TOPIC, autoStartup = "false")
-    private synchronized void globalReceiver(ConsumerRecord<?, ?> consumerRecord) {
-        String payload = (String) consumerRecord.value();
+    @Override
+    public void onMessage(ConsumerRecord<String, String> consumerRecord) {
+        String payload = consumerRecord.value();
         for(KafkaMessageReceiver receiver : receivers) {
             receiver.consume(payload);
         }
@@ -72,7 +70,7 @@ public class MessageSenderAndReceiverFactory implements InitializingBean {
     synchronized void deregisterReceiver(KafkaMessageReceiver kafkaMessageReceiver) {
         receivers.remove(kafkaMessageReceiver);
         if(receivers.isEmpty()) {
-            registry.getListenerContainer(CONTAINER_ID).stop();
+            listenerContainer.stop();
         }
     }
 }
