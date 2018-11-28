@@ -16,8 +16,8 @@ import poussecafe.sample.adapters.messaging.SerializableOrderRejected;
 import poussecafe.sample.adapters.messaging.SerializableOrderSettled;
 import poussecafe.sample.adapters.storage.CustomerData;
 import poussecafe.sample.adapters.storage.CustomerDataAccess;
-import poussecafe.sample.adapters.storage.MessageInternalDataAccess;
 import poussecafe.sample.adapters.storage.MessageData;
+import poussecafe.sample.adapters.storage.MessageInternalDataAccess;
 import poussecafe.sample.adapters.storage.OrderData;
 import poussecafe.sample.adapters.storage.OrderDataAccess;
 import poussecafe.sample.adapters.storage.ProductData;
@@ -153,6 +153,16 @@ public class SampleMetaAppBoundedContext extends BoundedContext {
     protected void loadServices(Set<Class<? extends Service>> services) {
         services.add(ContentChooser.class);
         services.add(IdGenerator.class);
+    }
+
+    @Override
+    protected void loadMessages(Set<Class<? extends poussecafe.messaging.Message>> messages) {
+        messages.add(MessageCreated.class);
+        messages.add(OrderCreated.class);
+        messages.add(OrderPlaced.class);
+        messages.add(OrderReadyForShipping.class);
+        messages.add(OrderRejected.class);
+        messages.add(OrderSettled.class);
     }
 
 }

@@ -3,9 +3,10 @@ package poussecafe.context;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.Service;
-import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Service;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.process.DomainProcess;
 
 import static java.util.Collections.unmodifiableSet;
@@ -28,6 +29,7 @@ public abstract class BoundedContext {
         loadMessageImplementations(messageImplementations);
         loadProcesses(processes);
         loadServices(services);
+        loadMessages(messages);
     }
 
     private Set<EntityDefinition> definitions = new HashSet<>();
@@ -68,5 +70,13 @@ public abstract class BoundedContext {
 
     public Set<Class<? extends Service>> getServices() {
         return unmodifiableSet(services);
+    }
+
+    private Set<Class<? extends Message>> messages = new HashSet<>();
+
+    protected abstract void loadMessages(Set<Class<? extends Message>> messages);
+
+    public Set<Class<? extends Message>> getMessages() {
+        return unmodifiableSet(messages);
     }
 }

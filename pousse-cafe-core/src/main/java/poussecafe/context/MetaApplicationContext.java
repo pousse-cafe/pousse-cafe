@@ -82,7 +82,7 @@ public class MetaApplicationContext {
     }
 
     public synchronized void load() {
-        loadBundles();
+        loadBoundedContexts();
         checkEnvironment();
 
         injector = new Injector();
@@ -94,7 +94,7 @@ public class MetaApplicationContext {
         injector.injectDependencies();
     }
 
-    private void loadBundles() {
+    private void loadBoundedContexts() {
         for(BoundedContext appBundle : boundedContexts) {
             loadBoundedContext(appBundle);
         }
@@ -104,17 +104,21 @@ public class MetaApplicationContext {
         for(EntityDefinition definition : boundedContext.getDefinitions()) {
             environment.defineEntity(definition);
         }
-        for(EntityImplementation implementation : boundedContext.getEntityImplementations()) {
-            environment.implementEntity(implementation);
-        }
-        for(MessageImplementationConfiguration implementation : boundedContext.getMessageImplementations()) {
-            environment.implementMessage(implementation);
+        for(Class<? extends Message> messageClass : boundedContext.getMessages()) {
+            environment.defineMessage(messageClass);
         }
         for(Class<? extends DomainProcess> processClass : boundedContext.getProcesses()) {
             environment.defineProcess(processClass);
         }
         for(Class<?> serviceClass : boundedContext.getServices()) {
             environment.defineService(serviceClass);
+        }
+
+        for(MessageImplementationConfiguration implementation : boundedContext.getMessageImplementations()) {
+            environment.implementMessage(implementation);
+        }
+        for(EntityImplementation implementation : boundedContext.getEntityImplementations()) {
+            environment.implementEntity(implementation);
         }
     }
 
@@ -125,6 +129,13 @@ public class MetaApplicationContext {
             for(Class<?> abstractEntityClass : abstractEntities) {
                 logger.error("- {}", abstractEntityClass.getName());
             }
+
+            Set<Class<? extends Message>> abstractMessages = environment.getAbstractMessages();
+            logger.error("{} abstract messages:", abstractMessages.size());
+            for(Class<? extends Message> abstractMessageClass : abstractMessages) {
+                logger.error("- {}", abstractMessageClass.getName());
+            }
+
             throw new PousseCafeException("Cannot start meta-application with an abstract environment");
         }
     }

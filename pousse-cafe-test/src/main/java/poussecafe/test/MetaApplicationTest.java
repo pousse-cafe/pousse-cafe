@@ -60,6 +60,8 @@ public abstract class MetaApplicationTest {
 
     @After
     public void tearDownInternalMessaging() {
-        wrapper.context().stopMessageHandling();
+        if(wrapper != null) {
+            wrapper.context().stopMessageHandling();
+        }
     }
 }

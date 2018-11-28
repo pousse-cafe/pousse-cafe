@@ -4,6 +4,7 @@ import java.util.Set;
 import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Service;
+import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
@@ -61,4 +62,9 @@ public abstract class DiscoveredBoundedContext extends BoundedContext {
     }
 
     protected abstract Messaging messaging();
+
+    @Override
+    protected void loadMessages(Set<Class<? extends Message>> messages) {
+        messages.addAll(BoundedContextDiscovery.discoverMessages(packageName));
+    }
 }

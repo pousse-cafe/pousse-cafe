@@ -56,7 +56,7 @@ public class Environment {
     private Set<Storage> storages = new HashSet<>();
 
     public boolean isAbstract() {
-        return !getAbstractEntities().isEmpty();
+        return !getAbstractEntities().isEmpty() || !getAbstractMessages().isEmpty();
     }
 
     public Set<Class<?>> getAbstractEntities() {
@@ -145,9 +145,27 @@ public class Environment {
         return entityImplementations.containsKey(primitiveClass);
     }
 
+    public void defineMessage(Class<? extends Message> messageClass) {
+        messageDefinitions.add(messageClass);
+    }
+
+    private Set<Class<? extends Message>> messageDefinitions = new HashSet<>();
+
     public void implementMessage(MessageImplementationConfiguration implementation) {
         checkThat(value(implementation).notNull());
         Class<? extends Message> messageClass = implementation.getMessageClass();
+        if(!messageDefinitions.contains(messageClass)) {
+            throw new PousseCafeException("Trying to implement a message that was not defined: " + messageClass);
+        }
+        MessageImplementationConfiguration existingImplementation = messageImplementations.get(messageClass);
+        if(existingImplementation != null) {
+            if(existingImplementation.getMessageImplementationClass() != implementation.getMessageImplementationClass()) {
+                throw new PousseCafeException("Conflicting implementations detected for message " + messageClass);
+            } else {
+                return;
+            }
+        }
+
         messageImplementations.put(messageClass, implementation);
         messageClassesPerImplementation.put(implementation.getMessageImplementationClass(), messageClass);
         messagings.add(implementation.getMessaging());
@@ -164,6 +182,16 @@ public class Environment {
 
     public Set<Messaging> getMessagings() {
         return unmodifiableSet(messagings);
+    }
+
+    public Set<Class<? extends Message>> getAbstractMessages() {
+        Set<Class<? extends Message>> abstractMessages = new HashSet<>();
+        for(Class<? extends Message> messageClass : messageDefinitions) {
+            if(!messageImplementations.containsKey(messageClass)) {
+                abstractMessages.add(messageClass);
+            }
+        }
+        return abstractMessages;
     }
 
     public Class<?> getMessageImplementationClass(Class<?> messageClass) {

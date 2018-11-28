@@ -110,4 +110,14 @@ public class BoundedContextDiscovery {
                 .withMessageImplementationClass(messageImplementationClass)
                 .build();
     }
+
+    public static List<Class<? extends Message>> discoverMessages(String packageName) {
+        logger.info("Discovering messages in package {}", packageName);
+        Reflections reflections = new Reflections(packageName);
+        Set<Class<? extends Message>> messageClasses = reflections.getSubTypesOf(Message.class);
+        return messageClasses.stream()
+                .filter(Class::isInterface)
+                .filter(messageClass -> messageClass.getPackage().getName().startsWith(packageName))
+                .collect(toList());
+    }
 }
