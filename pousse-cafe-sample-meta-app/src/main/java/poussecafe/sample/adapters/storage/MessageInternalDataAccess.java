@@ -2,12 +2,20 @@ package poussecafe.sample.adapters.storage;
 
 import java.util.List;
 import poussecafe.sample.domain.CustomerKey;
+import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageDataAccess;
 import poussecafe.sample.domain.MessageKey;
+import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
+import poussecafe.storage.internal.InternalStorage;
 
 import static java.util.Arrays.asList;
 
+@DataAccessImplementation(
+    aggregateRoot = Message.class,
+    dataImplementation = MessageData.class,
+    storageName = InternalStorage.NAME
+)
 public class MessageInternalDataAccess extends InternalDataAccess<MessageKey, MessageData> implements MessageDataAccess<MessageData> {
 
     @Override

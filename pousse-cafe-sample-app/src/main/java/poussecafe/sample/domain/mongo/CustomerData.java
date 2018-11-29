@@ -4,7 +4,13 @@ import org.springframework.data.annotation.Id;
 import poussecafe.property.Property;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
+import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
+import poussecafe.storage.DataImplementation;
 
+@DataImplementation(
+    entity = Customer.class,
+    storageNames = SpringMongoDbStorage.NAME
+)
 public class CustomerData implements Customer.Data {
 
     @Override

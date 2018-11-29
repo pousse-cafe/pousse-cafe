@@ -18,7 +18,7 @@ public abstract class MetaApplicationTest {
     public void configureContext() {
         MetaApplicationContext context = new MetaApplicationContext();
         for(BoundedContext bundle : testBundle()) {
-            context.loadBoundedContext(bundle);
+            context.addBoundedContext(bundle);
         }
         context.load();
         context.injectDependencies(this);

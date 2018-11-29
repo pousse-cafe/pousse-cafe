@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import poussecafe.domain.AggregateRoot;
@@ -28,7 +30,6 @@ import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
-import static poussecafe.check.Checks.checkThatValue;
 
 public class MetaApplicationContext {
 
@@ -48,7 +49,11 @@ public class MetaApplicationContext {
 
     private Map<Class<?>, EntityServices> entityServices = new HashMap<>();
 
-    private List<BoundedContext> boundedContexts = new ArrayList<>();
+    private List<BoundedContextDefinition> boundedContextDefinitions = new ArrayList<>();
+
+    private Set<EntityImplementation> boundedContextStorageImplementations = new HashSet<>();
+
+    private Set<MessageImplementationConfiguration> boundedContextMessagingImplementations = new HashSet<>();
 
     public MetaApplicationContext() {
         environment = new Environment();
@@ -72,8 +77,10 @@ public class MetaApplicationContext {
     }
 
     public void addBoundedContext(BoundedContext boundedContext) {
-        checkThatValue(boundedContext).notNull();
-        boundedContexts.add(boundedContext);
+        Objects.requireNonNull(boundedContext);
+        boundedContextDefinitions.add(boundedContext.definition());
+        boundedContextStorageImplementations.addAll(boundedContext.storageImplementations());
+        boundedContextMessagingImplementations.addAll(boundedContext.messagingImplementations());
     }
 
     public synchronized void start() {
@@ -82,7 +89,8 @@ public class MetaApplicationContext {
     }
 
     public synchronized void load() {
-        loadBoundedContexts();
+        loadBoundedContextDefinitions();
+        loadBoundedContextImplementations();
         checkEnvironment();
 
         injector = new Injector();
@@ -94,15 +102,15 @@ public class MetaApplicationContext {
         injector.injectDependencies();
     }
 
-    private void loadBoundedContexts() {
-        for(BoundedContext appBundle : boundedContexts) {
-            loadBoundedContext(appBundle);
+    private void loadBoundedContextDefinitions() {
+        for(BoundedContextDefinition boundedContextDefinition : boundedContextDefinitions) {
+            loadBoundedContextDefinition(boundedContextDefinition);
         }
     }
 
-    public void loadBoundedContext(BoundedContext boundedContext) {
-        for(EntityDefinition definition : boundedContext.getDefinitions()) {
-            environment.defineEntity(definition);
+    private void loadBoundedContextDefinition(BoundedContextDefinition boundedContext) {
+        for(EntityDefinition entityDefinition : boundedContext.getEntityDefinitions()) {
+            environment.defineEntity(entityDefinition);
         }
         for(Class<? extends Message> messageClass : boundedContext.getMessages()) {
             environment.defineMessage(messageClass);
@@ -113,12 +121,22 @@ public class MetaApplicationContext {
         for(Class<?> serviceClass : boundedContext.getServices()) {
             environment.defineService(serviceClass);
         }
+    }
 
-        for(MessageImplementationConfiguration implementation : boundedContext.getMessageImplementations()) {
-            environment.implementMessage(implementation);
-        }
-        for(EntityImplementation implementation : boundedContext.getEntityImplementations()) {
+    private void loadBoundedContextImplementations() {
+        loadStorageImplementations();
+        loadMessagingImplementations();
+    }
+
+    private void loadStorageImplementations() {
+        for(EntityImplementation implementation : boundedContextStorageImplementations) {
             environment.implementEntity(implementation);
+        }
+    }
+
+    private void loadMessagingImplementations() {
+        for(MessageImplementationConfiguration implementation : boundedContextMessagingImplementations) {
+            environment.implementMessage(implementation);
         }
     }
 

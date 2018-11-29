@@ -1,15 +1,13 @@
 package poussecafe.sample.domain;
 
+import java.util.UUID;
 import poussecafe.domain.Factory;
-import poussecafe.util.IdGenerator;
 
 public class MessageFactory extends Factory<MessageKey, Message, Message.Data> {
 
     public Message buildMessage(CustomerKey customerKey) {
-        Message message = newAggregateWithKey(new MessageKey(idGenerator.generateId()));
+        Message message = newAggregateWithKey(new MessageKey(UUID.randomUUID().toString()));
         message.setCustomerKey(customerKey);
         return message;
     }
-
-    private IdGenerator idGenerator;
 }

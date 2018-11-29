@@ -1,4 +1,4 @@
-package poussecafe.journal.data.memory;
+package poussecafe.journal.internal;
 
 import java.util.List;
 import poussecafe.journal.data.JournalEntryData;

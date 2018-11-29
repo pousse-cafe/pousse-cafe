@@ -1,82 +1,60 @@
 package poussecafe.context;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import poussecafe.domain.EntityDefinition;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.domain.Service;
-import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementationConfiguration;
-import poussecafe.process.DomainProcess;
 
-import static java.util.Collections.unmodifiableSet;
+public class BoundedContext {
 
-public abstract class BoundedContext {
+    public static class Builder {
 
-    protected BoundedContext() {
-        this(true);
-    }
+        private BoundedContext boundedContext = new BoundedContext();
 
-    protected BoundedContext(boolean loadAll) {
-        if(loadAll) {
-            loadAll();
+        public Builder definition(BoundedContextDefinition definition) {
+            boundedContext.definition = definition;
+            return this;
+        }
+
+        public Builder storageImplementations(Collection<EntityImplementation> storageImplementations) {
+            boundedContext.storageImplementations.addAll(storageImplementations);
+            return this;
+        }
+
+        public Builder messagingImplementations(Collection<MessageImplementationConfiguration> messagingImplementations) {
+            boundedContext.messagingImplementations.addAll(messagingImplementations);
+            return this;
+        }
+
+        public BoundedContext build() {
+            Objects.requireNonNull(boundedContext.definition);
+            Objects.requireNonNull(boundedContext.storageImplementations);
+            Objects.requireNonNull(boundedContext.messagingImplementations);
+            return boundedContext;
         }
     }
 
-    protected void loadAll() {
-        loadDefinitions(definitions);
-        loadEntityImplementations(entityImplementations);
-        loadMessageImplementations(messageImplementations);
-        loadProcesses(processes);
-        loadServices(services);
-        loadMessages(messages);
+    private BoundedContext() {
+
     }
 
-    private Set<EntityDefinition> definitions = new HashSet<>();
+    private BoundedContextDefinition definition;
 
-    protected abstract void loadDefinitions(Set<EntityDefinition> definitions);
-
-    public Set<EntityDefinition> getDefinitions() {
-        return unmodifiableSet(definitions);
+    public BoundedContextDefinition definition() {
+        return definition;
     }
 
-    private Set<EntityImplementation> entityImplementations = new HashSet<>();
+    private Set<EntityImplementation> storageImplementations = new HashSet<>();
 
-    protected abstract void loadEntityImplementations(Set<EntityImplementation> implementations);
-
-    public Set<EntityImplementation> getEntityImplementations() {
-        return unmodifiableSet(entityImplementations);
+    public Set<EntityImplementation> storageImplementations() {
+        return storageImplementations;
     }
 
-    private Set<MessageImplementationConfiguration> messageImplementations = new HashSet<>();
+    private Set<MessageImplementationConfiguration> messagingImplementations = new HashSet<>();
 
-    protected abstract void loadMessageImplementations(Set<MessageImplementationConfiguration> implementations);
-
-    public Set<MessageImplementationConfiguration> getMessageImplementations() {
-        return unmodifiableSet(messageImplementations);
-    }
-
-    private Set<Class<? extends DomainProcess>> processes = new HashSet<>();
-
-    protected abstract void loadProcesses(Set<Class<? extends DomainProcess>> processes);
-
-    public Set<Class<? extends DomainProcess>> getProcesses() {
-        return unmodifiableSet(processes);
-    }
-
-    private Set<Class<? extends Service>> services = new HashSet<>();
-
-    protected abstract void loadServices(Set<Class<? extends Service>> services);
-
-    public Set<Class<? extends Service>> getServices() {
-        return unmodifiableSet(services);
-    }
-
-    private Set<Class<? extends Message>> messages = new HashSet<>();
-
-    protected abstract void loadMessages(Set<Class<? extends Message>> messages);
-
-    public Set<Class<? extends Message>> getMessages() {
-        return unmodifiableSet(messages);
+    public Set<MessageImplementationConfiguration> messagingImplementations() {
+        return messagingImplementations;
     }
 }

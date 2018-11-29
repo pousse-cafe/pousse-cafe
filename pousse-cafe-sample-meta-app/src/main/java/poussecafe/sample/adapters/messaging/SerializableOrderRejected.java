@@ -1,12 +1,14 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
 
+@MessageImplementation(message = OrderRejected.class)
 @SuppressWarnings("serial")
 public class SerializableOrderRejected implements Serializable, OrderRejected {
 

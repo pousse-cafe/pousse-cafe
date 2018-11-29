@@ -28,8 +28,14 @@ public class StorageUnitBuilder {
     public StorageUnitBuilder withPackage(String packageName) {
         Reflections reflections = new Reflections(packageName);
         Set<Class<?>> dataAccessImplementations = reflections.getTypesAnnotatedWith(DataAccessImplementation.class);
+        Set<Class<?>> aggregateRoots = new HashSet<>();
         for(Class<?> entityDataAccessClass : dataAccessImplementations) {
+            DataAccessImplementation annotation = entityDataAccessClass.getAnnotation(DataAccessImplementation.class);
             if(storage.name().equals(entityDataAccessClass.getAnnotation(DataAccessImplementation.class).storageName())) {
+                if(!aggregateRoots.add(annotation.aggregateRoot())) {
+                    throw new PousseCafeException("Aggregate root " + annotation.aggregateRoot() + " has already an implementation");
+                }
+
                 logger.debug("Adding data access implementation {}", entityDataAccessClass);
                 entityDataAccessClasses.add((Class<EntityDataAccess>) entityDataAccessClass);
             }
@@ -40,6 +46,10 @@ public class StorageUnitBuilder {
             DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
             if(annotation.storageNames().length == 0 ||
                     storage.nameIn(annotation.storageNames())) {
+                if(aggregateRoots.contains(annotation.entity())) {
+                    throw new PousseCafeException("Aggregate root implementation can only be declared with @" + DataAccessImplementation.class.getSimpleName());
+                }
+
                 logger.debug("Adding data implementation {}", entityDataClass);
                 entityDataClasses.add((Class<EntityData>) entityDataClass);
             }
@@ -68,7 +78,7 @@ public class StorageUnitBuilder {
         List<EntityImplementation> nonRootEntityImplementations = entityDataClasses.stream()
                 .map(this::buildNonRootEntityImplementation)
                 .collect(toList());
-            unit.implementations.addAll(nonRootEntityImplementations);
+        unit.implementations.addAll(nonRootEntityImplementations);
 
         return unit;
     }

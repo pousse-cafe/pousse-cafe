@@ -1,11 +1,13 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.OrderSettled;
 
+@MessageImplementation(message = OrderSettled.class)
 @SuppressWarnings("serial")
 public class SerializableOrderSettled implements Serializable, OrderSettled {
 

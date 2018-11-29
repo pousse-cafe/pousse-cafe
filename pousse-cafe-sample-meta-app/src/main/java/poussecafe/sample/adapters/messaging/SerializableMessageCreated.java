@@ -1,11 +1,13 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.MessageCreated;
 import poussecafe.sample.domain.MessageKey;
 
+@MessageImplementation(message = MessageCreated.class)
 @SuppressWarnings("serial")
 public class SerializableMessageCreated implements Serializable, MessageCreated {
 
