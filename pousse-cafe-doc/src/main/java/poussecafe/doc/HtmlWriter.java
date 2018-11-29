@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import poussecafe.doc.model.BoundedContextComponentDoc;
@@ -208,7 +209,8 @@ public class HtmlWriter {
 
     private List<ValueObjectDoc> findValueObjects(AggregateDocKey aggregateDocKey) {
         return findValueObjects(aggregateDocKey.getValue()).stream()
-                .map(valueObjectDocRepository::get)
+                .map(valueObjectDocRepository::find)
+                .filter(Objects::nonNull)
                 .filter(doc -> !doc.boundedContextComponentDoc().componentDoc().trivial())
                 .collect(toList());
     }

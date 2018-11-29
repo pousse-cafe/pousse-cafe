@@ -5,8 +5,8 @@ import poussecafe.util.StringKey;
 
 public class BoundedContextDocKey extends StringKey implements ValueObject {
 
-    public static BoundedContextDocKey ofClassName(String className) {
-        return new BoundedContextDocKey(className);
+    public static BoundedContextDocKey ofPackageName(String packageName) {
+        return new BoundedContextDocKey(packageName);
     }
 
     private BoundedContextDocKey(String value) {

@@ -1,12 +1,12 @@
 package poussecafe.doc.model;
 
-import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.Doc;
 import poussecafe.doc.AnnotationsResolver;
 import poussecafe.domain.Service;
 
 public class ComponentDocFactory implements Service {
 
-    public ComponentDoc buildDoc(String name, ProgramElementDoc doc) {
+    public ComponentDoc buildDoc(String name, Doc doc) {
         return new ComponentDoc.Builder()
                 .name(name)
                 .description(doc.commentText())

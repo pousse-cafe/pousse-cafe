@@ -15,7 +15,7 @@ public class PousseCafeDoclet {
         Logger.setRootDoc(rootDocWrapper);
 
         context = new MetaApplicationContext();
-        context.addBoundedContext(PousseCafeDocBoundedContextConfiguration.configure()
+        context.addBoundedContext(PousseCafeDoc.configure()
                 .defineAndImplementDefault()
                 .build());
     }
@@ -47,9 +47,9 @@ public class PousseCafeDoclet {
         BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator(rootDocWrapper);
         context.injectDependencies(boundedContextCreator);
 
-        ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
+        PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
-                .classDocConsumer(boundedContextCreator)
+                .packageDocConsumer(boundedContextCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }

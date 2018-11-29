@@ -17,6 +17,7 @@ import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
+import poussecafe.exception.NotFoundException;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -145,7 +146,11 @@ public class AggregateGraphFactory {
         case ENTITY:
             return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
         case VALUE_OBJECT:
-            return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
+            try {
+                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
+            } catch (NotFoundException e) {
+                return component.className();
+            }
         default:
             throw new IllegalArgumentException("Unsupported component type " + component.type());
         }

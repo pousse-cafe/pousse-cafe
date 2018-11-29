@@ -2,11 +2,12 @@ package poussecafe.doc;
 
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.MethodDoc;
-import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import poussecafe.exception.PousseCafeException;
 
 public class AnnotationsResolver {
 
@@ -26,7 +27,7 @@ public class AnnotationsResolver {
         return tags(methodDoc, Tags.STEP);
     }
 
-    private static Optional<String> optionalTag(ProgramElementDoc doc,
+    private static Optional<String> optionalTag(Doc doc,
             String tagName) {
         Tag[] tags = doc.tags(tagName);
         if(tags.length > 1) {
@@ -60,15 +61,23 @@ public class AnnotationsResolver {
         return tags(methodDoc, Tags.FROM_EXTERNAL);
     }
 
-    public static boolean isTrivial(ProgramElementDoc doc) {
+    public static boolean isTrivial(Doc doc) {
         return hasTag(doc, Tags.TRIVIAL);
     }
 
-    public static Optional<String> shortDescription(ProgramElementDoc doc) {
+    public static Optional<String> shortDescription(Doc doc) {
         return optionalTag(doc, Tags.SHORT);
     }
 
     public static List<String> event(MethodDoc methodDoc) {
         return tags(methodDoc, Tags.EVENT);
+    }
+
+    public static boolean isBoundedContext(PackageDoc packageDoc) {
+        return hasTag(packageDoc, Tags.BOUNDED_CONTEXT);
+    }
+
+    public static String boundedContext(PackageDoc packageDoc) {
+        return optionalTag(packageDoc, Tags.BOUNDED_CONTEXT).orElseThrow(PousseCafeException::new);
     }
 }

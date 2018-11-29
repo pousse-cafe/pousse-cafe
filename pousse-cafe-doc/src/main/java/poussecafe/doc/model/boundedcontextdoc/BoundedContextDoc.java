@@ -19,13 +19,8 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, Bound
         return getData().componentDoc().get();
     }
 
-    void packageName(String packageName) {
-        checkThatValue(packageName).notNull();
-        getData().packageName().set(packageName);
-    }
-
     public String packageName() {
-        return getData().packageName().get();
+        return getKey().getValue();
     }
 
     public String id() {
@@ -35,7 +30,5 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, Bound
     public static interface Data extends EntityData<BoundedContextDocKey> {
 
         Property<ComponentDoc> componentDoc();
-
-        Property<String> packageName();
     }
 }

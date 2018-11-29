@@ -13,17 +13,17 @@ public class BoundedContextDocData implements BoundedContextDoc.Data, Serializab
         return new Property<BoundedContextDocKey>() {
             @Override
             public BoundedContextDocKey get() {
-                return BoundedContextDocKey.ofClassName(className);
+                return BoundedContextDocKey.ofPackageName(id);
             }
 
             @Override
             public void set(BoundedContextDocKey value) {
-                className = value.getValue();
+                id = value.getValue();
             }
         };
     }
 
-    private String className;
+    private String id;
 
     @Override
     public Property<ComponentDoc> componentDoc() {
@@ -41,21 +41,4 @@ public class BoundedContextDocData implements BoundedContextDoc.Data, Serializab
     }
 
     private ComponentDocData componentDoc;
-
-    @Override
-    public Property<String> packageName() {
-        return new Property<String>() {
-            @Override
-            public String get() {
-                return packageName;
-            }
-
-            @Override
-            public void set(String value) {
-                packageName = value;
-            }
-        };
-    }
-
-    private String packageName;
 }

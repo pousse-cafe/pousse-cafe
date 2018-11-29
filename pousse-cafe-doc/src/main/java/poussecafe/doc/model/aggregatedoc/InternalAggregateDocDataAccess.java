@@ -2,10 +2,17 @@ package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
+import poussecafe.storage.internal.InternalStorage;
 
 import static java.util.stream.Collectors.toList;
 
+@DataAccessImplementation(
+    aggregateRoot = AggregateDoc.class,
+    dataImplementation = AggregateDocData.class,
+    storageName = InternalStorage.NAME
+)
 public class InternalAggregateDocDataAccess extends InternalDataAccess<AggregateDocKey, AggregateDocData> implements AggregateDocDataAccess<AggregateDocData> {
 
     @Override

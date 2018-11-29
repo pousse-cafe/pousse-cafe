@@ -29,7 +29,7 @@ public class AggregateDocTest {
         ReflectionUtils.access(aggregateDoc).set("data", new AggregateDocData());
 
         aggregateDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(BoundedContextDocKey.ofClassName("test.B"))
+                .boundedContextDocKey(BoundedContextDocKey.ofPackageName("test"))
                 .componentDoc(new ComponentDoc.Builder()
                         .name("A")
                         .description("")

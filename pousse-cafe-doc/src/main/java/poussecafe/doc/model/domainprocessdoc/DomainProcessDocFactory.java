@@ -162,7 +162,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
     private Optional<String> consumedEvent(MethodDoc methodDoc) {
         if(methodDoc.parameters().length > 0 &&
                 methodDoc.parameters()[0].type().asClassDoc() != null &&
-                ClassDocPredicates.documentsWithSuperclass(methodDoc.parameters()[0].type().asClassDoc(), DomainEvent.class)) {
+                ClassDocPredicates.documentsWithSuperinterface(methodDoc.parameters()[0].type().asClassDoc(), DomainEvent.class)) {
             return Optional.of(methodDoc.parameters()[0].type().asClassDoc().name());
         } else {
             return Optional.empty();

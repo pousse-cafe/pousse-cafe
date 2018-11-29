@@ -17,4 +17,6 @@ public interface Tags {
     String SHORT = "short";
 
     String EVENT = "event";
+
+    String BOUNDED_CONTEXT = "bounded_context";
 }

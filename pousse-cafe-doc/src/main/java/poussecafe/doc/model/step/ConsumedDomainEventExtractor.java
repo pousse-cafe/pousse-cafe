@@ -23,7 +23,8 @@ public class ConsumedDomainEventExtractor {
     public Optional<String> consumedDomainEvent() {
         for(Parameter parameter : methodDoc.parameters()) {
             Optional<ClassDoc> parameterClassDoc = Optional.ofNullable(parameter.type().asClassDoc());
-            if(parameterClassDoc.isPresent() && ClassDocPredicates.documentsWithSuperclass(parameterClassDoc.get(), DomainEvent.class)) {
+            if(parameterClassDoc.isPresent() &&
+                    ClassDocPredicates.documentsWithSuperinterface(parameterClassDoc.get(), DomainEvent.class)) {
                 return Optional.of(parameterClassDoc.get().typeName());
             } else if(parameterClassDoc.isPresent()) {
                 return consumedDomainEvent(parameterClassDoc.get());
@@ -40,7 +41,7 @@ public class ConsumedDomainEventExtractor {
 
         for(FieldDoc fieldDoc : classDoc.fields()) {
             Optional<ClassDoc> fieldType = Optional.ofNullable(fieldDoc.type().asClassDoc());
-            if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperclass(fieldType.get(), DomainEvent.class)) {
+            if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
                 return consumedDomainEvent(fieldType.get());
@@ -48,7 +49,7 @@ public class ConsumedDomainEventExtractor {
         }
         for(MethodDoc methodDoc : classDoc.methods()) {
             Optional<ClassDoc> fieldType = Optional.ofNullable(methodDoc.returnType().asClassDoc());
-            if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperclass(fieldType.get(), DomainEvent.class)) {
+            if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
                 return consumedDomainEvent(fieldType.get());

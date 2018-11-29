@@ -2,9 +2,9 @@ package poussecafe.doc;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class PousseCafeDocBoundedContextConfiguration {
+public class PousseCafeDoc {
 
-    private PousseCafeDocBoundedContextConfiguration() {
+    private PousseCafeDoc() {
 
     }
 
