@@ -1,6 +1,9 @@
 package poussecafe.domain;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.util.AbstractBuilder;
+import poussecafe.util.ReferenceEquals;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -62,5 +65,23 @@ public class EntityDefinition {
 
     private EntityDefinition() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(entityClass, other.entityClass)
+                .append(factoryClass, other.factoryClass)
+                .append(repositoryClass, other.repositoryClass)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(entityClass)
+                .append(factoryClass)
+                .append(repositoryClass)
+                .build();
     }
 }

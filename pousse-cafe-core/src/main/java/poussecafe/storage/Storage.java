@@ -18,7 +18,7 @@ public abstract class Storage {
 
     protected abstract TransactionRunner initTransactionRunner();
 
-    protected abstract String name();
+    public abstract String name();
 
     public StorageUnitBuilder newStorageUnit() {
         return new StorageUnitBuilder(this);

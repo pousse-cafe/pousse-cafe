@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.context.MessagingAndStorage;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.journal.JournalBoundedContextDefinition;
+import poussecafe.journal.JournalBoundedContextConfiguration;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.sample.SampleMetaAppBoundedContextDefinition;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
@@ -19,10 +19,12 @@ public class AppConfiguration {
         MetaApplicationContext context = new MetaApplicationContext();
         MessagingAndStorage messagingAndStorage = new MessagingAndStorage(InternalMessaging.instance(),
                 SpringMongoDbStorage.instance());
-        context.addBoundedContext(new JournalBoundedContextDefinition().implement()
+        context.addBoundedContext(JournalBoundedContextConfiguration.configure()
+                .defineThenImplement()
                 .messagingAndStorage(messagingAndStorage)
                 .build());
-        context.addBoundedContext(new SampleMetaAppBoundedContextDefinition().implement()
+        context.addBoundedContext(SampleMetaAppBoundedContextDefinition.configure()
+                .defineThenImplement()
                 .messagingAndStorage(messagingAndStorage)
                 .build());
         context.start();

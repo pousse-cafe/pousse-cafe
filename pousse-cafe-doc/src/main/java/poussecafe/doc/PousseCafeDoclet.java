@@ -15,8 +15,8 @@ public class PousseCafeDoclet {
         Logger.setRootDoc(rootDocWrapper);
 
         context = new MetaApplicationContext();
-        context.addBoundedContext(new PousseCafeDocDefinition()
-                .withDefaultImplementation()
+        context.addBoundedContext(PousseCafeDocBoundedContextConfiguration.configure()
+                .defineAndImplementDefault()
                 .build());
     }
 

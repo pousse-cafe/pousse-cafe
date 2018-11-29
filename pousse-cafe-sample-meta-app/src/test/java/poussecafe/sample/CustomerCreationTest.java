@@ -19,7 +19,7 @@ public class CustomerCreationTest extends MetaApplicationTest {
 
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new SampleMetaAppBoundedContextDefinition().withDefaultImplementation().build());
+        return asList(SampleMetaAppBoundedContextDefinition.configure().defineAndImplementDefault().build());
     }
 
     @Test

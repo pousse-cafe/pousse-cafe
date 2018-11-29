@@ -1,16 +1,16 @@
-package poussecafe.sample;
+package poussecafe.doc;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class SampleMetaAppBoundedContextDefinition {
+public class PousseCafeDocBoundedContextConfiguration {
 
-    private SampleMetaAppBoundedContextDefinition() {
+    private PousseCafeDocBoundedContextConfiguration() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.sample")
+                .packagePrefix("poussecafe.doc")
                 .build();
     }
 }

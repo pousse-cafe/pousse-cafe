@@ -31,7 +31,7 @@ public class SpringMongoDbStorage extends Storage {
     }
 
     @Override
-    protected String name() {
+    public String name() {
         return NAME;
     }
 }

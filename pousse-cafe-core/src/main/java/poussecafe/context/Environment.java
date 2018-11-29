@@ -1,5 +1,6 @@
 package poussecafe.context;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,7 +25,11 @@ public class Environment {
         checkThat(value(definition).notNull());
         Class<?> entityClass = definition.getEntityClass();
         if(definitions.containsKey(entityClass)) {
-            throw new PousseCafeException("Entity " + entityClass.getName() + " is already defined");
+            if(definition.equals(definitions.get(entityClass))) {
+                return;
+            } else {
+                throw new PousseCafeException("Conflicting definitions found for Entity " + entityClass.getName());
+            }
         }
         definitions.put(entityClass, definition);
 
@@ -150,6 +155,10 @@ public class Environment {
     }
 
     private Set<Class<? extends Message>> messageDefinitions = new HashSet<>();
+
+    public Set<Class<? extends Message>> getDefinedMessages() {
+        return Collections.unmodifiableSet(messageDefinitions);
+    }
 
     public void implementMessage(MessageImplementationConfiguration implementation) {
         checkThat(value(implementation).notNull());

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.context.Environment;
 import poussecafe.context.MessageListenerEntry;
+import poussecafe.exception.PousseCafeException;
 
 import static java.util.Collections.emptySet;
 import static poussecafe.check.AssertionSpecification.value;
@@ -20,6 +21,9 @@ public class MessageListenerRegistry {
 
     public void registerListener(MessageListenerEntry entry) {
         logger.debug("Registring listener {}", entry);
+        if(!environment.getDefinedMessages().contains(entry.getKey().getMessageClass())) {
+            throw new PousseCafeException("Message " + entry.getKey().getMessageClass().getName() + " is not defined");
+        }
         Set<MessageListener> registeredListeners = getOrCreateSet(entry.getKey());
         registeredListeners.add(entry.getListener());
     }

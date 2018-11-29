@@ -1,12 +1,8 @@
 package poussecafe.messaging;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import poussecafe.context.ClassPathExplorer;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.Checks.checkThatValue;
@@ -20,32 +16,19 @@ public class MessagingUnitBuilder {
 
     private Messaging messaging;
 
-    @SuppressWarnings({ "unchecked" })
-    public MessagingUnitBuilder withPackage(String packageName) {
-        Reflections reflections = new Reflections(packageName);
-
-        Set<Class<?>> implementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
-        for(Class<?> messageImplementationClass : implementationClasses) {
-            MessageImplementation annotation = messageImplementationClass.getAnnotation(MessageImplementation.class);
-            if(annotation.messagingNames().length == 0 ||
-                    messaging.nameIn(annotation.messagingNames())) {
-                logger.debug("Adding message implementation {}", messageImplementationClass);
-                messageImplementationClasses.add((Class<Message>) messageImplementationClass);
-            }
-        }
+    public MessagingUnitBuilder classPathExplorer(ClassPathExplorer classPathExplorer) {
+        this.classPathExplorer = classPathExplorer;
         return this;
     }
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private Set<Class<Message>> messageImplementationClasses = new HashSet<>();
+    private ClassPathExplorer classPathExplorer;
 
     public MessagingUnit build() {
         MessagingUnit unit = new MessagingUnit();
         unit.messaging = messaging;
         unit.implementations = new ArrayList<>();
 
-        List<poussecafe.messaging.MessageImplementationConfiguration> nonRootEntityImplementations = messageImplementationClasses.stream()
+        List<poussecafe.messaging.MessageImplementationConfiguration> nonRootEntityImplementations = classPathExplorer.getMessageImplementations(messaging).stream()
                 .map(this::buildNonRootEntityImplementation)
                 .collect(toList());
         unit.implementations.addAll(nonRootEntityImplementations);

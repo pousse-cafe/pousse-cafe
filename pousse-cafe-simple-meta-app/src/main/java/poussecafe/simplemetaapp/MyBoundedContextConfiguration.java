@@ -1,16 +1,16 @@
-package poussecafe.sample;
+package poussecafe.simplemetaapp;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class SampleMetaAppBoundedContextDefinition {
+public class MyBoundedContextConfiguration {
 
-    private SampleMetaAppBoundedContextDefinition() {
+    private MyBoundedContextConfiguration() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.sample")
+                .packagePrefix("poussecafe.simplemetaapp")
                 .build();
     }
 }

@@ -11,8 +11,8 @@ public class StorageImplementationDiscovery {
 
         private StorageImplementationDiscovery discovery = new StorageImplementationDiscovery();
 
-        public Builder packageName(String packageName) {
-            discovery.packageName = packageName;
+        public Builder classPathExplorer(ClassPathExplorer classPathExplorer) {
+            discovery.classPathExplorer = classPathExplorer;
             return this;
         }
 
@@ -22,7 +22,7 @@ public class StorageImplementationDiscovery {
         }
 
         public StorageImplementationDiscovery build() {
-            Objects.requireNonNull(discovery.packageName);
+            Objects.requireNonNull(discovery.classPathExplorer);
             Objects.requireNonNull(discovery.storage);
             return discovery;
         }
@@ -32,10 +32,10 @@ public class StorageImplementationDiscovery {
 
     }
 
-    private String packageName;
+    private ClassPathExplorer classPathExplorer;
 
-    public String packageName() {
-        return packageName;
+    public ClassPathExplorer classPathExplorer() {
+        return classPathExplorer;
     }
 
     private Storage storage;
@@ -46,7 +46,7 @@ public class StorageImplementationDiscovery {
 
     public List<EntityImplementation> discover() {
         return storage().newStorageUnit()
-                .withPackage(packageName)
+                .classPathExplorer(classPathExplorer)
                 .build()
                 .implementations();
     }

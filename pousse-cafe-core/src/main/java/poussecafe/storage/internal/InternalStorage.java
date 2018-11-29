@@ -27,8 +27,7 @@ public class InternalStorage extends Storage {
     }
 
     @Override
-    protected String name() {
+    public String name() {
         return NAME;
     }
-
 }

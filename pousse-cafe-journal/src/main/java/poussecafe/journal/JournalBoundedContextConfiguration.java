@@ -1,16 +1,16 @@
-package poussecafe.sample;
+package poussecafe.journal;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class SampleMetaAppBoundedContextDefinition {
+public class JournalBoundedContextConfiguration {
 
-    private SampleMetaAppBoundedContextDefinition() {
+    private JournalBoundedContextConfiguration() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.sample")
+                .packagePrefix("poussecafe.journal")
                 .build();
     }
 }

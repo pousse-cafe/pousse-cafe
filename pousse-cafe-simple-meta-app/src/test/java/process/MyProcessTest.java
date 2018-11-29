@@ -3,7 +3,7 @@ package process;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.context.BoundedContext;
-import poussecafe.simplemetaapp.MyBoundedContextDefinition;
+import poussecafe.simplemetaapp.MyBoundedContextConfiguration;
 import poussecafe.simplemetaapp.domain.MyAggregate;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;
 import poussecafe.simplemetaapp.process.CreateAggregate;
@@ -29,7 +29,7 @@ public class MyProcessTest extends MetaApplicationTest {
      */
     @Override
     protected List<BoundedContext> testBundle() {
-        return asList(new MyBoundedContextDefinition().withDefaultImplementation().build());
+        return asList(MyBoundedContextConfiguration.configure().defineAndImplementDefault().build());
     }
 
     /*

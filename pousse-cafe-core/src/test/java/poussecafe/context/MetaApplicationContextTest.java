@@ -9,8 +9,10 @@ import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
+import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessagingConnection;
+import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.internal.InternalStorage;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -45,6 +47,13 @@ public class MetaApplicationContextTest {
                 .build());
 
         context.environment().defineProcess(DummyProcess.class);
+
+        context.environment().defineMessage(TestDomainEvent.class);
+        context.environment().implementMessage(new MessageImplementationConfiguration.Builder()
+                .withMessageClass(TestDomainEvent.class)
+                .withMessageImplementationClass(TestDomainEvent.class)
+                .withMessaging(InternalMessaging.instance())
+                .build());
     }
 
     private void whenCreatingContext() {

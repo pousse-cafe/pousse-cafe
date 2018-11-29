@@ -11,8 +11,8 @@ public class MessagingImplementationDiscovery {
 
         private MessagingImplementationDiscovery discovery = new MessagingImplementationDiscovery();
 
-        public Builder packageName(String packageName) {
-            discovery.packageName = packageName;
+        public Builder classPathExplorer(ClassPathExplorer classPathExplorer) {
+            discovery.classPathExplorer = classPathExplorer;
             return this;
         }
 
@@ -22,7 +22,7 @@ public class MessagingImplementationDiscovery {
         }
 
         public MessagingImplementationDiscovery build() {
-            Objects.requireNonNull(discovery.packageName);
+            Objects.requireNonNull(discovery.classPathExplorer);
             return discovery;
         }
     }
@@ -31,10 +31,10 @@ public class MessagingImplementationDiscovery {
 
     }
 
-    private String packageName;
+    private ClassPathExplorer classPathExplorer;
 
-    public String packageName() {
-        return packageName;
+    public ClassPathExplorer classPathExplorer() {
+        return classPathExplorer;
     }
 
     private Messaging messaging;
@@ -45,7 +45,7 @@ public class MessagingImplementationDiscovery {
 
     public List<MessageImplementationConfiguration> discover() {
         return messaging().newMessagingUnit()
-                .withPackage(packageName)
+                .classPathExplorer(classPathExplorer)
                 .build()
                 .implementations();
     }

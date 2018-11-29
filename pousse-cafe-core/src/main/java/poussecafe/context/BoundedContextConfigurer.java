@@ -1,62 +1,55 @@
 package poussecafe.context;
 
+import java.util.HashSet;
 import java.util.Set;
-import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.Service;
-import poussecafe.messaging.Message;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.internal.InternalMessaging;
-import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 import poussecafe.storage.internal.InternalStorage;
 
-import static poussecafe.check.Checks.checkThatValue;
+public class BoundedContextConfigurer {
 
-public abstract class DiscoveredBoundedContextDefinition extends BoundedContextDefinition {
+    public static class Builder {
 
-    public DiscoveredBoundedContextDefinition(String packageName) {
-        super(false);
+        private BoundedContextConfigurer discovery = new BoundedContextConfigurer();
 
-        packageName(packageName);
-        loadAll();
+        public Builder packagePrefix(String packageName) {
+            this.packageName.add(packageName);
+            return this;
+        }
+
+        private Set<String> packageName = new HashSet<>();
+
+        public BoundedContextConfigurer build() {
+            discovery.classPathExplorer = new ClassPathExplorer(packageName);
+            return discovery;
+        }
     }
 
-    private void packageName(String packageName) {
-        checkThatValue(packageName).notNull();
-        this.packageName = packageName;
+    private BoundedContextConfigurer() {
+
     }
 
-    private String packageName;
+    private ClassPathExplorer classPathExplorer;
 
-    @Override
-    protected void loadDefinitions(Set<EntityDefinition> definitions) {
-        definitions.addAll(BoundedContextDiscovery.discoverDefinitions(packageName));
+    public BoundedContextDefinition define() {
+        BoundedContextDefinition.Builder builder = new BoundedContextDefinition.Builder();
+        builder.definitions(classPathExplorer.discoverDefinitions());
+        builder.processes(classPathExplorer.discoverDomainProcesses());
+        builder.services(classPathExplorer.discoverServices());
+        builder.messages(classPathExplorer.discoverMessages());
+        return builder.build();
     }
 
-    @Override
-    protected void loadProcesses(Set<Class<? extends DomainProcess>> processes) {
-        processes.addAll(BoundedContextDiscovery.discoverDomainProcesses(packageName));
-    }
-
-    @Override
-    protected void loadServices(Set<Class<? extends Service>> services) {
-        services.addAll(BoundedContextDiscovery.discoverServices(packageName));
-    }
-
-    @Override
-    protected void loadMessages(Set<Class<? extends Message>> messages) {
-        messages.addAll(BoundedContextDiscovery.discoverMessages(packageName));
-    }
-
-    public BoundedContext.Builder withDefaultImplementation() {
-        return implement()
+    public BoundedContext.Builder defineAndImplementDefault() {
+        return defineThenImplement()
                 .messaging(InternalMessaging.instance())
                 .storage(InternalStorage.instance());
     }
 
-    public BoundedContextWithNoImplementation implement() {
+    public BoundedContextWithNoImplementation defineThenImplement() {
         BoundedContext.Builder builder = new BoundedContext.Builder();
-        builder.definition(this);
+        builder.definition(define());
         return new BoundedContextWithNoImplementation(builder);
     }
 
@@ -75,7 +68,7 @@ public abstract class DiscoveredBoundedContextDefinition extends BoundedContextD
 
         public BoundedContextWithMessaging messaging(Messaging messaging) {
             builder.messagingImplementations(new MessagingImplementationDiscovery.Builder()
-                    .packageName(packageName)
+                    .classPathExplorer(classPathExplorer)
                     .messaging(messaging)
                     .build()
                     .discover());
@@ -93,7 +86,7 @@ public abstract class DiscoveredBoundedContextDefinition extends BoundedContextD
 
         public BoundedContext.Builder storage(Storage storage) {
             builder.storageImplementations(new StorageImplementationDiscovery.Builder()
-                    .packageName(packageName)
+                    .classPathExplorer(classPathExplorer)
                     .storage(storage)
                     .build()
                     .discover());
