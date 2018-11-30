@@ -97,6 +97,7 @@ public class MetaApplicationContext {
         injector.registerInjectableService(environment);
         injector.registerInjectableService(storageServiceLocator);
         injector.registerInjectableService(messageListenerRegistry);
+        injector.registerInjectableService(componentFactory);
 
         configureContext();
         injector.injectDependencies();

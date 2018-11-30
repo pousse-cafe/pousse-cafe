@@ -1,7 +1,9 @@
-package poussecafe.storage.internal;
+package poussecafe.context;
+
+import poussecafe.exception.PousseCafeException;
 
 @SuppressWarnings("serial")
-public class OptimisticLockingException extends InternalStorageException {
+public class OptimisticLockingException extends PousseCafeException {
 
     public OptimisticLockingException() {
         super();

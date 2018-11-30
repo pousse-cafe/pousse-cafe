@@ -3,17 +3,19 @@ package poussecafe.journal;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import poussecafe.adapters.messaging.FailedConsumptionData;
+import poussecafe.adapters.messaging.SuccessfulConsumptionData;
 import poussecafe.context.TransactionRunnerLocator;
 import poussecafe.domain.ComponentFactory;
+import poussecafe.events.FailedConsumption;
+import poussecafe.events.SuccessfulConsumption;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
 import poussecafe.journal.domain.JournalEntryRepository;
 import poussecafe.journal.process.MessagingJournal;
-import poussecafe.messaging.FailedConsumption;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
-import poussecafe.messaging.SuccessfulConsumption;
 import poussecafe.messaging.TransparentMessageAdapter;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.FieldAccessor;
@@ -90,11 +92,23 @@ public abstract class MessagingJournalTest {
     }
 
     protected void whenLoggingSuccessfulConsumption() {
-        journal.logSuccessfulConsumption(new SuccessfulConsumption(key.getConsumptionId(), listenerId, message));
+        SuccessfulConsumption event = new SuccessfulConsumptionData();
+        event.consumptionId().set(key.getConsumptionId());
+        event.listenerId().set(listenerId);
+        event.rawMessage().set(rawMessage());
+        journal.logSuccessfulConsumption(event);
+    }
+
+    protected String rawMessage() {
+        return "rawMessage";
     }
 
     protected void whenLoggingFailedConsumption() {
-        journal.logFailedConsumption(new FailedConsumption(key.getConsumptionId(), listenerId, message, exception));
+        FailedConsumption event = new FailedConsumptionData();
+        event.consumptionId().set(key.getConsumptionId());
+        event.listenerId().set(listenerId);
+        event.rawMessage().set(rawMessage());
+        event.error().set("error");
+        journal.logFailedConsumption(event);
     }
-
 }

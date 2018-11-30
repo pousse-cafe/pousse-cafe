@@ -3,6 +3,7 @@ package poussecafe.messaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.context.MessageConsumer;
+import poussecafe.context.RawAndAdaptedMessage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -26,7 +27,10 @@ public abstract class MessageReceiver {
     protected void onMessage(Object receivedMessage) {
         checkThat(value(receivedMessage).notNull().because("Received message cannot be null"));
         Message message = messageAdapter.adaptSerializedMessage(receivedMessage);
-        messageConsumer.consumeMessage(message);
+        messageConsumer.consumeMessage(new RawAndAdaptedMessage.Builder()
+                .raw(receivedMessage)
+                .adapted(message)
+                .build());
     }
 
     protected Logger logger = LoggerFactory.getLogger(getClass());

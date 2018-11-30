@@ -2,7 +2,9 @@ package poussecafe.spring.mongo.storage;
 
 import java.io.Serializable;
 import java.util.List;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import poussecafe.context.OptimisticLockingException;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
 
@@ -19,17 +21,33 @@ public abstract class MongoDataAccess<K, D extends EntityData<K>, M extends Seri
 
     @Override
     public void addData(D data) {
-        mongoRepository().insert(data);
+        try {
+            mongoRepository().insert(data);
+        } catch (OptimisticLockingFailureException e) {
+            throw translateOptimisticLockingFailure(e);
+        }
+    }
+
+    private OptimisticLockingException translateOptimisticLockingFailure(OptimisticLockingFailureException e) {
+        return new OptimisticLockingException(e);
     }
 
     @Override
     public void updateData(D data) {
-        mongoRepository().save(data);
+        try {
+            mongoRepository().save(data);
+        } catch (OptimisticLockingFailureException e) {
+            throw translateOptimisticLockingFailure(e);
+        }
     }
 
     @Override
     public void deleteData(K key) {
-        mongoRepository().deleteById(convertKey(key));
+        try {
+            mongoRepository().deleteById(convertKey(key));
+        } catch (OptimisticLockingFailureException e) {
+            throw translateOptimisticLockingFailure(e);
+        }
     }
 
     @Override

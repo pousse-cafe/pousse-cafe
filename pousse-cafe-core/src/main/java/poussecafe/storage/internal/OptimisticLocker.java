@@ -1,6 +1,7 @@
 package poussecafe.storage.internal;
 
 import java.util.Optional;
+import poussecafe.context.OptimisticLockingException;
 import poussecafe.util.ReflectionException;
 import poussecafe.util.ReflectionUtils;
 

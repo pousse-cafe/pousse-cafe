@@ -2,6 +2,7 @@ package poussecafe.messaging;
 
 import org.junit.Test;
 import poussecafe.context.MessageConsumer;
+import poussecafe.context.RawAndAdaptedMessage;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,12 +33,18 @@ public abstract class MessageReceiverTest {
     private MessagingConnection connection;
 
     private void whenConsumingMessage() {
-        connection.messageReceiver().onMessage(serializedMessage(message));
+        serializedMessage = serializedMessage(message);
+        connection.messageReceiver().onMessage(serializedMessage);
     }
+
+    private Object serializedMessage;
 
     protected abstract Object serializedMessage(Message message);
 
     private void thenListenerConsumes() {
-        verify(messageConsumer).consumeMessage(message);
+        verify(messageConsumer).consumeMessage(new RawAndAdaptedMessage.Builder()
+                .raw(serializedMessage)
+                .adapted(message)
+                .build());
     }
 }

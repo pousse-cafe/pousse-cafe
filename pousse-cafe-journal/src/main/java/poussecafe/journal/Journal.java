@@ -2,15 +2,17 @@ package poussecafe.journal;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class JournalBoundedContextConfiguration {
+public class Journal {
 
-    private JournalBoundedContextConfiguration() {
+    private Journal() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
                 .packagePrefix("poussecafe.journal")
+                .packagePrefix("poussecafe.events")
+                .packagePrefix("poussecafe.adapters.messaging")
                 .build();
     }
 }

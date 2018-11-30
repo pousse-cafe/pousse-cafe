@@ -1,14 +1,14 @@
 package poussecafe.journal.adapters;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.journal.data.SerializableJournalEntryKey;
+import poussecafe.journal.adapters.SerializableJournalEntryKey;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
 import poussecafe.journal.domain.JournalEntryStatus;
 import poussecafe.journal.domain.Logs;
 import poussecafe.property.Property;
 
-public class JournalEntryData implements JournalEntry.Data {
+public class MongoJournalEntryData implements JournalEntry.Data {
 
     @Override
     public Property<JournalEntryKey> key() {

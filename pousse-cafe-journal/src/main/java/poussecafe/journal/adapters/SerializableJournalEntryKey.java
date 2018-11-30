@@ -1,4 +1,4 @@
-package poussecafe.journal.data;
+package poussecafe.journal.adapters;
 
 import java.io.Serializable;
 import poussecafe.journal.domain.JournalEntryKey;

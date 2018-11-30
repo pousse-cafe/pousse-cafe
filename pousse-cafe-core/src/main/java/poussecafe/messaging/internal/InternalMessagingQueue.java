@@ -26,21 +26,22 @@ public class InternalMessagingQueue {
         @Override
         protected void actuallyStartReceiving() {
             Thread t = new Thread(() -> {
-                try {
-                    while (true) {
+                while (true) {
+                    try {
                         available.acquire();
                         mutex.acquire();
                         Object polledObject = queue.poll();
-                        if(STOP.equals(polledObject)) {
-                            mutex.release();
-                            break;
+                        if (STOP.equals(polledObject)) {
+                            return;
                         } else {
                             onMessage(polledObject);
-                            mutex.release();
                         }
+                    } catch (InterruptedException e) {
+                        return;
+                    } finally {
+                        // Catch-all, thread must continue to run until explicitly stopped
+                        mutex.release();
                     }
-                } catch (InterruptedException e) {
-                    return;
                 }
             });
             t.setDaemon(true);

@@ -2,8 +2,8 @@ package poussecafe.storage.internal;
 
 import java.util.Optional;
 import org.junit.Test;
+import poussecafe.context.OptimisticLockingException;
 import poussecafe.storage.internal.OptimisticLocker;
-import poussecafe.storage.internal.OptimisticLockingException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
