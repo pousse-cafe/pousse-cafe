@@ -7,5 +7,5 @@ public interface JournalEntryDataAccess<D extends JournalEntry.Data> extends Ent
 
     List<D> findByMessageId(String messageId);
 
-    List<D> findByStatus(JournalEntryStatus status);
+    List<D> findByStatus(ConsumptionStatus status);
 }

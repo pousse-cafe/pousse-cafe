@@ -1,9 +1,9 @@
 package poussecafe.journal.adapters;
 
 import java.util.List;
+import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.journal.domain.JournalEntryStatus;
 import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
@@ -19,7 +19,7 @@ public class InternalJournalEntryDataAccess extends InternalDataAccess<JournalEn
 
     @Override
     protected List<Object> extractIndexedData(JournalEntryData data) {
-        return asList(data.key().get().getConsumptionId(), data.getStatus());
+        return asList(data.key().get().getConsumptionId(), data.status().get());
     }
 
     @Override
@@ -28,7 +28,7 @@ public class InternalJournalEntryDataAccess extends InternalDataAccess<JournalEn
     }
 
     @Override
-    public List<JournalEntryData> findByStatus(JournalEntryStatus status) {
+    public List<JournalEntryData> findByStatus(ConsumptionStatus status) {
         return findBy(status);
     }
 

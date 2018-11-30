@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import poussecafe.journal.adapters.SerializableJournalEntryKey;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.journal.domain.JournalEntryStatus;
+import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.spring.mongo.storage.MongoDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 import poussecafe.storage.DataAccessImplementation;
@@ -28,7 +28,7 @@ public class MongoJournalEntryDataAccess extends MongoDataAccess<JournalEntryKey
     }
 
     @Override
-    public List<MongoJournalEntryData> findByStatus(JournalEntryStatus status) {
+    public List<MongoJournalEntryData> findByStatus(ConsumptionStatus status) {
         return repository.findByStatus(status);
     }
 

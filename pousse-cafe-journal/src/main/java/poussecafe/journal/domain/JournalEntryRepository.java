@@ -13,7 +13,7 @@ public class JournalEntryRepository extends Repository<JournalEntry, JournalEntr
         return (JournalEntryDataAccess<JournalEntry.Data>) dataAccess;
     }
 
-    public List<JournalEntry> findByStatus(JournalEntryStatus status) {
+    public List<JournalEntry> findByStatus(ConsumptionStatus status) {
         return newEntitiesWithData(dataAccess().findByStatus(status));
     }
 

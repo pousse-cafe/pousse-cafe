@@ -1,72 +1,53 @@
 package poussecafe.journal.adapters;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.journal.adapters.SerializableJournalEntryKey;
+import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.journal.domain.JournalEntryStatus;
-import poussecafe.journal.domain.Logs;
 import poussecafe.property.Property;
+import poussecafe.property.PropertyBuilder;
 
 public class MongoJournalEntryData implements JournalEntry.Data {
 
     @Override
     public Property<JournalEntryKey> key() {
-        return new Property<JournalEntryKey>() {
-            @Override
-            public JournalEntryKey get() {
-                return key.toJournalEntryKey();
-            }
-
-            @Override
-            public void set(JournalEntryKey value) {
-                key = new SerializableJournalEntryKey(value);
-            }
-        };
+        return PropertyBuilder.simple(JournalEntryKey.class)
+                .fromAutoAdapting(SerializableJournalEntryKey.class)
+                .get(() -> key)
+                .set(value -> key = value)
+                .build();
     }
 
     @Id
     private SerializableJournalEntryKey key;
 
     @Override
-    public void setMessageData(String messageData) {
-        this.messageData = messageData;
+    public Property<String> rawMessage() {
+        return PropertyBuilder.simple(String.class)
+                .get(() -> rawMessage)
+                .set(value -> rawMessage = value)
+                .build();
     }
 
-    private String messageData;
+    private String rawMessage;
 
     @Override
-    public String getMessageData() {
-        return messageData;
+    public Property<String> error() {
+        return PropertyBuilder.simple(String.class)
+                .get(() -> error)
+                .set(value -> error = value)
+                .build();
     }
+
+    private String error;
 
     @Override
-    public Property<Logs> logs() {
-        return new Property<Logs>() {
-            @Override
-            public Logs get() {
-                return logs;
-            }
-
-            @Override
-            public void set(Logs value) {
-                logs = value;
-            }
-        };
+    public Property<ConsumptionStatus> status() {
+        return PropertyBuilder.simple(ConsumptionStatus.class)
+                .get(() -> status)
+                .set(value -> status = value)
+                .build();
     }
 
-    private Logs logs;
-
-    @Override
-    public void setStatus(JournalEntryStatus status) {
-        this.status = status;
-    }
-
-    private JournalEntryStatus status;
-
-    @Override
-    public JournalEntryStatus getStatus() {
-        return status;
-    }
-
+    private ConsumptionStatus status;
 }

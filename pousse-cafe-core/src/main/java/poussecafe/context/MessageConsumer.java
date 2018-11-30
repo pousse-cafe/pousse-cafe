@@ -11,6 +11,7 @@ import poussecafe.domain.ComponentSpecification;
 import poussecafe.events.FailedConsumption;
 import poussecafe.events.SuccessfulConsumption;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.util.ExceptionUtils;
@@ -40,6 +41,8 @@ public class MessageConsumer {
             } catch (OptimisticLockingException e) {
                 logger.debug("Optimistic locking failure detected, will retry", e);
                 toRetry.add(listener);
+            } catch (SameOperationException e) {
+                logger.debug("Ignoring probable dubbed message consumption", e);
             }
         }
         return toRetry;

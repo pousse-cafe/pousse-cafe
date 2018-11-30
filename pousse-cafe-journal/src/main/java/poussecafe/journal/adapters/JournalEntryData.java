@@ -1,78 +1,53 @@
 package poussecafe.journal.adapters;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.journal.domain.JournalEntryStatus;
-import poussecafe.journal.domain.Logs;
 import poussecafe.property.Property;
-
-import static java.util.stream.Collectors.toList;
+import poussecafe.property.PropertyBuilder;
 
 @SuppressWarnings("serial")
 public class JournalEntryData implements JournalEntry.Data, Serializable {
 
     @Override
-    public Property<Logs> logs() {
-        return new Property<Logs>() {
-            @Override
-            public Logs get() {
-                return new Logs(new ArrayList<>(logs.stream().map(JournalEntryLogData::toLog).collect(toList())));
-            }
-
-            @Override
-            public void set(Logs value) {
-                logs.clear();
-                logs.addAll(value.asList().stream().map(JournalEntryLogData::new).collect(toList()));
-            }
-        };
-    }
-
-    private ArrayList<JournalEntryLogData> logs = new ArrayList<>();
-
-    @Override
-    public void setStatus(JournalEntryStatus status) {
-        this.status = status;
-    }
-
-    private JournalEntryStatus status;
-
-    @Override
-    public JournalEntryStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setMessageData(String messageData) {
-        this.messageData = messageData;
-    }
-
-    private String messageData;
-
-    @Override
-    public String getMessageData() {
-        return messageData;
-    }
-
-    @Override
     public Property<JournalEntryKey> key() {
-        return new Property<JournalEntryKey>() {
-            @Override
-            public JournalEntryKey get() {
-                return new JournalEntryKey(consumptionId, listenerId);
-            }
-
-            @Override
-            public void set(JournalEntryKey value) {
-                consumptionId = value.getConsumptionId();
-                listenerId = value.getListenerId();
-            }
-        };
+        return PropertyBuilder.simple(JournalEntryKey.class)
+                .fromAutoAdapting(SerializableJournalEntryKey.class)
+                .get(() -> key)
+                .set(value -> key = value)
+                .build();
     }
 
-    private String consumptionId;
+    private SerializableJournalEntryKey key;
 
-    private String listenerId;
+    @Override
+    public Property<String> rawMessage() {
+        return PropertyBuilder.simple(String.class)
+                .get(() -> rawMessage)
+                .set(value -> rawMessage = value)
+                .build();
+    }
 
+    private String rawMessage;
+
+    @Override
+    public Property<String> error() {
+        return PropertyBuilder.simple(String.class)
+                .get(() -> error)
+                .set(value -> error = value)
+                .build();
+    }
+
+    private String error;
+
+    @Override
+    public Property<ConsumptionStatus> status() {
+        return PropertyBuilder.simple(ConsumptionStatus.class)
+                .get(() -> status)
+                .set(value -> status = value)
+                .build();
+    }
+
+    private ConsumptionStatus status;
 }

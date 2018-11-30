@@ -13,7 +13,7 @@ import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
 import poussecafe.journal.domain.JournalEntryRepository;
-import poussecafe.journal.process.MessagingJournal;
+import poussecafe.journal.process.StoreConsumptionResult;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.TransparentMessageAdapter;
@@ -35,7 +35,7 @@ public abstract class MessagingJournalTest {
     protected ComponentFactory primitiveFactory;
 
     @InjectMocks
-    protected MessagingJournal journal;
+    protected StoreConsumptionResult journal;
 
     protected MessageAdapter messageAdapter;
 
@@ -96,7 +96,7 @@ public abstract class MessagingJournalTest {
         event.consumptionId().set(key.getConsumptionId());
         event.listenerId().set(listenerId);
         event.rawMessage().set(rawMessage());
-        journal.logSuccessfulConsumption(event);
+        journal.storeSuccessfulConsumption(event);
     }
 
     protected String rawMessage() {
@@ -109,6 +109,6 @@ public abstract class MessagingJournalTest {
         event.listenerId().set(listenerId);
         event.rawMessage().set(rawMessage());
         event.error().set("error");
-        journal.logFailedConsumption(event);
+        journal.storeFailedConsumption(event);
     }
 }
