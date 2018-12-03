@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
@@ -17,6 +18,10 @@ import poussecafe.property.Property;
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.Checks.checkThatValue;
 
+@Aggregate(
+  factory = DomainProcessDocFactory.class,
+  repository = DomainProcessDocRepository.class
+)
 public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainProcessDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {

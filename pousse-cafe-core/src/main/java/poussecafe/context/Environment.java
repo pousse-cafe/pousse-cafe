@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -21,17 +21,17 @@ import static poussecafe.check.Checks.checkThat;
 
 public class Environment {
 
-    public void defineEntity(EntityDefinition definition) {
+    public void defineAggregate(AggregateDefinition definition) {
         checkThat(value(definition).notNull());
         Class<?> entityClass = definition.getEntityClass();
-        if(definitions.containsKey(entityClass)) {
-            if(definition.equals(definitions.get(entityClass))) {
+        if(aggregateDefinitions.containsKey(entityClass)) {
+            if(definition.equals(aggregateDefinitions.get(entityClass))) {
                 return;
             } else {
                 throw new PousseCafeException("Conflicting definitions found for Entity " + entityClass.getName());
             }
         }
-        definitions.put(entityClass, definition);
+        aggregateDefinitions.put(entityClass, definition);
 
         if(definition.hasFactory()) {
             entityClassByRelated.put(definition.getFactoryClass(), entityClass);
@@ -42,13 +42,19 @@ public class Environment {
         }
     }
 
-    private Map<Class<?>, EntityDefinition> definitions = new HashMap<>();
+    private Map<Class<?>, AggregateDefinition> aggregateDefinitions = new HashMap<>();
 
     private Map<Class<?>, Class<?>> entityClassByRelated = new HashMap<>();
 
     public void implementEntity(EntityImplementation implementation) {
         checkThat(value(implementation).notNull());
         Class<?> entityClass = implementation.getEntityClass();
+
+        if(!aggregateDefinitions.containsKey(entityClass)
+                && implementation.hasDataAccess()) {
+            throw new PousseCafeException("Trying to implement undefined aggregate with root " + entityClass.getName());
+        }
+
         entityImplementations.put(entityClass, implementation);
 
         if(implementation.hasStorage()) {
@@ -66,7 +72,7 @@ public class Environment {
 
     public Set<Class<?>> getAbstractEntities() {
         Set<Class<?>> abstractEntities = new HashSet<>();
-        for(Class<?> entityClass : definitions.keySet()) {
+        for(Class<?> entityClass : aggregateDefinitions.keySet()) {
             if(!entityImplementations.containsKey(entityClass)) {
                 abstractEntities.add(entityClass);
             }
@@ -108,8 +114,8 @@ public class Environment {
         return implementation.getDataAccessFactory();
     }
 
-    public EntityDefinition getEntityDefinition(Class<?> entityClass) {
-        EntityDefinition definition = definitions.get(entityClass);
+    public AggregateDefinition getEntityDefinition(Class<?> entityClass) {
+        AggregateDefinition definition = aggregateDefinitions.get(entityClass);
         if(definition == null) {
             throw new PousseCafeException("Entity " + entityClass + " is not defined");
         }
@@ -117,7 +123,7 @@ public class Environment {
     }
 
     public Set<Class<?>> getDefinedEntities() {
-        return unmodifiableSet(definitions.keySet());
+        return unmodifiableSet(aggregateDefinitions.keySet());
     }
 
     public void defineService(Class<?> serviceClass) {

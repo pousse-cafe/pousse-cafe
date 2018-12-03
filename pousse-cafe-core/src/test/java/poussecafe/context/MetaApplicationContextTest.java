@@ -2,7 +2,7 @@ package poussecafe.context;
 
 import java.util.Set;
 import org.junit.Test;
-import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.SimpleAggregate;
 import poussecafe.domain.SimpleAggregateData;
@@ -33,7 +33,7 @@ public class MetaApplicationContextTest {
     }
 
     private void givenApplicationConfiguration() {
-        context.environment().defineEntity(new EntityDefinition.Builder()
+        context.environment().defineAggregate(new AggregateDefinition.Builder()
                 .withEntityClass(SimpleAggregate.class)
                 .withFactoryClass(SimpleAggregateFactory.class)
                 .withRepositoryClass(SimpleAggregateRepository.class)

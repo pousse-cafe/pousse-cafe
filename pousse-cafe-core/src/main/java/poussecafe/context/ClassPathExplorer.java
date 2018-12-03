@@ -2,11 +2,8 @@ package poussecafe.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
@@ -15,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
-import poussecafe.domain.EntityDefinition;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -42,51 +37,26 @@ public class ClassPathExplorer {
     private Reflections reflections;
 
     @SuppressWarnings("rawtypes")
-    public List<EntityDefinition> discoverDefinitions() {
-        Map<String, Class<? extends AggregateRoot>> aggregateRootClassesByName = classesByName(AggregateRoot.class);
-        Map<String, Class<? extends Factory>> factoryClassesByName = classesByName(Factory.class);
-        Map<String, Class<? extends Repository>> repositoryClassesByName = classesByName(Repository.class);
+    public List<AggregateDefinition> discoverDefinitions() {
+        Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
 
-        List<EntityDefinition> discoveredDefinitions = new ArrayList<>();
-        for(Entry<String, Class<? extends AggregateRoot>> entry : aggregateRootClassesByName.entrySet()) {
-            Class<? extends AggregateRoot> aggregateRootClass = entry.getValue();
-            String aggregateRootName = aggregateRootClass.getSimpleName();
-            String aggregateRootPackage = aggregateRootClass.getPackage().getName();
-
-            String expectedFactoryName = aggregateRootPackage + "." + aggregateRootName + "Factory";
-            Class<? extends Factory> factoryClass = factoryClassesByName.get(expectedFactoryName);
-            if(factoryClass == null) {
-                throw new PousseCafeException("Missing factory class " + expectedFactoryName);
+        List<AggregateDefinition> definitions = new ArrayList<>();
+        for(Class<?> aggregateRootClass : aggregateRootClasses) {
+            if(!AggregateRoot.class.isAssignableFrom(aggregateRootClass)) {
+                throw new PousseCafeException("Only aggregate roots can be annotated with @" + Aggregate.class.getSimpleName());
             }
 
-            String expectedRepositoryName = aggregateRootPackage + "." + aggregateRootName + "Repository";
-            Class<? extends Repository> repositoryClass = repositoryClassesByName.get(expectedRepositoryName);
-            if(repositoryClass == null) {
-                throw new PousseCafeException("Missing repository class " + expectedRepositoryName);
-            }
-
-            EntityDefinition definition = new EntityDefinition.Builder()
-                    .withEntityClass(entry.getValue())
-                    .withFactoryClass(factoryClass)
-                    .withRepositoryClass(repositoryClass)
-                    .build();
-
-            logger.debug("Adding definition for aggregate {}", aggregateRootName);
-            discoveredDefinitions.add(definition);
+            Aggregate annotation = aggregateRootClass.getAnnotation(Aggregate.class);
+            definitions.add(new AggregateDefinition.Builder()
+                    .withEntityClass(aggregateRootClass)
+                    .withFactoryClass(annotation.factory())
+                    .withRepositoryClass(annotation.repository())
+                    .build());
         }
-        return discoveredDefinitions;
+        return definitions;
     }
 
     private Logger logger = LoggerFactory.getLogger(ClassPathExplorer.class);
-
-    private <T> Map<String, Class<? extends T>> classesByName(Class<T> superType) {
-        Map<String, Class<? extends T>> classesByName = new HashMap<>();
-        getSubTypesOf(superType).forEach(aClass -> {
-            String className = aClass.getName();
-            classesByName.put(className, aClass);
-        });
-        return classesByName;
-    }
 
     public List<Class<? extends Service>> discoverServices() {
         return getSubTypesOf(Service.class).collect(toList());

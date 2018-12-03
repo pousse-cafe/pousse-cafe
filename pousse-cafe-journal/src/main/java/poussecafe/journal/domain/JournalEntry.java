@@ -1,11 +1,16 @@
 package poussecafe.journal.domain;
 
+import poussecafe.context.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
 import poussecafe.property.ProtectedProperty;
 import poussecafe.property.ProtectedPropertyBuilder;
 
+@Aggregate(
+  factory = JournalEntryFactory.class,
+  repository = JournalEntryRepository.class
+)
 public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Data> {
 
     public ProtectedProperty<ConsumptionStatus> status() {

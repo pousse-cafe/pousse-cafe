@@ -1,5 +1,6 @@
 package poussecafe.sample.domain;
 
+import poussecafe.context.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.sample.domain.Product.Data;
@@ -9,6 +10,10 @@ import static poussecafe.check.Predicates.equalTo;
 import static poussecafe.check.Predicates.greaterThan;
 import static poussecafe.domain.DomainCheckSpecification.value;
 
+@Aggregate(
+  factory = ProductFactory.class,
+  repository = ProductRepository.class
+)
 public class Product extends AggregateRoot<ProductKey, Data> {
 
     void setTotalUnits(int units) {

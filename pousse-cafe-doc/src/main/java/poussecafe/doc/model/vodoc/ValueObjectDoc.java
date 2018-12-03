@@ -1,5 +1,6 @@
 package poussecafe.doc.model.vodoc;
 
+import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
@@ -8,6 +9,10 @@ import poussecafe.property.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
+@Aggregate(
+  factory = ValueObjectDocFactory.class,
+  repository = ValueObjectDocRepository.class
+)
 public class ValueObjectDoc extends AggregateRoot<ValueObjectDocKey, ValueObjectDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {

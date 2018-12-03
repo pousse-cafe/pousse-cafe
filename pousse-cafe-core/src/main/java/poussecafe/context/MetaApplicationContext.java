@@ -14,7 +14,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.EntityData;
-import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
@@ -110,8 +110,8 @@ public class MetaApplicationContext {
     }
 
     private void loadBoundedContextDefinition(BoundedContextDefinition boundedContext) {
-        for(EntityDefinition entityDefinition : boundedContext.getEntityDefinitions()) {
-            environment.defineEntity(entityDefinition);
+        for(AggregateDefinition entityDefinition : boundedContext.getEntityDefinitions()) {
+            environment.defineAggregate(entityDefinition);
         }
         for(Class<? extends Message> messageClass : boundedContext.getMessages()) {
             environment.defineMessage(messageClass);
@@ -178,7 +178,7 @@ public class MetaApplicationContext {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void configureEntity(Class<?> entityClass) {
-        EntityDefinition definition = environment.getEntityDefinition(entityClass);
+        AggregateDefinition definition = environment.getEntityDefinition(entityClass);
         if(definition.hasFactory() && definition.hasRepository()) {
             Repository repository = (Repository) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getRepositoryClass()));
             Factory factory = (Factory) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getFactoryClass()));

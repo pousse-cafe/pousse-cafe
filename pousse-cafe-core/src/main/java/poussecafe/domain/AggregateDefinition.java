@@ -8,7 +8,7 @@ import poussecafe.util.ReferenceEquals;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class EntityDefinition {
+public class AggregateDefinition {
 
     public Class<?> getEntityClass() {
         return entityClass;
@@ -36,10 +36,10 @@ public class EntityDefinition {
         return repositoryClass != null;
     }
 
-    public static class Builder extends AbstractBuilder<EntityDefinition> {
+    public static class Builder extends AbstractBuilder<AggregateDefinition> {
 
         public Builder() {
-            super(new EntityDefinition());
+            super(new AggregateDefinition());
         }
 
         public Builder withEntityClass(Class<?> entityClass) {
@@ -58,12 +58,12 @@ public class EntityDefinition {
         }
 
         @Override
-        protected void checkProduct(EntityDefinition product) {
+        protected void checkProduct(AggregateDefinition product) {
             checkThat(value(product.entityClass).notNull().because("Entity class cannot be null"));
         }
     }
 
-    private EntityDefinition() {
+    private AggregateDefinition() {
 
     }
 

@@ -2,6 +2,7 @@ package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
 import java.util.Optional;
+import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.step.StepDoc;
@@ -13,6 +14,10 @@ import poussecafe.property.Property;
 
 import static poussecafe.check.Checks.checkThatValue;
 
+@Aggregate(
+    factory = AggregateDocFactory.class,
+    repository = AggregateDocRepository.class
+)
 public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {

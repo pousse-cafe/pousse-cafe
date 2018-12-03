@@ -1,9 +1,14 @@
 package poussecafe.doc.model.relation;
 
+import poussecafe.context.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
 
+@Aggregate(
+  factory = RelationFactory.class,
+  repository = RelationRepository.class
+)
 public class Relation extends AggregateRoot<RelationKey, Relation.Data> {
 
     void fromType(ComponentType fromType) {

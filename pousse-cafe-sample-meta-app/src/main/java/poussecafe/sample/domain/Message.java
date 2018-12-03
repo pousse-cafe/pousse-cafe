@@ -1,11 +1,16 @@
 package poussecafe.sample.domain;
 
+import poussecafe.context.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
+@Aggregate(
+  factory = MessageFactory.class,
+  repository = MessageRepository.class
+)
 public class Message extends AggregateRoot<MessageKey, Message.Data> {
 
     void setCustomerKey(CustomerKey customerKey) {

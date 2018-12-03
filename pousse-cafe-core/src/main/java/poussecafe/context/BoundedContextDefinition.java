@@ -3,7 +3,7 @@ package poussecafe.context;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import poussecafe.domain.EntityDefinition;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.Service;
 import poussecafe.messaging.Message;
 import poussecafe.process.DomainProcess;
@@ -16,7 +16,7 @@ public class BoundedContextDefinition {
 
         private BoundedContextDefinition definition = new BoundedContextDefinition();
 
-        public Builder definitions(Collection<EntityDefinition> definitions) {
+        public Builder definitions(Collection<AggregateDefinition> definitions) {
             definition.definitions.addAll(definitions);
             return this;
         }
@@ -45,9 +45,9 @@ public class BoundedContextDefinition {
 
     }
 
-    private Set<EntityDefinition> definitions = new HashSet<>();
+    private Set<AggregateDefinition> definitions = new HashSet<>();
 
-    public Set<EntityDefinition> getEntityDefinitions() {
+    public Set<AggregateDefinition> getEntityDefinitions() {
         return unmodifiableSet(definitions);
     }
 

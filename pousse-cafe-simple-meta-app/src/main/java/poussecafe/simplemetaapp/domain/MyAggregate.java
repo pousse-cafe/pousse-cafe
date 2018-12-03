@@ -1,5 +1,6 @@
 package poussecafe.simplemetaapp.domain;
 
+import poussecafe.context.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
@@ -13,6 +14,10 @@ import static poussecafe.check.Predicates.greaterThan;
 /*
  * A simple aggregate root
  */
+@Aggregate(
+    factory = MyAggregateFactory.class,
+    repository = MyAggregateRepository.class
+)
 public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data> {
 
     /*
