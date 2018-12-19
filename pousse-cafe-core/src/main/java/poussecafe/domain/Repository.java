@@ -53,6 +53,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     public void add(A entity) {
         checkEntity(entity);
+        entity.onAdd();
         addData(entity);
     }
 
@@ -77,6 +78,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     public void update(A entity) {
         checkEntity(entity);
+        entity.onUpdate();
         updateData(entity);
     }
 
@@ -98,6 +100,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         checkKey(key);
         A entity = find(key);
         if (entity != null) {
+            entity.onDelete();
             delete(entity);
         }
     }
