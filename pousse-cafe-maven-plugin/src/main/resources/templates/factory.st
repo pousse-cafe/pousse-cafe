@@ -12,8 +12,8 @@ public class <name>Factory extends Factory\<<name>Key, <name>, <name>.Data> {
 
     public static class Parameters {
 
-        <name>Key key;
+        public <name>Key key;
 
-        String name;
+        public String name;
     }
 }
