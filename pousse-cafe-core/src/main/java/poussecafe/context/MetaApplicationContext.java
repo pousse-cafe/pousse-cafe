@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.EntityData;
-import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
@@ -32,6 +32,8 @@ import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MetaApplicationContext {
+
+    private Configuration configuration;
 
     private Environment environment;
 
@@ -56,6 +58,7 @@ public class MetaApplicationContext {
     private Set<MessageImplementationConfiguration> boundedContextMessagingImplementations = new HashSet<>();
 
     public MetaApplicationContext() {
+        configuration = new Configuration();
         environment = new Environment();
 
         componentFactory = new ComponentFactory();
@@ -72,6 +75,10 @@ public class MetaApplicationContext {
         messageSenderLocator = new MessageSenderLocator(connections);
     }
 
+    public Configuration configuration() {
+        return configuration;
+    }
+
     public Environment environment() {
         return environment;
     }
@@ -83,10 +90,23 @@ public class MetaApplicationContext {
         boundedContextMessagingImplementations.addAll(boundedContext.messagingImplementations());
     }
 
+    public synchronized void addConfiguration(String key, Object value) {
+        if(started) {
+            throw new PousseCafeException("Cannot add configuration entries after meta-application context has been started");
+        }
+        configuration.add(key, value);
+    }
+
     public synchronized void start() {
+        if(started) {
+            return;
+        }
+        started = true;
         load();
         startMessageHandling();
     }
+
+    private boolean started;
 
     public synchronized void load() {
         loadBoundedContextDefinitions();
@@ -94,6 +114,7 @@ public class MetaApplicationContext {
         checkEnvironment();
 
         injector = new Injector();
+        injector.registerInjectableService(configuration);
         injector.registerInjectableService(environment);
         injector.registerInjectableService(storageServiceLocator);
         injector.registerInjectableService(messageListenerRegistry);
