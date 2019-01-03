@@ -10,15 +10,19 @@
 
 ## Snapshot release
 
-Deployment is automatically handled by Travis (see .travis.yml for details).
+Deployment is automatically handled by Travis (see .travis.yml for details) except for the archetype.
+
+The archetype package needs to be deployed separately:
+
+    ( cd pousse-cafe-simple-meta-app/ ; ./scripts/archetype_mvn.sh deploy )
 
 ## Other releases
 
 Deployment is manual (because of package signing).
 
-``mvn deploy -Ppousse-cafe-release`` where ``pousse-cafe-release`` profile enables the generation of source and javadoc
-packages as well as the signing of all artifacts. Note that ``settings.xml`` file needs to contain related profile
-section to configure GPG. For instance:
+``mvn deploy -Ppousse-cafe-release`` where ``pousse-cafe-release`` profile enables the generation of source and 
+javadoc packages as well as the signing of all artifacts. Note that ``settings.xml`` file needs to contain related
+profile section to configure GPG. For instance:
 
     <profile>
       <id>pousse-cafe-release</id>
@@ -27,6 +31,10 @@ section to configure GPG. For instance:
         <gpg.keyname>deployer_email_address</gpg.keyname>
       </properties>
     </profile>
+
+The archetype package needs to be deployed separately:
+
+    ( cd pousse-cafe-simple-meta-app/ ; ./scripts/archetype_mvn.sh deploy -Ppousse-cafe-release )
 
 After that:
 
