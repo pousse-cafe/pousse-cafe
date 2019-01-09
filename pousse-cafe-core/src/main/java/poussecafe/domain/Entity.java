@@ -8,18 +8,29 @@ import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Checks.checkThatValue;
 
-public abstract class Entity<K, D extends EntityData<K>> extends Component {
-
-    private D data;
+public abstract class Entity<K, D extends EntityData<K>> {
 
     @SuppressWarnings("unchecked")
-    void setData(Object data) {
+    public void setData(Object data) {
         checkThat(value(data).notNull().because("Data cannot be null"));
         this.data = (D) data;
     }
 
+    private D data;
+
     public D getData() {
         return data;
+    }
+
+    public void setComponentFactory(ComponentFactory componentFactory) {
+        checkThat(value(componentFactory).notNull());
+        this.componentFactory = componentFactory;
+    }
+
+    private ComponentFactory componentFactory;
+
+    protected ComponentFactory componentFactory() {
+        return componentFactory;
     }
 
     protected void dontPersist(boolean value) {
@@ -39,17 +50,6 @@ public abstract class Entity<K, D extends EntityData<K>> extends Component {
     public void setKey(K key) {
         checkThatValue(key).notNull();
         getData().key().set(key);
-    }
-
-    public void parent(Component parent) {
-        checkThatValue(parent).notNull();
-        this.parent = parent;
-    }
-
-    private Component parent;
-
-    public Component parent() {
-        return parent;
     }
 
     public MessageCollection messageCollection() {
@@ -72,29 +72,24 @@ public abstract class Entity<K, D extends EntityData<K>> extends Component {
         this.storage = storage;
     }
 
-    @Override
-    public <T> T newComponent(ComponentSpecification<T> specification) {
-        T newPrimitive = super.newComponent(specification);
-        if(newPrimitive instanceof Entity) {
-            @SuppressWarnings("rawtypes")
-            Entity entity = (Entity) newPrimitive;
-            entity.storage(storage);
-            entity.messageCollection(messageCollection);
-        }
-        return newPrimitive;
-    }
-
     protected void addDomainEvent(DomainEvent event) {
         messageCollection().addMessage(event);
     }
 
-    protected <E> E newDomainEvent(Class<E> eventClass) {
-        return newComponent(eventClass);
+    protected <E extends DomainEvent> E newDomainEvent(Class<E> eventClass) {
+        return componentFactory.newMessage(eventClass);
     }
 
     private MultiTypeMap<String> transitiveContext = new MultiTypeMap<>();
 
     public MultiTypeMap<String> transitiveData() {
         return transitiveContext;
+    }
+
+    public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
+        E entity = componentFactory.newEntity(EntitySpecification.ofClass(entityClass));
+        entity.storage(storage);
+        entity.messageCollection(messageCollection);
+        return entity;
     }
 }

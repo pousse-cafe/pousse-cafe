@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.ComponentFactory;
-import poussecafe.domain.ComponentSpecification;
 import poussecafe.events.FailedConsumption;
 import poussecafe.events.SuccessfulConsumption;
 import poussecafe.exception.PousseCafeException;
@@ -82,7 +81,7 @@ public class MessageConsumer {
         logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage, listener);
         if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
-                SuccessfulConsumption event = componentFactory.newComponent(ComponentSpecification.ofClass(SuccessfulConsumption.class));
+                SuccessfulConsumption event = componentFactory.newMessage(SuccessfulConsumption.class);
                 event.consumptionId().set(consumptionId);
                 event.listenerId().set(listener.getListenerId());
                 event.rawMessage().set(rawMessageOrDefault(receivedMessage));
@@ -112,7 +111,7 @@ public class MessageConsumer {
         logger.error("Consumption of message {} by listener {} failed", receivedMessage, listener, e);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
-                FailedConsumption event = componentFactory.newComponent(ComponentSpecification.ofClass(FailedConsumption.class));
+                FailedConsumption event = componentFactory.newMessage(FailedConsumption.class);
                 event.consumptionId().set(consumptionId);
                 event.listenerId().set(listener.getListenerId());
                 event.rawMessage().set(rawMessageOrDefault(receivedMessage));

@@ -5,33 +5,16 @@ import poussecafe.util.AbstractBuilder;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class ComponentSpecification<T> {
+public class EntitySpecification<T> {
 
-    public static <T> ComponentSpecification<T> ofClass(Class<T> primitiveClass) {
-        return new ComponentSpecification.Builder<T>().withComponentClass(primitiveClass).build();
+    public static <T> EntitySpecification<T> ofClass(Class<T> primitiveClass) {
+        return new EntitySpecification.Builder<T>().withComponentClass(primitiveClass).build();
     }
 
-    private Class<T> primitiveClass;
+    public static class Builder<T> extends AbstractBuilder<EntitySpecification<T>> {
 
-    private boolean withData;
-
-    public Class<T> getPrimitiveClass() {
-        return primitiveClass;
-    }
-
-    public boolean isWithData() {
-        return withData;
-    }
-
-    public Object getExistingData() {
-        return existingData;
-    }
-
-    private Object existingData;
-
-    public static class Builder<T> extends AbstractBuilder<ComponentSpecification<T>> {
         public Builder() {
-            super(new ComponentSpecification<>());
+            super(new EntitySpecification<>());
         }
 
         public Builder<T> withComponentClass(Class<T> primitiveClass) {
@@ -51,7 +34,7 @@ public class ComponentSpecification<T> {
         }
 
         @Override
-        protected void checkProduct(ComponentSpecification<T> product) {
+        protected void checkProduct(EntitySpecification<T> product) {
             checkThat(value(product.primitiveClass).notNull());
             if(product.withData) {
                 checkThat(value(product.existingData == null).isTrue());
@@ -59,9 +42,27 @@ public class ComponentSpecification<T> {
         }
     }
 
-    private ComponentSpecification() {
+    private EntitySpecification() {
 
     }
+
+    private Class<T> primitiveClass;
+
+    private boolean withData;
+
+    public Class<T> getPrimitiveClass() {
+        return primitiveClass;
+    }
+
+    public boolean isWithData() {
+        return withData;
+    }
+
+    public Object getExistingData() {
+        return existingData;
+    }
+
+    private Object existingData;
 
     @Override
     public int hashCode() {
@@ -84,7 +85,7 @@ public class ComponentSpecification<T> {
             return false;
         }
         @SuppressWarnings("rawtypes")
-        ComponentSpecification other = (ComponentSpecification) obj;
+        EntitySpecification other = (EntitySpecification) obj;
         if (primitiveClass == null) {
             if (other.primitiveClass != null) {
                 return false;

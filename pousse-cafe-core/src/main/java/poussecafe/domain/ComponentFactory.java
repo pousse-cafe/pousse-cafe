@@ -1,97 +1,89 @@
 package poussecafe.domain;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.context.Environment;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.storage.Storage;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-
 public class ComponentFactory {
 
-    public <T> T newComponent(ComponentSpecification<T> specification) {
-        Class<T> primitiveClass = specification.getPrimitiveClass();
-        T primitive;
-        if(Message.class.isAssignableFrom(primitiveClass)) {
-            primitive = newMessage(primitiveClass);
-        } else {
-            primitive = newInstance(primitiveClass);
+    public <E extends Entity<?, ?>> E newEntity(EntitySpecification<E> specification) {
+        Class<E> entityClass = specification.getPrimitiveClass();
+        E entity = newInstance(entityClass);
+
+        entity.setComponentFactory(this);
+
+        if(specification.getExistingData() != null) {
+            entity.setData(specification.getExistingData());
         }
 
-        if(Component.class.isAssignableFrom(primitiveClass)) {
-            Component realPrimitive = (Component) primitive;
-            realPrimitive.setComponentFactory(this);
+        Storage storage = environment.getStorage(entityClass);
+        if(storage != null) {
+            entity.storage(storage);
+            entity.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
         }
 
-        if(Entity.class.isAssignableFrom(primitiveClass)) {
-            Entity<?, ?> entity = (Entity<?, ?>) primitive;
-            if(specification.getExistingData() != null) {
-                entity.setData(specification.getExistingData());
-            }
-
-            Storage storage = environment.getStorage(primitiveClass);
-            if(storage != null) {
-                entity.storage(storage);
-                entity.messageCollection(storage.getMessageSendingPolicy().newMessageCollection());
-            }
-
-            if(environment.hasStorageImplementation(primitiveClass)) {
-                Object data = null;
-                if(specification.isWithData()) {
-                    data = supplyEntityDataImplementation(primitiveClass);
-                    entity.setData(data);
-                }
+        if(environment.hasStorageImplementation(entityClass)) {
+            Object data = null;
+            if(specification.isWithData()) {
+                data = supplyEntityDataImplementation(entityClass);
+                entity.setData(data);
             }
         }
 
-        if(Repository.class.isAssignableFrom(primitiveClass)) {
-            Repository<?, ?, ?> repository = (Repository<?, ?, ?>) primitive;
-            Class<?> entityClass = environment.getEntityClass(primitiveClass);
-            repository.setEntityClass(entityClass);
-            repository.setDataAccess(supplyDataAccessImplementation(entityClass));
-        }
-
-        if(Factory.class.isAssignableFrom(primitiveClass)) {
-            Factory<?, ?, ?> factory = (Factory<?, ?, ?>) primitive;
-            factory.setEntityClass(environment.getEntityClass(primitiveClass));
-        }
-
-        return primitive;
+        return entity;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T newMessage(Class<T> primitiveClass) {
-        return (T) supplyMessageImplementation(primitiveClass);
-    }
-
-    private Object supplyMessageImplementation(Class<?> messageClass) {
-        return newInstance(environment.getMessageImplementationClass(messageClass));
-    }
-
-    private <T> T newInstance(Class<T> entityClass) {
+    private <T> T newInstance(Class<T> componentClass) {
         try {
-            return entityClass.newInstance();
+            return componentClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new PousseCafeException("Unable to instantiate entity", e);
         }
     }
 
+    private Environment environment;
+
     public void setEnvironment(Environment environment) {
-        checkThat(value(environment).notNull());
+        Objects.requireNonNull(environment);
         this.environment = environment;
     }
-
-    private Environment environment;
 
     private Object supplyEntityDataImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.getEntityDataFactory(entityClass);
         return factory.get();
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Repository newRepository(Class<? extends Repository> repositoryClass) {
+        Repository repository = newInstance(repositoryClass);
+        Class<?> entityClass = environment.getEntityClass(repositoryClass);
+        repository.setEntityClass(entityClass);
+        repository.setDataAccess(supplyDataAccessImplementation(entityClass));
+        return repository;
+    }
+
     private Object supplyDataAccessImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.getEntityDataAccessFactory(entityClass);
         return factory.get();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Factory newFactory(Class<? extends Factory> factoryClass) {
+        Factory factory = newInstance(factoryClass);
+        Class<?> entityClass = environment.getEntityClass(factoryClass);
+        factory.setEntityClass(entityClass);
+        return factory;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Message> T newMessage(Class<T> primitiveClass) {
+        return (T) supplyMessageImplementation(primitiveClass);
+    }
+
+    private Object supplyMessageImplementation(Class<?> messageClass) {
+        return newInstance(environment.getMessageImplementationClass(messageClass));
     }
 }

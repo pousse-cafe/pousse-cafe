@@ -1,11 +1,10 @@
 package poussecafe.property;
 
 import poussecafe.domain.Entity;
-import poussecafe.domain.Component;
 
 public interface EntityMapProperty<K, E extends Entity<K, ?>> {
 
-    MapProperty<K, E> inContextOf(Component primitive);
+    MapProperty<K, E> inContextOf(Entity<?, ?> primitive);
 
-    E newInContextOf(Component primitive);
+    E newInContextOf(Entity<?, ?> primitive);
 }

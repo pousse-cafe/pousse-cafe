@@ -1,9 +1,8 @@
 package poussecafe.domain;
 
 import org.junit.Test;
-import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Factory;
 import poussecafe.exception.AssertionFailedException;
+import poussecafe.util.ReflectionUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,8 +33,8 @@ public abstract class FactoryTest<K, D extends EntityData<K>, A extends Aggregat
 
     private void whenCreatingAggregate() {
         F factory = factory();
-        factory.setComponentFactory(primitiveFactory);
-        when(primitiveFactory.newComponent(any())).thenReturn(givenKey);
+        ReflectionUtils.access(factory).set("componentFactory", primitiveFactory);
+        when(primitiveFactory.newEntity(any())).thenReturn(givenKey);
         createdEntity = factory.newAggregateWithKey(givenKey);
     }
 

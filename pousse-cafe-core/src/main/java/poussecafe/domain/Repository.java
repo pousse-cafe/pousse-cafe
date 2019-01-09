@@ -9,7 +9,7 @@ import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityData<K>> extends Component {
+public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityData<K>> {
 
     @SuppressWarnings("unchecked")
     void setEntityClass(Class<?> entityClass) {
@@ -35,12 +35,14 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         if(data == null) {
             return null;
         } else {
-            return newComponent(new ComponentSpecification.Builder<A>()
+            return componentFactory.newEntity(new EntitySpecification.Builder<A>()
                     .withComponentClass(entityClass)
                     .withExistingData(data)
                     .build());
         }
     }
+
+    private ComponentFactory componentFactory;
 
     public A get(K key) {
         A entity = find(key);
@@ -66,7 +68,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         considerMessageSendingAfterAdd(entity, messageCollection);
     }
 
-    protected void considerMessageSendingAfterAdd(A entity,
+    private void considerMessageSendingAfterAdd(A entity,
             MessageCollection messageCollection) {
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
@@ -91,7 +93,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         considerMessageSendingAfterUpdate(entity, messageCollection);
     }
 
-    protected void considerMessageSendingAfterUpdate(A entity,
+    private void considerMessageSendingAfterUpdate(A entity,
             MessageCollection messageCollection) {
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
@@ -111,7 +113,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         considerMessageSendingAfterDelete(entity, messageCollection);
     }
 
-    protected void considerMessageSendingAfterDelete(A entity,
+    private void considerMessageSendingAfterDelete(A entity,
             MessageCollection messageCollection) {
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
@@ -129,5 +131,4 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public EntityDataAccess<K, D> getDataAccess() {
         return dataAccess;
     }
-
 }

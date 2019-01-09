@@ -3,7 +3,6 @@ package poussecafe.property;
 import java.util.Map;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
-import poussecafe.domain.Component;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -23,7 +22,7 @@ public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K,
     private Class<E> primitiveClass;
 
     @Override
-    public MapProperty<K, E> inContextOf(Component primitive) {
+    public MapProperty<K, E> inContextOf(Entity<?, ?> primitive) {
         checkThatValue(primitive).notNull();
 
         return new ConvertingMapProperty<L, F, K, E>(data) {
@@ -34,8 +33,8 @@ public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K,
 
             @Override
             protected E convertFromValue(F from) {
-                E entity = primitive.newComponent(primitiveClass, from);
-                entity.parent(primitive);
+                E entity = primitive.newEntity(primitiveClass);
+                entity.setData(from);
                 return entity;
             }
 
@@ -57,9 +56,7 @@ public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K,
     protected abstract K convertFromKey(L from);
 
     @Override
-    public E newInContextOf(Component primitive) {
-        E entity = primitive.newComponent(primitiveClass);
-        entity.parent(primitive);
-        return entity;
+    public E newInContextOf(Entity<?, ?> primitive) {
+        return primitive.newEntity(primitiveClass);
     }
 }

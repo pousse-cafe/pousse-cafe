@@ -1,11 +1,10 @@
 package poussecafe.property;
 
 import poussecafe.domain.Entity;
-import poussecafe.domain.Component;
 
 public interface EntityProperty<E extends Entity<?, ?>> {
 
-    Property<E> inContextOf(Component primitive);
+    Property<E> inContextOf(Entity<?, ?> primitive);
 
-    E newInContextOf(Component primitive);
+    E newInContextOf(Entity<?, ?> primitive);
 }

@@ -32,6 +32,13 @@ public class Order extends AggregateRoot<OrderKey, Data> {
         addDomainEvent(event);
     }
 
+    @Override
+    public void onAdd() {
+        OrderCreated event = newDomainEvent(OrderCreated.class);
+        event.orderKey().set(getKey());
+        addDomainEvent(event);
+    }
+
     public static interface Data extends EntityData<OrderKey> {
 
         void setUnits(int units);

@@ -3,8 +3,7 @@ package poussecafe.domain;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityData<K>>
-        extends Component {
+public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityData<K>> {
 
     @SuppressWarnings("unchecked")
     void setEntityClass(Class<?> entityClass) {
@@ -16,8 +15,13 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
 
     protected A newAggregateWithKey(K key) {
         checkThat(value(key).notNull().because("Key cannot be null"));
-        A entity = newComponent(entityClass);
+        A entity = componentFactory.newEntity(new EntitySpecification.Builder<A>()
+                .withComponentClass(entityClass)
+                .withData(true)
+                .build());
         entity.setKey(key);
         return entity;
     }
+
+    private ComponentFactory componentFactory;
 }

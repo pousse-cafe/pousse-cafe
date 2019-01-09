@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentFactory;
-import poussecafe.domain.ComponentSpecification;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
@@ -201,10 +200,12 @@ public class MetaApplicationContext {
     private void configureEntity(Class<?> entityClass) {
         AggregateDefinition definition = environment.getEntityDefinition(entityClass);
         if(definition.hasFactory() && definition.hasRepository()) {
-            Repository repository = (Repository) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getRepositoryClass()));
-            Factory factory = (Factory) componentFactory.newComponent(ComponentSpecification.ofClass(definition.getFactoryClass()));
+            Repository repository = componentFactory.newRepository(definition.getRepositoryClass());
+            Factory factory = componentFactory.newFactory(definition.getFactoryClass());
 
             injector.registerInjectableService(repository);
+            injector.addInjectionCandidate(repository);
+
             injector.registerInjectableService(factory);
             injector.addInjectionCandidate(factory);
 

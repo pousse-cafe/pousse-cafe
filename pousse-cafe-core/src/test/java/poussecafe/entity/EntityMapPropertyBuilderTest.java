@@ -3,8 +3,7 @@ package poussecafe.entity;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
-import poussecafe.domain.Component;
-import poussecafe.domain.ComponentSpecification;
+import poussecafe.domain.Entity;
 import poussecafe.domain.SimpleEntityData;
 import poussecafe.property.EntityMapProperty;
 import poussecafe.property.PropertyBuilder;
@@ -73,18 +72,12 @@ public class EntityMapPropertyBuilderTest {
         valueWithConversion = propertyWithConversion.inContextOf(primitive()).get();
     }
 
-    private Component primitive() {
-        return new Component() {
-            @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
+    private Entity<?, ?> primitive() {
+        return new Entity() {
             @Override
-            public <T> T newComponent(ComponentSpecification<T> specification) {
-                if(specification.isWithData()) {
-                    return (T) entity(new SimpleEntityData());
-                } else if(specification.getExistingData() != null) {
-                    return (T) entity((SimpleEntityData) specification.getExistingData());
-                } else {
-                    return (T) new SimpleEntity();
-                }
+            public Entity newEntity(Class entityClass) {
+                return new SimpleEntity();
             }
         };
     }

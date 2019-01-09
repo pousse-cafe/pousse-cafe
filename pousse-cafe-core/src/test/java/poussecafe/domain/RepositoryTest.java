@@ -3,6 +3,7 @@ package poussecafe.domain;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import poussecafe.util.ReflectionUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -35,7 +36,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
         dataAccess = mockEntityDataAccess();
         repository.setDataAccess(dataAccess);
 
-        repository.setComponentFactory(primitiveFactory);
+        ReflectionUtils.access(repository).set("componentFactory", primitiveFactory);
         registerData(primitiveFactory);
     }
 

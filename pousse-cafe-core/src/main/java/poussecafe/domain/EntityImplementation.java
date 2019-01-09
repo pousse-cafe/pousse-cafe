@@ -9,38 +9,6 @@ import static poussecafe.check.Checks.checkThat;
 
 public class EntityImplementation {
 
-    public Class<?> getEntityClass() {
-        return entityClass;
-    }
-
-    private Class<?> entityClass;
-
-    public Supplier<Object> getDataFactory() {
-        return dataFactory;
-    }
-
-    private Supplier<Object> dataFactory;
-
-    public boolean hasDataAccess() {
-        return dataAccessFactory != null;
-    }
-
-    public Supplier<Object> getDataAccessFactory() {
-        return dataAccessFactory;
-    }
-
-    private Supplier<Object> dataAccessFactory;
-
-    public Storage getStorage() {
-        return storage;
-    }
-
-    private Storage storage;
-
-    public boolean hasStorage() {
-        return storage != null;
-    }
-
     public static class Builder extends AbstractBuilder<EntityImplementation> {
 
         public Builder() {
@@ -75,10 +43,41 @@ public class EntityImplementation {
                 checkThat(value(product.storage).notNull().because("Storage cannot be null"));
             }
         }
-
     }
 
     private EntityImplementation() {
 
+    }
+
+    public Class<?> getEntityClass() {
+        return entityClass;
+    }
+
+    private Class<?> entityClass;
+
+    public Supplier<Object> getDataFactory() {
+        return dataFactory;
+    }
+
+    private Supplier<Object> dataFactory;
+
+    public boolean hasDataAccess() {
+        return dataAccessFactory != null;
+    }
+
+    public Supplier<Object> getDataAccessFactory() {
+        return dataAccessFactory;
+    }
+
+    private Supplier<Object> dataAccessFactory;
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+    private Storage storage;
+
+    public boolean hasStorage() {
+        return storage != null;
     }
 }

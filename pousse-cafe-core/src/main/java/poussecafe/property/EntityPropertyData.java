@@ -2,7 +2,6 @@ package poussecafe.property;
 
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
-import poussecafe.domain.Component;
 
 import static poussecafe.check.Checks.checkThatValue;
 
@@ -16,12 +15,12 @@ public abstract class EntityPropertyData<D extends EntityData<?>, E extends Enti
     private Class<E> primitiveClass;
 
     @Override
-    public Property<E> inContextOf(Component primitive) {
+    public Property<E> inContextOf(Entity<?, ?> primitive) {
         return new Property<E>() {
             @Override
             public E get() {
-                E entity = primitive.newComponent(primitiveClass, EntityPropertyData.this.getData());
-                entity.parent(primitive);
+                E entity = primitive.newEntity(primitiveClass);
+                entity.setData(EntityPropertyData.this.getData());
                 return entity;
             }
 
@@ -37,9 +36,7 @@ public abstract class EntityPropertyData<D extends EntityData<?>, E extends Enti
     protected abstract void setData(D data);
 
     @Override
-    public E newInContextOf(Component primitive) {
-        E entity = primitive.newComponent(primitiveClass);
-        entity.parent(primitive);
-        return entity;
+    public E newInContextOf(Entity<?, ?> primitive) {
+        return primitive.newEntity(primitiveClass);
     }
 }

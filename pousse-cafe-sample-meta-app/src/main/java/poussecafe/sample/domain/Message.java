@@ -27,6 +27,13 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
         return getData().getContentType();
     }
 
+    @Override
+    public void onAdd() {
+        MessageCreated event = newDomainEvent(MessageCreated.class);
+        event.messageKey().set(getKey());
+        addDomainEvent(event);
+    }
+
     public static interface Data extends EntityData<MessageKey> {
 
         void setCustomerKey(CustomerKey customerKey);
