@@ -10,7 +10,7 @@
   <name>Pousse-Café - Jackson</name>
 
   <properties>
-    <jackson.version>2.9.6</jackson.version>
+    <jackson.version>2.9.8</jackson.version>
   </properties>
 
   <dependencies>
