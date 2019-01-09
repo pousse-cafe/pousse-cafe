@@ -16,7 +16,7 @@ public class ReadOnlySetPropertyBuilder<T> {
             }
 
             @Override
-            public void add(T item) {
+            public boolean add(T item) {
                 throw new UnsupportedOperationException();
             }
         };

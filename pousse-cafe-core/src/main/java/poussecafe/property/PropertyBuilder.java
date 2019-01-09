@@ -31,7 +31,10 @@ public class PropertyBuilder {
     }
 
     public static <T> SetPropertyBuilder<T> set(Class<T> elementClass) { // NOSONAR
-        return new SetPropertyBuilder<>();
+        Objects.requireNonNull(elementClass);
+        SetPropertyBuilder<T> builder = new SetPropertyBuilder<>();
+        builder.elementClass = elementClass;
+        return builder;
     }
 
     public static <K, V> MapPropertyBuilder<K, V> map(Class<K> keyClass, Class<V> valueClass) {

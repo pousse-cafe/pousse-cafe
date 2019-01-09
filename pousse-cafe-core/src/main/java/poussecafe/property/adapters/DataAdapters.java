@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.property.AutoAdaptingDataAdapter;
 import poussecafe.util.StringKey;
 
 public class DataAdapters {
@@ -100,6 +101,24 @@ public class DataAdapters {
             @Override
             public String adaptSet(E valueToStore) {
                 return valueToStore.name();
+            }
+        };
+    }
+
+    public static <U, T> DataAdapter<U, T> auto(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
+        return new AutoAdaptingDataAdapter<>(propertyTypeClass, dataAdapterClass);
+    }
+
+    public static <T> DataAdapter<T, T>  identity() {
+        return new DataAdapter<T, T>() {
+            @Override
+            public T adaptGet(T storedValue) {
+                return storedValue;
+            }
+
+            @Override
+            public T adaptSet(T valueToStore) {
+                return valueToStore;
             }
         };
     }

@@ -268,6 +268,7 @@ public class MetaApplicationContext {
     }
 
     public synchronized void startMessageHandling() {
+        logger.info("Starting message handling...");
         connectMessaging();
         for(MessagingConnection connection : connections) {
             connection.startReceiving();

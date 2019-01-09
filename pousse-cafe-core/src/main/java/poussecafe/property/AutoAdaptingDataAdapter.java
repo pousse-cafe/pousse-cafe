@@ -3,10 +3,11 @@ package poussecafe.property;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.property.adapters.DataAdapter;
 
-class AutoAdaptingDataAdapter<U, T> {
+public class AutoAdaptingDataAdapter<U, T> implements DataAdapter<U, T> {
 
-    AutoAdaptingDataAdapter(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
+    public AutoAdaptingDataAdapter(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
         this.propertyTypeClass = propertyTypeClass;
         this.dataAdapterClass = dataAdapterClass;
         requiresDataAdapter();
@@ -44,6 +45,7 @@ class AutoAdaptingDataAdapter<U, T> {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public T adaptGet(U u) {
         try {
             return (T) getAdapter().invoke(u);
@@ -53,6 +55,7 @@ class AutoAdaptingDataAdapter<U, T> {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public U adaptSet(T value) {
         try {
             return (U) setAdapter().invoke(null, value);

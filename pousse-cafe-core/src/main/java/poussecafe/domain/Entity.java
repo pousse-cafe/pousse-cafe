@@ -1,5 +1,6 @@
 package poussecafe.domain;
 
+import poussecafe.collection.MultiTypeMap;
 import poussecafe.property.MessageCollection;
 import poussecafe.storage.Storage;
 
@@ -89,5 +90,11 @@ public abstract class Entity<K, D extends EntityData<K>> extends Component {
 
     protected <E> E newDomainEvent(Class<E> eventClass) {
         return newComponent(eventClass);
+    }
+
+    private MultiTypeMap<String> transitiveContext = new MultiTypeMap<>();
+
+    public MultiTypeMap<String> transitiveData() {
+        return transitiveContext;
     }
 }

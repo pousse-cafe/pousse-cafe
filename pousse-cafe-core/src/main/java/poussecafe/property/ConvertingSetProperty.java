@@ -28,8 +28,8 @@ public abstract class ConvertingSetProperty<F, T> implements SetProperty<T> {
     protected abstract F convertTo(T from);
 
     @Override
-    public void add(T item) {
-        setProperty.add(convertTo(item));
+    public boolean add(T item) {
+        return setProperty.add(convertTo(item));
     }
 
     @Override
@@ -45,5 +45,10 @@ public abstract class ConvertingSetProperty<F, T> implements SetProperty<T> {
     @Override
     public int size() {
         return setProperty.size();
+    }
+
+    @Override
+    public boolean remove(T item) {
+        return setProperty.remove(convertTo(item));
     }
 }

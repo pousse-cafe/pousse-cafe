@@ -28,8 +28,8 @@ public class BaseSetProperty<T> implements SetProperty<T> {
     }
 
     @Override
-    public void add(T item) {
-        set.add(item);
+    public boolean add(T item) {
+        return set.add(item);
     }
 
     @Override
@@ -45,6 +45,11 @@ public class BaseSetProperty<T> implements SetProperty<T> {
     @Override
     public int size() {
         return set.size();
+    }
+
+    @Override
+    public boolean remove(T item) {
+        return set.remove(item);
     }
 
 }
