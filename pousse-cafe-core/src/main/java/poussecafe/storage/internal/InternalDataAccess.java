@@ -75,6 +75,8 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
     private List<AdditionPlan> prepareAddition(D data) {
         return uniqueIndexes.values().stream()
             .map(uniqueIndex -> uniqueIndex.prepareAddition(data))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(toList());
     }
 
@@ -131,6 +133,8 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
             D newData) {
         return uniqueIndexes.values().stream()
                 .map(uniqueIndex -> uniqueIndex.prepareUpdate(oldData, newData))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(toList());
     }
 

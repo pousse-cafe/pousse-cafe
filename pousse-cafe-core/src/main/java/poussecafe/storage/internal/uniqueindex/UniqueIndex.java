@@ -23,6 +23,11 @@ public class UniqueIndex<D> {
             return this;
         }
 
+        public Builder<E> sparse(boolean sparse) {
+            index.sparse = sparse;
+            return this;
+        }
+
         public UniqueIndex<E> build() {
             checkThatValue(index.name).notNull();
             checkThatValue(index.uniqueDataProducer).notNull();
@@ -40,17 +45,27 @@ public class UniqueIndex<D> {
         return name;
     }
 
+    private boolean sparse;
+
+    public boolean sparse() {
+        return sparse;
+    }
+
     private Set<Object> index = new HashSet<>();
 
     private Function<D, Object> uniqueDataProducer;
 
-    public AdditionPlan prepareAddition(D data) {
+    public Optional<AdditionPlan> prepareAddition(D data) {
         Object uniqueData = uniqueDataProducer.apply(data);
-        checkAddition(uniqueData);
-        return new AdditionPlan.Builder()
-                .index(this)
-                .uniqueData(uniqueData)
-                .build();
+        if(uniqueData == null && sparse) {
+            return Optional.empty();
+        } else {
+            checkAddition(uniqueData);
+            return Optional.of(new AdditionPlan.Builder()
+                    .index(this)
+                    .uniqueData(uniqueData)
+                    .build());
+        }
     }
 
     private void checkAddition(Object uniqueData) {
@@ -64,15 +79,19 @@ public class UniqueIndex<D> {
         index.add(plan.uniqueData());
     }
 
-    public UpdatePlan prepareUpdate(Optional<D> oldData, D newData) {
+    public Optional<UpdatePlan> prepareUpdate(Optional<D> oldData, D newData) {
         Object newUniqueData = uniqueDataProducer.apply(newData);
-        Optional<Object> oldUniqueData = oldData.map(uniqueDataProducer::apply);
-        checkUpdate(newUniqueData, oldUniqueData);
-        return new UpdatePlan.Builder()
-                .index(this)
-                .newUniqueData(newUniqueData)
-                .oldUniqueData(oldUniqueData)
-                .build();
+        if(newUniqueData == null && sparse) {
+            return Optional.empty();
+        } else {
+            Optional<Object> oldUniqueData = oldData.map(uniqueDataProducer::apply);
+            checkUpdate(newUniqueData, oldUniqueData);
+            return Optional.of(new UpdatePlan.Builder()
+                    .index(this)
+                    .newUniqueData(newUniqueData)
+                    .oldUniqueData(oldUniqueData)
+                    .build());
+        }
     }
 
     private void checkUpdate(Object newUniqueData,

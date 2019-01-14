@@ -1,4 +1,4 @@
-package poussecafe.events;
+package poussecafe.support.model;
 
 import poussecafe.domain.DomainEvent;
 import poussecafe.property.Property;

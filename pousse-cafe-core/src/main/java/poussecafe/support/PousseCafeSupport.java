@@ -1,16 +1,15 @@
-package poussecafe.journal;
+package poussecafe.support;
 
 import poussecafe.context.BoundedContextConfigurer;
 
-public class Journal {
+public class PousseCafeSupport {
 
-    private Journal() {
+    private PousseCafeSupport() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.journal")
                 .packagePrefix("poussecafe.support")
                 .build();
     }

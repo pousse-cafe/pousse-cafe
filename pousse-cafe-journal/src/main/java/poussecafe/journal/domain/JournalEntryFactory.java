@@ -1,8 +1,8 @@
 package poussecafe.journal.domain;
 
 import poussecafe.domain.Factory;
-import poussecafe.events.FailedConsumption;
-import poussecafe.events.SuccessfulConsumption;
+import poussecafe.support.model.FailedConsumption;
+import poussecafe.support.model.SuccessfulConsumption;
 
 public class JournalEntryFactory extends Factory<JournalEntryKey, JournalEntry, JournalEntry.Data> {
 

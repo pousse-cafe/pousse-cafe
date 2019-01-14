@@ -7,25 +7,25 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.ComponentFactory;
-import poussecafe.events.FailedConsumption;
-import poussecafe.events.SuccessfulConsumption;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
+import poussecafe.support.model.FailedConsumption;
+import poussecafe.support.model.SuccessfulConsumption;
 import poussecafe.util.ExceptionUtils;
 
 public class MessageConsumer {
 
     public synchronized void consumeMessage(RawAndAdaptedMessage message) {
-        logger.debug("Handling received message {}", message);
+        logger.debug("Handling received message {}", message.adapted());
         String consumptionId = UUID.randomUUID().toString();
         Collection<MessageListener> listeners = listenerRegistry.getListeners(message.adapted().getClass());
         List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);
         }
-        logger.debug("Message {} handled (consumption ID {})", message, consumptionId);
+        logger.debug("Message {} handled (consumption ID {})", message.adapted(), consumptionId);
     }
 
     private MessageListenerRegistry listenerRegistry;
@@ -38,10 +38,10 @@ public class MessageConsumer {
             try {
                 consumeMessage(consumptionId, message, listener);
             } catch (OptimisticLockingException e) {
-                logger.debug("Optimistic locking failure detected, will retry", e);
+                logger.warn("Optimistic locking failure detected, will retry", e);
                 toRetry.add(listener);
             } catch (SameOperationException e) {
-                logger.debug("Ignoring probable dubbed message consumption", e);
+                logger.warn("Ignoring probable dubbed message consumption", e);
             }
         }
         return toRetry;
@@ -66,7 +66,7 @@ public class MessageConsumer {
     private void consumeMessage(String consumptionId,
             RawAndAdaptedMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {}", receivedMessage, listener);
+        logger.debug("Consumption of message {} by listener {}", receivedMessage.adapted(), listener);
         try {
             listener.consume(receivedMessage.adapted());
             notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
@@ -78,7 +78,7 @@ public class MessageConsumer {
     private void notifySuccessfulConsumption(String consumptionId,
             RawAndAdaptedMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage, listener);
+        logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.adapted(), listener);
         if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 SuccessfulConsumption event = componentFactory.newMessage(SuccessfulConsumption.class);
@@ -108,7 +108,7 @@ public class MessageConsumer {
             RawAndAdaptedMessage receivedMessage,
             MessageListener listener,
             Exception e) {
-        logger.error("Consumption of message {} by listener {} failed", receivedMessage, listener, e);
+        logger.error("Consumption of message {} by listener {} failed", receivedMessage.adapted(), listener, e);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 FailedConsumption event = componentFactory.newMessage(FailedConsumption.class);
@@ -118,7 +118,7 @@ public class MessageConsumer {
                 event.error().set(ExceptionUtils.getStackTrace(e));
                 messageSenderLocator.locate(FailedConsumption.class).sendMessage(event);
             } catch (PousseCafeException e1) {
-                logger.error("Unable to notify failed consumption for message {}", rawMessageOrDefault(receivedMessage), e);
+                logger.error("Unable to notify failed consumption for message {}", rawMessageOrDefault(receivedMessage), e1);
             }
         }
     }

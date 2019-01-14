@@ -1,10 +1,10 @@
-package poussecafe.adapters.messaging;
+package poussecafe.support.adapters.messaging;
 
 import java.io.Serializable;
-import poussecafe.events.SuccessfulConsumption;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
+import poussecafe.support.model.SuccessfulConsumption;
 
 @MessageImplementation(message = SuccessfulConsumption.class)
 @SuppressWarnings("serial")

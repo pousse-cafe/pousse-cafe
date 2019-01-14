@@ -35,7 +35,7 @@ public abstract class MessageReceiver {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    public void startReceiving() {
+    public synchronized void startReceiving() {
         if (started) {
             return;
         }
@@ -47,11 +47,11 @@ public abstract class MessageReceiver {
 
     protected abstract void actuallyStartReceiving();
 
-    public boolean isStarted() {
+    public synchronized boolean isStarted() {
         return started;
     }
 
-    public void stopReceiving() {
+    public synchronized void stopReceiving() {
         if(!started) {
             return;
         }

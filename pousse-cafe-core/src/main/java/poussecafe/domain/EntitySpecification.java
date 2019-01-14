@@ -7,10 +7,6 @@ import static poussecafe.check.Checks.checkThat;
 
 public class EntitySpecification<T> {
 
-    public static <T> EntitySpecification<T> ofClass(Class<T> primitiveClass) {
-        return new EntitySpecification.Builder<T>().withComponentClass(primitiveClass).build();
-    }
-
     public static class Builder<T> extends AbstractBuilder<EntitySpecification<T>> {
 
         public Builder() {

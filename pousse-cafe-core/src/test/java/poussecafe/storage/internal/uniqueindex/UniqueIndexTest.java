@@ -3,10 +3,6 @@ package poussecafe.storage.internal.uniqueindex;
 import java.util.Optional;
 import org.hamcrest.Matcher;
 import org.junit.Test;
-import poussecafe.storage.internal.uniqueindex.AdditionPlan;
-import poussecafe.storage.internal.uniqueindex.UniqueIndex;
-import poussecafe.storage.internal.uniqueindex.UniqueIndexException;
-import poussecafe.storage.internal.uniqueindex.UpdatePlan;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -50,8 +46,8 @@ public class UniqueIndexTest {
 
     private void whenAddingData() {
         try {
-            AdditionPlan plan = index.prepareAddition(data);
-            plan.commit();
+            Optional<AdditionPlan> plan = index.prepareAddition(data);
+            plan.get().commit();
         } catch (UniqueIndexException e) {
             thrownException = e;
         }
@@ -93,7 +89,7 @@ public class UniqueIndexTest {
 
     private void whenUpdatingData() {
         try {
-            UpdatePlan plan = index.prepareUpdate(oldData, data);
+            UpdatePlan plan = index.prepareUpdate(oldData, data).get();
             plan.commit();
         } catch (UniqueIndexException e) {
             thrownException = e;

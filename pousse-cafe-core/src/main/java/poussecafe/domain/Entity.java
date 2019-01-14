@@ -87,7 +87,10 @@ public abstract class Entity<K, D extends EntityData<K>> {
     }
 
     public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
-        E entity = componentFactory.newEntity(EntitySpecification.ofClass(entityClass));
+        E entity = componentFactory.newEntity(new EntitySpecification.Builder<E>()
+                .withComponentClass(entityClass)
+                .withData(true)
+                .build());
         entity.storage(storage);
         entity.messageCollection(messageCollection);
         return entity;
