@@ -6,7 +6,7 @@ import poussecafe.domain.Repository;
 public class MessageRepository extends Repository<Message, MessageKey, Message.Data> {
 
     public List<Message> findByCustomer(CustomerKey customerKey) {
-        return newEntitiesWithData(dataAccess().findByCustomer(customerKey));
+        return wrap(dataAccess().findByCustomer(customerKey));
     }
 
     @Override

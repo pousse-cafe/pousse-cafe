@@ -6,7 +6,7 @@ import poussecafe.domain.Repository;
 public class EntityDocRepository extends Repository<EntityDoc, EntityDocKey, EntityDoc.Data> {
 
     public List<EntityDoc> findAll() {
-        return newEntitiesWithData(dataAccess().findAll());
+        return wrap(dataAccess().findAll());
     }
 
     @Override

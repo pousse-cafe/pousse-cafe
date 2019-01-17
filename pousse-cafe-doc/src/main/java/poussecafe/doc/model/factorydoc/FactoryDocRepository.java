@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocKey, FactoryDoc.Data> {
 
     public List<FactoryDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
+        return wrap(dataAccess().findByBoundedContextKey(key));
     }
 
     @Override
@@ -16,11 +16,11 @@ public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocKey, 
     }
 
     public List<FactoryDoc> findAll() {
-        return newEntitiesWithData(dataAccess().findAll());
+        return wrap(dataAccess().findAll());
     }
 
     public FactoryDoc findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String factoryName) {
-        return newEntityWithData(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, factoryName));
+        return wrap(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, factoryName));
     }
 }

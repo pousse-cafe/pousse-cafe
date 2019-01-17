@@ -22,7 +22,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public A find(K key) {
         checkKey(key);
         D data = dataAccess.findData(key);
-        return newEntityWithData(data);
+        return wrap(data);
     }
 
     private EntityDataAccess<K, D> dataAccess;
@@ -31,7 +31,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         checkThat(value(key).notNull().because("Key cannot be null"));
     }
 
-    protected A newEntityWithData(D data) {
+    protected A wrap(D data) {
         if(data == null) {
             return null;
         } else {
@@ -118,8 +118,8 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
-    protected List<A> newEntitiesWithData(List<D> data) {
-        return data.stream().map(this::newEntityWithData).filter(Objects::nonNull).collect(toList());
+    protected List<A> wrap(List<D> data) {
+        return data.stream().map(this::wrap).filter(Objects::nonNull).collect(toList());
     }
 
     @SuppressWarnings("unchecked")

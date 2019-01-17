@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Data> {
 
     public List<AggregateDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
+        return wrap(dataAccess().findByBoundedContextKey(key));
     }
 
     @Override
@@ -16,15 +16,15 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
     }
 
     public List<AggregateDoc> findAll() {
-        return newEntitiesWithData(dataAccess().findAll());
+        return wrap(dataAccess().findAll());
     }
 
     public List<AggregateDoc> findByKeyClassName(String qualifiedName) {
-        return newEntitiesWithData(dataAccess().findByKeyClassName(qualifiedName));
+        return wrap(dataAccess().findByKeyClassName(qualifiedName));
     }
 
     public AggregateDoc findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String aggregateName) {
-        return newEntityWithData(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
+        return wrap(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
     }
 }

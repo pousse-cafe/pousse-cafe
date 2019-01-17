@@ -6,7 +6,7 @@ import poussecafe.domain.Repository;
 public class JournalEntryRepository extends Repository<JournalEntry, JournalEntryKey, JournalEntry.Data> {
 
     public List<JournalEntry> findByConsumptionId(String messageId) {
-        return newEntitiesWithData(dataAccess().findByMessageId(messageId));
+        return wrap(dataAccess().findByMessageId(messageId));
     }
 
     @Override
@@ -15,7 +15,7 @@ public class JournalEntryRepository extends Repository<JournalEntry, JournalEntr
     }
 
     public List<JournalEntry> findByStatus(ConsumptionStatus status) {
-        return newEntitiesWithData(dataAccess().findByStatus(status));
+        return wrap(dataAccess().findByStatus(status));
     }
 
 }

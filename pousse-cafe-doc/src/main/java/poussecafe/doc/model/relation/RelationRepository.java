@@ -7,7 +7,7 @@ import poussecafe.domain.Repository;
 public class RelationRepository extends Repository<Relation, RelationKey, Relation.Data> {
 
     public List<Relation> findWithFromClassName(String className) {
-        return newEntitiesWithData(dataAccess().findWithFromClass(className));
+        return wrap(dataAccess().findWithFromClass(className));
     }
 
     @Override
