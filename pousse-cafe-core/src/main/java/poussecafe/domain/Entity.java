@@ -72,11 +72,11 @@ public abstract class Entity<K, D extends EntityData<K>> {
         this.storage = storage;
     }
 
-    protected void addDomainEvent(DomainEvent event) {
+    public void addDomainEvent(DomainEvent event) {
         messageCollection().addMessage(event);
     }
 
-    protected <E extends DomainEvent> E newDomainEvent(Class<E> eventClass) {
+    public <E extends DomainEvent> E newDomainEvent(Class<E> eventClass) {
         return componentFactory.newMessage(eventClass);
     }
 

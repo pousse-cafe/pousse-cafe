@@ -9,7 +9,8 @@ public class EntityDocRepository extends Repository<EntityDoc, EntityDocKey, Ent
         return newEntitiesWithData(dataAccess().findAll());
     }
 
-    private EntityDocDataAccess<EntityDoc.Data> dataAccess() {
-        return (EntityDocDataAccess<EntityDoc.Data>) dataAccess;
+    @Override
+    public EntityDocDataAccess<EntityDoc.Data> dataAccess() {
+        return (EntityDocDataAccess<EntityDoc.Data>) super.dataAccess();
     }
 }

@@ -10,8 +10,9 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
         return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
-    private AggregateDocDataAccess<AggregateDoc.Data> dataAccess() {
-        return (AggregateDocDataAccess<AggregateDoc.Data>) dataAccess;
+    @Override
+    public AggregateDocDataAccess<AggregateDoc.Data> dataAccess() {
+        return (AggregateDocDataAccess<AggregateDoc.Data>) super.dataAccess();
     }
 
     public List<AggregateDoc> findAll() {

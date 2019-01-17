@@ -1,6 +1,6 @@
 package <adaptersPackage>;
 
-<if(storage_in_memory)>import java.io.Serializable;<endif>
+<if(storage_internal)>import java.io.Serializable;<endif>
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 <if(storage_spring_mongo)>import org.springframework.data.annotation.Id;<endif>
@@ -9,8 +9,8 @@ import poussecafe.property.PropertyBuilder;
 import <modelPackage>.<name>;
 import <modelPackage>.<name>Key;
 
-<if(storage_in_memory)>@SuppressWarnings("serial")<endif>
-public class <name>Data implements <name>.Data<if(storage_in_memory)>, Serializable<endif> {
+<if(storage_internal)>@SuppressWarnings("serial")<endif>
+public class <name>Data implements <name>.Data<if(storage_internal)>, Serializable<endif> {
 
     @Override
     public Property\<<name>Key> key() {

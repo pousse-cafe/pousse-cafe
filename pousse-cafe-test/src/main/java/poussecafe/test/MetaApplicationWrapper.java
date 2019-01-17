@@ -92,7 +92,7 @@ public class MetaApplicationWrapper {
             checkThat(value(entityImplementation.getStorage() == InternalStorage.instance()).isTrue());
 
             EntityServices services = context.getEntityServices(entityClass);
-            InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().getDataAccess();
+            InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();
             logger.debug("Field value " + jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading " + dataJson.toString());

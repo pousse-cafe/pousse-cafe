@@ -9,8 +9,9 @@ public class JournalEntryRepository extends Repository<JournalEntry, JournalEntr
         return newEntitiesWithData(dataAccess().findByMessageId(messageId));
     }
 
-    protected JournalEntryDataAccess<JournalEntry.Data> dataAccess() {
-        return (JournalEntryDataAccess<JournalEntry.Data>) dataAccess;
+    @Override
+    public JournalEntryDataAccess<JournalEntry.Data> dataAccess() {
+        return (JournalEntryDataAccess<JournalEntry.Data>) super.dataAccess();
     }
 
     public List<JournalEntry> findByStatus(ConsumptionStatus status) {

@@ -23,7 +23,7 @@ public class PousseCafeComponentsWirer implements ApplicationListener<ContextRef
         for(EntityServices services : pousseCafeContext.getAllEntityServices()) {
             logger.debug("Wiring services for entity {}", services.getEntityClass().getSimpleName());
             beanFactory.autowireBean(services.getRepository());
-            beanFactory.autowireBean(services.getRepository().getDataAccess());
+            beanFactory.autowireBean(services.getRepository().dataAccess());
             beanFactory.autowireBean(services.getFactory());
         }
         for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {

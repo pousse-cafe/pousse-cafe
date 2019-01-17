@@ -25,7 +25,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         return newEntityWithData(data);
     }
 
-    protected EntityDataAccess<K, D> dataAccess;
+    private EntityDataAccess<K, D> dataAccess;
 
     private void checkKey(K key) {
         checkThat(value(key).notNull().because("Key cannot be null"));
@@ -128,7 +128,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         this.dataAccess = (EntityDataAccess<K, D>) dataAccess;
     }
 
-    public EntityDataAccess<K, D> getDataAccess() {
+    public EntityDataAccess<K, D> dataAccess() {
         return dataAccess;
     }
 }

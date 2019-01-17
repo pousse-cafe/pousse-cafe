@@ -28,7 +28,7 @@ public class AddAggregateExecutor {
         public Builder packageName(String packageName) {
             executor.packageName = packageName;
             executor.aggregateDirectory = aggregatePackageDirectory(packageName);
-            executor.modelDirectory = new File(executor.aggregateDirectory, "model");
+            executor.modelDirectory = executor.aggregateDirectory;
             executor.adaptersDirectory = new File(executor.aggregateDirectory, "adapters");
             return this;
         }
@@ -62,7 +62,7 @@ public class AddAggregateExecutor {
             checkThatValue(executor.name).notNull();
 
             executor.sourceWriter = new SourceWriter.Builder()
-                    .modelPackageName(executor.packageName + ".model")
+                    .modelPackageName(executor.packageName)
                     .adaptersPackageName(executor.packageName + ".adapters")
                     .name(executor.name)
                     .storageAdapters(executor.storageAdapters)

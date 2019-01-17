@@ -9,7 +9,8 @@ public class MessageRepository extends Repository<Message, MessageKey, Message.D
         return newEntitiesWithData(dataAccess().findByCustomer(customerKey));
     }
 
-    private MessageDataAccess<Message.Data> dataAccess() {
-        return (MessageDataAccess<Message.Data>) dataAccess;
+    @Override
+    public MessageDataAccess<Message.Data> dataAccess() {
+        return (MessageDataAccess<Message.Data>) super.dataAccess();
     }
 }

@@ -9,7 +9,8 @@ public class ValueObjectDocRepository extends Repository<ValueObjectDoc, ValueOb
         return newEntitiesWithData(dataAccess().findAll());
     }
 
-    private ValueObjectDocDataAccess<ValueObjectDoc.Data> dataAccess() {
-        return (ValueObjectDocDataAccess<ValueObjectDoc.Data>) dataAccess;
+    @Override
+    public ValueObjectDocDataAccess<ValueObjectDoc.Data> dataAccess() {
+        return (ValueObjectDocDataAccess<ValueObjectDoc.Data>) super.dataAccess();
     }
 }

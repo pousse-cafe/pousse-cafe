@@ -10,8 +10,9 @@ public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocKey, 
         return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
-    private FactoryDocDataAccess<FactoryDoc.Data> dataAccess() {
-        return (FactoryDocDataAccess<FactoryDoc.Data>) dataAccess;
+    @Override
+    public FactoryDocDataAccess<FactoryDoc.Data> dataAccess() {
+        return (FactoryDocDataAccess<FactoryDoc.Data>) super.dataAccess();
     }
 
     public List<FactoryDoc> findAll() {

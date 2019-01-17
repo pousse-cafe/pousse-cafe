@@ -10,8 +10,9 @@ public class BoundedContextDocRepository extends Repository<BoundedContextDoc, B
         return newEntitiesWithData(dataAccess().findAll());
     }
 
-    private BoundedContextDocDataAccess<BoundedContextDoc.Data> dataAccess() {
-        return (BoundedContextDocDataAccess<Data>) dataAccess;
+    @Override
+    public BoundedContextDocDataAccess<BoundedContextDoc.Data> dataAccess() {
+        return (BoundedContextDocDataAccess<Data>) super.dataAccess();
     }
 
     public BoundedContextDoc findByPackageNamePrefixing(String name) {

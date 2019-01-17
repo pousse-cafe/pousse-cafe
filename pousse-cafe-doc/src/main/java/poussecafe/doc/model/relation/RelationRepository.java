@@ -10,7 +10,8 @@ public class RelationRepository extends Repository<Relation, RelationKey, Relati
         return newEntitiesWithData(dataAccess().findWithFromClass(className));
     }
 
-    private RelationDataAccess<Relation.Data> dataAccess() {
-        return (RelationDataAccess<Data>) dataAccess;
+    @Override
+    public RelationDataAccess<Relation.Data> dataAccess() {
+        return (RelationDataAccess<Data>) super.dataAccess();
     }
 }

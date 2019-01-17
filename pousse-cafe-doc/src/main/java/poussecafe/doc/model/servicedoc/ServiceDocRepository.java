@@ -10,8 +10,9 @@ public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocKey, 
         return newEntitiesWithData(dataAccess().findByBoundedContextKey(key));
     }
 
-    private ServiceDocDataAccess<ServiceDoc.Data> dataAccess() {
-        return (ServiceDocDataAccess<ServiceDoc.Data>) dataAccess;
+    @Override
+    public ServiceDocDataAccess<ServiceDoc.Data> dataAccess() {
+        return (ServiceDocDataAccess<ServiceDoc.Data>) super.dataAccess();
     }
 
     public List<ServiceDoc> findAll() {

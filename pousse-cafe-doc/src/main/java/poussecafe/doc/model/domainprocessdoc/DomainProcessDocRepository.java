@@ -10,8 +10,9 @@ public class DomainProcessDocRepository extends Repository<DomainProcessDoc, Dom
         return newEntitiesWithData(dataAccess().findAll());
     }
 
-    private DomainProcessDocDataAccess<DomainProcessDoc.Data> dataAccess() {
-        return (DomainProcessDocDataAccess<DomainProcessDoc.Data>) dataAccess;
+    @Override
+    public DomainProcessDocDataAccess<DomainProcessDoc.Data> dataAccess() {
+        return (DomainProcessDocDataAccess<DomainProcessDoc.Data>) super.dataAccess();
     }
 
     public List<DomainProcessDoc> findByBoundedContextKey(BoundedContextDocKey key) {
