@@ -18,7 +18,7 @@ public abstract class Entity<K, D extends EntityData<K>> {
 
     private D data;
 
-    public D getData() {
+    public D data() {
         return data;
     }
 
@@ -44,12 +44,12 @@ public abstract class Entity<K, D extends EntityData<K>> {
     }
 
     public K getKey() {
-        return getData().key().get();
+        return data().key().get();
     }
 
     public void setKey(K key) {
         checkThatValue(key).notNull();
-        getData().key().set(key);
+        data().key().set(key);
     }
 
     public MessageCollection messageCollection() {

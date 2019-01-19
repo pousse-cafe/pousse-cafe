@@ -26,11 +26,11 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {
         checkThatValue(componentDoc).notNull();
-        getData().boundedContextComponentDoc().set(componentDoc);
+        data().boundedContextComponentDoc().set(componentDoc);
     }
 
     public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return getData().boundedContextComponentDoc().get();
+        return data().boundedContextComponentDoc().get();
     }
 
     void steps(List<Step> steps) {
@@ -40,11 +40,11 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
                 throw new DomainException("Steps must have unique names");
             }
         }
-        getData().steps().set(map);
+        data().steps().set(map);
     }
 
     public Map<String, Step> steps() {
-        return getData().steps().get();
+        return data().steps().get();
     }
 
     public String id() {
@@ -56,13 +56,13 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
         List<String> orderedStepNames = topologicalOrdering(graph);
         return orderedStepNames
                 .stream()
-                .map(stepName -> getData().steps().get(stepName).orElseThrow(DomainException::new))
+                .map(stepName -> data().steps().get(stepName).orElseThrow(DomainException::new))
                 .collect(toList());
     }
 
     private Map<String, List<String>> buildGraph() {
         Map<String, List<String>> graph = new HashMap<>();
-        for(Step step : getData().steps().values()) {
+        for(Step step : data().steps().values()) {
             if(!graph.containsKey(step.componentDoc().name())) {
                 graph.put(step.componentDoc().name(), new ArrayList<>());
             }

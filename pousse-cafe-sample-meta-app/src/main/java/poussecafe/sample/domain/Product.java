@@ -17,36 +17,36 @@ import static poussecafe.domain.DomainCheckSpecification.value;
 public class Product extends AggregateRoot<ProductKey, Data> {
 
     void setTotalUnits(int units) {
-        getData().setTotalUnits(units);
+        data().setTotalUnits(units);
     }
 
     public int getTotalUnits() {
-        return getData().getTotalUnits();
+        return data().getTotalUnits();
     }
 
     void setAvailableUnits(int units) {
-        getData().setAvailableUnits(units);
+        data().setAvailableUnits(units);
     }
 
     public int getAvailableUnits() {
-        return getData().getAvailableUnits();
+        return data().getAvailableUnits();
     }
 
     public void addUnits(int units) {
         checkThat(value(units).verifies(greaterThan(0).or(equalTo(0))).because("Cannot add negative number of units"));
-        getData().setAvailableUnits(getData().getAvailableUnits() + units);
-        getData().setTotalUnits(getData().getTotalUnits() + units);
+        data().setAvailableUnits(data().getAvailableUnits() + units);
+        data().setTotalUnits(data().getTotalUnits() + units);
     }
 
     public void placeOrder(OrderDescription description) {
-        int unitsAvailable = getData().getAvailableUnits();
+        int unitsAvailable = data().getAvailableUnits();
         if (description.units > unitsAvailable) {
             OrderRejected event = newDomainEvent(OrderRejected.class);
             event.productKey().set(getKey());
             event.description().set(description);
             addDomainEvent(event);
         } else {
-            getData().setAvailableUnits(unitsAvailable - description.units);
+            data().setAvailableUnits(unitsAvailable - description.units);
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
             event.productKey().set(getKey());

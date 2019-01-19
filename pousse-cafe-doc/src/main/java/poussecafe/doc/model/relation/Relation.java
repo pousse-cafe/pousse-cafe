@@ -12,19 +12,19 @@ import poussecafe.property.Property;
 public class Relation extends AggregateRoot<RelationKey, Relation.Data> {
 
     void fromType(ComponentType fromType) {
-        getData().fromType().set(fromType);
+        data().fromType().set(fromType);
     }
 
     void toType(ComponentType toType) {
-        getData().toType().set(toType);
+        data().toType().set(toType);
     }
 
     public Component fromComponent() {
-        return new Component(getData().fromType().get(), getKey().fromClass());
+        return new Component(data().fromType().get(), getKey().fromClass());
     }
 
     public Component toComponent() {
-        return new Component(getData().toType().get(), getKey().toClass());
+        return new Component(data().toType().get(), getKey().toClass());
     }
 
     public static interface Data extends EntityData<RelationKey> {

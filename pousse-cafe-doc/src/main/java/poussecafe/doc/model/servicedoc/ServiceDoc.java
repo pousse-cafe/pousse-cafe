@@ -17,11 +17,11 @@ public class ServiceDoc extends AggregateRoot<ServiceDocKey, ServiceDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
         checkThatValue(boundedContextComponentDoc).notNull();
-        getData().boundedContextComponentDoc().set(boundedContextComponentDoc);
+        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 
     public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return getData().boundedContextComponentDoc().get();
+        return data().boundedContextComponentDoc().get();
     }
 
     public String id() {

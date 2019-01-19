@@ -14,21 +14,21 @@ import poussecafe.property.ProtectedPropertyBuilder;
 public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Data> {
 
     public ProtectedProperty<ConsumptionStatus> status() {
-        return ProtectedPropertyBuilder.protect(getData().status())
+        return ProtectedPropertyBuilder.protect(data().status())
                 .of(this)
                 .allowClassWrite(JournalEntryFactory.class)
                 .build();
     }
 
     public ProtectedProperty<String> rawMessage() {
-        return ProtectedPropertyBuilder.protect(getData().rawMessage())
+        return ProtectedPropertyBuilder.protect(data().rawMessage())
                 .of(this)
                 .allowClassWrite(JournalEntryFactory.class)
                 .build();
     }
 
     public ProtectedProperty<String> error() {
-        return ProtectedPropertyBuilder.protect(getData().error())
+        return ProtectedPropertyBuilder.protect(data().error())
                 .of(this)
                 .allowClassWrite(JournalEntryFactory.class)
                 .build();

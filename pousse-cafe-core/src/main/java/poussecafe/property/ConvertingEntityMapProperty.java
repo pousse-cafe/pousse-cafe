@@ -46,7 +46,7 @@ public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K,
             @SuppressWarnings("unchecked")
             @Override
             protected F convertToValue(E from) {
-                return (F) from.getData();
+                return (F) from.data();
             }
         };
     }

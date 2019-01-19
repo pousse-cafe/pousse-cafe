@@ -12,7 +12,7 @@ import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.check.Checks.checkThatValue;
 
-public class AddAggregateExecutor {
+public class AddAggregateExecutor implements MojoExecutor {
 
     public static class Builder {
 
@@ -92,6 +92,7 @@ public class AddAggregateExecutor {
 
     private boolean missingAdaptersOnly;
 
+    @Override
     public void execute() throws MojoExecutionException {
         try {
             checkDoesNotExist();

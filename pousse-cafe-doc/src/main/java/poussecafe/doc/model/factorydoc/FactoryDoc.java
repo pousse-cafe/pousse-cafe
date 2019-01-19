@@ -22,11 +22,11 @@ public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
         checkThatValue(boundedContextComponentDoc).notNull();
-        getData().boundedContextComponentDoc().set(boundedContextComponentDoc);
+        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 
     public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return getData().boundedContextComponentDoc().get();
+        return data().boundedContextComponentDoc().get();
     }
 
     public String id() {
@@ -34,11 +34,11 @@ public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
     }
 
     void stepDocs(List<StepDoc> stepDocs) {
-        getData().stepDocs().set(stepDocs);
+        data().stepDocs().set(stepDocs);
     }
 
     public Optional<StepDoc> stepDocBySignature(StepMethodSignature methodSignature) {
-        return getData()
+        return data()
                 .stepDocs()
                 .stream()
                 .filter(stepDoc -> stepDoc.methodSignature().equals(methodSignature))
@@ -46,7 +46,7 @@ public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
     }
 
     public List<StepDoc> stepDocs() {
-        return getData().stepDocs().get();
+        return data().stepDocs().get();
     }
 
     public static interface Data extends EntityData<FactoryDocKey> {

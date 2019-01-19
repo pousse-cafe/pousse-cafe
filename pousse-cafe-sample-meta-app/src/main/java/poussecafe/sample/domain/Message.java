@@ -15,16 +15,16 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
 
     void setCustomerKey(CustomerKey customerKey) {
         checkThat(value(customerKey).notNull().because("Customer key cannot be null"));
-        getData().setCustomerKey(customerKey);
+        data().setCustomerKey(customerKey);
     }
 
     public void setContentType(ContentType type) {
         checkThat(value(type).notNull().because("Content type cannot be null"));
-        getData().setContentType(type);
+        data().setContentType(type);
     }
 
     public ContentType getContentType() {
-        return getData().getContentType();
+        return data().getContentType();
     }
 
     @Override

@@ -25,7 +25,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
      */
     public void doSomeAction(int x) {
         checkThat(value(x).verifies(greaterThan(0)).because("X cannot be <=0"));
-        getData().x().set(x);
+        data().x().set(x);
 
         MyDomainEvent event = newDomainEvent(MyDomainEvent.class);
         event.key().set(getKey());
@@ -37,7 +37,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
      * before build() is called.
      */
     public ProtectedProperty<Integer> x() {
-        return ProtectedPropertyBuilder.protect(getData().x()).of(this)
+        return ProtectedPropertyBuilder.protect(data().x()).of(this)
                 .build();
     }
 

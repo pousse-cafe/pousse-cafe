@@ -2,7 +2,6 @@ package poussecafe.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -14,24 +13,15 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public abstract class GoatTest {
 
     protected void givenProjectDirectory(File projectDirectory) throws IOException {
         this.projectDirectory = projectDirectory;
-        sourceDirectory = new File(projectDirectory, "src/main/java");
-        if(projectDirectory.exists()) {
-            try {
-                Files.walk(projectDirectory.toPath())
-                    .sorted((path1, path2) -> -path1.compareTo(path2))
-                    .forEach(path -> path.toFile().delete());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        sourceDirectory.mkdirs();
-        Files.copy(getClass().getResourceAsStream("/pom_test.xml"), new File(projectDirectory, "pom.xml").toPath());
+        pomFile = new File(projectDirectory, "pom.xml");
     }
 
     private File projectDirectory;
@@ -40,10 +30,10 @@ public abstract class GoatTest {
         return projectDirectory;
     }
 
-    private File sourceDirectory;
+    private File pomFile;
 
-    protected File sourceDirectory() {
-        return sourceDirectory;
+    protected File pomFile() {
+        return pomFile;
     }
 
     protected void givenInvoker() {
@@ -52,7 +42,7 @@ public abstract class GoatTest {
 
     private Invoker invoker;
 
-    protected void whenExecutingGoals(List<String> goals) throws MojoExecutionException, MavenInvocationException {
+    protected void whenExecutingMavenGoals(List<String> goals) throws MojoExecutionException, MavenInvocationException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(projectDirectory);
         request.setGoals(goals);
@@ -62,11 +52,30 @@ public abstract class GoatTest {
 
     private InvocationResult result;
 
-    protected void thenInvokationSuccess(boolean success) {
+    protected void thenMavenGoalsExecutionSuccess(boolean success) {
         if(success) {
             assertThat(result.getExitCode(), is(0));
         } else {
             assertThat(result.getExitCode(), not(is(0)));
+        }
+    }
+
+    protected void whenExecutingMojo(MojoExecutor executor) {
+        try {
+            mojoExecutionException = null;
+            executor.execute();
+        } catch (MojoExecutionException e) {
+            mojoExecutionException = e;
+        }
+    }
+
+    private MojoExecutionException mojoExecutionException;
+
+    protected void thenMojoExecutionSuccess(boolean success) {
+        if(success) {
+            assertNull(mojoExecutionException);
+        } else {
+            assertNotNull(mojoExecutionException);
         }
     }
 }

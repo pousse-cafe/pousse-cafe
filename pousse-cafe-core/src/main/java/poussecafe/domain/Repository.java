@@ -62,7 +62,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void addData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            D data = entity.getData();
+            D data = entity.data();
             dataAccess.addData(data);
         }
         considerMessageSendingAfterAdd(entity, messageCollection);
@@ -75,7 +75,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     private void checkEntity(A entity) {
         checkThat(value(entity).notNull().because("Entity cannot be null"));
-        checkThat(value(entity.getData()).notNull().because("Entity data cannot be null"));
+        checkThat(value(entity.data()).notNull().because("Entity data cannot be null"));
     }
 
     public void update(A entity) {
@@ -87,7 +87,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void updateData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            D data = entity.getData();
+            D data = entity.data();
             dataAccess.updateData(data);
         }
         considerMessageSendingAfterUpdate(entity, messageCollection);

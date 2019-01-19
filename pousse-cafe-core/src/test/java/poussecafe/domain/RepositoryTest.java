@@ -96,7 +96,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenFoundEntityHasDataAndMessageCollection() {
-        assertThat(entity.getData(), is(foundOrCreatedData));
+        assertThat(entity.data(), is(foundOrCreatedData));
     }
 
     @Test(expected = DomainException.class)
@@ -133,7 +133,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     protected void givenEntity() {
         entity = mockEntity();
         D data = mock(dataClass);
-        when(entity.getData()).thenReturn(data);
+        when(entity.data()).thenReturn(data);
     }
 
     protected abstract S mockEntity();
@@ -143,7 +143,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenDataAdded() {
-        verify(dataAccess).addData(entity.getData());
+        verify(dataAccess).addData(entity.data());
     }
 
     @Test
@@ -158,7 +158,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenDataUpdated() {
-        verify(dataAccess).updateData(entity.getData());
+        verify(dataAccess).updateData(entity.data());
     }
 
     @Test

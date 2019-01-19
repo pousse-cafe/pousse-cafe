@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import poussecafe.domain.Entity;
+import poussecafe.domain.EntityData;
 import poussecafe.property.adapters.DataAdapter;
 import poussecafe.property.adapters.DataAdapters;
 import poussecafe.util.StringKey;
@@ -87,5 +88,13 @@ public class PropertyBuilder {
 
     public static <E extends Enum<E>> PrimitivePropertyBuilder<String, E> enumProperty(Class<E> enumClass) {
         return simple(DataAdapters.stringEnum(enumClass));
+    }
+
+    public static <D extends EntityData<?>, E extends Entity<?, D>, F extends D> EntityPropertyBuilder<D, E, F> entity(Class<E> entityClass, Class<F> dataClass) {
+        Objects.requireNonNull(entityClass);
+        EntityPropertyBuilder<D, E, F> builder = new EntityPropertyBuilder<>();
+        builder.entityClass = entityClass;
+        builder.dataClass = dataClass;
+        return builder;
     }
 }

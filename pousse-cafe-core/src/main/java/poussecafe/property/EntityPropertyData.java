@@ -26,7 +26,7 @@ public abstract class EntityPropertyData<D extends EntityData<?>, E extends Enti
 
             @Override
             public void set(E value) {
-                EntityPropertyData.this.setData(value.getData());
+                EntityPropertyData.this.setData(value.data());
             }
         };
     }

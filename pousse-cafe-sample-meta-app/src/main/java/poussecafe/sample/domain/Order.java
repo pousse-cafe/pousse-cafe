@@ -17,7 +17,7 @@ public class Order extends AggregateRoot<OrderKey, Data> {
 
     void setUnits(int units) {
         checkThat(value(units).verifies(greaterThan(0)).because("More than 0 units have to be ordered"));
-        getData().setUnits(units);
+        data().setUnits(units);
     }
 
     public void settle() {

@@ -17,19 +17,19 @@ public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
 
     void componentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
         checkThatValue(boundedContextComponentDoc).notNull();
-        getData().boundedContextComponentDoc().set(boundedContextComponentDoc);
+        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 
     public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return getData().boundedContextComponentDoc().get();
+        return data().boundedContextComponentDoc().get();
     }
 
     void keyClassName(String keyClassName) {
-        getData().keyClassName().set(keyClassName);
+        data().keyClassName().set(keyClassName);
     }
 
     public String keyClassName() {
-        return getData().keyClassName().get();
+        return data().keyClassName().get();
     }
 
     public String id() {

@@ -17,11 +17,11 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, Bound
 
     void componentDoc(ComponentDoc componentDoc) {
         checkThatValue(componentDoc).notNull();
-        getData().componentDoc().set(componentDoc);
+        data().componentDoc().set(componentDoc);
     }
 
     public ComponentDoc componentDoc() {
-        return getData().componentDoc().get();
+        return data().componentDoc().get();
     }
 
     public String packageName() {
