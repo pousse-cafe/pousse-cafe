@@ -14,7 +14,7 @@ import poussecafe.property.ProtectedPropertyBuilder;
 public class <name> extends AggregateRoot\<<name>Key, <name>.Data> {
 
     public ProtectedProperty\<String> name() {
-        return ProtectedPropertyBuilder.protect(getData().name()).of(this)
+        return ProtectedPropertyBuilder.protect(data().name()).of(this)
                 .allowClassWrite(<name>Factory.class)
                 .build();
     } 
