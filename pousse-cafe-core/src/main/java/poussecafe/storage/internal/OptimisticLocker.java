@@ -1,16 +1,15 @@
 package poussecafe.storage.internal;
 
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.context.OptimisticLockingException;
 import poussecafe.util.ReflectionException;
 import poussecafe.util.ReflectionUtils;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 public class OptimisticLocker {
 
     public OptimisticLocker(String versionField) {
-        checkThatValue(versionField).notNull();
+        Objects.requireNonNull(versionField);
         this.versionField = versionField;
     }
 

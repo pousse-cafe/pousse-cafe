@@ -3,14 +3,13 @@ package poussecafe.doc;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import java.io.File;
+import java.util.Objects;
 import poussecafe.context.MetaApplicationContext;
-
-import static poussecafe.check.Checks.checkThatValue;
 
 public class PousseCafeDoclet {
 
     public PousseCafeDoclet(RootDoc rootDoc) {
-        checkThatValue(rootDoc).notNull();
+        Objects.requireNonNull(rootDoc);
         rootDocWrapper = new RootDocWrapper(rootDoc);
         Logger.setRootDoc(rootDocWrapper);
 

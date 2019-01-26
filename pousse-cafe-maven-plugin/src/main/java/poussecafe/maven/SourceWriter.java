@@ -8,7 +8,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.stringtemplate.v4.ST;
 import poussecafe.exception.PousseCafeException;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class SourceWriter {
 
@@ -37,9 +37,9 @@ public class SourceWriter {
         }
 
         public SourceWriter build() {
-            checkThatValue(generator.modelPackageName).notNull();
-            checkThatValue(generator.name).notNull();
-            checkThatValue(generator.storageAdapters).notNull();
+            Objects.requireNonNull(generator.modelPackageName);
+            Objects.requireNonNull(generator.name);
+            Objects.requireNonNull(generator.storageAdapters);
             return generator;
         }
     }

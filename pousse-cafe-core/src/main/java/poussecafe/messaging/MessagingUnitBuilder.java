@@ -5,12 +5,12 @@ import java.util.List;
 import poussecafe.context.ClassPathExplorer;
 
 import static java.util.stream.Collectors.toList;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class MessagingUnitBuilder {
 
     MessagingUnitBuilder(Messaging messaging) {
-        checkThatValue(messaging).notNull();
+        Objects.requireNonNull(messaging);
         this.messaging = messaging;
     }
 

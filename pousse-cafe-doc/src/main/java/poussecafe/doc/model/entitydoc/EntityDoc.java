@@ -1,13 +1,12 @@
 package poussecafe.doc.model.entitydoc;
 
+import java.util.Objects;
 import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
-
-import static poussecafe.check.Checks.checkThatValue;
 
 @Aggregate(
   factory = EntityDocFactory.class,
@@ -16,7 +15,7 @@ import static poussecafe.check.Checks.checkThatValue;
 public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
 
     void componentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
-        checkThatValue(boundedContextComponentDoc).notNull();
+        Objects.requireNonNull(boundedContextComponentDoc);
         data().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 

@@ -3,7 +3,7 @@ package poussecafe.doc.model;
 import java.util.Optional;
 import poussecafe.domain.ValueObject;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class ComponentDoc implements ValueObject {
 
@@ -32,9 +32,9 @@ public class ComponentDoc implements ValueObject {
         }
 
         public ComponentDoc build() {
-            checkThatValue(doc.name).notNull();
-            checkThatValue(doc.description).notNull();
-            checkThatValue(doc.shortDescription).notNull();
+            Objects.requireNonNull(doc.name);
+            Objects.requireNonNull(doc.description);
+            Objects.requireNonNull(doc.shortDescription);
             return doc;
         }
     }

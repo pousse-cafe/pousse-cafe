@@ -3,8 +3,8 @@ package poussecafe.entity;
 import org.junit.Test;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
+import poussecafe.domain.MessageCollection;
 import poussecafe.domain.RepositoryTest;
-import poussecafe.property.MessageCollection;
 import poussecafe.storage.MessageSendingPolicy;
 
 import static org.hamcrest.CoreMatchers.is;

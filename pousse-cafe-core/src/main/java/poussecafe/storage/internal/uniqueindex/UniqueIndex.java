@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class UniqueIndex<D> {
 
@@ -29,8 +29,8 @@ public class UniqueIndex<D> {
         }
 
         public UniqueIndex<E> build() {
-            checkThatValue(index.name).notNull();
-            checkThatValue(index.uniqueDataProducer).notNull();
+            Objects.requireNonNull(index.name);
+            Objects.requireNonNull(index.uniqueDataProducer);
             return index;
         }
     }

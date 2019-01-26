@@ -16,7 +16,6 @@ import poussecafe.property.MapProperty;
 import poussecafe.property.Property;
 
 import static java.util.stream.Collectors.toList;
-import static poussecafe.check.Checks.checkThatValue;
 
 @Aggregate(
   factory = DomainProcessDocFactory.class,
@@ -25,7 +24,6 @@ import static poussecafe.check.Checks.checkThatValue;
 public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainProcessDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {
-        checkThatValue(componentDoc).notNull();
         data().boundedContextComponentDoc().set(componentDoc);
     }
 

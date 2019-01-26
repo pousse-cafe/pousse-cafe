@@ -7,8 +7,6 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 @Aggregate(
     factory = BoundedContextDocFactory.class,
     repository = BoundedContextDocRepository.class
@@ -16,7 +14,6 @@ import static poussecafe.check.Checks.checkThatValue;
 public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, BoundedContextDoc.Data> {
 
     void componentDoc(ComponentDoc componentDoc) {
-        checkThatValue(componentDoc).notNull();
         data().componentDoc().set(componentDoc);
     }
 

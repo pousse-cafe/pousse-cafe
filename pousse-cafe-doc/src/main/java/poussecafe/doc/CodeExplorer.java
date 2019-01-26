@@ -6,7 +6,7 @@ import java.util.Set;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class CodeExplorer {
 
@@ -30,9 +30,9 @@ public class CodeExplorer {
         }
 
         public CodeExplorer build() {
-            checkThatValue(codeExplorer.rootClassDoc).notNull();
-            checkThatValue(codeExplorer.basePackage).notNull();
-            checkThatValue(codeExplorer.classRelationBuilder).notNull();
+            Objects.requireNonNull(codeExplorer.rootClassDoc);
+            Objects.requireNonNull(codeExplorer.basePackage);
+            Objects.requireNonNull(codeExplorer.classRelationBuilder);
             return codeExplorer;
         }
     }

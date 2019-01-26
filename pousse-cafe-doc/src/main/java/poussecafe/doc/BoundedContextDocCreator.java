@@ -1,16 +1,15 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.PackageDoc;
+import java.util.Objects;
 import java.util.function.Consumer;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.process.BoundedContextDocCreation;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 public class BoundedContextDocCreator implements Consumer<PackageDoc> {
 
     public BoundedContextDocCreator(RootDocWrapper rootDocWrapper) {
-        checkThatValue(rootDocWrapper).notNull();
+        Objects.requireNonNull(rootDocWrapper);
         this.rootDocWrapper = rootDocWrapper;
     }
 

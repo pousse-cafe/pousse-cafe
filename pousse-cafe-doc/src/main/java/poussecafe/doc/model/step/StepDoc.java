@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import poussecafe.doc.model.ComponentDoc;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class StepDoc {
 
@@ -28,9 +28,9 @@ public class StepDoc {
         }
 
         public StepDoc build() {
-            checkThatValue(stepDoc.methodSignature).notNull();
-            checkThatValue(stepDoc.componentDoc).notNull();
-            checkThatValue(stepDoc.producedEvents).notNull();
+            Objects.requireNonNull(stepDoc.methodSignature);
+            Objects.requireNonNull(stepDoc.componentDoc);
+            Objects.requireNonNull(stepDoc.producedEvents);
             return stepDoc;
         }
     }

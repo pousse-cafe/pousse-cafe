@@ -19,7 +19,7 @@ import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.exception.NotFoundException;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class AggregateGraphFactory {
 
@@ -53,11 +53,11 @@ public class AggregateGraphFactory {
         }
 
         public AggregateGraphFactory build() {
-            checkThatValue(factory.aggregateDoc).notNull();
-            checkThatValue(factory.relationRepository).notNull();
-            checkThatValue(factory.aggregateDocRepository).notNull();
-            checkThatValue(factory.entityDocRepository).notNull();
-            checkThatValue(factory.valueObjectDocRepository).notNull();
+            Objects.requireNonNull(factory.aggregateDoc);
+            Objects.requireNonNull(factory.relationRepository);
+            Objects.requireNonNull(factory.aggregateDocRepository);
+            Objects.requireNonNull(factory.entityDocRepository);
+            Objects.requireNonNull(factory.valueObjectDocRepository);
             return factory;
         }
     }

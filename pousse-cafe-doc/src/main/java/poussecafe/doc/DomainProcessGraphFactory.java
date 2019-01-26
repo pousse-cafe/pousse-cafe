@@ -1,6 +1,7 @@
 package poussecafe.doc;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.doc.graph.DirectedEdge;
 import poussecafe.doc.graph.DirectedGraph;
@@ -10,12 +11,10 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 public class DomainProcessGraphFactory {
 
     public DomainProcessGraphFactory(DomainProcessDoc domainProcessDoc) {
-        checkThatValue(domainProcessDoc).notNull();
+        Objects.requireNonNull(domainProcessDoc);
         this.domainProcessDoc = domainProcessDoc;
     }
 

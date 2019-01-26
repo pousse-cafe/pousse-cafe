@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class PathFinder {
 
@@ -38,10 +38,10 @@ public class PathFinder {
         }
 
         public PathFinder build() {
-            checkThatValue(pathFinder.start).notNull();
-            checkThatValue(pathFinder.basePackage).notNull();
-            checkThatValue(pathFinder.matcher).notNull();
-            checkThatValue(pathFinder.pathHandler).notNull();
+            Objects.requireNonNull(pathFinder.start);
+            Objects.requireNonNull(pathFinder.basePackage);
+            Objects.requireNonNull(pathFinder.matcher);
+            Objects.requireNonNull(pathFinder.pathHandler);
             return pathFinder;
         }
     }

@@ -2,7 +2,7 @@ package poussecafe.maven;
 
 import java.io.File;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class CommonStorageSourceGenerator {
 
@@ -26,9 +26,9 @@ public class CommonStorageSourceGenerator {
         }
 
         public CommonStorageSourceGenerator build() {
-            checkThatValue(generator.sourceWriter).notNull();
-            checkThatValue(generator.aggregateName).notNull();
-            checkThatValue(generator.adaptersDirectory).notNull();
+            Objects.requireNonNull(generator.sourceWriter);
+            Objects.requireNonNull(generator.aggregateName);
+            Objects.requireNonNull(generator.adaptersDirectory);
             return generator;
         }
     }

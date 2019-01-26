@@ -3,7 +3,6 @@ package poussecafe.domain;
 import java.util.List;
 import java.util.Objects;
 import poussecafe.exception.NotFoundException;
-import poussecafe.property.MessageCollection;
 
 import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;

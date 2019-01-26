@@ -3,12 +3,12 @@ package poussecafe.property;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public abstract class EntityPropertyData<D extends EntityData<?>, E extends Entity<?, D>> implements EntityProperty<E> {
 
     public EntityPropertyData(Class<E> primitiveClass) {
-        checkThatValue(primitiveClass).notNull();
+        Objects.requireNonNull(primitiveClass);
         this.primitiveClass = primitiveClass;
     }
 

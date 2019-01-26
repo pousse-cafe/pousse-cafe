@@ -3,11 +3,12 @@ package poussecafe.doc.model.domainprocessdoc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.ValueObject;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class Step implements ValueObject {
 
@@ -21,7 +22,7 @@ public class Step implements ValueObject {
         }
 
         public Builder to(ToStep to) {
-            checkThatValue(to).notNull();
+            Objects.requireNonNull(to);
             step.tos.add(to);
             return this;
         }
@@ -54,7 +55,7 @@ public class Step implements ValueObject {
         }
 
         public Step build() {
-            checkThatValue(step.componentDoc).notNull();
+            Objects.requireNonNull(step.componentDoc);
             return step;
         }
     }

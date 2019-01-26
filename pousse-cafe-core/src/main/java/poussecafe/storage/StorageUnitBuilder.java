@@ -11,12 +11,12 @@ import poussecafe.exception.PousseCafeException;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class StorageUnitBuilder {
 
     StorageUnitBuilder(Storage storage) {
-        checkThatValue(storage).notNull();
+        Objects.requireNonNull(storage);
         this.storage = storage;
     }
 

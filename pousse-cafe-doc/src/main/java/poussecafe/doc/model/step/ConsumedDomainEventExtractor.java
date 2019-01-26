@@ -5,16 +5,15 @@ import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.domain.DomainEvent;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 public class ConsumedDomainEventExtractor {
 
     public ConsumedDomainEventExtractor(MethodDoc methodDoc) {
-        checkThatValue(methodDoc).notNull();
+        Objects.requireNonNull(methodDoc);
         this.methodDoc = methodDoc;
     }
 

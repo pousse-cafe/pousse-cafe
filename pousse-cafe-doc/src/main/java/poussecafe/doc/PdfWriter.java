@@ -2,15 +2,14 @@ package poussecafe.doc;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Objects;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.util.XRLog;
-
-import static poussecafe.check.Checks.checkThatValue;
 
 public class PdfWriter {
 
     public PdfWriter(RootDocWrapper rootDocWrapper) {
-        checkThatValue(rootDocWrapper).notNull();
+        Objects.requireNonNull(rootDocWrapper);
         this.rootDocWrapper = rootDocWrapper;
     }
 

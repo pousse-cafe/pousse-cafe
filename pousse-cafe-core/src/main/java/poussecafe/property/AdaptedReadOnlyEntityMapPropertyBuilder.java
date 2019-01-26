@@ -5,7 +5,7 @@ import java.util.function.Function;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 /**
  * @param <J> Stored key type
@@ -40,7 +40,7 @@ public class AdaptedReadOnlyEntityMapPropertyBuilder<J, U extends EntityData<K>,
     }
 
     public AdaptingReadWriteEntityMapPropertyBuilder<J, U, K, E> adapt(Function<K, J> keyAdapter) {
-        checkThatValue(keyAdapter).notNull();
+        Objects.requireNonNull(keyAdapter);
         return new AdaptingReadWriteEntityMapPropertyBuilder<>(entityClass, this.keyAdapter, keyAdapter);
     }
 }

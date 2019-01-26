@@ -6,7 +6,7 @@ import org.junit.Test;
 import poussecafe.domain.Entity;
 import poussecafe.domain.SimpleEntityData;
 import poussecafe.property.EntityMapProperty;
-import poussecafe.property.PropertyBuilder;
+import poussecafe.property.EntityPropertyBuilder;
 import poussecafe.util.ReflectionUtils;
 import poussecafe.util.StringKey;
 
@@ -57,7 +57,7 @@ public class EntityMapPropertyBuilderTest {
     }
 
     private void givenReadOnlyPropertyWithConversion() {
-        propertyWithConversion = PropertyBuilder.entityMap(StringKey.class, SimpleEntity.class)
+        propertyWithConversion = EntityPropertyBuilder.entityMap(StringKey.class, SimpleEntity.class)
                 .from(String.class, SimpleEntityData.class)
                 .adapt(StringKey::new)
                 .read()
@@ -96,7 +96,7 @@ public class EntityMapPropertyBuilderTest {
     }
 
     private void givenReadWritePropertyWithConversion() {
-        propertyWithConversion = PropertyBuilder.entityMap(StringKey.class, SimpleEntity.class)
+        propertyWithConversion = EntityPropertyBuilder.entityMap(StringKey.class, SimpleEntity.class)
                 .from(String.class, SimpleEntityData.class)
                 .adapt(StringKey::new)
                 .read()

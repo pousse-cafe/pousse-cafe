@@ -1,13 +1,12 @@
 package poussecafe.doc.model.vodoc;
 
+import java.util.Objects;
 import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
-
-import static poussecafe.check.Checks.checkThatValue;
 
 @Aggregate(
   factory = ValueObjectDocFactory.class,
@@ -16,7 +15,7 @@ import static poussecafe.check.Checks.checkThatValue;
 public class ValueObjectDoc extends AggregateRoot<ValueObjectDocKey, ValueObjectDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {
-        checkThatValue(componentDoc).notNull();
+        Objects.requireNonNull(componentDoc);
         data().boundedContextComponentDoc().set(componentDoc);
     }
 

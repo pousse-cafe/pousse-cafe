@@ -1,16 +1,15 @@
 package poussecafe.doc.model.relation;
 
+import java.util.Objects;
 import poussecafe.domain.ValueObject;
-
-import static poussecafe.check.Checks.checkThatValue;
 
 public class RelationKey implements ValueObject {
 
     public RelationKey(String fromClass, String toClass) {
-        checkThatValue(fromClass).notNull();
+        Objects.requireNonNull(fromClass);
         this.fromClass = fromClass;
 
-        checkThatValue(toClass).notNull();
+        Objects.requireNonNull(toClass);
         this.toClass = toClass;
     }
 

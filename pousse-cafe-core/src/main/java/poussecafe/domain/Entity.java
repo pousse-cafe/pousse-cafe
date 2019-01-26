@@ -1,12 +1,11 @@
 package poussecafe.domain;
 
 import poussecafe.collection.MultiTypeMap;
-import poussecafe.property.MessageCollection;
 import poussecafe.storage.Storage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public abstract class Entity<K, D extends EntityData<K>> {
 
@@ -48,7 +47,7 @@ public abstract class Entity<K, D extends EntityData<K>> {
     }
 
     public void setKey(K key) {
-        checkThatValue(key).notNull();
+        Objects.requireNonNull(key);
         data().key().set(key);
     }
 

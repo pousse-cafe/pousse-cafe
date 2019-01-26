@@ -7,16 +7,16 @@ import poussecafe.context.RawAndAdaptedMessage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public abstract class MessageReceiver {
 
     protected MessageReceiver(MessageAdapter messageAdapter,
             MessageConsumer messageConsumer) {
-        checkThatValue(messageAdapter).notNull();
+        Objects.requireNonNull(messageAdapter);
         this.messageAdapter = messageAdapter;
 
-        checkThatValue(messageConsumer).notNull();
+        Objects.requireNonNull(messageConsumer);
         this.messageConsumer = messageConsumer;
     }
 

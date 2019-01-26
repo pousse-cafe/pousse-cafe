@@ -178,5 +178,7 @@
     <module>pousse-cafe-maven-plugin</module>
     <module>pousse-cafe-spring-kafka</module>
     <module>pousse-cafe-jackson</module>
+    <module>pousse-cafe-property</module>
+    <module>pousse-cafe-base</module>
   </modules>
 </project>

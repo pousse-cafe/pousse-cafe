@@ -38,12 +38,12 @@ import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 
 import static java.util.stream.Collectors.toList;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class HtmlWriter {
 
     public HtmlWriter(RootDocWrapper rootDocWrapper) {
-        checkThatValue(rootDocWrapper).notNull();
+        Objects.requireNonNull(rootDocWrapper);
         this.rootDocWrapper = rootDocWrapper;
     }
 

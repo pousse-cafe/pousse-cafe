@@ -1,6 +1,7 @@
 package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.context.Aggregate;
 import poussecafe.doc.StringNormalizer;
@@ -12,8 +13,6 @@ import poussecafe.domain.EntityData;
 import poussecafe.property.ListProperty;
 import poussecafe.property.Property;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 @Aggregate(
   factory = FactoryDocFactory.class,
   repository = FactoryDocRepository.class
@@ -21,7 +20,7 @@ import static poussecafe.check.Checks.checkThatValue;
 public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
-        checkThatValue(boundedContextComponentDoc).notNull();
+        Objects.requireNonNull(boundedContextComponentDoc);
         data().boundedContextComponentDoc().set(boundedContextComponentDoc);
     }
 

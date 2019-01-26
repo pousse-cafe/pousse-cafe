@@ -23,12 +23,12 @@ import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class MetaApplicationWrapper {
 
     public MetaApplicationWrapper(MetaApplicationContext context) {
-        checkThatValue(context).notNull();
+        Objects.requireNonNull(context);
         this.context = context;
     }
 

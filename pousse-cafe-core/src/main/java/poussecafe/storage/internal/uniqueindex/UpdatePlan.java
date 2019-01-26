@@ -2,7 +2,7 @@ package poussecafe.storage.internal.uniqueindex;
 
 import java.util.Optional;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class UpdatePlan implements Plan {
 
@@ -26,9 +26,9 @@ public class UpdatePlan implements Plan {
         }
 
         public UpdatePlan build() {
-            checkThatValue(plan.newUniqueData).notNull();
-            checkThatValue(plan.oldUniqueData).notNull();
-            checkThatValue(plan.index).notNull();
+            Objects.requireNonNull(plan.newUniqueData);
+            Objects.requireNonNull(plan.oldUniqueData);
+            Objects.requireNonNull(plan.index);
             return plan;
         }
     }

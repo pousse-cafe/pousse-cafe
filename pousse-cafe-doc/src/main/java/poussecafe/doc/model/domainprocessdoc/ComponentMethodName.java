@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.domain.DomainException;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class ComponentMethodName {
 
@@ -23,8 +23,8 @@ public class ComponentMethodName {
         }
 
         public ComponentMethodName build() {
-            checkThatValue(signature.aggregateName).notNull();
-            checkThatValue(signature.methodName).notNull();
+            Objects.requireNonNull(signature.aggregateName);
+            Objects.requireNonNull(signature.methodName);
             return signature;
         }
     }

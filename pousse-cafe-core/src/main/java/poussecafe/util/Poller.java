@@ -1,16 +1,16 @@
 package poussecafe.util;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import poussecafe.exception.PousseCafeException;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static poussecafe.check.Checks.checkThatValue;
 
 public class Poller {
 
     public Poller(Supplier<Boolean> poll) {
-        checkThatValue(poll).notNull();
+        Objects.requireNonNull(poll);
         this.poll = poll;
     }
 

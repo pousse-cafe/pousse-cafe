@@ -13,7 +13,7 @@ import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class BoundedContextGraphFactory {
 
@@ -37,9 +37,9 @@ public class BoundedContextGraphFactory {
         }
 
         public BoundedContextGraphFactory build() {
-            checkThatValue(factory.boundedContextDoc).notNull();
-            checkThatValue(factory.relationRepository).notNull();
-            checkThatValue(factory.aggregateDocRepository).notNull();
+            Objects.requireNonNull(factory.boundedContextDoc);
+            Objects.requireNonNull(factory.relationRepository);
+            Objects.requireNonNull(factory.aggregateDocRepository);
             return factory;
         }
     }

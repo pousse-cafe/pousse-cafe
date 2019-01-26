@@ -32,6 +32,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.pousse-cafe-framework</groupId>
+      <artifactId>pousse-cafe-property</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>

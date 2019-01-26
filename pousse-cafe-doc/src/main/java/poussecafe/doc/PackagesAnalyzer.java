@@ -3,9 +3,10 @@ package poussecafe.doc;
 import com.sun.javadoc.PackageDoc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class PackagesAnalyzer {
 
@@ -19,13 +20,13 @@ public class PackagesAnalyzer {
         }
 
         public Builder packageDocConsumer(Consumer<PackageDoc> classDocConsumer) {
-            checkThatValue(classDocConsumer).notNull();
+            Objects.requireNonNull(classDocConsumer);
             analyzer.packageDocConsumers.add(classDocConsumer);
             return this;
         }
 
         public PackagesAnalyzer build() {
-            checkThatValue(analyzer.rootDocWrapper).notNull();
+            Objects.requireNonNull(analyzer.rootDocWrapper);
             return analyzer;
         }
     }

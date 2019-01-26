@@ -2,7 +2,7 @@ package poussecafe.doc.model;
 
 import java.util.Optional;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class UbiquitousLanguageEntry
         implements Comparable<UbiquitousLanguageEntry> {
@@ -27,8 +27,8 @@ public class UbiquitousLanguageEntry
         }
 
         public UbiquitousLanguageEntry build() {
-            checkThatValue(entry.type).notNull();
-            checkThatValue(entry.componentDoc).notNull();
+            Objects.requireNonNull(entry.type);
+            Objects.requireNonNull(entry.componentDoc);
             return entry;
         }
     }

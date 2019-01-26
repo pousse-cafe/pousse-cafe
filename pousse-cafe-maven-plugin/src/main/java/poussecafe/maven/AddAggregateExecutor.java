@@ -10,7 +10,7 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 import poussecafe.storage.internal.InternalStorage;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class AddAggregateExecutor implements MojoExecutor {
 
@@ -58,8 +58,8 @@ public class AddAggregateExecutor implements MojoExecutor {
         }
 
         public AddAggregateExecutor build() {
-            checkThatValue(executor.aggregateDirectory).notNull();
-            checkThatValue(executor.name).notNull();
+            Objects.requireNonNull(executor.aggregateDirectory);
+            Objects.requireNonNull(executor.name);
 
             executor.sourceWriter = new SourceWriter.Builder()
                     .modelPackageName(executor.packageName)

@@ -4,16 +4,16 @@ import java.util.Map;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K, E extends Entity<K, ?>> implements
         EntityMapProperty<K, E> {
 
     public ConvertingEntityMapProperty(Map<L, F> data, Class<E> primitiveClass) {
-        checkThatValue(data).notNull();
+        Objects.requireNonNull(data);
         this.data = data;
 
-        checkThatValue(primitiveClass).notNull();
+        Objects.requireNonNull(primitiveClass);
         this.primitiveClass = primitiveClass;
     }
 
@@ -23,7 +23,7 @@ public abstract class ConvertingEntityMapProperty<L, F extends EntityData<K>, K,
 
     @Override
     public MapProperty<K, E> inContextOf(Entity<?, ?> primitive) {
-        checkThatValue(primitive).notNull();
+        Objects.requireNonNull(primitive);
 
         return new ConvertingMapProperty<L, F, K, E>(data) {
             @Override

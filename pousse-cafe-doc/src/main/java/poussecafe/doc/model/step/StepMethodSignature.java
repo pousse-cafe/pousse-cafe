@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.domain.DomainException;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class StepMethodSignature {
 
@@ -25,8 +25,8 @@ public class StepMethodSignature {
         }
 
         public StepMethodSignature build() {
-            checkThatValue(signature.componentMethodName).notNull();
-            checkThatValue(signature.consumedEventName).notNull();
+            Objects.requireNonNull(signature.componentMethodName);
+            Objects.requireNonNull(signature.consumedEventName);
             return signature;
         }
     }

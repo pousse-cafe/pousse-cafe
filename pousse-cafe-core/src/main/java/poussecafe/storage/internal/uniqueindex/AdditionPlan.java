@@ -1,6 +1,6 @@
 package poussecafe.storage.internal.uniqueindex;
 
-import static poussecafe.check.Checks.checkThatValue;
+import java.util.Objects;
 
 public class AdditionPlan implements Plan {
 
@@ -19,8 +19,8 @@ public class AdditionPlan implements Plan {
         }
 
         public AdditionPlan build() {
-            checkThatValue(plan.uniqueData).notNull();
-            checkThatValue(plan.index).notNull();
+            Objects.requireNonNull(plan.uniqueData);
+            Objects.requireNonNull(plan.index);
             return plan;
         }
 
