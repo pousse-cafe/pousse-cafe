@@ -9,16 +9,19 @@ import java.util.function.Function;
  */
 public class AdaptedReadWriteListPropertyBuilder<U, T> {
 
-    AdaptedReadWriteListPropertyBuilder(Function<U, T> readAdapter, Function<T, U> writeAdapter) {
+    AdaptedReadWriteListPropertyBuilder(Function<U, T> readAdapter, Function<T, U> writeAdapter, List<U> list) {
         this.readAdapter = readAdapter;
         this.writeAdapter = writeAdapter;
+        this.list = list;
     }
 
     private Function<U, T> readAdapter;
 
     private Function<T, U> writeAdapter;
 
-    public ListProperty<T> build(List<U> list) {
+    private List<U> list;
+
+    public ListProperty<T> build() {
         return new ConvertingListProperty<U, T>(list) {
             @Override
             protected T convertFrom(U from) {

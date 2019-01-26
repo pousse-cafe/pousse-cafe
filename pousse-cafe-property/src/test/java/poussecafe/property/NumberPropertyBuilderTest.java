@@ -1,39 +1,11 @@
-package poussecafe.entity;
+package poussecafe.property;
 
 import org.junit.Test;
-import poussecafe.property.AddOperator;
-import poussecafe.property.NumberProperty;
-import poussecafe.property.NumberPropertyBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public abstract class NumberPropertyBuilderTest<N extends Number> {
-
-    @Test
-    public void readOnlyNoConversion() {
-        givenReadOnlyPropertyWithoutConversion();
-        whenReadingValueWithoutConversion();
-        thenReadValueIs(value);
-    }
-
-    private void givenReadOnlyPropertyWithoutConversion() {
-        property = builder()
-                .get(() -> value)
-                .build();
-    }
-
-    protected abstract NumberPropertyBuilder<N> builder();
-
-    private NumberProperty<N> property;
-
-    private N value = initialValue();
-
-    protected abstract N initialValue();
-
-    private void whenReadingValueWithoutConversion() {
-        readValue = property.get();
-    }
 
     private N readValue;
 
@@ -56,7 +28,15 @@ public abstract class NumberPropertyBuilderTest<N extends Number> {
                 .build();
     }
 
+    protected abstract NumberPropertyBuilder<N> builder();
+
+    private N value = initialValue();
+
+    protected abstract N initialValue();
+
     protected abstract AddOperator<N> addOperator();
+
+    private NumberProperty<N> property;
 
     private void whenWritingValueWithoutConversion() {
         property.set(newValue);

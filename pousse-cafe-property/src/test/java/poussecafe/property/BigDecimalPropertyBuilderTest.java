@@ -1,4 +1,4 @@
-package poussecafe.entity;
+package poussecafe.property;
 
 import java.math.BigDecimal;
 import poussecafe.property.AddOperator;

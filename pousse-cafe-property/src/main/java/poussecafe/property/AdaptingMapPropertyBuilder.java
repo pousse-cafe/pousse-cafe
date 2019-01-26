@@ -11,9 +11,9 @@ import java.util.function.Function;
  */
 public class AdaptingMapPropertyBuilder<J, U, K, V> {
 
-    public AdaptedMapPropertyBuilder<J, U, K, V> adapt(Function<J, K> keyAdapter, Function<U, V> valueAdapter) {
+    public AdaptedReadOnlyMapPropertyBuilder<J, U, K, V> adaptOnGet(Function<J, K> keyAdapter, Function<U, V> valueAdapter) {
         Objects.requireNonNull(keyAdapter);
         Objects.requireNonNull(valueAdapter);
-        return new AdaptedMapPropertyBuilder<>(keyAdapter, valueAdapter);
+        return new AdaptedReadOnlyMapPropertyBuilder<>(keyAdapter, valueAdapter);
     }
 }

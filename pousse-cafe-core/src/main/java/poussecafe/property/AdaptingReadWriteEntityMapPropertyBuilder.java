@@ -1,5 +1,7 @@
 package poussecafe.property;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
@@ -27,7 +29,8 @@ public class AdaptingReadWriteEntityMapPropertyBuilder<J, U extends EntityData<K
 
     private Function<K, J> writeKeyAdapter;
 
-    public AdaptedReadWriteEntityMapPropertyBuilder<J, U, K, E> write() {
-        return new AdaptedReadWriteEntityMapPropertyBuilder<>(entityClass, readKeyAdapter, writeKeyAdapter);
+    public AdaptedReadWriteEntityMapPropertyBuilder<J, U, K, E> withMap(Map<J, U> map) {
+        Objects.requireNonNull(map);
+        return new AdaptedReadWriteEntityMapPropertyBuilder<>(entityClass, readKeyAdapter, writeKeyAdapter, map);
     }
 }

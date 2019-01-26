@@ -4,11 +4,13 @@ import java.util.Set;
 
 public class ReadWriteSetPropertyBuilder<T> {
 
-    ReadWriteSetPropertyBuilder() {
-
+    ReadWriteSetPropertyBuilder(Set<T> set) {
+        this.set = set;
     }
 
-    public SetProperty<T> build(Set<T> list) {
-        return new BaseSetProperty<>(list);
+    private Set<T> set;
+
+    public SetProperty<T> build() {
+        return new BaseSetProperty<>(set);
     }
 }

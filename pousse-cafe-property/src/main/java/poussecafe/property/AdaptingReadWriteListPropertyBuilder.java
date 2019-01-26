@@ -1,5 +1,7 @@
 package poussecafe.property;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -17,7 +19,8 @@ public class AdaptingReadWriteListPropertyBuilder<U, T> {
 
     private Function<T, U> writeAdapter;
 
-    public AdaptedReadWriteListPropertyBuilder<U, T> write() {
-        return new AdaptedReadWriteListPropertyBuilder<>(readAdapter, writeAdapter);
+    public AdaptedReadWriteListPropertyBuilder<U, T> withList(List<U> list) {
+        Objects.requireNonNull(list);
+        return new AdaptedReadWriteListPropertyBuilder<>(readAdapter, writeAdapter, list);
     }
 }

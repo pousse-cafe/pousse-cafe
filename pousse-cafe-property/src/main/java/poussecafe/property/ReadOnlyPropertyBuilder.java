@@ -12,20 +12,6 @@ public class ReadOnlyPropertyBuilder<T> {
 
     private CompositeProperty<T, ?> compositeProperty;
 
-    public Property<T> build() {
-        return new Property<T>() {
-            @Override
-            public T get() {
-                return compositeProperty.getter.get();
-            }
-
-            @Override
-            public void set(T value) {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
     public ReadWritePropertyBuilder<T> set(Consumer<T> setter) {
         CompositeProperty<T, T> newCompositeProperty = new CompositeProperty<>();
         newCompositeProperty.getter = compositeProperty.getter;

@@ -1,5 +1,7 @@
 package poussecafe.property;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -30,7 +32,8 @@ public class AdaptingReadWriteMapPropertyBuilder<J, U, K, V> {
 
     private Function<V, U> writeValueAdapter;
 
-    public AdaptedReadWriteMapPropertyBuilder<J, U, K, V> write() {
-        return new AdaptedReadWriteMapPropertyBuilder<>(readKeyAdapter, readValueAdapter, writeKeyAdapter, writeValueAdapter);
+    public AdaptedReadWriteMapPropertyBuilder<J, U, K, V> withMap(Map<J, U> map) {
+        Objects.requireNonNull(map);
+        return new AdaptedReadWriteMapPropertyBuilder<>(readKeyAdapter, readValueAdapter, writeKeyAdapter, writeValueAdapter, map);
     }
 }

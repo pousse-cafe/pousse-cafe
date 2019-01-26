@@ -9,8 +9,8 @@ import java.util.function.Function;
  */
 public class AdaptingSetPropertyBuilder<U, T> {
 
-    public AdaptedSetPropertyBuilder<U, T> adapt(Function<U, T> adapter) {
+    public AdaptedReadOnlySetPropertyBuilder<U, T> adaptOnGet(Function<U, T> adapter) {
         Objects.requireNonNull(adapter);
-        return new AdaptedSetPropertyBuilder<>(adapter);
+        return new AdaptedReadOnlySetPropertyBuilder<>(adapter);
     }
 }

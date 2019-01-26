@@ -16,10 +16,6 @@ public class AdaptedReadOnlyPropertyBuilder<U, T> {
 
     private Supplier<T> getter;
 
-    public Property<T> build() {
-        return new ReadOnlyPropertyBuilder<>(getter).build();
-    }
-
     public AdaptingReadWritePropertyBuilder<U, T> adapt(Function<T, U> adapter) {
         Objects.requireNonNull(adapter);
         return new AdaptingReadWritePropertyBuilder<>(getter, adapter);

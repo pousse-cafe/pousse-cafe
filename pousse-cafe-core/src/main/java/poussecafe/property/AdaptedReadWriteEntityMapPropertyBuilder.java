@@ -16,12 +16,12 @@ public class AdaptedReadWriteEntityMapPropertyBuilder<J, U extends EntityData<K>
     AdaptedReadWriteEntityMapPropertyBuilder(
             Class<E> entityClass,
             Function<J, K> readKeyAdapter,
-            Function<K, J> writeKeyAdapter) {
+            Function<K, J> writeKeyAdapter,
+            Map<J, U> map) {
         this.entityClass = entityClass;
-
         this.readKeyAdapter = readKeyAdapter;
-
         this.writeKeyAdapter = writeKeyAdapter;
+        this.map = map;
     }
 
     private Class<E> entityClass;
@@ -30,7 +30,9 @@ public class AdaptedReadWriteEntityMapPropertyBuilder<J, U extends EntityData<K>
 
     private Function<K, J> writeKeyAdapter;
 
-    public EntityMapProperty<K, E> build(Map<J, U> map) {
+    private Map<J, U> map;
+
+    public EntityMapProperty<K, E> build() {
         return new ConvertingEntityMapProperty<J, U, K, E>(map, entityClass) {
             @Override
             protected K convertFromKey(J from) {

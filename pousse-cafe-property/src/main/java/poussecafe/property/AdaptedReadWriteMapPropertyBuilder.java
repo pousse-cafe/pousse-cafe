@@ -15,12 +15,15 @@ public class AdaptedReadWriteMapPropertyBuilder<J, U, K, V> {
             Function<J, K> readKeyAdapter,
             Function<U, V> readValueAdapter,
             Function<K, J> writeKeyAdapter,
-            Function<V, U> writeValueAdapter) {
+            Function<V, U> writeValueAdapter,
+            Map<J, U> map) {
         this.readKeyAdapter = readKeyAdapter;
         this.readValueAdapter = readValueAdapter;
 
         this.writeKeyAdapter = writeKeyAdapter;
         this.writeValueAdapter = writeValueAdapter;
+
+        this.map = map;
     }
 
     private Function<J, K> readKeyAdapter;
@@ -31,7 +34,9 @@ public class AdaptedReadWriteMapPropertyBuilder<J, U, K, V> {
 
     private Function<V, U> writeValueAdapter;
 
-    public MapProperty<K, V> build(Map<J, U> map) {
+    private Map<J, U> map;
+
+    public MapProperty<K, V> build() {
         return new ConvertingMapProperty<J, U, K, V>(map) {
             @Override
             protected K convertFromKey(J from) {

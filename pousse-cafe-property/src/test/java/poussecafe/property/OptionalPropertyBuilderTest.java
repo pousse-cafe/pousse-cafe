@@ -1,38 +1,13 @@
-package poussecafe.entity;
+package poussecafe.property;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.property.OptionalProperty;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.util.StringKey;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class OptionalPropertyBuilderTest {
-
-    @Test
-    public void readOnlyNoConversion() {
-        givenReadOnlyPropertyWithoutConversion();
-        whenReadingValueWithoutConversion();
-        thenValueWithoutConvertionIs(Optional.of(value));
-    }
-
-    private void givenReadOnlyPropertyWithoutConversion() {
-        propertyWithoutConversion = PropertyBuilder.optional(String.class)
-                .get(() -> value)
-                .build();
-    }
-
-    private OptionalProperty<String> propertyWithoutConversion;
-
-    private String value = "current";
-
-    private void whenReadingValueWithoutConversion() {
-        valueWithoutConversion = propertyWithoutConversion.get();
-    }
-
-    private Optional<String> valueWithoutConversion;
 
     private void thenValueWithoutConvertionIs(Optional<String> value) {
         assertThat(valueWithoutConversion, is(value));
@@ -52,6 +27,10 @@ public class OptionalPropertyBuilderTest {
                 .build();
     }
 
+    private OptionalProperty<String> propertyWithoutConversion;
+
+    private String value = "current";
+
     private void whenWritingValueWithoutConversion() {
         propertyWithoutConversion.set(newValue);
         valueWithoutConversion = propertyWithoutConversion.get();
@@ -59,32 +38,15 @@ public class OptionalPropertyBuilderTest {
 
     private Optional<String> newValue = Optional.of("new");
 
-    @Test
-    public void readOnlyWithConversion() {
-        givenReadOnlyPropertyWithConversion();
-        whenReadingValueWithConversion();
-        thenValueWithConvertionIs(Optional.of(new StringKey(value)));
-    }
-
-    private void givenReadOnlyPropertyWithConversion() {
-        propertyWithConversion = PropertyBuilder.optional(StringKey.class)
-                .from(String.class)
-                .adapt(StringKey::new)
-                .get(() -> value)
-                .build();
-    }
-
     private OptionalProperty<StringKey> propertyWithConversion;
 
-    private void whenReadingValueWithConversion() {
-        valueWithConversion = propertyWithConversion.get();
-    }
-
-    private Optional<StringKey> valueWithConversion;
+    private Optional<String> valueWithoutConversion;
 
     private void thenValueWithConvertionIs(Optional<StringKey> value) {
         assertThat(valueWithConversion, is(value));
     }
+
+    private Optional<StringKey> valueWithConversion;
 
     @Test
     public void readWriteWithConversion() {

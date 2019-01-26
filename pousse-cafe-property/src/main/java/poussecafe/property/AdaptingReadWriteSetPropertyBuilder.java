@@ -1,5 +1,7 @@
 package poussecafe.property;
 
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -17,7 +19,8 @@ public class AdaptingReadWriteSetPropertyBuilder<U, T> {
 
     private Function<T, U> writeAdapter;
 
-    public AdaptedReadWriteSetPropertyBuilder<U, T> write() {
-        return new AdaptedReadWriteSetPropertyBuilder<>(readAdapter, writeAdapter);
+    public AdaptedReadWriteSetPropertyBuilder<U, T> withSet(Set<U> set) {
+        Objects.requireNonNull(set);
+        return new AdaptedReadWriteSetPropertyBuilder<>(readAdapter, writeAdapter, set);
     }
 }

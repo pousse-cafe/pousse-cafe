@@ -1,10 +1,9 @@
 package poussecafe.property;
 
+import java.util.Objects;
 import java.util.function.Function;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityData;
-
-import java.util.Objects;
 
 /**
  * @param <J> Stored key type
@@ -20,8 +19,8 @@ public class AdaptingEntityMapPropertyBuilder<J, U extends EntityData<K>, K, E e
 
     private Class<E> entityClass;
 
-    public AdaptedEntityMapPropertyBuilder<J, U, K, E> adapt(Function<J, K> keyAdapter) {
+    public AdaptedReadOnlyEntityMapPropertyBuilder<J, U, K, E> adaptOnGet(Function<J, K> keyAdapter) {
         Objects.requireNonNull(keyAdapter);
-        return new AdaptedEntityMapPropertyBuilder<>(entityClass, keyAdapter);
+        return new AdaptedReadOnlyEntityMapPropertyBuilder<>(entityClass, keyAdapter);
     }
 }

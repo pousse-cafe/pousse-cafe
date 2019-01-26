@@ -4,11 +4,13 @@ import java.util.List;
 
 public class ReadWriteListPropertyBuilder<T> {
 
-    ReadWriteListPropertyBuilder() {
-
+    ReadWriteListPropertyBuilder(List<T> list) {
+        this.list = list;
     }
 
-    public ListProperty<T> build(List<T> list) {
+    List<T> list;
+
+    public ListProperty<T> build() {
         return new BaseListProperty<>(list);
     }
 }

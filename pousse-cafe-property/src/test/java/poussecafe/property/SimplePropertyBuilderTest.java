@@ -1,4 +1,4 @@
-package poussecafe.entity;
+package poussecafe.property;
 
 import org.junit.Test;
 import poussecafe.property.Property;
@@ -9,33 +9,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SimplePropertyBuilderTest {
-
-    @Test
-    public void readOnlyNoConversion() {
-        givenReadOnlyPropertyWithoutConversion();
-        whenReadingValueWithoutConversion();
-        thenValueWithoutConvertionIs(value);
-    }
-
-    private void givenReadOnlyPropertyWithoutConversion() {
-        propertyWithoutConversion = PropertyBuilder.simple(String.class)
-                .get(() -> value)
-                .build();
-    }
-
-    private Property<String> propertyWithoutConversion;
-
-    private String value = "current";
-
-    private void whenReadingValueWithoutConversion() {
-        valueWithoutConversion = propertyWithoutConversion.get();
-    }
-
-    private String valueWithoutConversion;
-
-    private void thenValueWithoutConvertionIs(String value) {
-        assertThat(valueWithoutConversion, is(value));
-    }
 
     @Test
     public void readWriteNoConversion() {
@@ -51,6 +24,10 @@ public class SimplePropertyBuilderTest {
                 .build();
     }
 
+    private Property<String> propertyWithoutConversion;
+
+    private String value = "current";
+
     private void whenWritingValueWithoutConversion() {
         propertyWithoutConversion.set(newValue);
         valueWithoutConversion = propertyWithoutConversion.get();
@@ -58,31 +35,10 @@ public class SimplePropertyBuilderTest {
 
     private String newValue = "new";
 
-    @Test
-    public void readOnlyWithConversion() {
-        givenReadOnlyPropertyWithConversion();
-        whenReadingValueWithConversion();
-        thenValueWithConvertionIs(new StringKey(value));
-    }
+    private String valueWithoutConversion;
 
-    private void givenReadOnlyPropertyWithConversion() {
-        propertyWithConversion = PropertyBuilder.simple(StringKey.class)
-                .from(String.class)
-                .adapt(StringKey::new)
-                .get(() -> value)
-                .build();
-    }
-
-    private Property<StringKey> propertyWithConversion;
-
-    private void whenReadingValueWithConversion() {
-        valueWithConversion = propertyWithConversion.get();
-    }
-
-    private StringKey valueWithConversion;
-
-    private void thenValueWithConvertionIs(StringKey value) {
-        assertThat(valueWithConversion, is(value));
+    private void thenValueWithoutConvertionIs(String value) {
+        assertThat(valueWithoutConversion, is(value));
     }
 
     @Test
@@ -102,8 +58,16 @@ public class SimplePropertyBuilderTest {
                 .build();
     }
 
+    private Property<StringKey> propertyWithConversion;
+
     private void whenWritingValueWithConversion() {
         propertyWithConversion.set(new StringKey(newValue));
         valueWithConversion = propertyWithConversion.get();
+    }
+
+    private StringKey valueWithConversion;
+
+    private void thenValueWithConvertionIs(StringKey value) {
+        assertThat(valueWithConversion, is(value));
     }
 }

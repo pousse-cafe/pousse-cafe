@@ -9,8 +9,8 @@ import java.util.function.Function;
  */
 public class AdaptingListPropertyBuilder<U, T> {
 
-    public AdaptedListPropertyBuilder<U, T> adapt(Function<U, T> adapter) {
+    public AdaptedReadOnlyListPropertyBuilder<U, T> adaptOnGet(Function<U, T> adapter) {
         Objects.requireNonNull(adapter);
-        return new AdaptedListPropertyBuilder<>(adapter);
+        return new AdaptedReadOnlyListPropertyBuilder<>(adapter);
     }
 }

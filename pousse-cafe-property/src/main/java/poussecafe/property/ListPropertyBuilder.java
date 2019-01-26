@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ListPropertyBuilder<T> {
@@ -10,8 +11,9 @@ public class ListPropertyBuilder<T> {
 
     Class<T> elementClass;
 
-    public ReadOnlyListPropertyBuilder<T> read() {
-        return new ReadOnlyListPropertyBuilder<>();
+    public ReadWriteListPropertyBuilder<T> withList(List<T> list) {
+        Objects.requireNonNull(list);
+        return new ReadWriteListPropertyBuilder<>(list);
     }
 
     public <U> AdaptingListPropertyBuilder<U, T> from(Class<U> storedElementType) {

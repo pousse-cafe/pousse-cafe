@@ -1,7 +1,6 @@
 package poussecafe.property;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -16,21 +15,7 @@ public class AdaptedReadOnlySetPropertyBuilder<U, T> {
 
     private Function<U, T> adapter;
 
-    public SetProperty<T> build(Set<U> list) {
-        return new ConvertingSetProperty<U, T>(list) {
-            @Override
-            protected T convertFrom(U from) {
-                return adapter.apply(from);
-            }
-
-            @Override
-            protected U convertTo(T from) {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
-    public AdaptingReadWriteSetPropertyBuilder<U, T> adapt(Function<T, U> adapter) {
+    public AdaptingReadWriteSetPropertyBuilder<U, T> adaptOnSet(Function<T, U> adapter) {
         Objects.requireNonNull(adapter);
         return new AdaptingReadWriteSetPropertyBuilder<>(this.adapter, adapter);
     }

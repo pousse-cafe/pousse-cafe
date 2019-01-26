@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.Map;
 import java.util.Objects;
 import poussecafe.property.adapters.DataAdapter;
 
@@ -9,8 +10,8 @@ public class MapPropertyBuilder<K, V> {
 
     }
 
-    public ReadOnlyMapPropertyBuilder<K, V> read() {
-        return new ReadOnlyMapPropertyBuilder<>();
+    public ReadWriteMapPropertyBuilder<K, V> withMap(Map<K, V> map) {
+        return new ReadWriteMapPropertyBuilder<>(map);
     }
 
     public <J, U> AdaptingMapPropertyBuilder<J, U, K, V> from(Class<J> storedKeyType, Class<U> storedValueType) {

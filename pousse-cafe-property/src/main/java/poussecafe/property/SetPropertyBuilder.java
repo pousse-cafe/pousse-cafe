@@ -1,6 +1,7 @@
 package poussecafe.property;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class SetPropertyBuilder<T> {
 
@@ -10,8 +11,9 @@ public class SetPropertyBuilder<T> {
 
     Class<T> elementClass;
 
-    public ReadOnlySetPropertyBuilder<T> read() {
-        return new ReadOnlySetPropertyBuilder<>();
+    public ReadWriteSetPropertyBuilder<T> withSet(Set<T> set) {
+        Objects.requireNonNull(set);
+        return new ReadWriteSetPropertyBuilder<>(set);
     }
 
     public <U> AdaptingSetPropertyBuilder<U, T> from(Class<U> storedElementType) {
