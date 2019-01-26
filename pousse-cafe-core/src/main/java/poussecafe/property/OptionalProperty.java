@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class OptionalProperty<T> implements Property<Optional<T>> {
@@ -14,6 +15,7 @@ public abstract class OptionalProperty<T> implements Property<Optional<T>> {
 
     @Override
     public void set(Optional<T> value) {
+        Objects.requireNonNull(value);
         setNullable(value.orElse(null));
     }
 

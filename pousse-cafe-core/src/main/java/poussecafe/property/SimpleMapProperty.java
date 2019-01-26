@@ -4,16 +4,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static poussecafe.check.Checks.checkThatValue;
-
 public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
 
     public SimpleMapProperty(Map<K, V> wrappedMap) {
-        checkThatValue(wrappedMap).notNull();
+        Objects.requireNonNull(wrappedMap);
         this.wrappedMap = wrappedMap;
     }
 
@@ -26,6 +25,7 @@ public class SimpleMapProperty<K, V> implements MapProperty<K, V> {
 
     @Override
     public void set(Map<K, V> value) {
+        Objects.requireNonNull(value);
         wrappedMap.clear();
         wrappedMap.putAll(value);
     }

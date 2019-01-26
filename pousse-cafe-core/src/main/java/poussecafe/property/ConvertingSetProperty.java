@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -22,6 +23,7 @@ public abstract class ConvertingSetProperty<F, T> implements SetProperty<T> {
 
     @Override
     public void set(Set<T> value) {
+        Objects.requireNonNull(value);
         setProperty.set(value.stream().map(this::convertTo).collect(toSet()));
     }
 

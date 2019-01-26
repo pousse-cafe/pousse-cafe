@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -40,6 +41,7 @@ public abstract class MapPropertyCollectionWrapper<K, D, E extends D> implements
     @SuppressWarnings("unchecked")
     @Override
     public void set(Map<K, D> value) {
+        Objects.requireNonNull(value);
         wrappedCollection.clear();
         for(D data : value.values()) {
             wrappedCollection.add((E) data);

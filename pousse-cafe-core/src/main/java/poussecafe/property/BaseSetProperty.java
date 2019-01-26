@@ -1,6 +1,7 @@
 package poussecafe.property;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -23,6 +24,7 @@ public class BaseSetProperty<T> implements SetProperty<T> {
 
     @Override
     public void set(Set<T> value) {
+        Objects.requireNonNull(value);
         set.clear();
         set.addAll(value);
     }

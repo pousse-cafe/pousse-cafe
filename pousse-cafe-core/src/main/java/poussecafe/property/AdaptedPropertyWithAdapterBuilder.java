@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,6 +29,7 @@ public class AdaptedPropertyWithAdapterBuilder<U, T> {
 
             @Override
             public void set(T value) {
+                Objects.requireNonNull(value);
                 setter.accept(dataAdapter.adaptSet(value));
             }
         };

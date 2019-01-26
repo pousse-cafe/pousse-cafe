@@ -42,6 +42,7 @@ public class EntityPropertyBuilder<D extends EntityData<?>, E extends Entity<?, 
             @SuppressWarnings("unchecked")
             @Override
             protected void setData(D data) {
+                Objects.requireNonNull(data);
                 setter.accept((F) data);
             }
         };

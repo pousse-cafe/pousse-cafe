@@ -1,6 +1,7 @@
 package poussecafe.property;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -23,6 +24,7 @@ public abstract class ConvertingListProperty<F, T> implements ListProperty<T> {
 
     @Override
     public void set(List<T> value) {
+        Objects.requireNonNull(value);
         listProperty.set(value.stream().map(this::convertTo).collect(toList()));
     }
 

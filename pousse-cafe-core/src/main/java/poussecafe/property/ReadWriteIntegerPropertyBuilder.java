@@ -1,5 +1,7 @@
 package poussecafe.property;
 
+import java.util.Objects;
+
 public class ReadWriteIntegerPropertyBuilder {
 
     public ReadWriteIntegerPropertyBuilder(CompositeProperty<Integer, Integer> compositeProperty) {
@@ -17,6 +19,7 @@ public class ReadWriteIntegerPropertyBuilder {
 
             @Override
             public void set(Integer value) {
+                Objects.requireNonNull(value);
                 compositeProperty.setter.accept(value);
             }
         };

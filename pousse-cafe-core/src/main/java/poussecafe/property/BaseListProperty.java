@@ -2,6 +2,7 @@ package poussecafe.property;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -25,6 +26,7 @@ public class BaseListProperty<T> implements ListProperty<T> {
 
     @Override
     public void set(List<T> value) {
+        Objects.requireNonNull(value);
         list.clear();
         list.addAll(value);
     }

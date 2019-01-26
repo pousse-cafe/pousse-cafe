@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -48,6 +49,7 @@ public abstract class ConvertingMapProperty<L, U, K, V> implements MapProperty<K
 
     @Override
     public void set(Map<K, V> value) {
+        Objects.requireNonNull(value);
         map.clear();
         map.putAll(value.entrySet().stream().collect(toConvertedToMap()));
     }
