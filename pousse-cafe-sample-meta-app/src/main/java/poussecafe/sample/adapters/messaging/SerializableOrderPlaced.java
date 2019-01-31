@@ -1,7 +1,7 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
-import poussecafe.messaging.MessageImplementation;
+import poussecafe.contextconfigurer.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderDescription;

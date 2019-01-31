@@ -8,8 +8,6 @@ import java.util.Optional;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.ValueObject;
 
-import java.util.Objects;
-
 public class Step implements ValueObject {
 
     public static class Builder {

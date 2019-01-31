@@ -3,13 +3,13 @@ package poussecafe.journal.adapters;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.journal.adapters.SerializableJournalEntryKey;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
 import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.spring.mongo.storage.MongoDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
-import poussecafe.storage.DataAccessImplementation;
 
 @DataAccessImplementation(
     aggregateRoot = JournalEntry.class,

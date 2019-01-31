@@ -1,6 +1,6 @@
 package poussecafe.context;
 
-import poussecafe.context.Injector;
+import poussecafe.injector.Injector;
 
 import static org.junit.Assert.assertTrue;
 

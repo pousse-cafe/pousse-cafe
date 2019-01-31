@@ -1,10 +1,10 @@
 package poussecafe.journal.adapters;
 
 import java.util.List;
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 

@@ -1,7 +1,9 @@
-package poussecafe.messaging;
+package poussecafe.contextconfigurer;
 
 import java.util.Collections;
 import java.util.List;
+import poussecafe.messaging.MessageImplementation;
+import poussecafe.messaging.Messaging;
 
 public class MessagingUnit {
 
@@ -15,9 +17,9 @@ public class MessagingUnit {
         return messaging;
     }
 
-    List<MessageImplementationConfiguration> implementations;
+    List<MessageImplementation> implementations;
 
-    public List<MessageImplementationConfiguration> implementations() {
+    public List<MessageImplementation> implementations() {
         return Collections.unmodifiableList(implementations);
     }
 }

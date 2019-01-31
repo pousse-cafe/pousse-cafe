@@ -1,8 +1,8 @@
-package poussecafe.context;
+package poussecafe.contextconfigurer;
 
 import java.util.List;
 import java.util.Objects;
-import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
 
 public class MessagingImplementationDiscovery {
@@ -23,6 +23,7 @@ public class MessagingImplementationDiscovery {
 
         public MessagingImplementationDiscovery build() {
             Objects.requireNonNull(discovery.classPathExplorer);
+            Objects.requireNonNull(discovery.messaging);
             return discovery;
         }
     }
@@ -43,8 +44,8 @@ public class MessagingImplementationDiscovery {
         return messaging;
     }
 
-    public List<MessageImplementationConfiguration> discover() {
-        return messaging().newMessagingUnit()
+    public List<MessageImplementation> discover() {
+        return new MessagingUnitBuilder(messaging)
                 .classPathExplorer(classPathExplorer)
                 .build()
                 .implementations();

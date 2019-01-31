@@ -9,7 +9,7 @@ import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
-import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessaging;
@@ -49,7 +49,7 @@ public class MetaApplicationContextTest {
         context.environment().defineProcess(DummyProcess.class);
 
         context.environment().defineMessage(TestDomainEvent.class);
-        context.environment().implementMessage(new MessageImplementationConfiguration.Builder()
+        context.environment().implementMessage(new MessageImplementation.Builder()
                 .withMessageClass(TestDomainEvent.class)
                 .withMessageImplementationClass(TestDomainEvent.class)
                 .withMessaging(InternalMessaging.instance())

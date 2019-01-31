@@ -1,13 +1,13 @@
-package poussecafe.storage;
+package poussecafe.contextconfigurer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import poussecafe.context.ClassPathExplorer;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.storage.Storage;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;

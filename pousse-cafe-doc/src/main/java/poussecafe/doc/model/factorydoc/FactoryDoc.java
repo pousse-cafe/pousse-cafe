@@ -3,7 +3,7 @@ package poussecafe.doc.model.factorydoc;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import poussecafe.context.Aggregate;
+import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.step.StepDoc;

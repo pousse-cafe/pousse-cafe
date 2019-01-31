@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import poussecafe.domain.EntityImplementation;
-import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.MessageImplementation;
 
 public class BoundedContext {
 
@@ -23,8 +23,13 @@ public class BoundedContext {
             return this;
         }
 
-        public Builder messagingImplementations(Collection<MessageImplementationConfiguration> messagingImplementations) {
+        public Builder messagingImplementations(Collection<MessageImplementation> messagingImplementations) {
             boundedContext.messagingImplementations.addAll(messagingImplementations);
+            return this;
+        }
+
+        public Builder serviceImplementations(Collection<ServiceImplementation> serviceImplementations) {
+            boundedContext.serviceImplementations.addAll(serviceImplementations);
             return this;
         }
 
@@ -32,6 +37,7 @@ public class BoundedContext {
             Objects.requireNonNull(boundedContext.definition);
             Objects.requireNonNull(boundedContext.storageImplementations);
             Objects.requireNonNull(boundedContext.messagingImplementations);
+            Objects.requireNonNull(boundedContext.serviceImplementations);
             return boundedContext;
         }
     }
@@ -52,9 +58,15 @@ public class BoundedContext {
         return storageImplementations;
     }
 
-    private Set<MessageImplementationConfiguration> messagingImplementations = new HashSet<>();
+    private Set<MessageImplementation> messagingImplementations = new HashSet<>();
 
-    public Set<MessageImplementationConfiguration> messagingImplementations() {
+    public Set<MessageImplementation> messagingImplementations() {
         return messagingImplementations;
+    }
+
+    private Set<ServiceImplementation> serviceImplementations = new HashSet<>();
+
+    public Set<ServiceImplementation> serviceImplementations() {
+        return serviceImplementations;
     }
 }

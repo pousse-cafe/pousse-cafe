@@ -1,7 +1,7 @@
 package <adaptersPackage>;
 
 import java.util.List;
-import poussecafe.storage.DataAccessImplementation;
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 

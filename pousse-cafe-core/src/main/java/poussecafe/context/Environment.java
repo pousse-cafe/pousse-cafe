@@ -1,21 +1,26 @@
 package poussecafe.context;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageImplementationConfiguration;
+import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
+import poussecafe.util.ReflectionUtils;
 
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
@@ -67,7 +72,7 @@ public class Environment {
     private Set<Storage> storages = new HashSet<>();
 
     public boolean isAbstract() {
-        return !getAbstractEntities().isEmpty() || !getAbstractMessages().isEmpty();
+        return !getAbstractEntities().isEmpty() || !getAbstractMessages().isEmpty() || !abstractServices().isEmpty();
     }
 
     public Set<Class<?>> getAbstractEntities() {
@@ -126,15 +131,15 @@ public class Environment {
         return unmodifiableSet(aggregateDefinitions.keySet());
     }
 
-    public void defineService(Class<?> serviceClass) {
+    public void defineService(Class<? extends Service> serviceClass) {
         checkThat(value(serviceClass).notNull());
-        services.add(serviceClass);
+        serviceDefinitions.add(serviceClass);
     }
 
-    private Set<Class<?>> services = new HashSet<>();
+    private Set<Class<? extends Service>> serviceDefinitions = new HashSet<>();
 
-    public Set<Class<?>> getDefinedServices() {
-        return unmodifiableSet(services);
+    public Set<Class<? extends Service>> getDefinedServices() {
+        return unmodifiableSet(serviceDefinitions);
     }
 
     public void defineProcess(Class<? extends DomainProcess> processClass) {
@@ -166,13 +171,13 @@ public class Environment {
         return Collections.unmodifiableSet(messageDefinitions);
     }
 
-    public void implementMessage(MessageImplementationConfiguration implementation) {
+    public void implementMessage(MessageImplementation implementation) {
         checkThat(value(implementation).notNull());
         Class<? extends Message> messageClass = implementation.getMessageClass();
         if(!messageDefinitions.contains(messageClass)) {
             throw new PousseCafeException("Trying to implement a message that was not defined: " + messageClass);
         }
-        MessageImplementationConfiguration existingImplementation = messageImplementations.get(messageClass);
+        MessageImplementation existingImplementation = messageImplementations.get(messageClass);
         if(existingImplementation != null) {
             if(existingImplementation.getMessageImplementationClass() != implementation.getMessageImplementationClass()) {
                 throw new PousseCafeException("Conflicting implementations detected for message " + messageClass);
@@ -187,7 +192,7 @@ public class Environment {
         messagingByMessageClass.put(messageClass, implementation.getMessaging());
     }
 
-    private Map<Class<?>, MessageImplementationConfiguration> messageImplementations = new HashMap<>();
+    private Map<Class<?>, MessageImplementation> messageImplementations = new HashMap<>();
 
     private Map<Class<? extends Message>, Class<? extends Message>> messageClassesPerImplementation = new HashMap<>();
 
@@ -210,12 +215,12 @@ public class Environment {
     }
 
     public Class<?> getMessageImplementationClass(Class<?> messageClass) {
-        MessageImplementationConfiguration implementation = getMessageImplementation(messageClass);
+        MessageImplementation implementation = getMessageImplementation(messageClass);
         return implementation.getMessageImplementationClass();
     }
 
-    private MessageImplementationConfiguration getMessageImplementation(Class<?> messageClass) {
-        MessageImplementationConfiguration implementation = messageImplementations.get(messageClass);
+    private MessageImplementation getMessageImplementation(Class<?> messageClass) {
+        MessageImplementation implementation = messageImplementations.get(messageClass);
         if(implementation == null) {
             throw new PousseCafeException("Message " + messageClass.getName() + " is not implemented");
         }
@@ -233,5 +238,34 @@ public class Environment {
 
     public Messaging getMessaging(Class<? extends Message> messageClass) {
         return messagingByMessageClass.get(messageClass);
+    }
+
+    public void implementService(ServiceImplementation implementation) {
+        Objects.requireNonNull(implementation);
+        Class<? extends Service> serviceClass = implementation.serviceClass();
+
+        ServiceImplementation existingImplementation = serviceImplementations.get(serviceClass);
+        if(existingImplementation != null) {
+            if(existingImplementation.serviceImplementationClass() != implementation.serviceImplementationClass()) {
+                throw new PousseCafeException("Conflicting implementations detected for service " + serviceClass);
+            } else {
+                return;
+            }
+        }
+
+        serviceImplementations.put(serviceClass, implementation);
+    }
+
+    private Map<Class<? extends Service>, ServiceImplementation> serviceImplementations = new HashMap<>();
+
+    public Collection<ServiceImplementation> serviceImplementations() {
+        return Collections.unmodifiableCollection(serviceImplementations.values());
+    }
+
+    public Set<Class<? extends Service>> abstractServices() {
+        return serviceDefinitions.stream()
+                .filter(ReflectionUtils::isAbstract)
+                .filter(abstractServiceClass -> !serviceImplementations.containsKey(abstractServiceClass))
+                .collect(toSet());
     }
 }

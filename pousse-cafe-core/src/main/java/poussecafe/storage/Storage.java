@@ -20,10 +20,6 @@ public abstract class Storage {
 
     public abstract String name();
 
-    public StorageUnitBuilder newStorageUnit() {
-        return new StorageUnitBuilder(this);
-    }
-
     public boolean nameIn(String[] array) {
         for(String name : array) {
             if(name().equals(name)) {

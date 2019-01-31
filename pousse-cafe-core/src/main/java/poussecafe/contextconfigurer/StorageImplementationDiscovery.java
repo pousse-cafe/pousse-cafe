@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.contextconfigurer;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public class StorageImplementationDiscovery {
     }
 
     public List<EntityImplementation> discover() {
-        return storage().newStorageUnit()
+        return new StorageUnitBuilder(storage)
                 .classPathExplorer(classPathExplorer)
                 .build()
                 .implementations();

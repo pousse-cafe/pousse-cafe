@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.injector;
 
 import java.util.Map;
 

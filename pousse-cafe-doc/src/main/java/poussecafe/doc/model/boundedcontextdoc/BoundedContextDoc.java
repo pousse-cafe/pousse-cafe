@@ -1,6 +1,6 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
-import poussecafe.context.Aggregate;
+import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.AggregateRoot;

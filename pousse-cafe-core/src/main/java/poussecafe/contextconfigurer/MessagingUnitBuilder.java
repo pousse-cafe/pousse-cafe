@@ -1,15 +1,16 @@
-package poussecafe.messaging;
+package poussecafe.contextconfigurer;
 
 import java.util.ArrayList;
 import java.util.List;
-import poussecafe.context.ClassPathExplorer;
+import java.util.Objects;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.Messaging;
 
 import static java.util.stream.Collectors.toList;
-import java.util.Objects;
 
 public class MessagingUnitBuilder {
 
-    MessagingUnitBuilder(Messaging messaging) {
+    public MessagingUnitBuilder(Messaging messaging) {
         Objects.requireNonNull(messaging);
         this.messaging = messaging;
     }
@@ -28,7 +29,7 @@ public class MessagingUnitBuilder {
         unit.messaging = messaging;
         unit.implementations = new ArrayList<>();
 
-        List<poussecafe.messaging.MessageImplementationConfiguration> nonRootEntityImplementations = classPathExplorer.getMessageImplementations(messaging).stream()
+        List<poussecafe.messaging.MessageImplementation> nonRootEntityImplementations = classPathExplorer.getMessageImplementations(messaging).stream()
                 .map(this::buildNonRootEntityImplementation)
                 .collect(toList());
         unit.implementations.addAll(nonRootEntityImplementations);
@@ -36,9 +37,9 @@ public class MessagingUnitBuilder {
         return unit;
     }
 
-    private poussecafe.messaging.MessageImplementationConfiguration buildNonRootEntityImplementation(Class<Message> entityDataClass) {
+    private poussecafe.messaging.MessageImplementation buildNonRootEntityImplementation(Class<Message> entityDataClass) {
         MessageImplementation annotation = entityDataClass.getAnnotation(MessageImplementation.class);
-        return new poussecafe.messaging.MessageImplementationConfiguration.Builder()
+        return new poussecafe.messaging.MessageImplementation.Builder()
                 .withMessageClass(annotation.message())
                 .withMessageImplementationClass(entityDataClass)
                 .withMessaging(messaging)

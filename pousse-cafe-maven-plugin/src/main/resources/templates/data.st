@@ -14,11 +14,8 @@ public class <name>Data implements <name>.Data<if(storage_internal)>, Serializab
 
     @Override
     public Property\<<name>Key> key() {
-        return PropertyBuilder.simple(<name>Key.class)
-                .from(String.class)
-                .adapt(<name>Key::new)
+        return PropertyBuilder.stringKey(<name>Key.class)
                 .get(() -> id)
-                .adapt(<name>Key::getValue)
                 .set(value -> id = value)
                 .build();
     }

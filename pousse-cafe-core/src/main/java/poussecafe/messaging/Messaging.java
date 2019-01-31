@@ -4,10 +4,6 @@ import poussecafe.context.MessageConsumer;
 
 public abstract class Messaging {
 
-    public MessagingUnitBuilder newMessagingUnit() {
-        return new MessagingUnitBuilder(this);
-    }
-
     public abstract String name();
 
     public boolean nameIn(String[] array) {

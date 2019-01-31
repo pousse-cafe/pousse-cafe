@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.contextconfigurer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,23 +9,20 @@ import java.util.stream.Stream;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.domain.EntityDataAccess;
-import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
-import poussecafe.storage.DataAccessImplementation;
-import poussecafe.storage.DataImplementation;
 import poussecafe.storage.Storage;
 
 import static java.util.stream.Collectors.toList;
 
-public class ClassPathExplorer {
+class ClassPathExplorer {
 
     ClassPathExplorer(Collection<String> packagePrefix) {
         packagePrefixes = new HashSet<>(packagePrefix);
@@ -36,7 +33,6 @@ public class ClassPathExplorer {
 
     private Reflections reflections;
 
-    @SuppressWarnings("rawtypes")
     public List<AggregateDefinition> discoverDefinitions() {
         Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
 
@@ -59,7 +55,9 @@ public class ClassPathExplorer {
     private Logger logger = LoggerFactory.getLogger(ClassPathExplorer.class);
 
     public List<Class<? extends Service>> discoverServices() {
-        return getSubTypesOf(Service.class).collect(toList());
+        return getSubTypesOf(Service.class)
+                .filter(serviceClass -> !serviceClass.isAnnotationPresent(ServiceImplementation.class))
+                .collect(toList());
     }
 
     public List<Class<? extends DomainProcess>> discoverDomainProcesses() {
@@ -137,5 +135,20 @@ public class ClassPathExplorer {
             }
         }
         return entityDataClasses;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<poussecafe.context.ServiceImplementation> discoverServiceImplementations() {
+        Set<Class<?>> serviceImplementations = reflections.getTypesAnnotatedWith(ServiceImplementation.class);
+        Set<poussecafe.context.ServiceImplementation> implementations = new HashSet<>();
+        for(Class<?> serviceImplementationClass : serviceImplementations) {
+            ServiceImplementation annotation = serviceImplementationClass.getAnnotation(ServiceImplementation.class);
+            logger.debug("Adding service implementation {}", serviceImplementationClass);
+            implementations.add(new poussecafe.context.ServiceImplementation.Builder()
+                    .serviceClass(annotation.service())
+                    .serviceImplementationClass((Class<? extends Service>) serviceImplementationClass)
+                    .build());
+        }
+        return implementations;
     }
 }

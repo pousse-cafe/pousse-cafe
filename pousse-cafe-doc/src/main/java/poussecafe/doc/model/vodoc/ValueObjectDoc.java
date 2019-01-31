@@ -1,7 +1,7 @@
 package poussecafe.doc.model.vodoc;
 
 import java.util.Objects;
-import poussecafe.context.Aggregate;
+import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;

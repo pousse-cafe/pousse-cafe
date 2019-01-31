@@ -1,17 +1,14 @@
-package poussecafe.storage;
+package poussecafe.contextconfigurer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import poussecafe.domain.Entity;
+import poussecafe.domain.Service;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DataImplementation {
+public @interface ServiceImplementation {
 
-    String[] storageNames() default {};
-
-    Class<? extends Entity<?, ?>> entity();
-
+    Class<? extends Service> service();
 }

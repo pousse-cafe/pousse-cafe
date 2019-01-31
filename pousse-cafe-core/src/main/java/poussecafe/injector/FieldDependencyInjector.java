@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.injector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

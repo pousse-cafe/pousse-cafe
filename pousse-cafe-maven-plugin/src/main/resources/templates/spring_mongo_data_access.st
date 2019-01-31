@@ -2,9 +2,9 @@ package <adaptersPackage>;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.spring.mongo.storage.MongoDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
-import poussecafe.storage.DataAccessImplementation;
 
 import <adaptersPackage>.<name>Data;
 import <modelPackage>.<name>;

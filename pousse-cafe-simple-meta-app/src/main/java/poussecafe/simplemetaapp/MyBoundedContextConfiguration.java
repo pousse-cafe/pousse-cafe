@@ -1,6 +1,6 @@
 package poussecafe.simplemetaapp;
 
-import poussecafe.context.BoundedContextConfigurer;
+import poussecafe.contextconfigurer.BoundedContextConfigurer;
 
 public class MyBoundedContextConfiguration {
 

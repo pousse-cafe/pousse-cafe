@@ -1,7 +1,10 @@
-package poussecafe.context;
+package poussecafe.contextconfigurer;
 
 import java.util.HashSet;
 import java.util.Set;
+import poussecafe.context.BoundedContext;
+import poussecafe.context.BoundedContextDefinition;
+import poussecafe.context.MessagingAndStorage;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.Storage;
@@ -11,7 +14,7 @@ public class BoundedContextConfigurer {
 
     public static class Builder {
 
-        private BoundedContextConfigurer discovery = new BoundedContextConfigurer();
+        private BoundedContextConfigurer configurer = new BoundedContextConfigurer();
 
         public Builder packagePrefix(String packageName) {
             this.packageName.add(packageName);
@@ -21,8 +24,8 @@ public class BoundedContextConfigurer {
         private Set<String> packageName = new HashSet<>();
 
         public BoundedContextConfigurer build() {
-            discovery.classPathExplorer = new ClassPathExplorer(packageName);
-            return discovery;
+            configurer.classPathExplorer = new ClassPathExplorer(packageName);
+            return configurer;
         }
     }
 
@@ -50,6 +53,7 @@ public class BoundedContextConfigurer {
     public BoundedContextWithNoImplementation defineThenImplement() {
         BoundedContext.Builder builder = new BoundedContext.Builder();
         builder.definition(define());
+        builder.serviceImplementations(classPathExplorer.discoverServiceImplementations());
         return new BoundedContextWithNoImplementation(builder);
     }
 

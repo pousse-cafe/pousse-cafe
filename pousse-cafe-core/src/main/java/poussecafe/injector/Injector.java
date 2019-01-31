@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.injector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,10 +38,10 @@ public class Injector {
         }
     }
 
-    void injectDependencies(Object service) {
-        logger.debug("Injecting dependencies in {}", service.getClass().getName());
-        tryUsingSetters(service);
-        tryUsingMembers(service);
+    public void injectDependencies(Object component) {
+        logger.debug("Injecting dependencies in {}", component.getClass().getName());
+        tryUsingSetters(component);
+        tryUsingMembers(component);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());

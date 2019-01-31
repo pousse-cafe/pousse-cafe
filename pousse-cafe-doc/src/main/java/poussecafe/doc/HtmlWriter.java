@@ -38,7 +38,6 @@ import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 
 import static java.util.stream.Collectors.toList;
-import java.util.Objects;
 
 public class HtmlWriter {
 

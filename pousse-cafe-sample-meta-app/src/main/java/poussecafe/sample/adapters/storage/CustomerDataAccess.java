@@ -1,8 +1,8 @@
 package poussecafe.sample.adapters.storage;
 
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
-import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 

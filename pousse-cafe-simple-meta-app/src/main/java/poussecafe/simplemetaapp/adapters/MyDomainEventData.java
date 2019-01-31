@@ -1,7 +1,7 @@
 package poussecafe.simplemetaapp.adapters;
 
 import java.io.Serializable;
-import poussecafe.messaging.MessageImplementation;
+import poussecafe.contextconfigurer.MessageImplementation;
 import poussecafe.property.Property;
 import poussecafe.property.PropertyBuilder;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;

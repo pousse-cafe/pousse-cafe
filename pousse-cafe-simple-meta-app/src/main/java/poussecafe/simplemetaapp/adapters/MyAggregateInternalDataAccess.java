@@ -1,8 +1,8 @@
 package poussecafe.simplemetaapp.adapters;
 
+import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.simplemetaapp.domain.MyAggregate;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;
-import poussecafe.storage.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 

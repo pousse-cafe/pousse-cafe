@@ -1,6 +1,6 @@
 package poussecafe.domain;
 
-import poussecafe.context.Aggregate;
+import poussecafe.contextconfigurer.Aggregate;
 
 @Aggregate(
   factory = SimpleAggregateFactory.class,

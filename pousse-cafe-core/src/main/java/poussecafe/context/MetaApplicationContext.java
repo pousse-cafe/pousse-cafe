@@ -14,18 +14,19 @@ import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.EntityData;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
+import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.injector.Injector;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageImplementationConfiguration;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
+import poussecafe.util.ReflectionUtils;
 
 import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -50,11 +51,7 @@ public class MetaApplicationContext {
 
     private Map<Class<?>, EntityServices> entityServices = new HashMap<>();
 
-    private List<BoundedContextDefinition> boundedContextDefinitions = new ArrayList<>();
-
-    private Set<EntityImplementation> boundedContextStorageImplementations = new HashSet<>();
-
-    private Set<MessageImplementationConfiguration> boundedContextMessagingImplementations = new HashSet<>();
+    private Set<BoundedContext> boundedContexts = new HashSet<>();
 
     public MetaApplicationContext() {
         configuration = new Configuration();
@@ -84,9 +81,7 @@ public class MetaApplicationContext {
 
     public void addBoundedContext(BoundedContext boundedContext) {
         Objects.requireNonNull(boundedContext);
-        boundedContextDefinitions.add(boundedContext.definition());
-        boundedContextStorageImplementations.addAll(boundedContext.storageImplementations());
-        boundedContextMessagingImplementations.addAll(boundedContext.messagingImplementations());
+        boundedContexts.add(boundedContext);
     }
 
     public synchronized void addConfiguration(String key, Object value) {
@@ -124,8 +119,8 @@ public class MetaApplicationContext {
     }
 
     private void loadBoundedContextDefinitions() {
-        for(BoundedContextDefinition boundedContextDefinition : boundedContextDefinitions) {
-            loadBoundedContextDefinition(boundedContextDefinition);
+        for(BoundedContext boundedContext : boundedContexts) {
+            loadBoundedContextDefinition(boundedContext.definition());
         }
     }
 
@@ -139,26 +134,33 @@ public class MetaApplicationContext {
         for(Class<? extends DomainProcess> processClass : boundedContext.getProcesses()) {
             environment.defineProcess(processClass);
         }
-        for(Class<?> serviceClass : boundedContext.getServices()) {
+        for(Class<? extends Service> serviceClass : boundedContext.getServices()) {
             environment.defineService(serviceClass);
         }
     }
 
     private void loadBoundedContextImplementations() {
-        loadStorageImplementations();
-        loadMessagingImplementations();
-    }
-
-    private void loadStorageImplementations() {
-        for(EntityImplementation implementation : boundedContextStorageImplementations) {
-            environment.implementEntity(implementation);
+        for(BoundedContext boundedContext : boundedContexts) {
+            loadBoundedContextImplementations(boundedContext);
         }
     }
 
-    private void loadMessagingImplementations() {
-        for(MessageImplementationConfiguration implementation : boundedContextMessagingImplementations) {
-            environment.implementMessage(implementation);
-        }
+    private void loadBoundedContextImplementations(BoundedContext boundedContext) {
+        loadStorageImplementations(boundedContext);
+        loadMessagingImplementations(boundedContext);
+        loadServiceImplementations(boundedContext);
+    }
+
+    private void loadStorageImplementations(BoundedContext boundedContext) {
+        boundedContext.storageImplementations().stream().forEach(environment::implementEntity);
+    }
+
+    private void loadMessagingImplementations(BoundedContext boundedContext) {
+        boundedContext.messagingImplementations().stream().forEach(environment::implementMessage);
+    }
+
+    private void loadServiceImplementations(BoundedContext boundedContext) {
+        boundedContext.serviceImplementations().stream().forEach(environment::implementService);
     }
 
     private void checkEnvironment() {
@@ -173,6 +175,12 @@ public class MetaApplicationContext {
             logger.error("{} abstract messages:", abstractMessages.size());
             for(Class<? extends Message> abstractMessageClass : abstractMessages) {
                 logger.error("- {}", abstractMessageClass.getName());
+            }
+
+            Set<Class<? extends Service>> abstractServices = environment.abstractServices();
+            logger.error("{} abstract services:", abstractServices.size());
+            for(Class<? extends Service> abstractServiceClass : abstractServices) {
+                logger.error("- {}", abstractServiceClass.getName());
             }
 
             throw new PousseCafeException("Cannot start meta-application with an abstract environment");
@@ -215,10 +223,21 @@ public class MetaApplicationContext {
 
     protected void configureServices() {
         for (Class<?> serviceClass : environment.getDefinedServices()) {
-            Object service = newInstance(serviceClass);
-            injector.registerInjectableService(service);
+            if(!ReflectionUtils.isAbstract(serviceClass)) {
+                Object service = newInstance(serviceClass);
+                injector.registerInjectableService(service);
+                injector.addInjectionCandidate(service);
+                services.put(serviceClass, service);
+            }
+        }
+
+        for (ServiceImplementation serviceImplementation : environment.serviceImplementations()) {
+            Object service = newInstance(serviceImplementation.serviceImplementationClass());
+            injector.registerInjectableService(serviceImplementation.serviceClass(), service);
             injector.addInjectionCandidate(service);
-            services.put(serviceClass, service);
+            if(services.put(serviceImplementation.serviceClass(), service) != null) {
+                throw new PousseCafeException("Service was already implemented " + serviceImplementation.serviceClass());
+            }
         }
     }
 

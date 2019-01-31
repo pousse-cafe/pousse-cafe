@@ -1,6 +1,6 @@
 package poussecafe.doc;
 
-import poussecafe.context.BoundedContextConfigurer;
+import poussecafe.contextconfigurer.BoundedContextConfigurer;
 
 public class PousseCafeDoc {
 
