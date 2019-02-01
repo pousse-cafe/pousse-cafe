@@ -11,6 +11,10 @@
   <artifactId>pousse-cafe-spring</artifactId>
   <name>Pousse-Café - Spring Bridge</name>
 
+  <properties>
+    <spring.version>5.1.4.RELEASE</spring.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>

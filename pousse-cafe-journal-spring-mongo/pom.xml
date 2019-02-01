@@ -9,6 +9,10 @@
   <artifactId>pousse-cafe-journal-spring-mongo</artifactId>
   <name>Pousse-Café - Journal (Spring MongoDB)</name>
 
+  <properties>
+    <spring.data.mongo.version>2.1.4.RELEASE</spring.data.mongo.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
