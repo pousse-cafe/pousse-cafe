@@ -49,10 +49,14 @@ public class AddAggregateExecutorIT extends GoatTest {
     }
 
     @Test
-    public void generatedFilesCompile() throws MojoExecutionException, IOException, MavenInvocationException {
+    public void generatedFilesCompileWithDemoAttribute() throws MojoExecutionException, IOException, MavenInvocationException {
+        generatedFilesCompile(true);
+    }
+
+    private void generatedFilesCompile(boolean withDemoAttribute) throws MojoExecutionException, IOException, MavenInvocationException {
         givenInvoker();
         givenSourceFolder();
-        whenGeneratingSourceFiles();
+        whenGeneratingSourceFiles(withDemoAttribute);
         thenGenerationSuccessful();
         thenGeneratedFilesCompile();
     }
@@ -61,13 +65,14 @@ public class AddAggregateExecutorIT extends GoatTest {
         givenProjectDirectory(addAggregateTestProjectDirectory());
     }
 
-    private void whenGeneratingSourceFiles() throws MojoExecutionException, MavenInvocationException {
+    private void whenGeneratingSourceFiles(boolean withDemoAttribute) throws MojoExecutionException, MavenInvocationException {
         whenExecutingMojo(new AddAggregateExecutor.Builder()
                 .sourceDirectory(sourceDirectory())
                 .packageName("sample")
                 .name("Sample")
                 .storageAdapters(asSet("internal", "spring-mongo"))
                 .missingAdaptersOnly(false)
+                .demoAttribute(withDemoAttribute)
                 .build());
     }
 
@@ -78,5 +83,10 @@ public class AddAggregateExecutorIT extends GoatTest {
     private void thenGeneratedFilesCompile() throws MojoExecutionException, MavenInvocationException {
         whenExecutingMavenGoals(Collections.singletonList("compile"));
         thenMavenGoalsExecutionSuccess(true);
+    }
+
+    @Test
+    public void generatedFilesCompileWithoutDemoAttribute() throws MojoExecutionException, IOException, MavenInvocationException {
+        generatedFilesCompile(false);
     }
 }

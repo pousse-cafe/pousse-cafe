@@ -56,6 +56,13 @@ public class AddAggregateExecutor implements MojoExecutor {
             return this;
         }
 
+        public Builder demoAttribute(boolean demoAttribute) {
+            this.demoAttribute = demoAttribute;
+            return this;
+        }
+
+        private boolean demoAttribute;
+
         public AddAggregateExecutor build() {
             Objects.requireNonNull(executor.aggregateDirectory);
             Objects.requireNonNull(executor.name);
@@ -65,6 +72,7 @@ public class AddAggregateExecutor implements MojoExecutor {
                     .adaptersPackageName(executor.packageName + ".adapters")
                     .name(executor.name)
                     .storageAdapters(executor.storageAdapters)
+                    .demoAttribute(demoAttribute)
                     .build();
 
             return executor;

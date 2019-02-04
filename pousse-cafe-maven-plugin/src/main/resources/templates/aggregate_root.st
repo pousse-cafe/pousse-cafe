@@ -3,9 +3,7 @@ package <modelPackage>;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
-import poussecafe.property.Property;
-import poussecafe.property.ProtectedProperty;
-import poussecafe.property.ProtectedPropertyBuilder;
+<if(demoAttribute)>import poussecafe.property.Property;<endif>
 
 @Aggregate(
     factory = <name>Factory.class,
@@ -13,14 +11,10 @@ import poussecafe.property.ProtectedPropertyBuilder;
 )
 public class <name> extends AggregateRoot\<<name>Key, <name>.Data> {
 
-    public ProtectedProperty\<String> name() {
-        return ProtectedPropertyBuilder.protect(data().name()).of(this)
-                .allowClassWrite(<name>Factory.class)
-                .build();
-    } 
-
     public static interface Data extends EntityData\<<name>Key> {
 
+<if(demoAttribute)>
         Property\<String> name();
+<endif>
     }
 }

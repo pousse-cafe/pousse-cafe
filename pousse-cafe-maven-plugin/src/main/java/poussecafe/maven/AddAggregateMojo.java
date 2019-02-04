@@ -20,6 +20,7 @@ public class AddAggregateMojo extends AbstractMojo {
                 .name(aggregateName)
                 .storageAdapters(asSet(storageAdapters))
                 .missingAdaptersOnly(missingAdaptersOnly)
+                .demoAttribute(demoAttribute)
                 .build();
         executor.execute();
     }
@@ -38,4 +39,7 @@ public class AddAggregateMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "false", property = "missingAdaptersOnly", required = true)
     private boolean missingAdaptersOnly;
+
+    @Parameter(defaultValue = "false", property = "demoAttribute", required = true)
+    private boolean demoAttribute;
 }

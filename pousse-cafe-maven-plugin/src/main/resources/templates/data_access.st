@@ -1,9 +1,10 @@
 package <modelPackage>;
 
-import java.util.List;
+<if(demoAttribute)>import java.util.List;<endif>
 import poussecafe.domain.EntityDataAccess;
 
 public interface <name>DataAccess\<D extends <name>.Data> extends EntityDataAccess\<<name>Key, D> {
 
-    List\<D> findByName(String name);
+<if(demoAttribute)>
+    List\<D> findByName(String name);<endif>
 }

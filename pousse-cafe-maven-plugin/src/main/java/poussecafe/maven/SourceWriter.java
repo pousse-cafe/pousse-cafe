@@ -3,12 +3,11 @@ package poussecafe.maven;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Set;
 import org.codehaus.plexus.util.IOUtil;
 import org.stringtemplate.v4.ST;
 import poussecafe.exception.PousseCafeException;
-
-import java.util.Objects;
 
 public class SourceWriter {
 
@@ -36,6 +35,11 @@ public class SourceWriter {
             return this;
         }
 
+        public Builder demoAttribute(boolean demoAttribute) {
+            generator.demoAttribute = demoAttribute;
+            return this;
+        }
+
         public SourceWriter build() {
             Objects.requireNonNull(generator.modelPackageName);
             Objects.requireNonNull(generator.name);
@@ -56,6 +60,8 @@ public class SourceWriter {
 
     private Set<String> storageAdapters;
 
+    private boolean demoAttribute;
+
     public void writeSource(File file, String templateName) {
         if(file.exists()) {
             return;
@@ -65,6 +71,7 @@ public class SourceWriter {
         template.add("modelPackage", modelPackageName);
         template.add("adaptersPackage", adaptersPackageName);
         template.add("name", name);
+        template.add("demoAttribute", demoAttribute);
 
         for(String storageAdapter : storageAdapters) {
             template.add("storage_" + storageAdapter.replace("-", "_"), true);

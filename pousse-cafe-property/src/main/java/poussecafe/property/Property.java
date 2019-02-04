@@ -11,6 +11,10 @@ public interface Property<T> {
     }
 
     default boolean valueEqualsValueOf(Property<T> property) {
-        return get().equals(property.get());
+        return valueEquals(property.get());
+    }
+
+    default boolean valueEquals(T value) {
+        return get().equals(value);
     }
 }

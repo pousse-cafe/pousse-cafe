@@ -26,7 +26,7 @@ public class <name>Data implements <name>.Data<if(storage_internal)>, Serializab
     <if(storage_in_memory && !storage_spring_mongo)>@SuppressWarnings("unused")<endif>
     <if(storage_spring_mongo)>@Version<endif>
     private Long version;
-
+<if(demoAttribute)>
     @Override
     public Property\<String> name() {
         return PropertyBuilder.simple(String.class)
@@ -35,5 +35,5 @@ public class <name>Data implements <name>.Data<if(storage_internal)>, Serializab
                 .build();
     }
 
-    private String name;
+    private String name;<endif>
 }

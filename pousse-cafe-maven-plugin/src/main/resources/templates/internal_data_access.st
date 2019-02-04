@@ -1,6 +1,6 @@
 package <adaptersPackage>;
 
-import java.util.List;
+<if(demoAttribute)>import java.util.List;<endif>
 import poussecafe.contextconfigurer.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
@@ -8,9 +8,10 @@ import poussecafe.storage.internal.InternalStorage;
 import <modelPackage>.<name>;
 import <modelPackage>.<name>Key;
 import <modelPackage>.<name>DataAccess;
-import <adaptersPackage>.<name>Data;
 
+<if(demoAttribute)>
 import static java.util.stream.Collectors.toList;
+<endif>
 
 @DataAccessImplementation(
     aggregateRoot = <name>.class,
@@ -22,6 +23,7 @@ public class <name>InternalDataAccess extends InternalDataAccess\<<name>Key, <na
     public <name>InternalDataAccess() {
         versionField("version");
     }
+<if(demoAttribute)>
 
     @Override
     public List\<<name>Data> findByName(String name) {
@@ -29,4 +31,5 @@ public class <name>InternalDataAccess extends InternalDataAccess\<<name>Key, <na
                 .filter(data -> data.name().get().equals(name))
                 .collect(toList());
     }
+<endif>
 }

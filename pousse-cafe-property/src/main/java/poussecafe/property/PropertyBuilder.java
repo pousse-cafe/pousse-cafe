@@ -41,7 +41,9 @@ public class PropertyBuilder {
     }
 
     public static <T> OptionalPropertyBuilder<T> optional(Class<T> valueClass) { // NOSONAR
-        return new OptionalPropertyBuilder<>();
+        OptionalPropertyBuilder<T> builder = new OptionalPropertyBuilder<>();
+        builder.propertyTypeClass = valueClass;
+        return builder;
     }
 
     public static <T extends Number> NumberPropertyBuilder<T> number(Class<T> valueClass) { // NOSONAR
