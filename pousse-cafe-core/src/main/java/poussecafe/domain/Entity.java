@@ -1,6 +1,6 @@
 package poussecafe.domain;
 
-import poussecafe.collection.MultiTypeMap;
+import java.util.Objects;
 import poussecafe.storage.Storage;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -69,10 +69,16 @@ public abstract class Entity<K, D extends EntityData<K>> {
         return componentFactory.newMessage(eventClass);
     }
 
-    private MultiTypeMap<String> transitiveContext = new MultiTypeMap<>();
+    public void context(Object context) {
+        this.context = context;
+    }
 
-    public MultiTypeMap<String> transitiveData() {
-        return transitiveContext;
+    private Object context;
+
+    @SuppressWarnings("unchecked")
+    public <C> C context() {
+        Objects.requireNonNull(context);
+        return (C) context;
     }
 
     public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
