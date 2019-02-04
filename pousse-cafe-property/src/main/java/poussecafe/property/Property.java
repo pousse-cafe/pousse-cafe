@@ -10,7 +10,6 @@ public interface Property<T> {
         set(property.get());
     }
 
-    // TODO rename
     default boolean valueEqualsValueOf(Property<T> property) {
         return get().equals(property.get());
     }
