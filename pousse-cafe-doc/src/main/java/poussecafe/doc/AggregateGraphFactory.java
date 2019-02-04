@@ -1,6 +1,7 @@
 package poussecafe.doc;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
@@ -18,8 +19,6 @@ import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDocKey;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.exception.NotFoundException;
-
-import java.util.Objects;
 
 public class AggregateGraphFactory {
 
@@ -81,7 +80,7 @@ public class AggregateGraphFactory {
 
     private String addAggregate() {
         Logger.debug("Aggregate " + aggregateDoc.className());
-        String nodeName = aggregateDoc.boundedContextComponentDoc().componentDoc().name();
+        String nodeName = aggregateDoc.data().boundedContextComponentDoc().get().componentDoc().name();
         Node node = Node.box(nodeName);
         node.setStyle(NodeStyle.BOLD);
         graph.getNodesAndEdges().addNode(node);
@@ -120,7 +119,7 @@ public class AggregateGraphFactory {
         }
 
         AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocKey.ofClassName(toComponent.className()));
-        if(!toAggregateDoc.boundedContextComponentDoc().boundedContextDocKey().equals(aggregateDoc.boundedContextComponentDoc().boundedContextDocKey())) {
+        if(!toAggregateDoc.data().boundedContextComponentDoc().get().boundedContextDocKey().equals(aggregateDoc.data().boundedContextComponentDoc().get().boundedContextDocKey())) {
             return;
         }
 
@@ -142,12 +141,12 @@ public class AggregateGraphFactory {
     private String name(Component component) {
         switch(component.type()) {
         case AGGREGATE:
-            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
+            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
         case ENTITY:
-            return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
+            return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
         case VALUE_OBJECT:
             try {
-                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).boundedContextComponentDoc().componentDoc().name();
+                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
             } catch (NotFoundException e) {
                 return component.className();
             }

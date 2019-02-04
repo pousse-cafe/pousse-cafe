@@ -1,10 +1,9 @@
 package poussecafe.util;
 
 import org.junit.Test;
-import poussecafe.util.IdGenerator;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.text.IsEmptyString.isEmptyString;
+import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.Assert.assertThat;
 
 public class IdGeneratorTest {
@@ -29,6 +28,6 @@ public class IdGeneratorTest {
     }
 
     private void thenResultIsNonEmpty() {
-        assertThat(result, not(isEmptyString()));
+        assertThat(result, not(emptyString()));
     }
 }

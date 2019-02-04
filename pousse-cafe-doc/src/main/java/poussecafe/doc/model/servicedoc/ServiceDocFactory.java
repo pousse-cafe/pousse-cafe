@@ -19,7 +19,7 @@ public class ServiceDocFactory extends Factory<ServiceDocKey, ServiceDoc, Servic
         String name = classDoc.simpleTypeName();
         ServiceDocKey key = ServiceDocKey.ofClassName(classDoc.qualifiedName());
         ServiceDoc serviceDoc = newAggregateWithKey(key);
-        serviceDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
+        serviceDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());

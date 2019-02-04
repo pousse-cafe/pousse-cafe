@@ -2,9 +2,10 @@ package poussecafe.test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.context.EntityServices;
@@ -23,7 +24,6 @@ import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
-import java.util.Objects;
 
 public class MetaApplicationWrapper {
 
@@ -60,7 +60,7 @@ public class MetaApplicationWrapper {
                 }
             }
         } catch (InterruptedException e) {
-            return;
+            throw new PousseCafeException(e);
         }
     }
 
@@ -72,7 +72,7 @@ public class MetaApplicationWrapper {
     public void loadDataFile(String path) {
         try {
             String json = new String(Files.readAllBytes(Paths.get(getClass().getResource(path).toURI())),
-                    Charset.forName("UTF-8"));
+                    StandardCharsets.UTF_8);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.reader().readTree(json);
@@ -84,8 +84,9 @@ public class MetaApplicationWrapper {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void loadEntity(String entityClassName, JsonNode jsonNode) {
-        logger.info("Loading data for entity " + entityClassName);
+        logger.info("Loading data for entity {}", entityClassName);
         try {
             Class<?> entityClass = Class.forName(entityClassName);
             EntityImplementation entityImplementation = context.environment().getEntityImplementation(entityClass);
@@ -93,9 +94,9 @@ public class MetaApplicationWrapper {
 
             EntityServices services = context.getEntityServices(entityClass);
             InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();
-            logger.debug("Field value " + jsonNode.get(entityClassName));
+            logger.debug("Field value {}", jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
-                logger.debug("Loading " + dataJson.toString());
+                logger.debug("Loading {}", dataJson);
                 EntityData<?> dataImplementation = (EntityData<?>) entityImplementation.getDataFactory().get();
                 jsonDataReader.readJson(dataImplementation, dataJson);
                 dataAccess.addData(dataImplementation);

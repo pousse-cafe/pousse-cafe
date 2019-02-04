@@ -19,7 +19,7 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
                 .withComponentClass(entityClass)
                 .withData(true)
                 .build());
-        entity.setKey(key);
+        entity.data().key().set(key);
         return entity;
     }
 

@@ -1,6 +1,5 @@
 package poussecafe.doc.model.vodoc;
 
-import java.util.Objects;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
@@ -14,17 +13,8 @@ import poussecafe.property.Property;
 )
 public class ValueObjectDoc extends AggregateRoot<ValueObjectDocKey, ValueObjectDoc.Data> {
 
-    void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {
-        Objects.requireNonNull(componentDoc);
-        data().boundedContextComponentDoc().set(componentDoc);
-    }
-
-    public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return data().boundedContextComponentDoc().get();
-    }
-
     public String id() {
-        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
     }
 
     public static interface Data extends EntityData<ValueObjectDocKey> {

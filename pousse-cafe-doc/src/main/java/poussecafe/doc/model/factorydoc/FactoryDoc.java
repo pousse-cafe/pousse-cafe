@@ -1,7 +1,6 @@
 package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
@@ -19,17 +18,8 @@ import poussecafe.property.Property;
 )
 public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
 
-    void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
-        Objects.requireNonNull(boundedContextComponentDoc);
-        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
-    }
-
-    public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return data().boundedContextComponentDoc().get();
-    }
-
     public String id() {
-        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
     }
 
     void stepDocs(List<StepDoc> stepDocs) {
@@ -42,10 +32,6 @@ public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Data> {
                 .stream()
                 .filter(stepDoc -> stepDoc.methodSignature().equals(methodSignature))
                 .findFirst();
-    }
-
-    public List<StepDoc> stepDocs() {
-        return data().stepDocs().get();
     }
 
     public static interface Data extends EntityData<FactoryDocKey> {

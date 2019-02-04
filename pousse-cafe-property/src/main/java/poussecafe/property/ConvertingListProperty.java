@@ -1,5 +1,6 @@
 package poussecafe.property;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -43,5 +44,10 @@ public abstract class ConvertingListProperty<F, T> implements ListProperty<T> {
     @Override
     public Stream<T> stream() {
         return listProperty.stream().map(this::convertFrom);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return get().iterator();
     }
 }

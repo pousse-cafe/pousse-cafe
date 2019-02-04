@@ -4,8 +4,6 @@ import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityData;
 import poussecafe.property.Property;
-import poussecafe.property.ProtectedProperty;
-import poussecafe.property.ProtectedPropertyBuilder;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -28,17 +26,8 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Data>
         data().x().set(x);
 
         MyDomainEvent event = newDomainEvent(MyDomainEvent.class);
-        event.key().set(getKey());
+        event.key().setValueOf(data().key());
         addDomainEvent(event);
-    }
-
-    /*
-     * Below getter publicly exposes a data property as read-only. More advanced access policies can be configured
-     * before build() is called.
-     */
-    public ProtectedProperty<Integer> x() {
-        return ProtectedPropertyBuilder.protect(data().x()).of(this)
-                .build();
     }
 
     /*

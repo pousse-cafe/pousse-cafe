@@ -27,10 +27,6 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
         data().boundedContextComponentDoc().set(componentDoc);
     }
 
-    public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return data().boundedContextComponentDoc().get();
-    }
-
     void steps(List<Step> steps) {
         Map<String, Step> map = new HashMap<>();
         for(Step step : steps) {
@@ -46,7 +42,7 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
     }
 
     public List<Step> orderedSteps() {

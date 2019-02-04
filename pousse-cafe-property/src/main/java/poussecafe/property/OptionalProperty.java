@@ -20,4 +20,8 @@ public abstract class OptionalProperty<T> implements Property<Optional<T>> {
     }
 
     public abstract void setNullable(T nullableValue);
+
+    public void setNonOptionalValueOf(Property<T> property) {
+        set(Optional.of(property.get()));
+    }
 }

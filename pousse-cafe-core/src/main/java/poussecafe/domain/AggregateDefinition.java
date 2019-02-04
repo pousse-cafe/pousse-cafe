@@ -20,12 +20,14 @@ public class AggregateDefinition {
         return factoryClass != null;
     }
 
+    @SuppressWarnings("rawtypes")
     public Class getFactoryClass() {
         return factoryClass;
     }
 
     private Class<?> factoryClass;
 
+    @SuppressWarnings("rawtypes")
     public Class getRepositoryClass() {
         return repositoryClass;
     }

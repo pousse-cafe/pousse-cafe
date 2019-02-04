@@ -9,7 +9,7 @@ public class SimpleEntity extends Entity<StringKey, SimpleEntity.Data> {
     @Override
     public boolean equals(Object obj) {
         SimpleEntity other = (SimpleEntity) obj;
-        return getKey().equals(other.getKey());
+        return data().key().get().equals(other.data().key().get());
     }
 
     public static interface Data extends EntityData<StringKey> {

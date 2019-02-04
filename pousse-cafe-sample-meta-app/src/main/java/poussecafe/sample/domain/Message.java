@@ -30,7 +30,7 @@ public class Message extends AggregateRoot<MessageKey, Message.Data> {
     @Override
     public void onAdd() {
         MessageCreated event = newDomainEvent(MessageCreated.class);
-        event.messageKey().set(getKey());
+        event.messageKey().setValueOf(data().key());
         addDomainEvent(event);
     }
 

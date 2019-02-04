@@ -5,7 +5,6 @@ import poussecafe.storage.Storage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
-import java.util.Objects;
 
 public abstract class Entity<K, D extends EntityData<K>> {
 
@@ -40,15 +39,6 @@ public abstract class Entity<K, D extends EntityData<K>> {
 
     public boolean dontPersist() {
         return dontPersist;
-    }
-
-    public K getKey() {
-        return data().key().get();
-    }
-
-    public void setKey(K key) {
-        Objects.requireNonNull(key);
-        data().key().set(key);
     }
 
     public MessageCollection messageCollection() {

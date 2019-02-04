@@ -25,7 +25,7 @@ public class GraphImagesWriter {
             File outputDirectory = outputDirectory();
             List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
             for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
-                Logger.debug("Drawing BC " + boundedContextDoc.componentDoc().name() + " graph...");
+                Logger.debug("Drawing BC " + boundedContextDoc.data().componentDoc().get().name() + " graph...");
                 graphImageWriter
                         .writeImage(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
                                 boundedContextDoc.id());
@@ -49,8 +49,8 @@ public class GraphImagesWriter {
     private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
-                .findByBoundedContextKey(boundedContextDoc.getKey())) {
-            Logger.debug("Drawing aggregate " + aggregateDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+                .findByBoundedContextKey(boundedContextDoc.data().key().get())) {
+            Logger.debug("Drawing aggregate " + aggregateDoc.data().boundedContextComponentDoc().get().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + aggregateDoc.id());
@@ -66,8 +66,8 @@ public class GraphImagesWriter {
     private void writeDomainProcessesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
-                .findByBoundedContextKey(boundedContextDoc.getKey())) {
-            Logger.debug("Drawing domain process " + domainProcessDoc.boundedContextComponentDoc().componentDoc().name() + " graph...");
+                .findByBoundedContextKey(boundedContextDoc.data().key().get())) {
+            Logger.debug("Drawing domain process " + domainProcessDoc.data().boundedContextComponentDoc().get().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
                             boundedContextDoc.id() + "_" + domainProcessDoc.id());

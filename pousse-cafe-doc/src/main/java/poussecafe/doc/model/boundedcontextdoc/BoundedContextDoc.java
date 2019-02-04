@@ -17,16 +17,12 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, Bound
         data().componentDoc().set(componentDoc);
     }
 
-    public ComponentDoc componentDoc() {
-        return data().componentDoc().get();
-    }
-
     public String packageName() {
-        return getKey().getValue();
+        return data().key().get().getValue();
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(componentDoc().name());
+        return StringNormalizer.normalizeString(data().componentDoc().get().name());
     }
 
     public static interface Data extends EntityData<BoundedContextDocKey> {

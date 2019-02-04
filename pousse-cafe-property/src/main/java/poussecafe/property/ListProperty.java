@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public interface ListProperty<T> extends Property<List<T>> {
+public interface ListProperty<T> extends Property<List<T>>, Iterable<T> {
 
     void add(T item);
 

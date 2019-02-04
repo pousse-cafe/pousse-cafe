@@ -1,6 +1,5 @@
 package poussecafe.doc.model.entitydoc;
 
-import java.util.Objects;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
@@ -14,25 +13,12 @@ import poussecafe.property.Property;
 )
 public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Data> {
 
-    void componentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
-        Objects.requireNonNull(boundedContextComponentDoc);
-        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
-    }
-
-    public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return data().boundedContextComponentDoc().get();
-    }
-
     void keyClassName(String keyClassName) {
         data().keyClassName().set(keyClassName);
     }
 
-    public String keyClassName() {
-        return data().keyClassName().get();
-    }
-
     public String id() {
-        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
     }
 
     public static interface Data extends EntityData<EntityDocKey> {

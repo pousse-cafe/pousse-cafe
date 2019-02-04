@@ -90,7 +90,7 @@ public class HtmlWriter {
     private BoundedContextDocRepository boundedContextDocRepository;
 
     private int compareBoundedContexts(BoundedContextDoc boundedContextDoc1, BoundedContextDoc boundedContextDoc2) {
-        return compareTo(boundedContextDoc1.componentDoc(), boundedContextDoc2.componentDoc());
+        return compareTo(boundedContextDoc1.data().componentDoc().get(), boundedContextDoc2.data().componentDoc().get());
     }
 
     private int compareTo(ComponentDoc componentDoc1,
@@ -101,25 +101,25 @@ public class HtmlWriter {
     private HashMap<String, Object> adapt(BoundedContextDoc boundedContextDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", boundedContextDoc.id());
-        view.put("name", boundedContextDoc.componentDoc().name());
-        view.put("description", boundedContextDoc.componentDoc().description());
+        view.put("name", boundedContextDoc.data().componentDoc().get().name());
+        view.put("description", boundedContextDoc.data().componentDoc().get().description());
 
         view.put("aggregates", aggregateDocRepository
-                .findByBoundedContextKey(boundedContextDoc.getKey())
+                .findByBoundedContextKey(boundedContextDoc.data().key().get())
                 .stream()
                 .sorted(this::compareAggregates)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("services", serviceDocRepository
-                .findByBoundedContextKey(boundedContextDoc.getKey())
+                .findByBoundedContextKey(boundedContextDoc.data().key().get())
                 .stream()
                 .sorted(this::compareServices)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("domainProcesses", domainProcessDocRepository
-                .findByBoundedContextKey(boundedContextDoc.getKey())
+                .findByBoundedContextKey(boundedContextDoc.data().key().get())
                 .stream()
                 .sorted(this::compareDomainProcesses)
                 .map(this::adapt)
@@ -131,7 +131,7 @@ public class HtmlWriter {
     private AggregateDocRepository aggregateDocRepository;
 
     private int compareAggregates(AggregateDoc aggregateDoc1, AggregateDoc aggregateDoc2) {
-        return compareTo(aggregateDoc1.boundedContextComponentDoc(), aggregateDoc2.boundedContextComponentDoc());
+        return compareTo(aggregateDoc1.data().boundedContextComponentDoc().get(), aggregateDoc2.data().boundedContextComponentDoc().get());
     }
 
     private int compareTo(BoundedContextComponentDoc boundedContextComponentDoc1,
@@ -142,27 +142,27 @@ public class HtmlWriter {
     private ServiceDocRepository serviceDocRepository;
 
     private int compareServices(ServiceDoc serviceDoc1, ServiceDoc serviceDoc2) {
-        return compareTo(serviceDoc1.boundedContextComponentDoc(), serviceDoc2.boundedContextComponentDoc());
+        return compareTo(serviceDoc1.data().boundedContextComponentDoc().get(), serviceDoc2.data().boundedContextComponentDoc().get());
     }
 
     private DomainProcessDocRepository domainProcessDocRepository;
 
     private int compareDomainProcesses(DomainProcessDoc boundedContextDoc1, DomainProcessDoc boundedContextDoc2) {
-        return compareTo(boundedContextDoc1.boundedContextComponentDoc(), boundedContextDoc2.boundedContextComponentDoc());
+        return compareTo(boundedContextDoc1.data().boundedContextComponentDoc().get(), boundedContextDoc2.data().boundedContextComponentDoc().get());
     }
 
     private HashMap<String, Object> adapt(AggregateDoc aggregateDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", aggregateDoc.id());
-        view.put("name", aggregateDoc.boundedContextComponentDoc().componentDoc().name());
-        view.put("description", aggregateDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("name", aggregateDoc.data().boundedContextComponentDoc().get().componentDoc().name());
+        view.put("description", aggregateDoc.data().boundedContextComponentDoc().get().componentDoc().description());
 
-        view.put("entities", findEntities(aggregateDoc.getKey()).stream()
+        view.put("entities", findEntities(aggregateDoc.data().key().get()).stream()
                 .sorted(this::compareEntities)
                 .map(this::adapt)
                 .collect(toList()));
 
-        view.put("valueObjects", findValueObjects(aggregateDoc.getKey()).stream()
+        view.put("valueObjects", findValueObjects(aggregateDoc.data().key().get()).stream()
                 .sorted(this::compareValueObjects)
                 .map(this::adapt)
                 .collect(toList()));
@@ -173,12 +173,12 @@ public class HtmlWriter {
     private List<EntityDoc> findEntities(AggregateDocKey aggregateDocKey) {
         return findEntities(aggregateDocKey.getValue()).stream()
                 .map(entityDocRepository::get)
-                .filter(doc -> !doc.boundedContextComponentDoc().componentDoc().trivial())
+                .filter(doc -> !doc.data().boundedContextComponentDoc().get().componentDoc().trivial())
                 .collect(toList());
     }
 
     private int compareEntities(EntityDoc entityDoc1, EntityDoc entityDoc2) {
-        return compareTo(entityDoc1.boundedContextComponentDoc(), entityDoc2.boundedContextComponentDoc());
+        return compareTo(entityDoc1.data().boundedContextComponentDoc().get(), entityDoc2.data().boundedContextComponentDoc().get());
     }
 
     private Set<EntityDocKey> findEntities(String fromClassName) {
@@ -201,8 +201,8 @@ public class HtmlWriter {
     private HashMap<String, Object> adapt(EntityDoc entityDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", entityDoc.id());
-        view.put("name", entityDoc.boundedContextComponentDoc().componentDoc().name());
-        view.put("description", entityDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("name", entityDoc.data().boundedContextComponentDoc().get().componentDoc().name());
+        view.put("description", entityDoc.data().boundedContextComponentDoc().get().componentDoc().description());
         return view;
     }
 
@@ -210,12 +210,12 @@ public class HtmlWriter {
         return findValueObjects(aggregateDocKey.getValue()).stream()
                 .map(valueObjectDocRepository::find)
                 .filter(Objects::nonNull)
-                .filter(doc -> !doc.boundedContextComponentDoc().componentDoc().trivial())
+                .filter(doc -> !doc.data().boundedContextComponentDoc().get().componentDoc().trivial())
                 .collect(toList());
     }
 
     private int compareValueObjects(ValueObjectDoc valueObjectDoc1, ValueObjectDoc valueObjectDoc2) {
-        return compareTo(valueObjectDoc1.boundedContextComponentDoc(), valueObjectDoc2.boundedContextComponentDoc());
+        return compareTo(valueObjectDoc1.data().boundedContextComponentDoc().get(), valueObjectDoc2.data().boundedContextComponentDoc().get());
     }
 
     private Set<ValueObjectDocKey> findValueObjects(String fromClassName) {
@@ -236,24 +236,24 @@ public class HtmlWriter {
     private HashMap<String, Object> adapt(ValueObjectDoc entityDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", entityDoc.id());
-        view.put("name", entityDoc.boundedContextComponentDoc().componentDoc().name());
-        view.put("description", entityDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("name", entityDoc.data().boundedContextComponentDoc().get().componentDoc().name());
+        view.put("description", entityDoc.data().boundedContextComponentDoc().get().componentDoc().description());
         return view;
     }
 
     private HashMap<String, Object> adapt(ServiceDoc serviceDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", serviceDoc.id());
-        view.put("name", serviceDoc.boundedContextComponentDoc().componentDoc().name());
-        view.put("description", serviceDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("name", serviceDoc.data().boundedContextComponentDoc().get().componentDoc().name());
+        view.put("description", serviceDoc.data().boundedContextComponentDoc().get().componentDoc().description());
         return view;
     }
 
     private HashMap<String, Object> adapt(DomainProcessDoc domainProcessDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", domainProcessDoc.id());
-        view.put("name", domainProcessDoc.boundedContextComponentDoc().componentDoc().name());
-        view.put("description", domainProcessDoc.boundedContextComponentDoc().componentDoc().description());
+        view.put("name", domainProcessDoc.data().boundedContextComponentDoc().get().componentDoc().name());
+        view.put("description", domainProcessDoc.data().boundedContextComponentDoc().get().componentDoc().description());
         view.put("steps", domainProcessDoc.orderedSteps().stream().filter(step -> !step.external()).map(this::adapt).collect(toList()));
         return view;
     }

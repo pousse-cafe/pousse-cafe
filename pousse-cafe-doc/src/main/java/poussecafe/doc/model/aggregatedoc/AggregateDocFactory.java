@@ -21,12 +21,12 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
         AggregateDoc aggregateDoc = newAggregateWithKey(key);
 
         String name = name(aggregateClassDoc);
-        aggregateDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
+        aggregateDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 
-        aggregateDoc.keyClassName(keyClassName(aggregateClassDoc));
+        aggregateDoc.data().keyClassName().set(keyClassName(aggregateClassDoc));
 
         aggregateDoc.stepDocs(stepDocExtractor.extractStepDocs(name, aggregateClassDoc));
 

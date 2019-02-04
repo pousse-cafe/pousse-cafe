@@ -1,6 +1,5 @@
 package poussecafe.doc.model.servicedoc;
 
-import java.util.Objects;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
@@ -14,17 +13,8 @@ import poussecafe.property.Property;
 )
 public class ServiceDoc extends AggregateRoot<ServiceDocKey, ServiceDoc.Data> {
 
-    void boundedContextComponentDoc(BoundedContextComponentDoc boundedContextComponentDoc) {
-        Objects.requireNonNull(boundedContextComponentDoc);
-        data().boundedContextComponentDoc().set(boundedContextComponentDoc);
-    }
-
-    public BoundedContextComponentDoc boundedContextComponentDoc() {
-        return data().boundedContextComponentDoc().get();
-    }
-
     public String id() {
-        return StringNormalizer.normalizeString(boundedContextComponentDoc().componentDoc().name());
+        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
     }
 
     public static interface Data extends EntityData<ServiceDocKey> {

@@ -49,12 +49,12 @@ public class RelationCreator implements Consumer<ClassDoc> {
     private void tryRelationAggregateKey(ClassDoc classDoc) {
         AggregateDoc aggregateDoc = aggregateDocRepository.find(AggregateDocKey.ofClassName(classDoc.qualifiedTypeName()));
         if(aggregateDoc != null) {
-            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.keyClassName()));
+            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.data().keyClassName().get()));
             if(keyDoc != null) {
-                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.keyClassName());
+                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.data().keyClassName().get());
                 NewRelationParameters aggregateKeyParameters = new NewRelationParameters();
                 aggregateKeyParameters.fromComponent = component(classDoc);
-                aggregateKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.keyClassName());
+                aggregateKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.data().keyClassName().get());
                 componentLinking.linkComponents(aggregateKeyParameters);
 
                 NewRelationParameters keyAggregateParameters = new NewRelationParameters();
@@ -72,12 +72,12 @@ public class RelationCreator implements Consumer<ClassDoc> {
     private void tryRelationEntityKey(ClassDoc classDoc) {
         EntityDoc entityDoc = entityDocRepository.find(EntityDocKey.ofClassName(classDoc.qualifiedTypeName()));
         if(entityDoc != null) {
-            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(entityDoc.keyClassName()));
+            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(entityDoc.data().keyClassName().get()));
             if(keyDoc != null) {
-                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.keyClassName());
+                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.data().keyClassName().get());
                 NewRelationParameters entityKeyParameters = new NewRelationParameters();
                 entityKeyParameters.fromComponent = component(classDoc);
-                entityKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.keyClassName());
+                entityKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.data().keyClassName().get());
                 componentLinking.linkComponents(entityKeyParameters);
             }
         }

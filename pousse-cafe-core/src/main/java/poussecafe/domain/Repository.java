@@ -108,7 +108,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public void delete(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
-        dataAccess.deleteData(entity.getKey());
+        dataAccess.deleteData(entity.data().key().get());
         considerMessageSendingAfterDelete(entity, messageCollection);
     }
 

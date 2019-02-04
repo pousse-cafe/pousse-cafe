@@ -55,6 +55,6 @@ public class MyProcessTest extends MetaApplicationTest {
 
     private void thenAggregateUpdated() {
         MyAggregate aggregate = find(MyAggregate.class, key);
-        assertThat(aggregate.x().let(this).get(), equalTo(x));
+        assertThat(aggregate.data().x().get(), equalTo(x));
     }
 }

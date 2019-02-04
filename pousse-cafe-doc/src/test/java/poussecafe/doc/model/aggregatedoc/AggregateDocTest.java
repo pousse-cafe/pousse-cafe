@@ -28,14 +28,14 @@ public class AggregateDocTest {
         aggregateDoc = new AggregateDoc();
         ReflectionUtils.access(aggregateDoc).set("data", new AggregateDocData());
 
-        aggregateDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
+        aggregateDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(BoundedContextDocKey.ofPackageName("test"))
                 .componentDoc(new ComponentDoc.Builder()
                         .name("A")
                         .description("")
                         .build())
                 .build());
-        aggregateDoc.keyClassName("test.K");
+        aggregateDoc.data().keyClassName().set("test.K");
         aggregateDoc.stepDocs(stepDocs());
     }
 

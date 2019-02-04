@@ -24,47 +24,47 @@ public class UbiquitousLanguageFactory implements Service {
         for (BoundedContextDoc boundedContext : boundedContextDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .componentDoc(boundedContext.componentDoc())
+                            .componentDoc(boundedContext.data().componentDoc().get())
                             .type("Bounded Context")
                             .build());
         }
         for (AggregateDoc aggregateDoc : aggregateDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .boundedContextName(boundedContextName(aggregateDoc.boundedContextComponentDoc()))
-                            .componentDoc(aggregateDoc.boundedContextComponentDoc().componentDoc())
+                            .boundedContextName(boundedContextName(aggregateDoc.data().boundedContextComponentDoc().get()))
+                            .componentDoc(aggregateDoc.data().boundedContextComponentDoc().get().componentDoc())
                             .type("Aggregate")
                             .build());
         }
         for (ServiceDoc serviceDoc : serviceDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .boundedContextName(boundedContextName(serviceDoc.boundedContextComponentDoc()))
-                            .componentDoc(serviceDoc.boundedContextComponentDoc().componentDoc())
+                            .boundedContextName(boundedContextName(serviceDoc.data().boundedContextComponentDoc().get()))
+                            .componentDoc(serviceDoc.data().boundedContextComponentDoc().get().componentDoc())
                             .type("Service")
                             .build());
         }
         for (EntityDoc entityDoc : entityDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .boundedContextName(boundedContextName(entityDoc.boundedContextComponentDoc()))
-                            .componentDoc(entityDoc.boundedContextComponentDoc().componentDoc())
+                            .boundedContextName(boundedContextName(entityDoc.data().boundedContextComponentDoc().get()))
+                            .componentDoc(entityDoc.data().boundedContextComponentDoc().get().componentDoc())
                             .type("Entity")
                             .build());
         }
         for (ValueObjectDoc valueObjectDoc : valueObjectDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .boundedContextName(boundedContextName(valueObjectDoc.boundedContextComponentDoc()))
-                            .componentDoc(valueObjectDoc.boundedContextComponentDoc().componentDoc())
+                            .boundedContextName(boundedContextName(valueObjectDoc.data().boundedContextComponentDoc().get()))
+                            .componentDoc(valueObjectDoc.data().boundedContextComponentDoc().get().componentDoc())
                             .type("Value Object")
                             .build());
         }
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository.findAll()) {
             language
                     .add(new UbiquitousLanguageEntry.Builder()
-                            .boundedContextName(boundedContextName(domainProcessDoc.boundedContextComponentDoc()))
-                            .componentDoc(domainProcessDoc.boundedContextComponentDoc().componentDoc())
+                            .boundedContextName(boundedContextName(domainProcessDoc.data().boundedContextComponentDoc().get()))
+                            .componentDoc(domainProcessDoc.data().boundedContextComponentDoc().get().componentDoc())
                             .type("Domain Process")
                             .build());
         }
@@ -73,7 +73,7 @@ public class UbiquitousLanguageFactory implements Service {
     }
 
     private String boundedContextName(BoundedContextComponentDoc doc) {
-        return boundedContextDocRepository.get(doc.boundedContextDocKey()).componentDoc().name();
+        return boundedContextDocRepository.get(doc.boundedContextDocKey()).data().componentDoc().get().name();
     }
 
     private BoundedContextDocRepository boundedContextDocRepository;

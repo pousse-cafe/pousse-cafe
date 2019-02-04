@@ -42,14 +42,14 @@ public class Product extends AggregateRoot<ProductKey, Data> {
         int unitsAvailable = data().getAvailableUnits();
         if (description.units > unitsAvailable) {
             OrderRejected event = newDomainEvent(OrderRejected.class);
-            event.productKey().set(getKey());
+            event.productKey().setValueOf(data().key());
             event.description().set(description);
             addDomainEvent(event);
         } else {
             data().setAvailableUnits(unitsAvailable - description.units);
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
-            event.productKey().set(getKey());
+            event.productKey().setValueOf(data().key());
             event.description().set(description);
             addDomainEvent(event);
         }

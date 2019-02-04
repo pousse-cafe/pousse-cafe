@@ -43,7 +43,7 @@ public abstract class FactoryTest<K, D extends EntityData<K>, A extends Aggregat
     protected abstract F factory();
 
     private void thenCreatedAggregateHasKey() {
-        assertThat(createdEntity.getKey(), is(givenKey));
+        assertThat(createdEntity.data().key(), is(givenKey));
     }
 
     @Test(expected = AssertionFailedException.class)

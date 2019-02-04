@@ -8,16 +8,16 @@ public class JournalEntryFactory extends Factory<JournalEntryKey, JournalEntry, 
 
     public JournalEntry buildEntry(SuccessfulConsumption event) {
         JournalEntry entry = newAggregateWithKey(new JournalEntryKey(event.consumptionId().get(), event.listenerId().get()));
-        entry.rawMessage().let(this).set(event.rawMessage().get());
-        entry.status().let(this).set(ConsumptionStatus.SUCCESS);
+        entry.data().rawMessage().set(event.rawMessage().get());
+        entry.data().status().set(ConsumptionStatus.SUCCESS);
         return entry;
     }
 
     public JournalEntry buildEntry(FailedConsumption event) {
         JournalEntry entry = newAggregateWithKey(new JournalEntryKey(event.consumptionId().get(), event.listenerId().get()));
-        entry.rawMessage().let(this).set(event.rawMessage().get());
-        entry.status().let(this).set(ConsumptionStatus.FAILURE);
-        entry.error().let(this).set(event.error().get());
+        entry.data().rawMessage().set(event.rawMessage().get());
+        entry.data().status().set(ConsumptionStatus.FAILURE);
+        entry.data().error().set(event.error().get());
         return entry;
     }
 }

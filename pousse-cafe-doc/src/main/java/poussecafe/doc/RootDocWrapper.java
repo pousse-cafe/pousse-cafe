@@ -53,7 +53,7 @@ public class RootDocWrapper {
         return isDebug;
     }
 
-    private transient Boolean isDebug;
+    private Boolean isDebug;
 
     private boolean testIfDebug() {
         for (String[] option : rootDoc.options()) {

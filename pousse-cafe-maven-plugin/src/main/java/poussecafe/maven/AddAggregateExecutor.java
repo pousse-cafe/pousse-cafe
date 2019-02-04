@@ -4,13 +4,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 import poussecafe.storage.internal.InternalStorage;
-
-import java.util.Objects;
 
 public class AddAggregateExecutor implements MojoExecutor {
 

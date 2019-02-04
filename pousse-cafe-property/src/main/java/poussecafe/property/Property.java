@@ -9,4 +9,9 @@ public interface Property<T> {
     default void setValueOf(Property<T> property) {
         set(property.get());
     }
+
+    // TODO rename
+    default boolean valueEqualsValueOf(Property<T> property) {
+        return get().equals(property.get());
+    }
 }

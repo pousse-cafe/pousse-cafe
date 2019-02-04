@@ -22,20 +22,20 @@ public class Order extends AggregateRoot<OrderKey, Data> {
 
     public void settle() {
         OrderSettled event = newDomainEvent(OrderSettled.class);
-        event.orderKey().set(getKey());
+        event.orderKey().setValueOf(data().key());
         addDomainEvent(event);
     }
 
     public void ship() {
         OrderReadyForShipping event = newDomainEvent(OrderReadyForShipping.class);
-        event.orderKey().set(getKey());
+        event.orderKey().setValueOf(data().key());
         addDomainEvent(event);
     }
 
     @Override
     public void onAdd() {
         OrderCreated event = newDomainEvent(OrderCreated.class);
-        event.orderKey().set(getKey());
+        event.orderKey().setValueOf(data().key());
         addDomainEvent(event);
     }
 

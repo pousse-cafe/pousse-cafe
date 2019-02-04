@@ -43,7 +43,7 @@ public class PousseCafeDoclet {
     }
 
     private void detectBoundedContexts() {
-        BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator(rootDocWrapper);
+        BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator();
         context.injectDependencies(boundedContextCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
