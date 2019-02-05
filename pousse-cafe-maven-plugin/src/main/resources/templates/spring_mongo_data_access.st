@@ -16,8 +16,8 @@ import <modelPackage>.<name>Key;
     storageName = SpringMongoDbStorage.NAME
 )
 public class <name>MongoDataAccess extends MongoDataAccess\<<name>Key, <name>Data, String> implements <name>DataAccess\<<name>Data> {
-<if(demoAttribute)>
 
+<if(demoAttribute)>
     @Override
     public List\<<name>Data> findByName(String name) {
         return repository.findByName(name);
