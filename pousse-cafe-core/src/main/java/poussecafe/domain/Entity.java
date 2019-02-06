@@ -6,18 +6,18 @@ import poussecafe.storage.Storage;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class Entity<K, D extends EntityData<K>> {
+public abstract class Entity<K, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
-    public void setData(Object data) {
+    public void attributes(Object data) {
         checkThat(value(data).notNull().because("Data cannot be null"));
-        this.data = (D) data;
+        this.attributes = (D) data;
     }
 
-    private D data;
+    private D attributes;
 
-    public D data() {
-        return data;
+    public D attributes() {
+        return attributes;
     }
 
     public void setComponentFactory(ComponentFactory componentFactory) {

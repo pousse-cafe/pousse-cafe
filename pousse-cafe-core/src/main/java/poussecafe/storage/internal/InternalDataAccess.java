@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import poussecafe.collection.Multimap;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.storage.internal.uniqueindex.AdditionPlan;
@@ -24,7 +24,7 @@ import poussecafe.storage.internal.uniqueindex.UpdatePlan;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDataAccess<K, D> {
+public class InternalDataAccess<K, D extends EntityAttributes<K>> implements EntityDataAccess<K, D> {
 
     private Map<K, byte[]> storage;
 
@@ -59,7 +59,7 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
 
     @Override
     public synchronized void addData(D data) {
-        K key = data.key().get();
+        K key = data.key().value();
         if (storage.containsKey(key)) {
             throw new InternalStorageException("Duplicate key " + key);
         }
@@ -81,7 +81,7 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
     }
 
     private void index(D data) {
-        K key = data.key().get();
+        K key = data.key().value();
         List<Object> indexedData = extractIndexedData(data);
         indexedData.forEach(indexed -> {
             if(indexed != null) {
@@ -112,7 +112,7 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
 
     @Override
     public synchronized void updateData(D newData) {
-        K key = newData.key().get();
+        K key = newData.key().value();
         if (!storage.containsKey(key)) {
             throw new InternalStorageException("No entry with key " + key);
         }
@@ -148,7 +148,7 @@ public class InternalDataAccess<K, D extends EntityData<K>> implements EntityDat
     }
 
     private synchronized void unindex(D data) {
-        K key = data.key().get();
+        K key = data.key().value();
         List<Object> indexedData = extractIndexedData(data);
         indexedData.forEach(indexed -> index.remove(indexed, key));
     }

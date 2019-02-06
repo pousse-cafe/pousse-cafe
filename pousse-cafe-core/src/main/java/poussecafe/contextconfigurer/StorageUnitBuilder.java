@@ -3,7 +3,7 @@ package poussecafe.contextconfigurer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
@@ -43,8 +43,8 @@ public class StorageUnitBuilder {
                 .map(EntityImplementation::getEntityClass)
                 .collect(toSet());
 
-        Set<Class<EntityData<?>>> entityDataClasses = classPathExplorer.getDataImplementations(storage);
-        for(Class<EntityData<?>> entityDataClass : entityDataClasses) {
+        Set<Class<EntityAttributes<?>>> entityDataClasses = classPathExplorer.getDataImplementations(storage);
+        for(Class<EntityAttributes<?>> entityDataClass : entityDataClasses) {
             DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
             if(aggregateRoots.contains(annotation.entity())) {
                 throw new PousseCafeException("Aggregate root implementation can only be declared with @" + DataAccessImplementation.class.getSimpleName());
@@ -78,7 +78,7 @@ public class StorageUnitBuilder {
         }
     }
 
-    private EntityImplementation buildNonRootEntityImplementation(Class<EntityData<?>> entityDataClass) {
+    private EntityImplementation buildNonRootEntityImplementation(Class<EntityAttributes<?>> entityDataClass) {
         DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
         return new EntityImplementation.Builder()
                 .withEntityClass(annotation.entity())

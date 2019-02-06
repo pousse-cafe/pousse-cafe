@@ -1,17 +1,17 @@
 package poussecafe.journal.adapters;
 
 import org.springframework.data.annotation.Id;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryKey;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 
-public class MongoJournalEntryData implements JournalEntry.Data {
+public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
-    public Property<JournalEntryKey> key() {
-        return PropertyBuilder.simple(JournalEntryKey.class)
+    public Attribute<JournalEntryKey> key() {
+        return AttributeBuilder.simple(JournalEntryKey.class)
                 .fromAutoAdapting(SerializableJournalEntryKey.class)
                 .get(() -> key)
                 .set(value -> key = value)
@@ -22,8 +22,8 @@ public class MongoJournalEntryData implements JournalEntry.Data {
     private SerializableJournalEntryKey key;
 
     @Override
-    public Property<String> rawMessage() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> rawMessage() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> rawMessage)
                 .set(value -> rawMessage = value)
                 .build();
@@ -32,8 +32,8 @@ public class MongoJournalEntryData implements JournalEntry.Data {
     private String rawMessage;
 
     @Override
-    public Property<String> error() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> error() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> error)
                 .set(value -> error = value)
                 .build();
@@ -42,8 +42,8 @@ public class MongoJournalEntryData implements JournalEntry.Data {
     private String error;
 
     @Override
-    public Property<ConsumptionStatus> status() {
-        return PropertyBuilder.simple(ConsumptionStatus.class)
+    public Attribute<ConsumptionStatus> status() {
+        return AttributeBuilder.simple(ConsumptionStatus.class)
                 .get(() -> status)
                 .set(value -> status = value)
                 .build();

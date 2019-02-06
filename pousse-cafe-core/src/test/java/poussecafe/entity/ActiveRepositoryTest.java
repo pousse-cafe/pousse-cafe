@@ -2,7 +2,7 @@ package poussecafe.entity;
 
 import org.junit.Test;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.MessageCollection;
 import poussecafe.domain.RepositoryTest;
 import poussecafe.storage.MessageSendingPolicy;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public abstract class ActiveRepositoryTest<K, S extends AggregateRoot<K, D>, D extends EntityData<K>>
+public abstract class ActiveRepositoryTest<K, S extends AggregateRoot<K, D>, D extends EntityAttributes<K>>
         extends RepositoryTest<K, S, D> {
 
     private MessageSendingPolicy messageSendingPolicy;

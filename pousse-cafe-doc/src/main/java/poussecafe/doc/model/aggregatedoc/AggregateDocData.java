@@ -2,27 +2,27 @@ package poussecafe.doc.model.aggregatedoc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.ConvertingListAttribute;
+import poussecafe.attribute.ListAttribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepDocData;
-import poussecafe.property.ConvertingListProperty;
-import poussecafe.property.ListProperty;
-import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
-public class AggregateDocData implements AggregateDoc.Data, Serializable {
+public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
 
     @Override
-    public Property<AggregateDocKey> key() {
-        return new Property<AggregateDocKey>() {
+    public Attribute<AggregateDocKey> key() {
+        return new Attribute<AggregateDocKey>() {
             @Override
-            public AggregateDocKey get() {
+            public AggregateDocKey value() {
                 return AggregateDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(AggregateDocKey value) {
+            public void value(AggregateDocKey value) {
                 className = value.getValue();
             }
         };
@@ -31,15 +31,15 @@ public class AggregateDocData implements AggregateDoc.Data, Serializable {
     private String className;
 
     @Override
-    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Property<BoundedContextComponentDoc>() {
+    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Attribute<BoundedContextComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc get() {
+            public BoundedContextComponentDoc value() {
                 return componentDoc.toModel();
             }
 
             @Override
-            public void set(BoundedContextComponentDoc value) {
+            public void value(BoundedContextComponentDoc value) {
                 componentDoc = BoundedContextComponentDocData.of(value);
             }
         };
@@ -48,15 +48,15 @@ public class AggregateDocData implements AggregateDoc.Data, Serializable {
     private BoundedContextComponentDocData componentDoc;
 
     @Override
-    public Property<String> keyClassName() {
-        return new Property<String>() {
+    public Attribute<String> keyClassName() {
+        return new Attribute<String>() {
             @Override
-            public String get() {
+            public String value() {
                 return keyClassName;
             }
 
             @Override
-            public void set(String value) {
+            public void value(String value) {
                 keyClassName = value;
             }
         };
@@ -65,8 +65,8 @@ public class AggregateDocData implements AggregateDoc.Data, Serializable {
     private String keyClassName;
 
     @Override
-    public ListProperty<StepDoc> stepDocs() {
-        return new ConvertingListProperty<StepDocData, StepDoc>(stepDocs) {
+    public ListAttribute<StepDoc> stepDocs() {
+        return new ConvertingListAttribute<StepDocData, StepDoc>(stepDocs) {
             @Override
             protected StepDoc convertFrom(StepDocData from) {
                 return from.toModel();

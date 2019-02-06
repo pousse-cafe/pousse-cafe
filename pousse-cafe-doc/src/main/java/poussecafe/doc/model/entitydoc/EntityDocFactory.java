@@ -9,7 +9,7 @@ import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
 import poussecafe.domain.Factory;
 
-public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc.Data> {
+public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc.Attributes> {
 
     public EntityDoc newEntityDoc(BoundedContextDocKey boundedContextKey, ClassDoc entityClassDoc) {
         if(!isEntityDoc(entityClassDoc)) {
@@ -19,7 +19,7 @@ public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc
         String name = name(entityClassDoc);
         EntityDocKey key = EntityDocKey.ofClassName(entityClassDoc.qualifiedTypeName());
         EntityDoc entityDoc = newAggregateWithKey(key);
-        entityDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        entityDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextKey)
                 .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))
                 .build());

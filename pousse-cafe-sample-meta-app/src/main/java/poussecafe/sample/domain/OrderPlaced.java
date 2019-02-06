@@ -1,11 +1,11 @@
 package poussecafe.sample.domain;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
-import poussecafe.property.Property;
 
 public interface OrderPlaced extends DomainEvent {
 
-    Property<ProductKey> productKey();
+    Attribute<ProductKey> productKey();
 
-    Property<OrderDescription> description();
+    Attribute<OrderDescription> description();
 }

@@ -1,23 +1,23 @@
 package poussecafe.sample.adapters.storage;
 
 import java.io.Serializable;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
 
 @SuppressWarnings("serial")
-public class ProductData implements Product.Data, Serializable {
+public class ProductData implements Product.Attributes, Serializable {
 
     @Override
-    public Property<ProductKey> key() {
-        return new Property<ProductKey>() {
+    public Attribute<ProductKey> key() {
+        return new Attribute<ProductKey>() {
             @Override
-            public ProductKey get() {
+            public ProductKey value() {
                 return new ProductKey(productKey);
             }
 
             @Override
-            public void set(ProductKey value) {
+            public void value(ProductKey value) {
                 productKey = value.getValue();
             }
         };

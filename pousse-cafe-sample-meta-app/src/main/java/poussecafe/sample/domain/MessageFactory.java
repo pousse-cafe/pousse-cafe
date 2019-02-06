@@ -3,7 +3,7 @@ package poussecafe.sample.domain;
 import java.util.UUID;
 import poussecafe.domain.Factory;
 
-public class MessageFactory extends Factory<MessageKey, Message, Message.Data> {
+public class MessageFactory extends Factory<MessageKey, Message, Message.Attributes> {
 
     public Message buildMessage(CustomerKey customerKey) {
         Message message = newAggregateWithKey(new MessageKey(UUID.randomUUID().toString()));

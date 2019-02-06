@@ -1,24 +1,24 @@
 package poussecafe.doc.model.vodoc;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
   factory = ValueObjectDocFactory.class,
   repository = ValueObjectDocRepository.class
 )
-public class ValueObjectDoc extends AggregateRoot<ValueObjectDocKey, ValueObjectDoc.Data> {
+public class ValueObjectDoc extends AggregateRoot<ValueObjectDocKey, ValueObjectDoc.Attributes> {
 
     public String id() {
-        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
+        return StringNormalizer.normalizeString(attributes().boundedContextComponentDoc().value().componentDoc().name());
     }
 
-    public static interface Data extends EntityData<ValueObjectDocKey> {
+    public static interface Attributes extends EntityAttributes<ValueObjectDocKey> {
 
-        Property<BoundedContextComponentDoc> boundedContextComponentDoc();
+        Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
     }
 }

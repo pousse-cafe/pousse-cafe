@@ -1,21 +1,21 @@
 package poussecafe.doc.model.relation;
 
 import java.io.Serializable;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 
 @SuppressWarnings("serial")
-public class RelationData implements Relation.Data, Serializable {
+public class RelationData implements Relation.Attributes, Serializable {
 
     @Override
-    public Property<RelationKey> key() {
-        return new Property<RelationKey>() {
+    public Attribute<RelationKey> key() {
+        return new Attribute<RelationKey>() {
             @Override
-            public RelationKey get() {
+            public RelationKey value() {
                 return new RelationKey(fromClass, toClass);
             }
 
             @Override
-            public void set(RelationKey value) {
+            public void value(RelationKey value) {
                 fromClass = value.fromClass();
                 toClass = value.toClass();
             }
@@ -27,15 +27,15 @@ public class RelationData implements Relation.Data, Serializable {
     private String toClass;
 
     @Override
-    public Property<ComponentType> fromType() {
-        return new Property<ComponentType>() {
+    public Attribute<ComponentType> fromType() {
+        return new Attribute<ComponentType>() {
             @Override
-            public ComponentType get() {
+            public ComponentType value() {
                 return fromType;
             }
 
             @Override
-            public void set(ComponentType value) {
+            public void value(ComponentType value) {
                 fromType = value;
             };
         };
@@ -44,15 +44,15 @@ public class RelationData implements Relation.Data, Serializable {
     private ComponentType fromType;
 
     @Override
-    public Property<ComponentType> toType() {
-        return new Property<ComponentType>() {
+    public Attribute<ComponentType> toType() {
+        return new Attribute<ComponentType>() {
             @Override
-            public ComponentType get() {
+            public ComponentType value() {
                 return toType;
             }
 
             @Override
-            public void set(ComponentType value) {
+            public void value(ComponentType value) {
                 toType = value;
             };
         };

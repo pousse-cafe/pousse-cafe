@@ -4,15 +4,15 @@ import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.Repository;
 
-public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Data> {
+public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Attributes> {
 
     public List<AggregateDoc> findByBoundedContextKey(BoundedContextDocKey key) {
         return wrap(dataAccess().findByBoundedContextKey(key));
     }
 
     @Override
-    public AggregateDocDataAccess<AggregateDoc.Data> dataAccess() {
-        return (AggregateDocDataAccess<AggregateDoc.Data>) super.dataAccess();
+    public AggregateDocDataAccess<AggregateDoc.Attributes> dataAccess() {
+        return (AggregateDocDataAccess<AggregateDoc.Attributes>) super.dataAccess();
     }
 
     public List<AggregateDoc> findAll() {

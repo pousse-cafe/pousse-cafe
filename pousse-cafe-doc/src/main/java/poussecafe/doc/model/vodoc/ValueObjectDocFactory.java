@@ -9,7 +9,7 @@ import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 import poussecafe.domain.ValueObject;
 
-public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjectDoc, ValueObjectDoc.Data> {
+public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjectDoc, ValueObjectDoc.Attributes> {
 
     public ValueObjectDoc newValueObjectDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc doc) {
         if(!isValueObjectDoc(doc)) {
@@ -19,7 +19,7 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocKey, ValueObjec
         String name = name(doc);
         ValueObjectDocKey key = ValueObjectDocKey.ofClassName(doc.qualifiedName());
         ValueObjectDoc valueObjectDoc = newAggregateWithKey(key);
-        valueObjectDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        valueObjectDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());

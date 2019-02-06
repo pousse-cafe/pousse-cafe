@@ -1,7 +1,7 @@
 package poussecafe.entity;
 
 import org.junit.Test;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -9,11 +9,11 @@ import static org.junit.Assert.assertThat;
 
 public abstract class EntityDataAccessTest {
 
-    private EntityDataAccess<String, Data> dataAccess;
+    private EntityDataAccess<String, Attributes> dataAccess;
 
-    private Data foundData;
+    private Attributes foundData;
 
-    private Data addedData;
+    private Attributes addedData;
 
     @Test
     public void findReturnsNullWhenNotFound() {
@@ -30,13 +30,13 @@ public abstract class EntityDataAccessTest {
         dataAccess = newDataAccess();
     }
 
-    protected abstract EntityDataAccess<String, Data> newDataAccess();
+    protected abstract EntityDataAccess<String, Attributes> newDataAccess();
 
     private void whenFindingData() {
         foundData = dataAccess.findData(key1());
     }
 
-    private void thenFoundDataIs(Data expected) {
+    private void thenFoundDataIs(Attributes expected) {
         assertThat(foundData, equalTo(expected));
     }
 
@@ -61,15 +61,15 @@ public abstract class EntityDataAccessTest {
         dataAccess.addData(addedData);
     }
 
-    private Data data1() {
-        Data data = data(key1());
+    private Attributes data1() {
+        Attributes data = data(key1());
         data.setX(10);
         return data;
     }
 
-    private Data data(String key) {
-        Data data = newData();
-        data.key().set(key);
+    private Attributes data(String key) {
+        Attributes data = newData();
+        data.key().value(key);
         return data;
     }
 
@@ -77,10 +77,10 @@ public abstract class EntityDataAccessTest {
         return "key1";
     }
 
-    protected abstract Data newData();
+    protected abstract Attributes newData();
 
     private void whenFindingAddedData() {
-        foundData = dataAccess.findData(addedData.key().get());
+        foundData = dataAccess.findData(addedData.key().value());
     }
 
     @Test(expected = Exception.class)
@@ -102,13 +102,13 @@ public abstract class EntityDataAccessTest {
     }
 
     private void whenUpdatingAddedData() {
-        Data data = data2();
+        Attributes data = data2();
         dataAccess.updateData(data);
-        foundData = dataAccess.findData(data.key().get());
+        foundData = dataAccess.findData(data.key().value());
     }
 
-    private Data data2() {
-        Data data = data(key1());
+    private Attributes data2() {
+        Attributes data = data(key1());
         data.setX(12);
         return data;
     }
@@ -121,11 +121,11 @@ public abstract class EntityDataAccessTest {
     }
 
     private void whenDeletingAddedData() {
-        dataAccess.deleteData(addedData.key().get());
-        foundData = dataAccess.findData(addedData.key().get());
+        dataAccess.deleteData(addedData.key().value());
+        foundData = dataAccess.findData(addedData.key().value());
     }
 
-    public static interface Data extends EntityData<String> {
+    public static interface Attributes extends EntityAttributes<String> {
 
         void setX(int x);
     }

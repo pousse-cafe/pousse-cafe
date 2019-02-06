@@ -1,21 +1,21 @@
 package poussecafe.simplemetaapp.adapters;
 
 import java.io.Serializable;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.simplemetaapp.domain.MyAggregate;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;
 
 @SuppressWarnings("serial")
-public class MyAggregateData implements MyAggregate.Data, Serializable {
+public class MyAggregateData implements MyAggregate.Attributes, Serializable {
 
     /*
-     * PropertyBuilder class exposes factory methods for different types of property builders. The property
+     * AttributeBuilder class exposes factory methods for different types of property builders. The property
      * builders allow to directly expose the value or adapt it before.
      */
     @Override
-    public Property<MyAggregateKey> key() {
-        return PropertyBuilder.simple(MyAggregateKey.class)
+    public Attribute<MyAggregateKey> key() {
+        return AttributeBuilder.simple(MyAggregateKey.class)
                 .from(String.class)
                 .adapt(MyAggregateKey::new)
                 .get(() -> key)
@@ -27,8 +27,8 @@ public class MyAggregateData implements MyAggregate.Data, Serializable {
     private String key;
 
     @Override
-    public Property<Integer> x() {
-        return PropertyBuilder.simple(Integer.class)
+    public Attribute<Integer> x() {
+        return AttributeBuilder.simple(Integer.class)
                 .get(() -> x)
                 .set(value -> x = value)
                 .build();

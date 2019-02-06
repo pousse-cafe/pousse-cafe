@@ -1,9 +1,8 @@
 package poussecafe.sample.domain;
 
 import poussecafe.domain.Factory;
-import poussecafe.sample.domain.Order.Data;
 
-public class OrderFactory extends Factory<OrderKey, Order, Data> {
+public class OrderFactory extends Factory<OrderKey, Order, Order.Attributes> {
 
     public Order buildPlacedOrder(OrderKey orderKey,
             int units) {

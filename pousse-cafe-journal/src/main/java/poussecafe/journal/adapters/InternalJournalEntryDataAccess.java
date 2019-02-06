@@ -19,7 +19,7 @@ public class InternalJournalEntryDataAccess extends InternalDataAccess<JournalEn
 
     @Override
     protected List<Object> extractIndexedData(JournalEntryData data) {
-        return asList(data.key().get().getConsumptionId(), data.status().get());
+        return asList(data.key().value().getConsumptionId(), data.status().value());
     }
 
     @Override

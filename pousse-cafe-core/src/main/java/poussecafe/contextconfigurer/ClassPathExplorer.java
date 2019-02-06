@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
@@ -122,16 +122,16 @@ class ClassPathExplorer {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Class<EntityData<?>>> getDataImplementations(Storage storage) {
+    public Set<Class<EntityAttributes<?>>> getDataImplementations(Storage storage) {
         Set<Class<?>> dataImplementations = reflections.getTypesAnnotatedWith(DataImplementation.class);
 
-        Set<Class<EntityData<?>>> entityDataClasses = new HashSet<>();
+        Set<Class<EntityAttributes<?>>> entityDataClasses = new HashSet<>();
         for(Class<?> entityDataClass : dataImplementations) {
             DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
             if(annotation.storageNames().length == 0 ||
                     storage.nameIn(annotation.storageNames())) {
                 logger.debug("Adding data implementation {}", entityDataClass);
-                entityDataClasses.add((Class<EntityData<?>>) entityDataClass);
+                entityDataClasses.add((Class<EntityAttributes<?>>) entityDataClass);
             }
         }
         return entityDataClasses;

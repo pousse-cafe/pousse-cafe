@@ -1,19 +1,19 @@
 package poussecafe.domain;
 
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 
-public class SimpleAggregateData implements SimpleAggregate.Data {
+public class SimpleAggregateData implements SimpleAggregate.Attributes {
 
     @Override
-    public Property<SimpleAggregateKey> key() {
-        return new Property<SimpleAggregateKey>() {
+    public Attribute<SimpleAggregateKey> key() {
+        return new Attribute<SimpleAggregateKey>() {
             @Override
-            public SimpleAggregateKey get() {
+            public SimpleAggregateKey value() {
                 return new SimpleAggregateKey(key);
             }
 
             @Override
-            public void set(SimpleAggregateKey value) {
+            public void value(SimpleAggregateKey value) {
                 key = value.getId();
             }
         };

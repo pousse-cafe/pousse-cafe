@@ -17,7 +17,7 @@ public class InternalServiceDocDataAccess extends InternalDataAccess<ServiceDocK
 
     @Override
     public List<ServiceDocData> findByBoundedContextKey(BoundedContextDocKey key) {
-        return findAll().stream().filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(key)).collect(toList());
+        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(key)).collect(toList());
     }
 
 }

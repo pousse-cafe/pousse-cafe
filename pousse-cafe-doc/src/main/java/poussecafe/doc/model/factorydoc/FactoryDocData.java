@@ -2,27 +2,27 @@ package poussecafe.doc.model.factorydoc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.ConvertingListAttribute;
+import poussecafe.attribute.ListAttribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepDocData;
-import poussecafe.property.ConvertingListProperty;
-import poussecafe.property.ListProperty;
-import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
-public class FactoryDocData implements FactoryDoc.Data, Serializable {
+public class FactoryDocData implements FactoryDoc.Attributes, Serializable {
 
     @Override
-    public Property<FactoryDocKey> key() {
-        return new Property<FactoryDocKey>() {
+    public Attribute<FactoryDocKey> key() {
+        return new Attribute<FactoryDocKey>() {
             @Override
-            public FactoryDocKey get() {
+            public FactoryDocKey value() {
                 return FactoryDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(FactoryDocKey value) {
+            public void value(FactoryDocKey value) {
                 className = value.getValue();
             }
         };
@@ -31,15 +31,15 @@ public class FactoryDocData implements FactoryDoc.Data, Serializable {
     private String className;
 
     @Override
-    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Property<BoundedContextComponentDoc>() {
+    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Attribute<BoundedContextComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc get() {
+            public BoundedContextComponentDoc value() {
                 return boundedContextComponentDoc.toModel();
             }
 
             @Override
-            public void set(BoundedContextComponentDoc value) {
+            public void value(BoundedContextComponentDoc value) {
                 boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
             }
         };
@@ -48,8 +48,8 @@ public class FactoryDocData implements FactoryDoc.Data, Serializable {
     private BoundedContextComponentDocData boundedContextComponentDoc;
 
     @Override
-    public ListProperty<StepDoc> stepDocs() {
-        return new ConvertingListProperty<StepDocData, StepDoc>(stepDocs) {
+    public ListAttribute<StepDoc> stepDocs() {
+        return new ConvertingListAttribute<StepDocData, StepDoc>(stepDocs) {
             @Override
             protected StepDoc convertFrom(StepDocData from) {
                 return from.toModel();

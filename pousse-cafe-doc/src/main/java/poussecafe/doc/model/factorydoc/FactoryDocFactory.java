@@ -9,7 +9,7 @@ import poussecafe.doc.model.step.StepDocExtractor;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, FactoryDoc.Data> {
+public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, FactoryDoc.Attributes> {
 
     public FactoryDoc newFactoryDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
         if(!isFactoryDoc(classDoc)) {
@@ -19,7 +19,7 @@ public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, Factor
         String name = classDoc.simpleTypeName();
         FactoryDocKey key = FactoryDocKey.ofClassName(classDoc.qualifiedName());
         FactoryDoc factoryDoc = newAggregateWithKey(key);
-        factoryDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        factoryDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());

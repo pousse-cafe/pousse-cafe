@@ -1,9 +1,9 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.contextconfigurer.MessageImplementation;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;
@@ -13,8 +13,8 @@ import poussecafe.sample.domain.ProductKey;
 public class SerializableOrderRejected implements Serializable, OrderRejected {
 
     @Override
-    public Property<ProductKey> productKey() {
-        return PropertyBuilder.simple(ProductKey.class)
+    public Attribute<ProductKey> productKey() {
+        return AttributeBuilder.simple(ProductKey.class)
                 .from(String.class)
                 .adapt(ProductKey::new)
                 .get(() -> productId)
@@ -26,8 +26,8 @@ public class SerializableOrderRejected implements Serializable, OrderRejected {
     private String productId;
 
     @Override
-    public Property<OrderDescription> description() {
-        return PropertyBuilder.simple(OrderDescription.class)
+    public Attribute<OrderDescription> description() {
+        return AttributeBuilder.simple(OrderDescription.class)
                 .from(SerializableOrderDescription.class)
                 .adapt(SerializableOrderDescription::adapt)
                 .get(() -> description)

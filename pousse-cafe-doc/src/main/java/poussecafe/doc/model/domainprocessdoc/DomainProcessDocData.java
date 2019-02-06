@@ -2,25 +2,25 @@ package poussecafe.doc.model.domainprocessdoc;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.ConvertingMapAttribute;
+import poussecafe.attribute.MapAttribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.property.ConvertingMapProperty;
-import poussecafe.property.MapProperty;
-import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
-public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable {
+public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serializable {
 
     @Override
-    public Property<DomainProcessDocKey> key() {
-        return new Property<DomainProcessDocKey>() {
+    public Attribute<DomainProcessDocKey> key() {
+        return new Attribute<DomainProcessDocKey>() {
             @Override
-            public DomainProcessDocKey get() {
+            public DomainProcessDocKey value() {
                 return DomainProcessDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(DomainProcessDocKey value) {
+            public void value(DomainProcessDocKey value) {
                 className = value.getValue();
             }
         };
@@ -29,15 +29,15 @@ public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable
     private String className;
 
     @Override
-    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Property<BoundedContextComponentDoc>() {
+    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Attribute<BoundedContextComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc get() {
+            public BoundedContextComponentDoc value() {
                 return componentDoc.toModel();
             }
 
             @Override
-            public void set(BoundedContextComponentDoc value) {
+            public void value(BoundedContextComponentDoc value) {
                 componentDoc = BoundedContextComponentDocData.of(value);
             }
         };
@@ -46,8 +46,8 @@ public class DomainProcessDocData implements DomainProcessDoc.Data, Serializable
     private BoundedContextComponentDocData componentDoc;
 
     @Override
-    public MapProperty<String, Step> steps() {
-        return new ConvertingMapProperty<String, StepData, String, Step>(steps) {
+    public MapAttribute<String, Step> steps() {
+        return new ConvertingMapAttribute<String, StepData, String, Step>(steps) {
             @Override
             protected String convertFromKey(String from) {
                 return from;

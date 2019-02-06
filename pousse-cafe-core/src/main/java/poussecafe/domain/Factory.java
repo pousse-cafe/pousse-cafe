@@ -3,7 +3,7 @@ package poussecafe.domain;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityData<K>> {
+public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     void setEntityClass(Class<?> entityClass) {
@@ -19,7 +19,7 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
                 .withComponentClass(entityClass)
                 .withData(true)
                 .build());
-        entity.data().key().set(key);
+        entity.attributes().key().value(key);
         return entity;
     }
 

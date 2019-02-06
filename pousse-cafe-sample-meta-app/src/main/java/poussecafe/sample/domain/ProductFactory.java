@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.domain.Factory;
 
-public class ProductFactory extends Factory<ProductKey, Product, Product.Data> {
+public class ProductFactory extends Factory<ProductKey, Product, Product.Attributes> {
 
     public Product buildProductWithNoStock(ProductKey productKey) {
         Product product = newAggregateWithKey(productKey);

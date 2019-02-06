@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.toList;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityData<K>> {
+public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     void setEntityClass(Class<?> entityClass) {
@@ -61,7 +61,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void addData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            D data = entity.data();
+            D data = entity.attributes();
             dataAccess.addData(data);
         }
         considerMessageSendingAfterAdd(entity, messageCollection);
@@ -74,7 +74,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     private void checkEntity(A entity) {
         checkThat(value(entity).notNull().because("Entity cannot be null"));
-        checkThat(value(entity.data()).notNull().because("Entity data cannot be null"));
+        checkThat(value(entity.attributes()).notNull().because("Entity data cannot be null"));
     }
 
     public void update(A entity) {
@@ -86,7 +86,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void updateData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            D data = entity.data();
+            D data = entity.attributes();
             dataAccess.updateData(data);
         }
         considerMessageSendingAfterUpdate(entity, messageCollection);
@@ -108,7 +108,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public void delete(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
-        dataAccess.deleteData(entity.data().key().get());
+        dataAccess.deleteData(entity.attributes().key().value());
         considerMessageSendingAfterDelete(entity, messageCollection);
     }
 

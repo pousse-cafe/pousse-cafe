@@ -9,7 +9,7 @@ import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Service;
 
-public class ServiceDocFactory extends Factory<ServiceDocKey, ServiceDoc, ServiceDoc.Data> {
+public class ServiceDocFactory extends Factory<ServiceDocKey, ServiceDoc, ServiceDoc.Attributes> {
 
     public ServiceDoc newServiceDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
         if(!isServiceDoc(classDoc)) {
@@ -19,7 +19,7 @@ public class ServiceDocFactory extends Factory<ServiceDocKey, ServiceDoc, Servic
         String name = classDoc.simpleTypeName();
         ServiceDocKey key = ServiceDocKey.ofClassName(classDoc.qualifiedName());
         ServiceDoc serviceDoc = newAggregateWithKey(key);
-        serviceDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        serviceDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());

@@ -1,36 +1,36 @@
 package poussecafe.doc.model.relation;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
   factory = RelationFactory.class,
   repository = RelationRepository.class
 )
-public class Relation extends AggregateRoot<RelationKey, Relation.Data> {
+public class Relation extends AggregateRoot<RelationKey, Relation.Attributes> {
 
     void fromType(ComponentType fromType) {
-        data().fromType().set(fromType);
+        attributes().fromType().value(fromType);
     }
 
     void toType(ComponentType toType) {
-        data().toType().set(toType);
+        attributes().toType().value(toType);
     }
 
     public Component fromComponent() {
-        return new Component(data().fromType().get(), data().key().get().fromClass());
+        return new Component(attributes().fromType().value(), attributes().key().value().fromClass());
     }
 
     public Component toComponent() {
-        return new Component(data().toType().get(), data().key().get().toClass());
+        return new Component(attributes().toType().value(), attributes().key().value().toClass());
     }
 
-    public static interface Data extends EntityData<RelationKey> {
+    public static interface Attributes extends EntityAttributes<RelationKey> {
 
-        Property<ComponentType> fromType();
+        Attribute<ComponentType> fromType();
 
-        Property<ComponentType> toType();
+        Attribute<ComponentType> toType();
     }
 }

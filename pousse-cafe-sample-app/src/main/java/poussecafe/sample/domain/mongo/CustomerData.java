@@ -1,8 +1,8 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
+import poussecafe.attribute.Attribute;
 import poussecafe.contextconfigurer.DataImplementation;
-import poussecafe.property.Property;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
@@ -11,19 +11,19 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
     entity = Customer.class,
     storageNames = SpringMongoDbStorage.NAME
 )
-public class CustomerData implements Customer.Data {
+public class CustomerData implements Customer.Attributes {
 
     @Override
-    public Property<CustomerKey> key() {
-        return new Property<CustomerKey>() {
+    public Attribute<CustomerKey> key() {
+        return new Attribute<CustomerKey>() {
 
             @Override
-            public CustomerKey get() {
+            public CustomerKey value() {
                 return new CustomerKey(key);
             }
 
             @Override
-            public void set(CustomerKey value) {
+            public void value(CustomerKey value) {
                 key = value.getValue();
             }
 

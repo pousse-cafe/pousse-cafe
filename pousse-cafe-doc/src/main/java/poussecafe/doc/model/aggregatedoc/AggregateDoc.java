@@ -2,48 +2,48 @@ package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
 import java.util.Optional;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.ListAttribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepMethodSignature;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.property.ListProperty;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
     factory = AggregateDocFactory.class,
     repository = AggregateDocRepository.class
 )
-public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Data> {
+public class AggregateDoc extends AggregateRoot<AggregateDocKey, AggregateDoc.Attributes> {
 
     public String id() {
-        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
+        return StringNormalizer.normalizeString(attributes().boundedContextComponentDoc().value().componentDoc().name());
     }
 
     public String className() {
-        return data().key().get().getValue();
+        return attributes().key().value().getValue();
     }
 
     void stepDocs(List<StepDoc> stepDocs) {
-        data().stepDocs().set(stepDocs);
+        attributes().stepDocs().value(stepDocs);
     }
 
     public Optional<StepDoc> stepDocBySignature(StepMethodSignature methodSignature) {
-        return data()
+        return attributes()
                 .stepDocs()
                 .stream()
                 .filter(stepDoc -> stepDoc.methodSignature().equals(methodSignature))
                 .findFirst();
     }
 
-    public static interface Data extends EntityData<AggregateDocKey> {
+    public static interface Attributes extends EntityAttributes<AggregateDocKey> {
 
-        Property<BoundedContextComponentDoc> boundedContextComponentDoc();
+        Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 
-        Property<String> keyClassName();
+        Attribute<String> keyClassName();
 
-        ListProperty<StepDoc> stepDocs();
+        ListAttribute<StepDoc> stepDocs();
     }
 }

@@ -1,24 +1,24 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
 
-public class MessageData implements Message.Data {
+public class MessageData implements Message.Attributes {
 
     @Override
-    public Property<MessageKey> key() {
-        return new Property<MessageKey>() {
+    public Attribute<MessageKey> key() {
+        return new Attribute<MessageKey>() {
             @Override
-            public MessageKey get() {
+            public MessageKey value() {
                 return new MessageKey(key);
             }
 
             @Override
-            public void set(MessageKey value) {
+            public void value(MessageKey value) {
                 key = value.getValue();
             }
         };

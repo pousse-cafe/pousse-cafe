@@ -2,12 +2,12 @@ package <modelPackage>;
 
 import poussecafe.domain.Factory;
 
-public class <name>Factory extends Factory\<<name>Key, <name>, <name>.Data> {
+public class <name>Factory extends Factory\<<name>Key, <name>, <name>.Attributes> {
 
     public <name> new<name>(Parameters parameters) {
         <name> aggregate = newAggregateWithKey(parameters.key);
         <if(demoAttribute)>
-        aggregate.data().name().set(parameters.name);
+        aggregate.attributes().name().value(parameters.name);
         <endif>
         return aggregate;
     }

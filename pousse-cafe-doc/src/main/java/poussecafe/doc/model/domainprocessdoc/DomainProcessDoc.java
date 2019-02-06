@@ -6,14 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.MapAttribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
-import poussecafe.domain.EntityData;
-import poussecafe.property.MapProperty;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,10 +21,10 @@ import static java.util.stream.Collectors.toList;
   factory = DomainProcessDocFactory.class,
   repository = DomainProcessDocRepository.class
 )
-public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainProcessDoc.Data> {
+public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainProcessDoc.Attributes> {
 
     void boundedContextComponentDoc(BoundedContextComponentDoc componentDoc) {
-        data().boundedContextComponentDoc().set(componentDoc);
+        attributes().boundedContextComponentDoc().value(componentDoc);
     }
 
     void steps(List<Step> steps) {
@@ -34,15 +34,15 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
                 throw new DomainException("Steps must have unique names");
             }
         }
-        data().steps().set(map);
+        attributes().steps().value(map);
     }
 
     public Map<String, Step> steps() {
-        return data().steps().get();
+        return attributes().steps().value();
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(data().boundedContextComponentDoc().get().componentDoc().name());
+        return StringNormalizer.normalizeString(attributes().boundedContextComponentDoc().value().componentDoc().name());
     }
 
     public List<Step> orderedSteps() {
@@ -50,13 +50,13 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
         List<String> orderedStepNames = topologicalOrdering(graph);
         return orderedStepNames
                 .stream()
-                .map(stepName -> data().steps().get(stepName).orElseThrow(DomainException::new))
+                .map(stepName -> attributes().steps().get(stepName).orElseThrow(DomainException::new))
                 .collect(toList());
     }
 
     private Map<String, List<String>> buildGraph() {
         Map<String, List<String>> graph = new HashMap<>();
-        for(Step step : data().steps().values()) {
+        for(Step step : attributes().steps().values()) {
             if(!graph.containsKey(step.componentDoc().name())) {
                 graph.put(step.componentDoc().name(), new ArrayList<>());
             }
@@ -104,10 +104,10 @@ public class DomainProcessDoc extends AggregateRoot<DomainProcessDocKey, DomainP
         }
     }
 
-    public static interface Data extends EntityData<DomainProcessDocKey> {
+    public static interface Attributes extends EntityAttributes<DomainProcessDocKey> {
 
-        Property<BoundedContextComponentDoc> boundedContextComponentDoc();
+        Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 
-        MapProperty<String, Step> steps();
+        MapAttribute<String, Step> steps();
     }
 }

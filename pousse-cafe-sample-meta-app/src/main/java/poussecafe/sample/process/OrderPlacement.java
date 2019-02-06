@@ -30,8 +30,8 @@ public class OrderPlacement extends DomainProcess {
 
     @DomainEventListener
     public void updateProcessManager(OrderPlaced event) {
-        OrderDescription description = event.description().get();
-        OrderKey key = new OrderKey(event.productKey().get(), description.customerKey, description.reference);
+        OrderDescription description = event.description().value();
+        OrderKey key = new OrderKey(event.productKey().value(), description.customerKey, description.reference);
         Order order = orderFactory.buildPlacedOrder(key, description.units);
         runInTransaction(Order.class, () -> orderRepository.add(order));
     }

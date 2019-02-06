@@ -1,23 +1,23 @@
 package poussecafe.doc.model.entitydoc;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
-public class EntityDocData implements EntityDoc.Data, Serializable {
+public class EntityDocData implements EntityDoc.Attributes, Serializable {
 
     @Override
-    public Property<EntityDocKey> key() {
-        return new Property<EntityDocKey>() {
+    public Attribute<EntityDocKey> key() {
+        return new Attribute<EntityDocKey>() {
             @Override
-            public EntityDocKey get() {
+            public EntityDocKey value() {
                 return EntityDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(EntityDocKey value) {
+            public void value(EntityDocKey value) {
                 className = value.getValue();
             }
         };
@@ -26,15 +26,15 @@ public class EntityDocData implements EntityDoc.Data, Serializable {
     private String className;
 
     @Override
-    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Property<BoundedContextComponentDoc>() {
+    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Attribute<BoundedContextComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc get() {
+            public BoundedContextComponentDoc value() {
                 return boundedContextComponentDoc.toModel();
             }
 
             @Override
-            public void set(BoundedContextComponentDoc value) {
+            public void value(BoundedContextComponentDoc value) {
                 boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
             }
         };
@@ -43,15 +43,15 @@ public class EntityDocData implements EntityDoc.Data, Serializable {
     private BoundedContextComponentDocData boundedContextComponentDoc;
 
     @Override
-    public Property<String> keyClassName() {
-        return new Property<String>() {
+    public Attribute<String> keyClassName() {
+        return new Attribute<String>() {
             @Override
-            public String get() {
+            public String value() {
                 return keyClassName;
             }
 
             @Override
-            public void set(String value) {
+            public void value(String value) {
                 keyClassName = value;
             }
         };

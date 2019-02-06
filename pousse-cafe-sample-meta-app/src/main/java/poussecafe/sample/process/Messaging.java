@@ -24,7 +24,7 @@ public class Messaging extends DomainProcess {
     @DomainEventListener
     public void createMessage(OrderRejected event) {
         logger.info("Creating message for rejected order");
-        createMessageWithContent(event.description().get().customerKey, event);
+        createMessageWithContent(event.description().value().customerKey, event);
     }
 
     protected void createMessageWithContent(CustomerKey customerKey,
@@ -37,18 +37,18 @@ public class Messaging extends DomainProcess {
     @DomainEventListener
     public void createMessage(OrderCreated event) {
         logger.info("Creating message for created order");
-        createMessageWithContent(event.orderKey().get().getCustomerKey(), event);
+        createMessageWithContent(event.orderKey().value().getCustomerKey(), event);
     }
 
     @DomainEventListener
     public void createMessage(OrderSettled event) {
         logger.info("Creating message for settled order");
-        createMessageWithContent(event.orderKey().get().getCustomerKey(), event);
+        createMessageWithContent(event.orderKey().value().getCustomerKey(), event);
     }
 
     @DomainEventListener
     public void createMessage(OrderReadyForShipping event) {
         logger.info("Creating message for order ready-for-shipping");
-        createMessageWithContent(event.orderKey().get().getCustomerKey(), event);
+        createMessageWithContent(event.orderKey().value().getCustomerKey(), event);
     }
 }

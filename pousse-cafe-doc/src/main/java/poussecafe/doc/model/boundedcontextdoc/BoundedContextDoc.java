@@ -1,32 +1,32 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
     factory = BoundedContextDocFactory.class,
     repository = BoundedContextDocRepository.class
 )
-public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, BoundedContextDoc.Data> {
+public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, BoundedContextDoc.Attributes> {
 
     void componentDoc(ComponentDoc componentDoc) {
-        data().componentDoc().set(componentDoc);
+        attributes().componentDoc().value(componentDoc);
     }
 
     public String packageName() {
-        return data().key().get().getValue();
+        return attributes().key().value().getValue();
     }
 
     public String id() {
-        return StringNormalizer.normalizeString(data().componentDoc().get().name());
+        return StringNormalizer.normalizeString(attributes().componentDoc().value().name());
     }
 
-    public static interface Data extends EntityData<BoundedContextDocKey> {
+    public static interface Attributes extends EntityAttributes<BoundedContextDocKey> {
 
-        Property<ComponentDoc> componentDoc();
+        Attribute<ComponentDoc> componentDoc();
     }
 }

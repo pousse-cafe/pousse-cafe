@@ -33,7 +33,7 @@
 
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
-      <artifactId>pousse-cafe-property</artifactId>
+      <artifactId>pousse-cafe-attribute</artifactId>
       <version>${project.version}</version>
     </dependency>
 

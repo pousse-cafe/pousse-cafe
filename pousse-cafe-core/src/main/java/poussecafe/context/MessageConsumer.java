@@ -82,9 +82,9 @@ public class MessageConsumer {
         if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 SuccessfulConsumption event = componentFactory.newMessage(SuccessfulConsumption.class);
-                event.consumptionId().set(consumptionId);
-                event.listenerId().set(listener.getListenerId());
-                event.rawMessage().set(rawMessageOrDefault(receivedMessage));
+                event.consumptionId().value(consumptionId);
+                event.listenerId().value(listener.getListenerId());
+                event.rawMessage().value(rawMessageOrDefault(receivedMessage));
                 messageSenderLocator.locate(SuccessfulConsumption.class).sendMessage(event);
             } catch (PousseCafeException e) {
                 logger.debug("Unable to notify successful consumption", e);
@@ -112,10 +112,10 @@ public class MessageConsumer {
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 FailedConsumption event = componentFactory.newMessage(FailedConsumption.class);
-                event.consumptionId().set(consumptionId);
-                event.listenerId().set(listener.getListenerId());
-                event.rawMessage().set(rawMessageOrDefault(receivedMessage));
-                event.error().set(ExceptionUtils.getStackTrace(e));
+                event.consumptionId().value(consumptionId);
+                event.listenerId().value(listener.getListenerId());
+                event.rawMessage().value(rawMessageOrDefault(receivedMessage));
+                event.error().value(ExceptionUtils.getStackTrace(e));
                 messageSenderLocator.locate(FailedConsumption.class).sendMessage(event);
             } catch (PousseCafeException e1) {
                 logger.error("Unable to notify failed consumption for message {}", rawMessageOrDefault(receivedMessage), e1);

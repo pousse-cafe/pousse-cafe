@@ -2,7 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
@@ -11,30 +11,30 @@ import static poussecafe.check.Checks.checkThat;
   factory = MessageFactory.class,
   repository = MessageRepository.class
 )
-public class Message extends AggregateRoot<MessageKey, Message.Data> {
+public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
 
     void setCustomerKey(CustomerKey customerKey) {
         checkThat(value(customerKey).notNull().because("Customer key cannot be null"));
-        data().setCustomerKey(customerKey);
+        attributes().setCustomerKey(customerKey);
     }
 
     public void setContentType(ContentType type) {
         checkThat(value(type).notNull().because("Content type cannot be null"));
-        data().setContentType(type);
+        attributes().setContentType(type);
     }
 
     public ContentType getContentType() {
-        return data().getContentType();
+        return attributes().getContentType();
     }
 
     @Override
     public void onAdd() {
         MessageCreated event = newDomainEvent(MessageCreated.class);
-        event.messageKey().setValueOf(data().key());
+        event.messageKey().valueOf(attributes().key());
         addDomainEvent(event);
     }
 
-    public static interface Data extends EntityData<MessageKey> {
+    public static interface Attributes extends EntityAttributes<MessageKey> {
 
         void setCustomerKey(CustomerKey customerKey);
 

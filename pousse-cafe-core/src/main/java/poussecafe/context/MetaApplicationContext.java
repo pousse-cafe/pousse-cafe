@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.ComponentFactory;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
@@ -325,7 +325,7 @@ public class MetaApplicationContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Repository<A, K, D>, A extends AggregateRoot<K, D>, K, D extends EntityData<K>> T getRepository(Class<A> entityClass) {
+    public <T extends Repository<A, K, D>, A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T getRepository(Class<A> entityClass) {
         EntityServices services = getEntityServices(entityClass);
         if(services == null) {
             throw new PousseCafeException("Entity services not found");

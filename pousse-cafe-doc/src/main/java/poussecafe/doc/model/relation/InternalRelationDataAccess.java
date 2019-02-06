@@ -16,7 +16,7 @@ public class InternalRelationDataAccess extends InternalDataAccess<RelationKey, 
 
     @Override
     public List<RelationData> findWithFromClass(String className) {
-        return findAll().stream().filter(data -> data.key().get().fromClass().equals(className)).collect(toList());
+        return findAll().stream().filter(data -> data.key().value().fromClass().equals(className)).collect(toList());
     }
 
 }

@@ -2,8 +2,7 @@ package poussecafe.sample.domain;
 
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.sample.domain.Product.Data;
+import poussecafe.domain.EntityAttributes;
 
 import static poussecafe.check.Checks.checkThat;
 import static poussecafe.check.Predicates.equalTo;
@@ -14,48 +13,48 @@ import static poussecafe.domain.DomainCheckSpecification.value;
   factory = ProductFactory.class,
   repository = ProductRepository.class
 )
-public class Product extends AggregateRoot<ProductKey, Data> {
+public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
 
     void setTotalUnits(int units) {
-        data().setTotalUnits(units);
+        attributes().setTotalUnits(units);
     }
 
     public int getTotalUnits() {
-        return data().getTotalUnits();
+        return attributes().getTotalUnits();
     }
 
     void setAvailableUnits(int units) {
-        data().setAvailableUnits(units);
+        attributes().setAvailableUnits(units);
     }
 
     public int getAvailableUnits() {
-        return data().getAvailableUnits();
+        return attributes().getAvailableUnits();
     }
 
     public void addUnits(int units) {
         checkThat(value(units).verifies(greaterThan(0).or(equalTo(0))).because("Cannot add negative number of units"));
-        data().setAvailableUnits(data().getAvailableUnits() + units);
-        data().setTotalUnits(data().getTotalUnits() + units);
+        attributes().setAvailableUnits(attributes().getAvailableUnits() + units);
+        attributes().setTotalUnits(attributes().getTotalUnits() + units);
     }
 
     public void placeOrder(OrderDescription description) {
-        int unitsAvailable = data().getAvailableUnits();
+        int unitsAvailable = attributes().getAvailableUnits();
         if (description.units > unitsAvailable) {
             OrderRejected event = newDomainEvent(OrderRejected.class);
-            event.productKey().setValueOf(data().key());
-            event.description().set(description);
+            event.productKey().valueOf(attributes().key());
+            event.description().value(description);
             addDomainEvent(event);
         } else {
-            data().setAvailableUnits(unitsAvailable - description.units);
+            attributes().setAvailableUnits(unitsAvailable - description.units);
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
-            event.productKey().setValueOf(data().key());
-            event.description().set(description);
+            event.productKey().valueOf(attributes().key());
+            event.description().value(description);
             addDomainEvent(event);
         }
     }
 
-    public static interface Data extends EntityData<ProductKey> {
+    public static interface Attributes extends EntityAttributes<ProductKey> {
 
         void setTotalUnits(int units);
 

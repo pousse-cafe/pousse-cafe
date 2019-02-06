@@ -9,7 +9,6 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.step.StepDoc;
 import poussecafe.doc.model.step.StepMethodSignature;
-import poussecafe.util.ReflectionUtils;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -26,16 +25,16 @@ public class AggregateDocTest {
 
     private void givenAggregateDoc() {
         aggregateDoc = new AggregateDoc();
-        ReflectionUtils.access(aggregateDoc).set("data", new AggregateDocData());
+        aggregateDoc.attributes(new AggregateDocData());
 
-        aggregateDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        aggregateDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(BoundedContextDocKey.ofPackageName("test"))
                 .componentDoc(new ComponentDoc.Builder()
                         .name("A")
                         .description("")
                         .build())
                 .build());
-        aggregateDoc.data().keyClassName().set("test.K");
+        aggregateDoc.attributes().keyClassName().value("test.K");
         aggregateDoc.stepDocs(stepDocs());
     }
 

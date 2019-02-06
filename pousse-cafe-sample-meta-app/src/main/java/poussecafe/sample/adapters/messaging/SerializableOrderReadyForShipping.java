@@ -1,9 +1,9 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.contextconfigurer.MessageImplementation;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.OrderReadyForShipping;
 
@@ -12,8 +12,8 @@ import poussecafe.sample.domain.OrderReadyForShipping;
 public class SerializableOrderReadyForShipping implements Serializable, OrderReadyForShipping {
 
     @Override
-    public Property<OrderKey> orderKey() {
-        return PropertyBuilder.simple(OrderKey.class)
+    public Attribute<OrderKey> orderKey() {
+        return AttributeBuilder.simple(OrderKey.class)
                 .from(SerializableOrderKey.class)
                 .adapt(SerializableOrderKey::adapt)
                 .get(() -> orderKey)

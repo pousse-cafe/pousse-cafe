@@ -93,9 +93,9 @@ public abstract class MessagingJournalTest {
 
     protected void whenLoggingSuccessfulConsumption() {
         SuccessfulConsumption event = new SuccessfulConsumptionData();
-        event.consumptionId().set(key.getConsumptionId());
-        event.listenerId().set(listenerId);
-        event.rawMessage().set(rawMessage());
+        event.consumptionId().value(key.getConsumptionId());
+        event.listenerId().value(listenerId);
+        event.rawMessage().value(rawMessage());
         journal.storeSuccessfulConsumption(event);
     }
 
@@ -105,10 +105,10 @@ public abstract class MessagingJournalTest {
 
     protected void whenLoggingFailedConsumption() {
         FailedConsumption event = new FailedConsumptionData();
-        event.consumptionId().set(key.getConsumptionId());
-        event.listenerId().set(listenerId);
-        event.rawMessage().set(rawMessage());
-        event.error().set("error");
+        event.consumptionId().value(key.getConsumptionId());
+        event.listenerId().value(listenerId);
+        event.rawMessage().value(rawMessage());
+        event.error().value("error");
         journal.storeFailedConsumption(event);
     }
 }

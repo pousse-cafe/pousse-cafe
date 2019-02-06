@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends EntityData<K>> {
+public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends EntityAttributes<K>> {
 
     protected Class<D> dataClass;
 
@@ -96,7 +96,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenFoundEntityHasDataAndMessageCollection() {
-        assertThat(entity.data(), is(foundOrCreatedData));
+        assertThat(entity.attributes(), is(foundOrCreatedData));
     }
 
     @Test(expected = DomainException.class)
@@ -133,7 +133,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     protected void givenEntity() {
         entity = mockEntity();
         D data = mock(dataClass);
-        when(entity.data()).thenReturn(data);
+        when(entity.attributes()).thenReturn(data);
     }
 
     protected abstract S mockEntity();
@@ -143,7 +143,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenDataAdded() {
-        verify(dataAccess).addData(entity.data());
+        verify(dataAccess).addData(entity.attributes());
     }
 
     @Test
@@ -158,7 +158,7 @@ public abstract class RepositoryTest<K, S extends AggregateRoot<K, D>, D extends
     }
 
     protected void thenDataUpdated() {
-        verify(dataAccess).updateData(entity.data());
+        verify(dataAccess).updateData(entity.attributes());
     }
 
     @Test

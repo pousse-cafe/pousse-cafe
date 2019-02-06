@@ -1,9 +1,9 @@
 package poussecafe.support.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.contextconfigurer.MessageImplementation;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.support.model.FailedConsumption;
 
 @MessageImplementation(message = FailedConsumption.class)
@@ -11,8 +11,8 @@ import poussecafe.support.model.FailedConsumption;
 public class FailedConsumptionData implements Serializable, FailedConsumption {
 
     @Override
-    public Property<String> consumptionId() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> consumptionId() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> consumptionId)
                 .set(value -> consumptionId = value)
                 .build();
@@ -21,8 +21,8 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
     private String consumptionId;
 
     @Override
-    public Property<String> listenerId() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> listenerId() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> listenerId)
                 .set(value -> listenerId = value)
                 .build();
@@ -31,8 +31,8 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
     private String listenerId;
 
     @Override
-    public Property<String> rawMessage() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> rawMessage() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> rawMessage)
                 .set(value -> rawMessage = value)
                 .build();
@@ -41,8 +41,8 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
     private String rawMessage;
 
     @Override
-    public Property<String> error() {
-        return PropertyBuilder.simple(String.class)
+    public Attribute<String> error() {
+        return AttributeBuilder.simple(String.class)
                 .get(() -> error)
                 .set(value -> error = value)
                 .build();

@@ -80,7 +80,7 @@ public class AggregateGraphFactory {
 
     private String addAggregate() {
         Logger.debug("Aggregate " + aggregateDoc.className());
-        String nodeName = aggregateDoc.data().boundedContextComponentDoc().get().componentDoc().name();
+        String nodeName = aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name();
         Node node = Node.box(nodeName);
         node.setStyle(NodeStyle.BOLD);
         graph.getNodesAndEdges().addNode(node);
@@ -119,7 +119,7 @@ public class AggregateGraphFactory {
         }
 
         AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocKey.ofClassName(toComponent.className()));
-        if(!toAggregateDoc.data().boundedContextComponentDoc().get().boundedContextDocKey().equals(aggregateDoc.data().boundedContextComponentDoc().get().boundedContextDocKey())) {
+        if(!toAggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey().equals(aggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey())) {
             return;
         }
 
@@ -141,12 +141,12 @@ public class AggregateGraphFactory {
     private String name(Component component) {
         switch(component.type()) {
         case AGGREGATE:
-            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
+            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
         case ENTITY:
-            return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
+            return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
         case VALUE_OBJECT:
             try {
-                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).data().boundedContextComponentDoc().get().componentDoc().name();
+                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
             } catch (NotFoundException e) {
                 return component.className();
             }

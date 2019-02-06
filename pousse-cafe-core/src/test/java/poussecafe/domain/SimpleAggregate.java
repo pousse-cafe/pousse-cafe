@@ -6,9 +6,9 @@ import poussecafe.contextconfigurer.Aggregate;
   factory = SimpleAggregateFactory.class,
   repository = SimpleAggregateRepository.class
 )
-public class SimpleAggregate extends AggregateRoot<SimpleAggregateKey, SimpleAggregate.Data> {
+public class SimpleAggregate extends AggregateRoot<SimpleAggregateKey, SimpleAggregate.Attributes> {
 
-    public static interface Data extends EntityData<SimpleAggregateKey> {
+    public static interface Attributes extends EntityAttributes<SimpleAggregateKey> {
 
     }
 

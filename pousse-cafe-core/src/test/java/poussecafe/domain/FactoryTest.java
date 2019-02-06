@@ -10,7 +10,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class FactoryTest<K, D extends EntityData<K>, A extends AggregateRoot<K, D>, F extends Factory<K, A, D>> {
+public abstract class FactoryTest<K, D extends EntityAttributes<K>, A extends AggregateRoot<K, D>, F extends Factory<K, A, D>> {
 
     private ComponentFactory primitiveFactory = mock(ComponentFactory.class);
 
@@ -43,7 +43,7 @@ public abstract class FactoryTest<K, D extends EntityData<K>, A extends Aggregat
     protected abstract F factory();
 
     private void thenCreatedAggregateHasKey() {
-        assertThat(createdEntity.data().key(), is(givenKey));
+        assertThat(createdEntity.attributes().key(), is(givenKey));
     }
 
     @Test(expected = AssertionFailedException.class)

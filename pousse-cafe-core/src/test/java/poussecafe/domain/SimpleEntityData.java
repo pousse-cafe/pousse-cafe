@@ -1,15 +1,15 @@
 package poussecafe.domain;
 
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.entity.SimpleEntity;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.util.StringKey;
 
-public class SimpleEntityData implements SimpleEntity.Data {
+public class SimpleEntityData implements SimpleEntity.Attributes {
 
     @Override
-    public Property<StringKey> key() {
-        return PropertyBuilder.simple(StringKey.class)
+    public Attribute<StringKey> key() {
+        return AttributeBuilder.simple(StringKey.class)
                 .from(String.class)
                 .adapt(StringKey::new)
                 .get(() -> key)

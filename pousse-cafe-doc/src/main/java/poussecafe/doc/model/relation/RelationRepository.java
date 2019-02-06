@@ -1,17 +1,16 @@
 package poussecafe.doc.model.relation;
 
 import java.util.List;
-import poussecafe.doc.model.relation.Relation.Data;
 import poussecafe.domain.Repository;
 
-public class RelationRepository extends Repository<Relation, RelationKey, Relation.Data> {
+public class RelationRepository extends Repository<Relation, RelationKey, Relation.Attributes> {
 
     public List<Relation> findWithFromClassName(String className) {
         return wrap(dataAccess().findWithFromClass(className));
     }
 
     @Override
-    public RelationDataAccess<Relation.Data> dataAccess() {
-        return (RelationDataAccess<Data>) super.dataAccess();
+    public RelationDataAccess<Relation.Attributes> dataAccess() {
+        return (RelationDataAccess<Relation.Attributes>) super.dataAccess();
     }
 }

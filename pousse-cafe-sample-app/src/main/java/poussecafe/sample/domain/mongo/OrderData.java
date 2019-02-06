@@ -1,23 +1,23 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 import poussecafe.sample.adapters.storage.SerializableOrderKey;
 import poussecafe.sample.domain.Order;
 import poussecafe.sample.domain.OrderKey;
 
-public class OrderData implements Order.Data {
+public class OrderData implements Order.Attributes {
 
     @Override
-    public Property<OrderKey> key() {
-        return new Property<OrderKey>() {
+    public Attribute<OrderKey> key() {
+        return new Attribute<OrderKey>() {
             @Override
-            public OrderKey get() {
+            public OrderKey value() {
                 return key.toOrderKey();
             }
 
             @Override
-            public void set(OrderKey value) {
+            public void value(OrderKey value) {
                 key = new SerializableOrderKey(value);
             }
         };

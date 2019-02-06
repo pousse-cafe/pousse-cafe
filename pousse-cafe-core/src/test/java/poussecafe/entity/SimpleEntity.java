@@ -1,18 +1,18 @@
 package poussecafe.entity;
 
 import poussecafe.domain.Entity;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.util.StringKey;
 
-public class SimpleEntity extends Entity<StringKey, SimpleEntity.Data> {
+public class SimpleEntity extends Entity<StringKey, SimpleEntity.Attributes> {
 
     @Override
     public boolean equals(Object obj) {
         SimpleEntity other = (SimpleEntity) obj;
-        return data().key().get().equals(other.data().key().get());
+        return attributes().key().value().equals(other.attributes().key().value());
     }
 
-    public static interface Data extends EntityData<StringKey> {
+    public static interface Attributes extends EntityAttributes<StringKey> {
 
     }
 }

@@ -11,6 +11,6 @@ import poussecafe.storage.internal.InternalStorage;
     dataImplementation = ProductData.class,
     storageName = InternalStorage.NAME
 )
-public class ProductDataAccess extends InternalDataAccess<ProductKey, Product.Data> {
+public class ProductDataAccess extends InternalDataAccess<ProductKey, Product.Attributes> {
 
 }

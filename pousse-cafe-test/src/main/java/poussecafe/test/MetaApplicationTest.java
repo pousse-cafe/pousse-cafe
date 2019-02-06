@@ -7,7 +7,7 @@ import poussecafe.context.BoundedContext;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 
 public abstract class MetaApplicationTest {
 
@@ -32,7 +32,7 @@ public abstract class MetaApplicationTest {
         return wrapper.context();
     }
 
-    protected <T extends AggregateRoot<K, D>, K, D extends EntityData<K>> T find(Class<T> entityClass,
+    protected <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K key) {
         return wrapper.find(entityClass, key);
     }

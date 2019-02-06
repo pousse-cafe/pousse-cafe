@@ -1,9 +1,9 @@
 package poussecafe.sample.adapters.messaging;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.contextconfigurer.MessageImplementation;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.sample.domain.MessageCreated;
 import poussecafe.sample.domain.MessageKey;
 
@@ -12,8 +12,8 @@ import poussecafe.sample.domain.MessageKey;
 public class SerializableMessageCreated implements Serializable, MessageCreated {
 
     @Override
-    public Property<MessageKey> messageKey() {
-        return PropertyBuilder.simple(MessageKey.class)
+    public Attribute<MessageKey> messageKey() {
+        return AttributeBuilder.simple(MessageKey.class)
                 .from(String.class)
                 .adapt(MessageKey::new)
                 .get(() -> messageId)

@@ -1,23 +1,23 @@
 package poussecafe.doc.model.servicedoc;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.property.Property;
 
 @SuppressWarnings("serial")
-public class ServiceDocData implements ServiceDoc.Data, Serializable {
+public class ServiceDocData implements ServiceDoc.Attributes, Serializable {
 
     @Override
-    public Property<ServiceDocKey> key() {
-        return new Property<ServiceDocKey>() {
+    public Attribute<ServiceDocKey> key() {
+        return new Attribute<ServiceDocKey>() {
             @Override
-            public ServiceDocKey get() {
+            public ServiceDocKey value() {
                 return ServiceDocKey.ofClassName(className);
             }
 
             @Override
-            public void set(ServiceDocKey value) {
+            public void value(ServiceDocKey value) {
                 className = value.getValue();
             }
         };
@@ -26,15 +26,15 @@ public class ServiceDocData implements ServiceDoc.Data, Serializable {
     private String className;
 
     @Override
-    public Property<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Property<BoundedContextComponentDoc>() {
+    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
+        return new Attribute<BoundedContextComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc get() {
+            public BoundedContextComponentDoc value() {
                 return boundedContextComponentDoc.toModel();
             }
 
             @Override
-            public void set(BoundedContextComponentDoc value) {
+            public void value(BoundedContextComponentDoc value) {
                 boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
             }
         };

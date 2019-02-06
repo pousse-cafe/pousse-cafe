@@ -25,7 +25,7 @@ import poussecafe.process.DomainProcess;
 
 import static java.util.stream.Collectors.toList;
 
-public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, DomainProcessDoc, DomainProcessDoc.Data> {
+public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
     public DomainProcessDoc newDomainProcessDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc doc) {
         if(!isDomainProcessDoc(doc)) {

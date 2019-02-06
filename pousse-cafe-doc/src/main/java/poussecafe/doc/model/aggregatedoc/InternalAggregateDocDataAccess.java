@@ -17,20 +17,20 @@ public class InternalAggregateDocDataAccess extends InternalDataAccess<Aggregate
 
     @Override
     public List<AggregateDocData> findByBoundedContextKey(BoundedContextDocKey key) {
-        return findAll().stream().filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(key)).collect(toList());
+        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(key)).collect(toList());
     }
 
     @Override
     public List<AggregateDocData> findByKeyClassName(String qualifiedName) {
-        return findAll().stream().filter(data -> data.keyClassName().get().equals(qualifiedName)).collect(toList());
+        return findAll().stream().filter(data -> data.keyClassName().value().equals(qualifiedName)).collect(toList());
     }
 
     @Override
     public AggregateDocData findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String aggregateName) {
         return findAll().stream()
-                .filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(boundedContextDocKey))
-                .filter(data -> data.boundedContextComponentDoc().get().componentDoc().name().equals(aggregateName))
+                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDocKey))
+                .filter(data -> data.boundedContextComponentDoc().value().componentDoc().name().equals(aggregateName))
                 .findFirst().orElse(null);
     }
 

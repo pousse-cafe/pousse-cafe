@@ -49,12 +49,12 @@ public class RelationCreator implements Consumer<ClassDoc> {
     private void tryRelationAggregateKey(ClassDoc classDoc) {
         AggregateDoc aggregateDoc = aggregateDocRepository.find(AggregateDocKey.ofClassName(classDoc.qualifiedTypeName()));
         if(aggregateDoc != null) {
-            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.data().keyClassName().get()));
+            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(aggregateDoc.attributes().keyClassName().value()));
             if(keyDoc != null) {
-                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.data().keyClassName().get());
+                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its key " + aggregateDoc.attributes().keyClassName().value());
                 NewRelationParameters aggregateKeyParameters = new NewRelationParameters();
                 aggregateKeyParameters.fromComponent = component(classDoc);
-                aggregateKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.data().keyClassName().get());
+                aggregateKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.attributes().keyClassName().value());
                 componentLinking.linkComponents(aggregateKeyParameters);
 
                 NewRelationParameters keyAggregateParameters = new NewRelationParameters();
@@ -72,12 +72,12 @@ public class RelationCreator implements Consumer<ClassDoc> {
     private void tryRelationEntityKey(ClassDoc classDoc) {
         EntityDoc entityDoc = entityDocRepository.find(EntityDocKey.ofClassName(classDoc.qualifiedTypeName()));
         if(entityDoc != null) {
-            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(entityDoc.data().keyClassName().get()));
+            ValueObjectDoc keyDoc = valueObjectDocRepository.find(ValueObjectDocKey.ofClassName(entityDoc.attributes().keyClassName().value()));
             if(keyDoc != null) {
-                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.data().keyClassName().get());
+                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its key " + entityDoc.attributes().keyClassName().value());
                 NewRelationParameters entityKeyParameters = new NewRelationParameters();
                 entityKeyParameters.fromComponent = component(classDoc);
-                entityKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.data().keyClassName().get());
+                entityKeyParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.attributes().keyClassName().value());
                 componentLinking.linkComponents(entityKeyParameters);
             }
         }

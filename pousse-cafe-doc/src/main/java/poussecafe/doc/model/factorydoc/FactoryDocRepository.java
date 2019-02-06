@@ -4,15 +4,15 @@ import java.util.List;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.Repository;
 
-public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocKey, FactoryDoc.Data> {
+public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocKey, FactoryDoc.Attributes> {
 
     public List<FactoryDoc> findByBoundedContextKey(BoundedContextDocKey key) {
         return wrap(dataAccess().findByBoundedContextKey(key));
     }
 
     @Override
-    public FactoryDocDataAccess<FactoryDoc.Data> dataAccess() {
-        return (FactoryDocDataAccess<FactoryDoc.Data>) super.dataAccess();
+    public FactoryDocDataAccess<FactoryDoc.Attributes> dataAccess() {
+        return (FactoryDocDataAccess<FactoryDoc.Attributes>) super.dataAccess();
     }
 
     public List<FactoryDoc> findAll() {

@@ -1,5 +1,5 @@
 package poussecafe.domain;
 
-public class SimpleAggregateFactory extends Factory<SimpleAggregateKey, SimpleAggregate, SimpleAggregate.Data> {
+public class SimpleAggregateFactory extends Factory<SimpleAggregateKey, SimpleAggregate, SimpleAggregate.Attributes> {
 
 }

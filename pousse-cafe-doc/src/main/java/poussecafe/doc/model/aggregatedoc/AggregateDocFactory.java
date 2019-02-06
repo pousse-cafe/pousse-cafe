@@ -10,7 +10,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, AggregateDoc.Data> {
+public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, AggregateDoc.Attributes> {
 
     public AggregateDoc newAggregateDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc aggregateClassDoc) {
         if(!isAggregateDoc(aggregateClassDoc)) {
@@ -21,12 +21,12 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
         AggregateDoc aggregateDoc = newAggregateWithKey(key);
 
         String name = name(aggregateClassDoc);
-        aggregateDoc.data().boundedContextComponentDoc().set(new BoundedContextComponentDoc.Builder()
+        aggregateDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 
-        aggregateDoc.data().keyClassName().set(keyClassName(aggregateClassDoc));
+        aggregateDoc.attributes().keyClassName().value(keyClassName(aggregateClassDoc));
 
         aggregateDoc.stepDocs(stepDocExtractor.extractStepDocs(name, aggregateClassDoc));
 

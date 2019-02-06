@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import poussecafe.context.OptimisticLockingException;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 
-public abstract class MongoDataAccess<K, D extends EntityData<K>, M extends Serializable> implements EntityDataAccess<K, D> {
+public abstract class MongoDataAccess<K, D extends EntityAttributes<K>, M extends Serializable> implements EntityDataAccess<K, D> {
 
     @Override
     public D findData(K key) {

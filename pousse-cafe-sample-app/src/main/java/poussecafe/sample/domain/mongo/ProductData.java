@@ -1,22 +1,22 @@
 package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
 
-public class ProductData implements Product.Data {
+public class ProductData implements Product.Attributes {
 
     @Override
-    public Property<ProductKey> key() {
-        return new Property<ProductKey>() {
+    public Attribute<ProductKey> key() {
+        return new Attribute<ProductKey>() {
             @Override
-            public ProductKey get() {
+            public ProductKey value() {
                 return new ProductKey(key);
             }
 
             @Override
-            public void set(ProductKey value) {
+            public void value(ProductKey value) {
                 key = value.getValue();
             }
         };

@@ -6,7 +6,7 @@ import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class BoundedContextDocFactory extends Factory<BoundedContextDocKey, BoundedContextDoc, BoundedContextDoc.Data> {
+public class BoundedContextDocFactory extends Factory<BoundedContextDocKey, BoundedContextDoc, BoundedContextDoc.Attributes> {
 
     public BoundedContextDoc newBoundedContextDoc(PackageDoc packageDoc) {
         if(!isBoundedContextDoc(packageDoc)) {

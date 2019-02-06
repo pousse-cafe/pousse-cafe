@@ -2,7 +2,7 @@ package poussecafe.domain;
 
 import java.util.List;
 
-public interface EntityDataAccess<K, D extends EntityData<K>> {
+public interface EntityDataAccess<K, D extends EntityAttributes<K>> {
 
     D findData(K key);
 

@@ -1,7 +1,6 @@
 package poussecafe.maven;
 
 import java.io.File;
-
 import java.util.Objects;
 
 public class CommonStorageSourceGenerator {
@@ -48,7 +47,7 @@ public class CommonStorageSourceGenerator {
     }
 
     private void writeAggregateRootDataSource() {
-        File outputFile = new File(adaptersDirectory, aggregateName + "Data.java");
+        File outputFile = new File(adaptersDirectory, aggregateName + "Attributes.java");
         sourceWriter.writeSource(outputFile, "data");
     }
 }

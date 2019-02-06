@@ -12,7 +12,7 @@ import poussecafe.context.EntityServices;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
@@ -41,7 +41,7 @@ public class MetaApplicationWrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends AggregateRoot<K, D>, K, D extends EntityData<K>> T find(Class<T> entityClass,
+    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K key) {
         waitUntilAllMessageQueuesEmpty();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) context
@@ -97,7 +97,7 @@ public class MetaApplicationWrapper {
             logger.debug("Field value {}", jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading {}", dataJson);
-                EntityData<?> dataImplementation = (EntityData<?>) entityImplementation.getDataFactory().get();
+                EntityAttributes<?> dataImplementation = (EntityAttributes<?>) entityImplementation.getDataFactory().get();
                 jsonDataReader.readJson(dataImplementation, dataJson);
                 dataAccess.addData(dataImplementation);
             });

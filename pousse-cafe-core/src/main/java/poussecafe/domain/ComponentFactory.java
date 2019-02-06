@@ -16,7 +16,7 @@ public class ComponentFactory {
         entity.setComponentFactory(this);
 
         if(specification.getExistingData() != null) {
-            entity.setData(specification.getExistingData());
+            entity.attributes(specification.getExistingData());
         }
 
         Storage storage = environment.getStorage(entityClass);
@@ -29,7 +29,7 @@ public class ComponentFactory {
             Object data = null;
             if(specification.isWithData()) {
                 data = supplyEntityDataImplementation(entityClass);
-                entity.setData(data);
+                entity.attributes(data);
             }
         }
 

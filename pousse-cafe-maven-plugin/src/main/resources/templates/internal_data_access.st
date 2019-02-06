@@ -15,10 +15,10 @@ import static java.util.stream.Collectors.toList;
 
 @DataAccessImplementation(
     aggregateRoot = <name>.class,
-    dataImplementation = <name>Data.class,
+    dataImplementation = <name>Attributes.class,
     storageName = InternalStorage.NAME
 )
-public class <name>InternalDataAccess extends InternalDataAccess\<<name>Key, <name>Data> implements <name>DataAccess\<<name>Data> {
+public class <name>InternalDataAccess extends InternalDataAccess\<<name>Key, <name>Attributes> implements <name>DataAccess\<<name>Attributes> {
 
     public <name>InternalDataAccess() {
         versionField("version");
@@ -26,9 +26,9 @@ public class <name>InternalDataAccess extends InternalDataAccess\<<name>Key, <na
 <if(demoAttribute)>
 
     @Override
-    public List\<<name>Data> findByName(String name) {
+    public List\<<name>Attributes> findByName(String name) {
         return findAll().stream()
-                .filter(data -> data.name().get().equals(name))
+                .filter(data -> data.name().valueEquals(name))
                 .collect(toList());
     }
 <endif>

@@ -1,25 +1,25 @@
 package poussecafe.sample.adapters.storage;
 
 import java.io.Serializable;
-import poussecafe.property.Property;
+import poussecafe.attribute.Attribute;
 import poussecafe.sample.domain.ContentType;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageKey;
 
 @SuppressWarnings("serial")
-public class MessageData implements Message.Data, Serializable {
+public class MessageData implements Message.Attributes, Serializable {
 
     @Override
-    public Property<MessageKey> key() {
-        return new Property<MessageKey>() {
+    public Attribute<MessageKey> key() {
+        return new Attribute<MessageKey>() {
             @Override
-            public MessageKey get() {
+            public MessageKey value() {
                 return new MessageKey(key);
             }
 
             @Override
-            public void set(MessageKey value) {
+            public void value(MessageKey value) {
                 key = value.getValue();
             }
         };

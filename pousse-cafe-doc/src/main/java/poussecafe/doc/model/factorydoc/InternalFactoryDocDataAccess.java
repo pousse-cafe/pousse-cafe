@@ -17,15 +17,15 @@ public class InternalFactoryDocDataAccess extends InternalDataAccess<FactoryDocK
 
     @Override
     public List<FactoryDocData> findByBoundedContextKey(BoundedContextDocKey key) {
-        return findAll().stream().filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(key)).collect(toList());
+        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(key)).collect(toList());
     }
 
     @Override
     public FactoryDocData findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
             String aggregateName) {
         return findAll().stream()
-                .filter(data -> data.boundedContextComponentDoc().get().boundedContextDocKey().equals(boundedContextDocKey))
-                .filter(data -> data.boundedContextComponentDoc().get().componentDoc().name().equals(aggregateName))
+                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDocKey))
+                .filter(data -> data.boundedContextComponentDoc().value().componentDoc().name().equals(aggregateName))
                 .findFirst().orElse(null);
     }
 }

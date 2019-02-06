@@ -48,8 +48,8 @@ public class MessagingTest extends MetaApplicationTest {
 
     private void whenOrderRejected() {
         OrderRejected event = new SerializableOrderRejected();
-        event.productKey().set(productKey);
-        event.description().set(orderDescription);
+        event.productKey().value(productKey);
+        event.description().value(orderDescription);
         addDomainEvent(event);
     }
 

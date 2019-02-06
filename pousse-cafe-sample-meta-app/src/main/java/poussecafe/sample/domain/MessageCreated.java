@@ -1,9 +1,9 @@
 package poussecafe.sample.domain;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
-import poussecafe.property.Property;
 
 public interface MessageCreated extends DomainEvent {
 
-    Property<MessageKey> messageKey();
+    Attribute<MessageKey> messageKey();
 }

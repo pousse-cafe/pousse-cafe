@@ -10,7 +10,7 @@ public class ComponentLinking extends DomainProcess {
 
     public void linkComponents(NewRelationParameters parameters) {
         Relation relation = relationFactory.newRelation(parameters);
-        if(relationRepository.find(relation.data().key().get()) == null) {
+        if(relationRepository.find(relation.attributes().key().value()) == null) {
             runInTransaction(Relation.class, () -> relationRepository.add(relation));
         }
     }

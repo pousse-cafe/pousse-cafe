@@ -1,9 +1,9 @@
 package poussecafe.simplemetaapp.adapters;
 
 import java.io.Serializable;
+import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.contextconfigurer.MessageImplementation;
-import poussecafe.property.Property;
-import poussecafe.property.PropertyBuilder;
 import poussecafe.simplemetaapp.domain.MyAggregateKey;
 import poussecafe.simplemetaapp.domain.MyDomainEvent;
 
@@ -12,8 +12,8 @@ import poussecafe.simplemetaapp.domain.MyDomainEvent;
 public class MyDomainEventData implements Serializable, MyDomainEvent {
 
     @Override
-    public Property<MyAggregateKey> key() {
-        return PropertyBuilder.simple(MyAggregateKey.class)
+    public Attribute<MyAggregateKey> key() {
+        return AttributeBuilder.simple(MyAggregateKey.class)
                 .from(String.class)
                 .adapt(MyAggregateKey::new)
                 .get(() -> id)

@@ -1,6 +1,6 @@
 package poussecafe.domain;
 
-public abstract class AggregateRoot<K, D extends EntityData<K>> extends Entity<K, D> {
+public abstract class AggregateRoot<K, D extends EntityAttributes<K>> extends Entity<K, D> {
 
     public void onAdd() {
 

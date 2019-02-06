@@ -1,6 +1,6 @@
 package poussecafe.context;
 
-import poussecafe.domain.EntityData;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.storage.MessageSendingPolicy;
 import poussecafe.storage.TransactionRunner;
@@ -8,7 +8,7 @@ import poussecafe.storage.TransactionRunner;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class StorageServices<K, D extends EntityData<K>> {
+public class StorageServices<K, D extends EntityAttributes<K>> {
 
     private MessageSendingPolicy messageSendingPolicy;
 

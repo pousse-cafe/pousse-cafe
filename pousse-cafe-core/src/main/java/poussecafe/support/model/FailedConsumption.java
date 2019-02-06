@@ -1,15 +1,15 @@
 package poussecafe.support.model;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
-import poussecafe.property.Property;
 
 public interface FailedConsumption extends DomainEvent {
 
-    Property<String> consumptionId();
+    Attribute<String> consumptionId();
 
-    Property<String> listenerId();
+    Attribute<String> listenerId();
 
-    Property<String> rawMessage();
+    Attribute<String> rawMessage();
 
-    Property<String> error();
+    Attribute<String> error();
 }

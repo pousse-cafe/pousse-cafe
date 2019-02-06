@@ -12,14 +12,14 @@ import <modelPackage>.<name>Key;
 
 @DataAccessImplementation(
     aggregateRoot = <name>.class,
-    dataImplementation = <name>Data.class,
+    dataImplementation = <name>Attributes.class,
     storageName = SpringMongoDbStorage.NAME
 )
-public class <name>MongoDataAccess extends MongoDataAccess\<<name>Key, <name>Data, String> implements <name>DataAccess\<<name>Data> {
+public class <name>MongoDataAccess extends MongoDataAccess\<<name>Key, <name>Attributes, String> implements <name>DataAccess\<<name>Attributes> {
 
 <if(demoAttribute)>
     @Override
-    public List\<<name>Data> findByName(String name) {
+    public List\<<name>Attributes> findByName(String name) {
         return repository.findByName(name);
     }
 <endif>

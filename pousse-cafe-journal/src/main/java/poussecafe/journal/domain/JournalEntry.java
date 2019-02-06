@@ -1,22 +1,22 @@
 package poussecafe.journal.domain;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.contextconfigurer.Aggregate;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.EntityData;
-import poussecafe.property.Property;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
   factory = JournalEntryFactory.class,
   repository = JournalEntryRepository.class
 )
-public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Data> {
+public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Attributes> {
 
-    public static interface Data extends EntityData<JournalEntryKey> {
+    public static interface Attributes extends EntityAttributes<JournalEntryKey> {
 
-        Property<String> rawMessage();
+        Attribute<String> rawMessage();
 
-        Property<String> error();
+        Attribute<String> error();
 
-        Property<ConsumptionStatus> status();
+        Attribute<ConsumptionStatus> status();
     }
 }
