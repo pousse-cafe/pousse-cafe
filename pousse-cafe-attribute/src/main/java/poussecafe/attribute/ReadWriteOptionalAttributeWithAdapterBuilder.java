@@ -29,7 +29,7 @@ public class ReadWriteOptionalAttributeWithAdapterBuilder<U, T> {
             }
 
             @Override
-            public void setNullable(T nullableValue) {
+            public void optionalValue(T nullableValue) {
                 if(nullableValue == null) {
                     setter.accept(null);
                 } else {

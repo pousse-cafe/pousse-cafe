@@ -16,7 +16,7 @@ public class ReadWriteOptionalAttributeBuilder<T> {
             }
 
             @Override
-            public void setNullable(T nullableValue) {
+            public void optionalValue(T nullableValue) {
                 compositeAttribute.setter.accept(nullableValue);
             }
         };

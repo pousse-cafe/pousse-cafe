@@ -37,6 +37,7 @@ public class InternalMessagingQueue {
                             onMessage(polledObject);
                         }
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         return;
                     } finally {
                         // Catch-all, thread must continue to run until explicitly stopped

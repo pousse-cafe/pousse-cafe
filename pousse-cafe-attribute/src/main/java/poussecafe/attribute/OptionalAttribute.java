@@ -16,12 +16,16 @@ public abstract class OptionalAttribute<T> implements Attribute<Optional<T>> {
     @Override
     public void value(Optional<T> value) {
         Objects.requireNonNull(value);
-        setNullable(value.orElse(null));
+        optionalValue(value.orElse(null));
     }
 
-    public abstract void setNullable(T nullableValue);
+    public abstract void optionalValue(T nullableValue);
 
-    public void setNonOptionalValueOf(Attribute<T> property) {
-        value(Optional.of(property.value()));
+    public void nonOptionalValueOf(Attribute<T> property) {
+        nonOptionalValue(property.value());
+    }
+
+    public void nonOptionalValue(T value) {
+        value(Optional.of(value));
     }
 }
