@@ -8,7 +8,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.context.Environment;
-import poussecafe.context.MessageListenerEntry;
 import poussecafe.exception.PousseCafeException;
 
 import static java.util.Collections.emptySet;
@@ -17,24 +16,24 @@ import static poussecafe.check.Checks.checkThat;
 
 public class MessageListenerRegistry {
 
-    private Map<MessageListenerRoutingKey, Set<MessageListener>> listeners = new HashMap<>();
+    private Map<Class<? extends Message>, Set<MessageListener>> listeners = new HashMap<>();
 
-    public void registerListener(MessageListenerEntry entry) {
-        logger.debug("Registring listener {}", entry);
-        if(!environment.getDefinedMessages().contains(entry.getKey().getMessageClass())) {
-            throw new PousseCafeException("Message " + entry.getKey().getMessageClass().getName() + " is not defined");
+    public void registerListener(MessageListener entry) {
+        logger.debug("Registering listener {}", entry);
+        if(!environment.getDefinedMessages().contains(entry.messageClass())) {
+            throw new PousseCafeException("Message " + entry.messageClass().getName() + " is not defined");
         }
-        Set<MessageListener> registeredListeners = getOrCreateSet(entry.getKey());
-        registeredListeners.add(entry.getListener());
+        Set<MessageListener> registeredListeners = getOrCreateSet(entry.messageClass());
+        registeredListeners.add(entry);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Set<MessageListener> getOrCreateSet(MessageListenerRoutingKey key) {
+    private Set<MessageListener> getOrCreateSet(Class<? extends Message> key) {
         return listeners.computeIfAbsent(key, this::putNewEmptySet);
     }
 
-    private Set<MessageListener> putNewEmptySet(MessageListenerRoutingKey key) {
+    private Set<MessageListener> putNewEmptySet(Class<? extends Message> key) {
         Set<MessageListener> messageListeners = new HashSet<>();
         listeners.put(key, messageListeners);
         return messageListeners;
@@ -43,9 +42,9 @@ public class MessageListenerRegistry {
     public Set<MessageListener> getListeners(Class<? extends Message> messageImplementationClass) {
         Class<? extends Message> messageClass = environment.getMessageClass(messageImplementationClass);
         if(messageClass == null) {
-            return getListeners(new MessageListenerRoutingKey(messageImplementationClass));
+            return getListenersForMessageClass(messageImplementationClass);
         } else {
-            return getListeners(new MessageListenerRoutingKey(messageClass));
+            return getListenersForMessageClass(messageClass);
         }
     }
 
@@ -56,7 +55,7 @@ public class MessageListenerRegistry {
         this.environment = environment;
     }
 
-    private Set<MessageListener> getListeners(MessageListenerRoutingKey key) {
+    private Set<MessageListener> getListenersForMessageClass(Class<? extends Message> key) {
         return Optional.ofNullable(listeners.get(key)).orElse(emptySet());
     }
 }

@@ -1,54 +1,44 @@
 package poussecafe.context;
 
 import java.lang.reflect.Method;
-import org.junit.Before;
+import java.util.List;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import poussecafe.messaging.MessageListenerRegistry;
+import poussecafe.messaging.MessageListener;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertTrue;
 
 public class ListenersDiscoveryTest {
 
-    @Mock
-    private MessageListenerRegistry registry;
+    private MessageListenersDiscoverer workflowExplorer = new MessageListenersDiscoverer();
 
-    private DomainProcessExplorer workflowExplorer;
-
-    private DummyProcess workflow;
-
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-
-        workflowExplorer = new DomainProcessExplorer();
-        workflowExplorer.setMessageListenerRegistry(registry);
-    }
+    private DummyProcess service;
 
     @Test
     public void discoverDomainEventListenerWithDefaultId() {
-        givenWorkflow();
-        whenConfiguringWorkflow();
+        givenServiceWithDeclaredListeners();
+        whenDiscoveringDeclaredListeners();
         thenDomainEventListenerWithDefaultIdRegistered();
     }
 
-    private void givenWorkflow() {
-        workflow = new DummyProcess();
+    private void givenServiceWithDeclaredListeners() {
+        service = new DummyProcess();
     }
 
-    private void whenConfiguringWorkflow() {
-        workflowExplorer.discoverListeners(workflow);
+    private void whenDiscoveringDeclaredListeners() {
+        discoveredListeners = workflowExplorer.discoverDeclaredListeners(service);
     }
+
+    private List<MessageListener> discoveredListeners;
 
     private void thenDomainEventListenerWithDefaultIdRegistered() {
-        verify(registry).registerListener(new MessageListenerEntryBuilder()
-                .withMessageClass(TestDomainEvent.class)
-                .withListenerId("")
-                .withMethod(getMethodByName("domainEventListenerWithDefaultId"))
-                .withTarget(workflow)
+        assertTrue(discoveredListeners.stream().anyMatch(this::listenerWithDefaultId));
+    }
+
+    private boolean listenerWithDefaultId(MessageListener listener) {
+        return listener.id().equals(new DeclaredMessageListenerIdBuilder()
+                .messageClass(TestDomainEvent.class)
+                .target(service)
+                .method(getMethodByName("domainEventListenerWithDefaultId"))
                 .build());
     }
 
@@ -63,29 +53,28 @@ public class ListenersDiscoveryTest {
 
     @Test
     public void discoverDomainEventListenerWithCustomId() {
-        givenWorkflow();
-        whenConfiguringWorkflow();
+        givenServiceWithDeclaredListeners();
+        whenDiscoveringDeclaredListeners();
         thenDomainEventListenerWithCustomIdRegistered();
     }
 
     private void thenDomainEventListenerWithCustomIdRegistered() {
-        verify(registry).registerListener(new MessageListenerEntryBuilder()
-                .withMessageClass(TestDomainEvent.class)
-                .withListenerId("customDomainEventListenerId")
-                .withMethod(getMethodByName("domainEventListenerWithCustomId"))
-                .withTarget(workflow)
-                .build());
+        assertTrue(discoveredListeners.stream().anyMatch(this::listenerWithCustomId));
+    }
+
+    private boolean listenerWithCustomId(MessageListener listener) {
+        return listener.id().equals("customDomainEventListenerId");
     }
 
     @Test
-    public void onlyFourListenersRegistered() {
-        givenWorkflow();
-        whenConfiguringWorkflow();
-        thenOnlyFourListenersRegistered();
+    public void onlyTwoListenersRegistered() {
+        givenServiceWithDeclaredListeners();
+        whenDiscoveringDeclaredListeners();
+        thenOnlyTwoListenersRegistered();
     }
 
-    protected void thenOnlyFourListenersRegistered() {
-        verify(registry, times(2)).registerListener(any(MessageListenerEntry.class));
+    protected void thenOnlyTwoListenersRegistered() {
+        assertTrue(discoveredListeners.size() == 2);
     }
 
 }

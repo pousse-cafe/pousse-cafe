@@ -68,7 +68,7 @@ public class MessageConsumer {
             MessageListener listener) {
         logger.debug("Consumption of message {} by listener {}", receivedMessage.adapted(), listener);
         try {
-            listener.consume(receivedMessage.adapted());
+            listener.consumer().accept(receivedMessage.adapted());
             notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
         } catch (Exception e) {
             notifyFailedConsumption(consumptionId, receivedMessage, listener, e);
@@ -83,7 +83,7 @@ public class MessageConsumer {
             try {
                 SuccessfulConsumption event = componentFactory.newMessage(SuccessfulConsumption.class);
                 event.consumptionId().value(consumptionId);
-                event.listenerId().value(listener.getListenerId());
+                event.listenerId().value(listener.id());
                 event.rawMessage().value(rawMessageOrDefault(receivedMessage));
                 messageSenderLocator.locate(SuccessfulConsumption.class).sendMessage(event);
             } catch (PousseCafeException e) {
@@ -113,7 +113,7 @@ public class MessageConsumer {
             try {
                 FailedConsumption event = componentFactory.newMessage(FailedConsumption.class);
                 event.consumptionId().value(consumptionId);
-                event.listenerId().value(listener.getListenerId());
+                event.listenerId().value(listener.id());
                 event.rawMessage().value(rawMessageOrDefault(receivedMessage));
                 event.error().value(ExceptionUtils.getStackTrace(e));
                 messageSenderLocator.locate(FailedConsumption.class).sendMessage(event);

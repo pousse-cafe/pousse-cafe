@@ -1,25 +1,17 @@
 package poussecafe.context;
 
 import java.util.List;
-import poussecafe.messaging.MessageListenerRegistry;
+import poussecafe.messaging.MessageListener;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 abstract class MessageListenerExplorer {
 
-    protected MessageListenerRegistry registry;
-
     private Object service;
 
-    MessageListenerExplorer(MessageListenerRegistry registry, Object service) {
-        setRegistry(registry);
+    MessageListenerExplorer(Object service) {
         setService(service);
-    }
-
-    private void setRegistry(MessageListenerRegistry registry) {
-        checkThat(value(registry).notNull().because("Message listener registry cannot be null"));
-        this.registry = registry;
     }
 
     private void setService(Object service) {
@@ -27,15 +19,10 @@ abstract class MessageListenerExplorer {
         this.service = service;
     }
 
-    public void discoverListeners() {
-        MessageListeningServiceSourceProcessor sourceProcessor = buildSourceProcessor(service);
-        List<MessageListenerEntry> messageListenersEntries = sourceProcessor.discoverListeners();
-        for (MessageListenerEntry entry : messageListenersEntries) {
-            registerListener(entry);
-        }
+    public List<MessageListener> discoverListeners() {
+        MessageListenerDiscoverer sourceProcessor = buildSourceProcessor(service);
+        return sourceProcessor.discoverListeners();
     }
 
-    protected abstract MessageListeningServiceSourceProcessor buildSourceProcessor(Object service);
-
-    protected abstract void registerListener(MessageListenerEntry entry);
+    protected abstract MessageListenerDiscoverer buildSourceProcessor(Object service);
 }

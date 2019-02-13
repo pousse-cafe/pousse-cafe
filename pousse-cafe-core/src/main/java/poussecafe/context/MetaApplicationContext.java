@@ -192,7 +192,8 @@ public class MetaApplicationContext {
     private void configureContext() {
         configureEntities();
         configureServices();
-        configureProcesses();
+        configureDomainProcesses();
+        configureMessageListeners();
         configureMessageConsumer();
         configureMessageSenderLocator();
         configureMessageEmissionPolicies();
@@ -251,21 +252,23 @@ public class MetaApplicationContext {
         }
     }
 
-    protected void configureProcesses() {
-        DomainProcessExplorer processExplorer = processExplorer();
+    protected void configureDomainProcesses() {
         for (Class<?> processClass : environment.getDefinedProcesses()) {
             DomainProcess process = (DomainProcess) newInstance(processClass);
-            processExplorer.discoverListeners(process);
             injector.addInjectionCandidate(process);
             injector.registerInjectableService(process);
             processes.put(processClass, process);
         }
     }
 
-    private DomainProcessExplorer processExplorer() {
-        DomainProcessExplorer processExplorer = new DomainProcessExplorer();
-        processExplorer.setMessageListenerRegistry(messageListenerRegistry);
-        return processExplorer;
+    protected void configureMessageListeners() {
+        MessageListenersDiscoverer discoverer = new MessageListenersDiscoverer();
+        List<MessageListener> listeners = new ArrayList<>();
+        for (Class<?> processClass : environment.getDefinedProcesses()) {
+            DomainProcess process = processes.get(processClass);
+            listeners.addAll(discoverer.discoverDeclaredListeners(process));
+        }
+        listeners.stream().forEach(messageListenerRegistry::registerListener);
     }
 
     private Map<Class<?>, DomainProcess> processes = new HashMap<>();
@@ -350,7 +353,9 @@ public class MetaApplicationContext {
     }
 
     public synchronized void registerListeners(Object service) {
-        processExplorer().discoverListeners(service);
+        MessageListenersDiscoverer discoverer = new MessageListenersDiscoverer();
+        discoverer.discoverDeclaredListeners(service).stream()
+            .forEach(messageListenerRegistry::registerListener);
     }
 
     public MessageSenderLocator getMessageSenderLocator() {
