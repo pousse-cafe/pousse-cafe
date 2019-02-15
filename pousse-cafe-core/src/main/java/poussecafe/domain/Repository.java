@@ -11,12 +11,16 @@ import static poussecafe.check.Checks.checkThat;
 public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
-    void setEntityClass(Class<?> entityClass) {
+    public void setEntityClass(Class<?> entityClass) {
         checkThat(value(entityClass).notNull().because("Entity class cannot be null"));
         this.entityClass = (Class<A>) entityClass;
     }
 
     private Class<A> entityClass;
+
+    public Class<A> entityClass() {
+        return entityClass;
+    }
 
     public A find(K key) {
         checkKey(key);
@@ -41,7 +45,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         }
     }
 
-    private ComponentFactory componentFactory;
+    private EntityFactory componentFactory;
 
     public A get(K key) {
         A entity = find(key);
@@ -122,7 +126,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     @SuppressWarnings("unchecked")
-    void setDataAccess(Object dataAccess) {
+    public void setDataAccess(Object dataAccess) {
         checkThat(value(dataAccess).notNull().because("Data access cannot be null"));
         this.dataAccess = (EntityDataAccess<K, D>) dataAccess;
     }

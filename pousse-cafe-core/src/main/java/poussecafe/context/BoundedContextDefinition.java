@@ -6,6 +6,7 @@ import java.util.Set;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.Service;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.process.DomainProcess;
 
 import static java.util.Collections.unmodifiableSet;
@@ -33,6 +34,11 @@ public class BoundedContextDefinition {
 
         public Builder messages(Collection<Class<? extends Message>> messages) {
             definition.messages.addAll(messages);
+            return this;
+        }
+
+        public Builder listeners(Collection<MessageListenerDefinition> listeners) {
+            definition.listeners.addAll(listeners);
             return this;
         }
 
@@ -67,5 +73,11 @@ public class BoundedContextDefinition {
 
     public Set<Class<? extends Message>> getMessages() {
         return unmodifiableSet(messages);
+    }
+
+    private Set<MessageListenerDefinition> listeners = new HashSet<>();
+
+    public Set<MessageListenerDefinition> listeners() {
+        return unmodifiableSet(listeners);
     }
 }

@@ -1,22 +1,30 @@
 package poussecafe.contextconfigurer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.context.AggregateMessageListenerRunner;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
+import poussecafe.domain.Factory;
+import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.DomainEventListener;
 import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.messaging.Messaging;
+import poussecafe.messaging.VoidAggregateMessageListenerRunner;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
@@ -150,5 +158,52 @@ class ClassPathExplorer {
                     .build());
         }
         return implementations;
+    }
+
+    public Set<MessageListenerDefinition> discoverListeners() {
+        Set<Class<?>> listenersContainers = new HashSet<>();
+        getSubTypesOf(DomainProcess.class).forEach(listenersContainers::add);
+        getSubTypesOf(AggregateRoot.class).forEach(listenersContainers::add);
+        getSubTypesOf(Factory.class).forEach(listenersContainers::add);
+        getSubTypesOf(Repository.class).forEach(listenersContainers::add);
+
+        Set<MessageListenerDefinition> definitions = new HashSet<>();
+        for(Class<?> containerClass : listenersContainers) {
+            definitions.addAll(discoverListenersOfClass(containerClass));
+        }
+        return definitions;
+    }
+
+    private Collection<MessageListenerDefinition> discoverListenersOfClass(Class<?> containerClass) {
+        List<MessageListenerDefinition> definitions = new ArrayList<>();
+        for(Method method : containerClass.getDeclaredMethods()) {
+            DomainEventListener annotation = method.getAnnotation(DomainEventListener.class);
+            if(annotation != null) {
+                logger.debug("Defining listener for method {}", method);
+                definitions.add(new MessageListenerDefinition.Builder()
+                        .method(method)
+                        .customId(customId(annotation.id()))
+                        .runner(runner(annotation.runner()))
+                        .build());
+            }
+        }
+        return definitions;
+    }
+
+    private Optional<String> customId(String id) {
+        if(id == null || id.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(id);
+        }
+    }
+
+    private Optional<Class<? extends AggregateMessageListenerRunner>> runner(
+            Class<? extends AggregateMessageListenerRunner> runner) {
+        if(runner == VoidAggregateMessageListenerRunner.class) {
+            return Optional.empty();
+        } else {
+            return Optional.of(runner);
+        }
     }
 }

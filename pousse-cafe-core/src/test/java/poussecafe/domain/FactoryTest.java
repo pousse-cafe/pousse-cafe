@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class FactoryTest<K, D extends EntityAttributes<K>, A extends AggregateRoot<K, D>, F extends Factory<K, A, D>> {
 
-    private ComponentFactory primitiveFactory = mock(ComponentFactory.class);
+    private EntityFactory primitiveFactory = mock(EntityFactory.class);
 
     private K givenKey;
 

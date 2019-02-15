@@ -6,16 +6,20 @@ import static poussecafe.check.Checks.checkThat;
 public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
-    void setEntityClass(Class<?> entityClass) {
+    public void setEntityClass(Class<?> entityClass) {
         checkThat(value(entityClass).notNull().because("Entity class cannot be null"));
         this.entityClass = (Class<A>) entityClass;
     }
 
     private Class<A> entityClass;
 
+    public Class<A> entityClass() {
+        return entityClass;
+    }
+
     protected A newAggregateWithKey(K key) {
         checkThat(value(key).notNull().because("Key cannot be null"));
-        A entity = componentFactory.newEntity(new EntitySpecification.Builder<A>()
+        A entity = entityFactory.newEntity(new EntitySpecification.Builder<A>()
                 .withComponentClass(entityClass)
                 .withData(true)
                 .build());
@@ -23,5 +27,5 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
         return entity;
     }
 
-    private ComponentFactory componentFactory;
+    private EntityFactory entityFactory;
 }

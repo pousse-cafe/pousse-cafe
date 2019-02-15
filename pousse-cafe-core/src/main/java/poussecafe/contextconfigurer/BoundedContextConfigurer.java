@@ -41,6 +41,7 @@ public class BoundedContextConfigurer {
         builder.processes(classPathExplorer.discoverDomainProcesses());
         builder.services(classPathExplorer.discoverServices());
         builder.messages(classPathExplorer.discoverMessages());
+        builder.listeners(classPathExplorer.discoverListeners());
         return builder.build();
     }
 

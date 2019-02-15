@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import poussecafe.context.EntityServices;
 import poussecafe.context.MessageSenderLocator;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.domain.ComponentFactory;
+import poussecafe.domain.MessageFactory;
 import poussecafe.domain.Repository;
 import poussecafe.process.DomainProcess;
 
@@ -29,7 +29,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
         MessageSenderLocator messageSenderLocator = pousseCafeContext.getMessageSenderLocator();
         registerInstance(beanName(messageSenderLocator), messageSenderLocator);
 
-        ComponentFactory componentFactory = pousseCafeContext.getComponentFactory();
+        MessageFactory componentFactory = pousseCafeContext.getMessageFactory();
         registerInstance(beanName(componentFactory), componentFactory);
     }
 

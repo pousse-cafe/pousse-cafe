@@ -1,5 +1,6 @@
 package poussecafe.context;
 
+import java.util.Optional;
 import java.util.Set;
 import org.junit.Test;
 import poussecafe.domain.AggregateDefinition;
@@ -9,11 +10,14 @@ import poussecafe.domain.SimpleAggregateData;
 import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
+import poussecafe.domain.SimpleAggregateTouchRunner;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessageListener;
+import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.internal.InternalStorage;
+import poussecafe.util.ReflectionUtils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -54,6 +58,48 @@ public class MetaApplicationContextTest {
                 .withMessageImplementationClass(TestDomainEvent.class)
                 .withMessaging(InternalMessaging.instance())
                 .build());
+
+        context.environment().defineMessage(TestDomainEvent2.class);
+        context.environment().implementMessage(new MessageImplementation.Builder()
+                .withMessageClass(TestDomainEvent2.class)
+                .withMessageImplementationClass(TestDomainEvent2.class)
+                .withMessaging(InternalMessaging.instance())
+                .build());
+
+        context.environment().defineMessage(TestDomainEvent3.class);
+        context.environment().implementMessage(new MessageImplementation.Builder()
+                .withMessageClass(TestDomainEvent3.class)
+                .withMessageImplementationClass(TestDomainEvent3.class)
+                .withMessaging(InternalMessaging.instance())
+                .build());
+
+        context.environment().defineMessage(TestDomainEvent4.class);
+        context.environment().implementMessage(new MessageImplementation.Builder()
+                .withMessageClass(TestDomainEvent4.class)
+                .withMessageImplementationClass(TestDomainEvent4.class)
+                .withMessaging(InternalMessaging.instance())
+                .build());
+
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithDefaultId", TestDomainEvent.class))
+                .build());
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .customId(Optional.of("customDomainEventListenerId"))
+                .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithCustomId", TestDomainEvent.class))
+                .build());
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent.class))
+                .build());
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent2.class))
+                .build());
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .method(ReflectionUtils.method(SimpleAggregate.class, "touch", TestDomainEvent3.class))
+                .runner(Optional.of(SimpleAggregateTouchRunner.class))
+                .build());
+        context.environment().defineListener(new MessageListenerDefinition.Builder()
+                .method(ReflectionUtils.method(SimpleAggregateRepository.class, "delete", TestDomainEvent4.class))
+                .build());
     }
 
     private void whenCreatingContext() {
@@ -80,7 +126,7 @@ public class MetaApplicationContextTest {
         Set<MessageListener> listeners;
 
         listeners = context.getMessageListeners(TestDomainEvent.class);
-        assertThat(listeners.size(), is(2));
+        assertThat(listeners.size(), is(3));
     }
 
     @Test

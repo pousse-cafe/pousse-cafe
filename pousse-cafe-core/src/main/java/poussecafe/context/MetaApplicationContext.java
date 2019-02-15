@@ -3,32 +3,30 @@ package poussecafe.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import poussecafe.domain.AggregateDefinition;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.ComponentFactory;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
+import poussecafe.domain.MessageFactory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.injector.Injector;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerRegistry;
+import poussecafe.messaging.MessageListenerDefinition;
+import poussecafe.messaging.MessageListenerFactory;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 import poussecafe.util.ReflectionUtils;
 
-import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MetaApplicationContext {
@@ -37,19 +35,13 @@ public class MetaApplicationContext {
 
     private Environment environment;
 
-    private ComponentFactory componentFactory;
-
     private Injector injector;
 
-    private MessageListenerRegistry messageListenerRegistry;
-
-    private TransactionRunnerLocator storageServiceLocator;
+    private TransactionRunnerLocator transactionRunnerLocator;
 
     private MessageConsumer messageConsumer;
 
     private MessageSenderLocator messageSenderLocator;
-
-    private Map<Class<?>, EntityServices> entityServices = new HashMap<>();
 
     private Set<BoundedContext> boundedContexts = new HashSet<>();
 
@@ -57,14 +49,8 @@ public class MetaApplicationContext {
         configuration = new Configuration();
         environment = new Environment();
 
-        componentFactory = new ComponentFactory();
-        componentFactory.setEnvironment(environment);
-
-        messageListenerRegistry = new MessageListenerRegistry();
-        messageListenerRegistry.setEnvironment(environment);
-
-        storageServiceLocator = new TransactionRunnerLocator();
-        storageServiceLocator.setEnvironment(environment);
+        transactionRunnerLocator = new TransactionRunnerLocator();
+        transactionRunnerLocator.setEnvironment(environment);
 
         messageConsumer = new MessageConsumer();
 
@@ -110,9 +96,10 @@ public class MetaApplicationContext {
         injector = new Injector();
         injector.registerInjectableService(configuration);
         injector.registerInjectableService(environment);
-        injector.registerInjectableService(storageServiceLocator);
-        injector.registerInjectableService(messageListenerRegistry);
-        injector.registerInjectableService(componentFactory);
+        injector.registerInjectableService(transactionRunnerLocator);
+        injector.registerInjectableService(environment.messageListenerRegistry());
+        injector.registerInjectableService(environment.messageFactory());
+        injector.registerInjectableService(environment.entityFactory());
 
         configureContext();
         injector.injectDependencies();
@@ -137,6 +124,7 @@ public class MetaApplicationContext {
         for(Class<? extends Service> serviceClass : boundedContext.getServices()) {
             environment.defineService(serviceClass);
         }
+        boundedContext.listeners().forEach(environment::defineListener);
     }
 
     private void loadBoundedContextImplementations() {
@@ -193,85 +181,72 @@ public class MetaApplicationContext {
         configureEntities();
         configureServices();
         configureDomainProcesses();
-        configureMessageListeners();
         configureMessageConsumer();
         configureMessageSenderLocator();
         configureMessageEmissionPolicies();
+        configureMessageListeners();
     }
 
     protected void configureEntities() {
-        for (Class<?> entityClass : environment.getDefinedEntities()) {
-            configureEntity(entityClass);
+        EntityServicesFactory entityServicesFactory = new EntityServicesFactory(environment);
+        for (AggregateDefinition definition : environment.entityDefinitions()) {
+            if(definition.hasFactory() && definition.hasRepository()) {
+                configureEntity(entityServicesFactory.buildEntityServices(definition));
+            }
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void configureEntity(Class<?> entityClass) {
-        AggregateDefinition definition = environment.getEntityDefinition(entityClass);
-        if(definition.hasFactory() && definition.hasRepository()) {
-            Repository repository = componentFactory.newRepository(definition.getRepositoryClass());
-            Factory factory = componentFactory.newFactory(definition.getFactoryClass());
+    @SuppressWarnings({"rawtypes"})
+    private void configureEntity(EntityServices entityServices) {
+        environment.registerEntityServices(entityServices);
 
-            injector.registerInjectableService(repository);
-            injector.addInjectionCandidate(repository);
+        Repository repository = entityServices.getRepository();
+        injector.registerInjectableService(repository);
+        injector.addInjectionCandidate(repository);
 
-            injector.registerInjectableService(factory);
-            injector.addInjectionCandidate(factory);
-
-            entityServices.put(entityClass, new EntityServices(entityClass, repository, factory));
-        }
+        Factory factory = entityServices.getFactory();
+        injector.registerInjectableService(factory);
+        injector.addInjectionCandidate(factory);
     }
 
     protected void configureServices() {
         for (Class<?> serviceClass : environment.getDefinedServices()) {
             if(!ReflectionUtils.isAbstract(serviceClass)) {
-                Object service = newInstance(serviceClass);
+                Object service = ReflectionUtils.newInstance(serviceClass);
                 injector.registerInjectableService(service);
                 injector.addInjectionCandidate(service);
-                services.put(serviceClass, service);
+                environment.registerServiceInstance(serviceClass, service);
             }
         }
 
         for (ServiceImplementation serviceImplementation : environment.serviceImplementations()) {
-            Object service = newInstance(serviceImplementation.serviceImplementationClass());
+            Object service = ReflectionUtils.newInstance(serviceImplementation.serviceImplementationClass());
             injector.registerInjectableService(serviceImplementation.serviceClass(), service);
             injector.addInjectionCandidate(service);
-            if(services.put(serviceImplementation.serviceClass(), service) != null) {
-                throw new PousseCafeException("Service was already implemented " + serviceImplementation.serviceClass());
-            }
-        }
-    }
-
-    private Map<Class<?>, Object> services = new HashMap<>();
-
-    private Object newInstance(Class<?> serviceClass) {
-        try {
-            return serviceClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new PousseCafeException("Unable to instantiate service", e);
+            environment.registerServiceInstance(serviceImplementation.serviceClass(), service);
         }
     }
 
     protected void configureDomainProcesses() {
         for (Class<?> processClass : environment.getDefinedProcesses()) {
-            DomainProcess process = (DomainProcess) newInstance(processClass);
+            DomainProcess process = (DomainProcess) ReflectionUtils.newInstance(processClass);
             injector.addInjectionCandidate(process);
             injector.registerInjectableService(process);
-            processes.put(processClass, process);
+            environment.registerDomainProcessInstance(process);
         }
     }
 
     protected void configureMessageListeners() {
-        MessageListenersDiscoverer discoverer = new MessageListenersDiscoverer();
-        List<MessageListener> listeners = new ArrayList<>();
-        for (Class<?> processClass : environment.getDefinedProcesses()) {
-            DomainProcess process = processes.get(processClass);
-            listeners.addAll(discoverer.discoverDeclaredListeners(process));
+        MessageListenerFactory messageListenerFactory = new MessageListenerFactory.Builder()
+                .environment(environment)
+                .transactionRunnerLocator(transactionRunnerLocator)
+                .injector(injector)
+                .build();
+        for(MessageListenerDefinition definition : environment.definedListeners()) {
+            MessageListener listener = messageListenerFactory.build(definition);
+            environment.registerListener(listener);
         }
-        listeners.stream().forEach(messageListenerRegistry::registerListener);
     }
-
-    private Map<Class<?>, DomainProcess> processes = new HashMap<>();
 
     protected void configureMessageEmissionPolicies() {
         for (Storage storage : environment.getStorages()) {
@@ -311,16 +286,16 @@ public class MetaApplicationContext {
     }
 
     public Set<MessageListener> getMessageListeners(Class<? extends Message> messageClass) {
-        return messageListenerRegistry.getListeners(messageClass);
+        return environment.getListeners(messageClass);
     }
 
     public EntityServices getEntityServices(Class<?> entityClass) {
-        return entityServices.get(entityClass);
+        return environment.getEntityServices(entityClass);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends DomainProcess> T getDomainProcess(Class<T> processClass) {
-        T domainProcess = (T) processes.get(processClass);
+        T domainProcess = (T) environment.getDomainProcessInstance(processClass);
         if(domainProcess == null) {
             throw new PousseCafeException("Domain process not found");
         }
@@ -337,15 +312,15 @@ public class MetaApplicationContext {
     }
 
     public Collection<EntityServices> getAllEntityServices() {
-        return unmodifiableCollection(entityServices.values());
+        return environment.getAllEntityServices();
     }
 
     public Collection<DomainProcess> getAllDomainProcesses() {
-        return unmodifiableCollection(processes.values());
+        return environment.getAllDomainProcesses();
     }
 
     public Collection<Object> getAllServices() {
-        return unmodifiableCollection(services.values());
+        return environment.getAllServiceInstances();
     }
 
     public synchronized void injectDependencies(Object service) {
@@ -353,17 +328,20 @@ public class MetaApplicationContext {
     }
 
     public synchronized void registerListeners(Object service) {
-        MessageListenersDiscoverer discoverer = new MessageListenersDiscoverer();
-        discoverer.discoverDeclaredListeners(service).stream()
-            .forEach(messageListenerRegistry::registerListener);
+        ServiceMessageListenerDiscoverer explorer = new ServiceMessageListenerDiscoverer.Builder()
+                .service(service)
+                .messageListenerFactory(new DeclaredMessageListenerFactory())
+                .build();
+        explorer.discoverListeners().stream()
+            .forEach(environment::registerListener);
     }
 
     public MessageSenderLocator getMessageSenderLocator() {
         return messageSenderLocator;
     }
 
-    public ComponentFactory getComponentFactory() {
-        return componentFactory;
+    public MessageFactory getMessageFactory() {
+        return environment.messageFactory();
     }
 
     public List<MessagingConnection> messagingConnections() {

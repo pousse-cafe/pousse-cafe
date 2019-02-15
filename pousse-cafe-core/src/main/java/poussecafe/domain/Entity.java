@@ -20,15 +20,26 @@ public abstract class Entity<K, D extends EntityAttributes<K>> {
         return attributes;
     }
 
-    public void setComponentFactory(ComponentFactory componentFactory) {
-        checkThat(value(componentFactory).notNull());
-        this.componentFactory = componentFactory;
+    public void entityFactory(EntityFactory entityFactory) {
+        Objects.requireNonNull(entityFactory);
+        this.entityFactory = entityFactory;
     }
 
-    private ComponentFactory componentFactory;
+    private EntityFactory entityFactory;
 
-    protected ComponentFactory componentFactory() {
-        return componentFactory;
+    protected EntityFactory entityFactory() {
+        return entityFactory;
+    }
+
+    public void messageFactory(MessageFactory messageFactory) {
+        Objects.requireNonNull(messageFactory);
+        this.messageFactory = messageFactory;
+    }
+
+    private MessageFactory messageFactory;
+
+    protected MessageFactory messageFactory() {
+        return messageFactory;
     }
 
     protected void dontPersist(boolean value) {
@@ -66,7 +77,7 @@ public abstract class Entity<K, D extends EntityAttributes<K>> {
     }
 
     public <E extends DomainEvent> E newDomainEvent(Class<E> eventClass) {
-        return componentFactory.newMessage(eventClass);
+        return messageFactory.newMessage(eventClass);
     }
 
     public void context(Object context) {
@@ -82,7 +93,7 @@ public abstract class Entity<K, D extends EntityAttributes<K>> {
     }
 
     public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
-        E entity = componentFactory.newEntity(new EntitySpecification.Builder<E>()
+        E entity = entityFactory.newEntity(new EntitySpecification.Builder<E>()
                 .withComponentClass(entityClass)
                 .withData(true)
                 .build());

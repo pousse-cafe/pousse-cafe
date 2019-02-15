@@ -9,22 +9,59 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import poussecafe.domain.AggregateDefinition;
+import poussecafe.domain.EntityFactory;
 import poussecafe.domain.EntityImplementation;
+import poussecafe.domain.Factory;
+import poussecafe.domain.MessageFactory;
+import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
+import poussecafe.messaging.MessageListener;
+import poussecafe.messaging.MessageListenerDefinition;
+import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 import poussecafe.util.ReflectionUtils;
 
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
 public class Environment {
+
+    public Environment() {
+        messageListenerRegistry = new MessageListenerRegistry();
+        messageListenerRegistry.setEnvironment(this);
+
+        messageFactory = new MessageFactory(this);
+        entityFactory = new EntityFactory.Builder()
+                .environment(this)
+                .messageFactory(messageFactory)
+                .build();
+    }
+
+    private MessageListenerRegistry messageListenerRegistry;
+
+    public MessageListenerRegistry messageListenerRegistry() {
+        return messageListenerRegistry;
+    }
+
+    private EntityFactory entityFactory;
+
+    public EntityFactory entityFactory() {
+        return entityFactory;
+    }
+
+    private MessageFactory messageFactory;
+
+    public MessageFactory messageFactory() {
+        return messageFactory;
+    }
 
     public void defineAggregate(AggregateDefinition definition) {
         checkThat(value(definition).notNull());
@@ -267,5 +304,81 @@ public class Environment {
                 .filter(ReflectionUtils::isAbstract)
                 .filter(abstractServiceClass -> !serviceImplementations.containsKey(abstractServiceClass))
                 .collect(toSet());
+    }
+
+    public void defineListener(MessageListenerDefinition definition) {
+        Objects.requireNonNull(definition);
+        listenerDefinitions.add(definition);
+    }
+
+    public Set<MessageListenerDefinition> definedListeners() {
+        return unmodifiableSet(listenerDefinitions);
+    }
+
+    private Set<MessageListenerDefinition> listenerDefinitions = new HashSet<>();
+
+    public void registerEntityServices(EntityServices entityServices) {
+        Objects.requireNonNull(entityServices);
+        entityServicesMap.put(entityServices.getEntityClass(), entityServices);
+    }
+
+    private Map<Class<?>, EntityServices> entityServicesMap = new HashMap<>();
+
+    public void registerServiceInstance(Class<?> serviceClass,
+            Object serviceInstance) {
+        if(serviceInstances.containsKey(serviceClass)) {
+            throw new PousseCafeException("Service was already implemented " + serviceClass);
+        }
+        serviceInstances.put(serviceClass, serviceInstance);
+    }
+
+    private Map<Class<?>, Object> serviceInstances = new HashMap<>();
+
+    public void registerDomainProcessInstance(DomainProcess domainProcessInstance) {
+        processInstances.put(domainProcessInstance.getClass(), domainProcessInstance);
+    }
+
+    private Map<Class<?>, DomainProcess> processInstances = new HashMap<>();
+
+    public EntityServices getEntityServices(Class<?> entityClass) {
+        return entityServicesMap.get(entityClass);
+    }
+
+    public DomainProcess getDomainProcessInstance(Class<? extends DomainProcess> processClass) {
+        return processInstances.get(processClass);
+    }
+
+    public Collection<EntityServices> getAllEntityServices() {
+        return unmodifiableCollection(entityServicesMap.values());
+    }
+
+    public Collection<DomainProcess> getAllDomainProcesses() {
+        return unmodifiableCollection(processInstances.values());
+    }
+
+    public Collection<Object> getAllServiceInstances() {
+        return unmodifiableCollection(serviceInstances.values());
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Factory getFactoryInstance(Class factoryClass) {
+        return getEntityServices(getEntityClass(factoryClass)).getFactory();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Repository getRepositoryInstance(Class repositoryClass) {
+        return getEntityServices(getEntityClass(repositoryClass)).getRepository();
+    }
+
+    public void registerListener(MessageListener listener) {
+        messageListenerRegistry.registerListener(listener);
+    }
+
+    public Set<MessageListener> getListeners(Class<? extends Message> messageClass) {
+        return messageListenerRegistry.getListeners(messageClass);
+    }
+
+    public Collection<AggregateDefinition> entityDefinitions() {
+        return unmodifiableCollection(aggregateDefinitions.values());
     }
 }

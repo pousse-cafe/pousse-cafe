@@ -36,7 +36,6 @@ public class MessageListenerEntryBuilderTest {
         builtId = new DeclaredMessageListenerIdBuilder()
                 .messageClass(messageClass)
                 .method(method)
-                .target(service)
                 .build();
     }
 

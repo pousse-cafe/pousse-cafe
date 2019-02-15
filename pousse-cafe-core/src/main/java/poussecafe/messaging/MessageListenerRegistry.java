@@ -18,13 +18,13 @@ public class MessageListenerRegistry {
 
     private Map<Class<? extends Message>, Set<MessageListener>> listeners = new HashMap<>();
 
-    public void registerListener(MessageListener entry) {
-        logger.debug("Registering listener {}", entry);
-        if(!environment.getDefinedMessages().contains(entry.messageClass())) {
-            throw new PousseCafeException("Message " + entry.messageClass().getName() + " is not defined");
+    public void registerListener(MessageListener listener) {
+        logger.debug("Registering listener {}", listener);
+        if(!environment.getDefinedMessages().contains(listener.messageClass())) {
+            throw new PousseCafeException("Message " + listener.messageClass().getName() + " is not defined");
         }
-        Set<MessageListener> registeredListeners = getOrCreateSet(entry.messageClass());
-        registeredListeners.add(entry);
+        Set<MessageListener> registeredListeners = getOrCreateSet(listener.messageClass());
+        registeredListeners.add(listener);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());

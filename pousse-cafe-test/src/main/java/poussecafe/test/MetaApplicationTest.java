@@ -42,7 +42,7 @@ public abstract class MetaApplicationTest {
     }
 
     protected <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
-        return wrapper.context().getComponentFactory().newMessage(eventClass);
+        return wrapper.context().getMessageFactory().newMessage(eventClass);
     }
 
     protected void addDomainEvent(DomainEvent event) {

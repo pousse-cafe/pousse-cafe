@@ -4,7 +4,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.context.TransactionRunnerLocator;
-import poussecafe.domain.ComponentFactory;
+import poussecafe.domain.EntityFactory;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;
@@ -32,7 +32,7 @@ public abstract class MessagingJournalTest {
     protected JournalEntryFactory entryFactory;
 
     @Mock
-    protected ComponentFactory primitiveFactory;
+    protected EntityFactory primitiveFactory;
 
     @InjectMocks
     protected StoreConsumptionResult journal;

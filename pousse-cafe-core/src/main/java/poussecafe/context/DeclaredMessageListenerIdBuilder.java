@@ -24,17 +24,9 @@ public class DeclaredMessageListenerIdBuilder {
 
     private Method method;
 
-    public DeclaredMessageListenerIdBuilder target(Object target) {
-        this.target = target;
-        return this;
-    }
-
-    private Object target;
-
     public String build() {
         Objects.requireNonNull(messageClass);
         Objects.requireNonNull(method);
-        Objects.requireNonNull(target);
-        return target.getClass().getCanonicalName() + "::" + method.getName() + "(" + messageClass.getCanonicalName() + ")";
+        return method.getDeclaringClass().getCanonicalName() + "::" + method.getName() + "(" + messageClass.getCanonicalName() + ")";
     }
 }

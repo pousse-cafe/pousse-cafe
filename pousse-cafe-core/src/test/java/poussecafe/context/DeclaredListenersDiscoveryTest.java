@@ -7,9 +7,7 @@ import poussecafe.messaging.MessageListener;
 
 import static org.junit.Assert.assertTrue;
 
-public class ListenersDiscoveryTest {
-
-    private MessageListenersDiscoverer workflowExplorer = new MessageListenersDiscoverer();
+public class DeclaredListenersDiscoveryTest {
 
     private DummyProcess service;
 
@@ -25,8 +23,14 @@ public class ListenersDiscoveryTest {
     }
 
     private void whenDiscoveringDeclaredListeners() {
-        discoveredListeners = workflowExplorer.discoverDeclaredListeners(service);
+        workflowExplorer = new ServiceMessageListenerDiscoverer.Builder()
+                .service(service)
+                .messageListenerFactory(new DeclaredMessageListenerFactory())
+                .build();
+        discoveredListeners = workflowExplorer.discoverListeners();
     }
+
+    private ServiceMessageListenerDiscoverer workflowExplorer;
 
     private List<MessageListener> discoveredListeners;
 
@@ -37,7 +41,6 @@ public class ListenersDiscoveryTest {
     private boolean listenerWithDefaultId(MessageListener listener) {
         return listener.id().equals(new DeclaredMessageListenerIdBuilder()
                 .messageClass(TestDomainEvent.class)
-                .target(service)
                 .method(getMethodByName("domainEventListenerWithDefaultId"))
                 .build());
     }

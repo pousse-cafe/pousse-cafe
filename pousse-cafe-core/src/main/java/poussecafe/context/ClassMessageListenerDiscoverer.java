@@ -7,38 +7,38 @@ import java.util.Objects;
 import poussecafe.messaging.DomainEventListener;
 import poussecafe.messaging.MessageListener;
 
-class MessageListenerDiscoverer {
+public class ClassMessageListenerDiscoverer {
 
-    static class Builder {
+    public static class Builder {
 
-        private MessageListenerDiscoverer discoverer = new MessageListenerDiscoverer();
+        private ClassMessageListenerDiscoverer discoverer = new ClassMessageListenerDiscoverer();
 
-        public Builder service(Object service) {
-            discoverer.service = service;
+        public Builder targetClass(Class<?> targetClass) {
+            discoverer.targetClass = targetClass;
             return this;
         }
 
-        public Builder messageListenerFactory(MessageListenerFactory messageListenerFactory) {
+        public Builder messageListenerFactory(ClassMessageListenerFactory messageListenerFactory) {
             discoverer.messageListenerFactory = messageListenerFactory;
             return this;
         }
 
-        public MessageListenerDiscoverer build() {
-            Objects.requireNonNull(discoverer.service);
+        public ClassMessageListenerDiscoverer build() {
+            Objects.requireNonNull(discoverer.targetClass);
             Objects.requireNonNull(discoverer.messageListenerFactory);
             return discoverer;
         }
     }
 
-    private MessageListenerDiscoverer() {
+    private ClassMessageListenerDiscoverer() {
 
     }
 
-    private Object service;
+    private Class<?> targetClass;
 
     public List<MessageListener> discoverListeners() {
         List<MessageListener> listeners = new ArrayList<>();
-        for (Method method : service.getClass().getMethods()) {
+        for (Method method : targetClass.getMethods()) {
             MessageListener listener = tryDiscoverListener(method);
             if (listener != null) {
                 listeners.add(listener);
@@ -50,11 +50,11 @@ class MessageListenerDiscoverer {
     private MessageListener tryDiscoverListener(Method method) {
         DomainEventListener annotation = method.getAnnotation(DomainEventListener.class);
         if (annotation != null) {
-            return messageListenerFactory.build(service, method);
+            return messageListenerFactory.build(method);
         } else {
             return null;
         }
     }
 
-    private MessageListenerFactory messageListenerFactory;
+    private ClassMessageListenerFactory messageListenerFactory;
 }

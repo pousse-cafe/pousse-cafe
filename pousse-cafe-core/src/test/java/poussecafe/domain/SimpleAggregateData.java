@@ -1,6 +1,7 @@
 package poussecafe.domain;
 
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 
 public class SimpleAggregateData implements SimpleAggregate.Attributes {
 
@@ -20,4 +21,14 @@ public class SimpleAggregateData implements SimpleAggregate.Attributes {
     }
 
     private String key;
+
+    @Override
+    public Attribute<String> data() {
+        return AttributeBuilder.simple(String.class)
+                .get(() -> data)
+                .set(value -> data = value)
+                .build();
+    }
+
+    private String data;
 }
