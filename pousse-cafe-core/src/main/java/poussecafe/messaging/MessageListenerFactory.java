@@ -102,6 +102,7 @@ public class MessageListenerFactory {
     }
 
     private MessageListener buildFactoryListener(MessageListenerDefinition definition) {
+        @SuppressWarnings("rawtypes")
         Factory target = environment.getFactoryInstance(definition.method().getDeclaringClass());
         return buildMessageListenerBuilder(definition)
                 .consumer(buildFactoryListenerConsumer(target, definition))
