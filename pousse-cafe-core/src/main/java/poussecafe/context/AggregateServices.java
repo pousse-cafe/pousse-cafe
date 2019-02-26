@@ -6,7 +6,7 @@ import poussecafe.domain.Repository;
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 
-public class EntityServices {
+public class AggregateServices {
 
     private Class<?> entityClass;
 
@@ -14,7 +14,7 @@ public class EntityServices {
 
     private Factory<?, ?, ?> factory;
 
-    public EntityServices(Class<?> entityClass, Repository<?, ?, ?> repository,
+    public AggregateServices(Class<?> entityClass, Repository<?, ?, ?> repository,
             Factory<?, ?, ?> factory) {
         setEntityClass(entityClass);
         setRepository(repository);

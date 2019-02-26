@@ -45,12 +45,14 @@ public class MyProcessTest extends MetaApplicationTest {
 
     private void givenAvailableAggregate() {
         key = new MyAggregateKey("key");
-        context().getDomainProcess(MyProcess.class).handle(new CreateAggregate(key));
+        myProcess.handle(new CreateAggregate(key));
     }
+
+    private MyProcess myProcess;
 
     private void whenProcessingCommand() {
         x = 10;
-        context().getDomainProcess(MyProcess.class).handle(new MyCommand(key, x));
+        myProcess.handle(new MyCommand(key, x));
     }
 
     private void thenAggregateUpdated() {

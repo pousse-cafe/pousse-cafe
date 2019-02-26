@@ -23,8 +23,18 @@ public class BoundedContext {
             return this;
         }
 
+        public Builder withEntityImplementation(EntityImplementation entityImplementation) {
+            boundedContext.storageImplementations.add(entityImplementation);
+            return this;
+        }
+
         public Builder messagingImplementations(Collection<MessageImplementation> messagingImplementations) {
             boundedContext.messagingImplementations.addAll(messagingImplementations);
+            return this;
+        }
+
+        public Builder withMessageImplentation(MessageImplementation messageImplementation) {
+            boundedContext.messagingImplementations.add(messageImplementation);
             return this;
         }
 
@@ -54,13 +64,13 @@ public class BoundedContext {
 
     private Set<EntityImplementation> storageImplementations = new HashSet<>();
 
-    public Set<EntityImplementation> storageImplementations() {
+    public Set<EntityImplementation> entityImplementations() {
         return storageImplementations;
     }
 
     private Set<MessageImplementation> messagingImplementations = new HashSet<>();
 
-    public Set<MessageImplementation> messagingImplementations() {
+    public Set<MessageImplementation> messageImplementations() {
         return messagingImplementations;
     }
 

@@ -37,11 +37,11 @@ public class BoundedContextConfigurer {
 
     public BoundedContextDefinition define() {
         BoundedContextDefinition.Builder builder = new BoundedContextDefinition.Builder();
-        builder.definitions(classPathExplorer.discoverDefinitions());
-        builder.processes(classPathExplorer.discoverDomainProcesses());
-        builder.services(classPathExplorer.discoverServices());
-        builder.messages(classPathExplorer.discoverMessages());
-        builder.listeners(classPathExplorer.discoverListeners());
+        builder.withAggregateDefinitions(classPathExplorer.discoverDefinitions());
+        builder.withDomainProcesses(classPathExplorer.discoverDomainProcesses());
+        builder.withServices(classPathExplorer.discoverServices());
+        builder.withMessages(classPathExplorer.discoverMessages());
+        builder.withMessageListeners(classPathExplorer.discoverListeners());
         return builder.build();
     }
 

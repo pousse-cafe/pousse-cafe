@@ -34,8 +34,10 @@ public class CustomerCreationTest extends MetaApplicationTest {
     }
 
     private void whenCreatingCustomer() {
-        context().getDomainProcess(CustomerCreation.class).createCustomer(new CreateCustomer(customerKey));
+        customerCreation.createCustomer(new CreateCustomer(customerKey));
     }
+
+    private CustomerCreation customerCreation;
 
     private void thenCustomerIsCreated() {
         assertThat(find(Customer.class, customerKey), notNullValue());

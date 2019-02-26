@@ -11,6 +11,7 @@ import poussecafe.domain.SimpleAggregateDataAccess;
 import poussecafe.domain.SimpleAggregateFactory;
 import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.domain.SimpleAggregateTouchRunner;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerDefinition;
@@ -37,69 +38,70 @@ public class MetaApplicationContextTest {
     }
 
     private void givenApplicationConfiguration() {
-        context.environment().defineAggregate(new AggregateDefinition.Builder()
-                .withEntityClass(SimpleAggregate.class)
-                .withFactoryClass(SimpleAggregateFactory.class)
-                .withRepositoryClass(SimpleAggregateRepository.class)
-                .build());
+        BoundedContextDefinition boundedContextDefinition = new BoundedContextDefinition.Builder()
+                .withAggregateDefinition(new AggregateDefinition.Builder()
+                        .withEntityClass(SimpleAggregate.class)
+                        .withFactoryClass(SimpleAggregateFactory.class)
+                        .withRepositoryClass(SimpleAggregateRepository.class)
+                        .build())
+                .withDomainProcess(DummyProcess.class)
+                .withMessage(TestDomainEvent.class)
+                .withMessage(TestDomainEvent2.class)
+                .withMessage(TestDomainEvent3.class)
+                .withMessage(TestDomainEvent4.class)
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithDefaultId", TestDomainEvent.class))
+                        .build())
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .customId(Optional.of("customDomainEventListenerId"))
+                        .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithCustomId", TestDomainEvent.class))
+                        .build())
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent.class))
+                        .build())
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent2.class))
+                        .build())
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .method(ReflectionUtils.method(SimpleAggregate.class, "touch", TestDomainEvent3.class))
+                        .runner(Optional.of(SimpleAggregateTouchRunner.class))
+                        .build())
+                .withMessageListener(new MessageListenerDefinition.Builder()
+                        .method(ReflectionUtils.method(SimpleAggregateRepository.class, "delete", TestDomainEvent4.class))
+                        .build())
+                .build();
 
-        context.environment().implementEntity(new EntityImplementation.Builder()
-                .withEntityClass(SimpleAggregate.class)
-                .withDataFactory(SimpleAggregateData::new)
-                .withDataAccessFactory(SimpleAggregateDataAccess::new)
-                .withStorage(InternalStorage.instance())
-                .build());
+        BoundedContext boundedContext = new BoundedContext.Builder()
+                .definition(boundedContextDefinition)
+                .withEntityImplementation(new EntityImplementation.Builder()
+                        .withEntityClass(SimpleAggregate.class)
+                        .withDataFactory(SimpleAggregateData::new)
+                        .withDataAccessFactory(SimpleAggregateDataAccess::new)
+                        .withStorage(InternalStorage.instance())
+                        .build())
+                .withMessageImplentation(new MessageImplementation.Builder()
+                    .withMessageClass(TestDomainEvent.class)
+                    .withMessageImplementationClass(TestDomainEvent.class)
+                    .withMessaging(InternalMessaging.instance())
+                    .build())
+                .withMessageImplentation(new MessageImplementation.Builder()
+                        .withMessageClass(TestDomainEvent2.class)
+                        .withMessageImplementationClass(TestDomainEvent2.class)
+                        .withMessaging(InternalMessaging.instance())
+                        .build())
+                .withMessageImplentation(new MessageImplementation.Builder()
+                        .withMessageClass(TestDomainEvent3.class)
+                        .withMessageImplementationClass(TestDomainEvent3.class)
+                        .withMessaging(InternalMessaging.instance())
+                        .build())
+                .withMessageImplentation(new MessageImplementation.Builder()
+                        .withMessageClass(TestDomainEvent4.class)
+                        .withMessageImplementationClass(TestDomainEvent4.class)
+                        .withMessaging(InternalMessaging.instance())
+                        .build())
+                .build();
 
-        context.environment().defineProcess(DummyProcess.class);
-
-        context.environment().defineMessage(TestDomainEvent.class);
-        context.environment().implementMessage(new MessageImplementation.Builder()
-                .withMessageClass(TestDomainEvent.class)
-                .withMessageImplementationClass(TestDomainEvent.class)
-                .withMessaging(InternalMessaging.instance())
-                .build());
-
-        context.environment().defineMessage(TestDomainEvent2.class);
-        context.environment().implementMessage(new MessageImplementation.Builder()
-                .withMessageClass(TestDomainEvent2.class)
-                .withMessageImplementationClass(TestDomainEvent2.class)
-                .withMessaging(InternalMessaging.instance())
-                .build());
-
-        context.environment().defineMessage(TestDomainEvent3.class);
-        context.environment().implementMessage(new MessageImplementation.Builder()
-                .withMessageClass(TestDomainEvent3.class)
-                .withMessageImplementationClass(TestDomainEvent3.class)
-                .withMessaging(InternalMessaging.instance())
-                .build());
-
-        context.environment().defineMessage(TestDomainEvent4.class);
-        context.environment().implementMessage(new MessageImplementation.Builder()
-                .withMessageClass(TestDomainEvent4.class)
-                .withMessageImplementationClass(TestDomainEvent4.class)
-                .withMessaging(InternalMessaging.instance())
-                .build());
-
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithDefaultId", TestDomainEvent.class))
-                .build());
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .customId(Optional.of("customDomainEventListenerId"))
-                .method(ReflectionUtils.method(DummyProcess.class, "domainEventListenerWithCustomId", TestDomainEvent.class))
-                .build());
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent.class))
-                .build());
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .method(ReflectionUtils.method(SimpleAggregateFactory.class, "newSimpleAggregate", TestDomainEvent2.class))
-                .build());
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .method(ReflectionUtils.method(SimpleAggregate.class, "touch", TestDomainEvent3.class))
-                .runner(Optional.of(SimpleAggregateTouchRunner.class))
-                .build());
-        context.environment().defineListener(new MessageListenerDefinition.Builder()
-                .method(ReflectionUtils.method(SimpleAggregateRepository.class, "delete", TestDomainEvent4.class))
-                .build());
+        context.addBoundedContext(boundedContext);
     }
 
     private void whenCreatingContext() {
@@ -107,9 +109,9 @@ public class MetaApplicationContextTest {
     }
 
     private void thenEntityServicesAreConfigured() {
-        EntityServices services;
+        AggregateServices services;
 
-        services = context.getEntityServices(SimpleAggregate.class);
+        services = context.environment().aggregateServicesOf(SimpleAggregate.class).orElseThrow(PousseCafeException::new);
         assertThat(services.getEntityClass(), equalTo(SimpleAggregate.class));
         assertThat(services.getFactory(), notNullValue());
         assertThat(services.getRepository(), notNullValue());
@@ -125,7 +127,7 @@ public class MetaApplicationContextTest {
     private void thenMessageListenersAreConfigured() {
         Set<MessageListener> listeners;
 
-        listeners = context.getMessageListeners(TestDomainEvent.class);
+        listeners = context.environment().messageListenersOf(TestDomainEvent.class);
         assertThat(listeners.size(), is(3));
     }
 

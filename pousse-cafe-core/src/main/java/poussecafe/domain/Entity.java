@@ -1,6 +1,8 @@
 package poussecafe.domain;
 
 import java.util.Objects;
+import poussecafe.environment.EntityFactory;
+import poussecafe.environment.MessageFactory;
 import poussecafe.storage.Storage;
 
 import static poussecafe.check.AssertionSpecification.value;

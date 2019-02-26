@@ -1,5 +1,7 @@
 package poussecafe.domain;
 
+import poussecafe.environment.EntityFactory;
+
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;
 

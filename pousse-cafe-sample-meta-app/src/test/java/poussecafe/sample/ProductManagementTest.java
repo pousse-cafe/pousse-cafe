@@ -42,8 +42,10 @@ public class ProductManagementTest extends MetaApplicationTest {
     }
 
     protected void createProduct() {
-        context().getDomainProcess(ProductManagement.class).createProduct(new CreateProduct(productKey));
+        productManagement.createProduct(new CreateProduct(productKey));
     }
+
+    private ProductManagement productManagement;
 
     private void thenProductCreated() {
         assertThat(find(Product.class, productKey), notNullValue());
@@ -63,7 +65,7 @@ public class ProductManagementTest extends MetaApplicationTest {
 
     private void whenSubmittingAddUnitsCommand() {
         addUnits = new AddUnits(productKey, 10);
-        context().getDomainProcess(ProductManagement.class).addUnits(addUnits);
+        productManagement.addUnits(addUnits);
     }
 
     private void thenProductHasAddedUnits() {

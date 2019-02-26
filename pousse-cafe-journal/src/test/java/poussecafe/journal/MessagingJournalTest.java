@@ -4,7 +4,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import poussecafe.context.TransactionRunnerLocator;
-import poussecafe.domain.EntityFactory;
+import poussecafe.environment.EntityFactory;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryKey;

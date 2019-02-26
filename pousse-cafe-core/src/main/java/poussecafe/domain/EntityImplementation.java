@@ -65,7 +65,7 @@ public class EntityImplementation {
         return dataAccessFactory != null;
     }
 
-    public Supplier<Object> getDataAccessFactory() {
+    public Supplier<Object> dataAccessFactory() {
         return dataAccessFactory;
     }
 

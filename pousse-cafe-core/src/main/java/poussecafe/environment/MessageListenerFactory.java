@@ -1,4 +1,4 @@
-package poussecafe.messaging;
+package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -6,9 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import poussecafe.context.AggregateMessageListenerRunner;
+import poussecafe.context.AggregateServices;
 import poussecafe.context.DeclaredMessageListenerIdBuilder;
-import poussecafe.context.EntityServices;
-import poussecafe.context.Environment;
 import poussecafe.context.TransactionRunnerLocator;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
@@ -16,10 +15,14 @@ import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.injector.Injector;
+import poussecafe.messaging.Message;
+import poussecafe.messaging.MessageListener;
+import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.ReflectionUtils;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MessageListenerFactory {
 
     public static class Builder {
@@ -63,10 +66,9 @@ public class MessageListenerFactory {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private MessageListener buildDomainProcessListener(MessageListenerDefinition definition) {
         Method method = definition.method();
-        DomainProcess target = environment.getDomainProcessInstance((Class<? extends DomainProcess>) definition.method().getDeclaringClass());
+        DomainProcess target = environment.domainProcess((Class<? extends DomainProcess>) definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         return buildMessageListenerBuilder(definition)
                 .consumer(buildMessageConsumer(target, method))
                 .build();
@@ -74,7 +76,6 @@ public class MessageListenerFactory {
 
     private MessageListener.Builder buildMessageListenerBuilder(MessageListenerDefinition definition) {
         Method method = definition.method();
-        @SuppressWarnings("unchecked")
         Class<? extends Message> messageClass = (Class<? extends Message>) method.getParameters()[0].getType();
         Optional<String> customId = definition.customId();
         if(!customId.isPresent()) {
@@ -102,8 +103,7 @@ public class MessageListenerFactory {
     }
 
     private MessageListener buildFactoryListener(MessageListenerDefinition definition) {
-        @SuppressWarnings("rawtypes")
-        Factory target = environment.getFactoryInstance(definition.method().getDeclaringClass());
+        Factory target = environment.factory(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         return buildMessageListenerBuilder(definition)
                 .consumer(buildFactoryListenerConsumer(target, definition))
                 .build();
@@ -111,7 +111,7 @@ public class MessageListenerFactory {
 
     private Consumer<Message> buildFactoryListenerConsumer(Factory factory, MessageListenerDefinition definition) {
         Class entityClass = factory.entityClass();
-        Repository repository = environment.getEntityServices(entityClass).getRepository();
+        Repository repository = environment.repositoryOf(entityClass).orElseThrow(PousseCafeException::new);
         Method method = definition.method();
         Class<?> returnType = method.getReturnType();
         if(entityClass.isAssignableFrom(returnType) || returnType.isAssignableFrom(Optional.class)) {
@@ -123,7 +123,6 @@ public class MessageListenerFactory {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private Consumer<Message> addSingleCreatedAggregate(Object target,
             Method method,
             Repository repository,
@@ -150,21 +149,18 @@ public class MessageListenerFactory {
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void addCreatedAggregate(TransactionRunner transactionRunner,
             Repository repository,
             AggregateRoot aggregate) {
         transactionRunner.runInTransaction(() -> repository.add(aggregate));
     }
 
-    @SuppressWarnings("rawtypes")
     private Consumer<Message> addIterableCreatedAggregates(Object target,
             Method method,
             Repository repository,
             Class entityClass) {
         return message -> {
             try {
-                @SuppressWarnings("unchecked")
                 Iterable<AggregateRoot> iterable = (Iterable<AggregateRoot>) method.invoke(target, message);
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
                 for(AggregateRoot aggregate : iterable) {
@@ -178,7 +174,7 @@ public class MessageListenerFactory {
 
     private MessageListener buildRepositoryListener(MessageListenerDefinition definition) {
         Method method = definition.method();
-        Repository target = environment.getRepositoryInstance(definition.method().getDeclaringClass());
+        Repository target = environment.repository(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         return buildMessageListenerBuilder(definition)
                 .consumer(buildRepositoryMessageConsumer(target, method))
                 .build();
@@ -209,11 +205,11 @@ public class MessageListenerFactory {
     protected Consumer<Message> buildAggregateRootMessageConsumer(MessageListenerDefinition definition) {
         Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner().orElseThrow(() -> new DomainException("Aggregate root message listeners must have a runner"));
         AggregateMessageListenerRunner runner = ReflectionUtils.newInstance(runnerClass);
-        injector.injectDependencies(runner);
+        injector.addInjectionCandidate(runner);
 
         Method method = definition.method();
         Class entityClass = method.getDeclaringClass();
-        EntityServices entityServices = environment.getEntityServices(entityClass);
+        AggregateServices entityServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
         return message -> {
             Set targetAggregatesKey = runner.targetAggregatesKeys(message);
             Repository repository = entityServices.getRepository();

@@ -198,8 +198,8 @@ class ClassPathExplorer {
         }
     }
 
-    private Optional<Class<? extends AggregateMessageListenerRunner>> runner(
-            Class<? extends AggregateMessageListenerRunner> runner) {
+    private Optional<Class<? extends AggregateMessageListenerRunner<?, ?, ?>>> runner(
+            Class<? extends AggregateMessageListenerRunner<?, ?, ?>> runner) {
         if(runner == VoidAggregateMessageListenerRunner.class) {
             return Optional.empty();
         } else {

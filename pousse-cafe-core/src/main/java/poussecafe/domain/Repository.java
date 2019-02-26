@@ -2,6 +2,7 @@ package poussecafe.domain;
 
 import java.util.List;
 import java.util.Objects;
+import poussecafe.environment.EntityFactory;
 import poussecafe.exception.NotFoundException;
 
 import static java.util.stream.Collectors.toList;

@@ -1,7 +1,6 @@
-package poussecafe.domain;
+package poussecafe.environment;
 
 import java.util.Objects;
-import poussecafe.context.Environment;
 import poussecafe.messaging.Message;
 import poussecafe.util.ReflectionUtils;
 
@@ -16,6 +15,6 @@ public class MessageFactory {
 
     @SuppressWarnings("unchecked")
     public <T extends Message> T newMessage(Class<T> messageClass) {
-        return (T) ReflectionUtils.newInstance(environment.getMessageImplementationClass(messageClass));
+        return (T) ReflectionUtils.newInstance(environment.messageImplementationClass(messageClass));
     }
 }

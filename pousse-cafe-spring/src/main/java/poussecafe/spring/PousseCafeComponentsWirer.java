@@ -7,8 +7,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import poussecafe.context.AggregateServices;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.context.EntityServices;
 import poussecafe.process.DomainProcess;
 
 @Component
@@ -20,17 +20,17 @@ public class PousseCafeComponentsWirer implements ApplicationListener<ContextRef
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         AutowireCapableBeanFactory beanFactory = event.getApplicationContext().getAutowireCapableBeanFactory();
-        for(EntityServices services : pousseCafeContext.getAllEntityServices()) {
+        for(AggregateServices services : pousseCafeContext.environment().aggregateServices()) {
             logger.debug("Wiring services for entity {}", services.getEntityClass().getSimpleName());
             beanFactory.autowireBean(services.getRepository());
             beanFactory.autowireBean(services.getRepository().dataAccess());
             beanFactory.autowireBean(services.getFactory());
         }
-        for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {
+        for(DomainProcess process : pousseCafeContext.environment().domainProcesses()) {
             logger.debug("Wiring domain process {}", process.getClass().getSimpleName());
             beanFactory.autowireBean(process);
         }
-        for(Object service : pousseCafeContext.getAllServices()) {
+        for(Object service : pousseCafeContext.environment().services()) {
             logger.debug("Wiring service {}", service.getClass().getSimpleName());
             beanFactory.autowireBean(service);
         }

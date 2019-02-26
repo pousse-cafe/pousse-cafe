@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.EntityServices;
+import poussecafe.context.AggregateServices;
 import poussecafe.context.MetaApplicationContext;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
@@ -45,8 +45,9 @@ public class MetaApplicationWrapper {
             K key) {
         waitUntilAllMessageQueuesEmpty();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) context
-                .getEntityServices(entityClass)
-                .getRepository();
+                .environment()
+                .repositoryOf(entityClass)
+                .orElseThrow(PousseCafeException::new);
         return (T) repository.find(key);
     }
 
@@ -60,6 +61,7 @@ public class MetaApplicationWrapper {
                 }
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new PousseCafeException(e);
         }
     }
@@ -89,10 +91,10 @@ public class MetaApplicationWrapper {
         logger.info("Loading data for entity {}", entityClassName);
         try {
             Class<?> entityClass = Class.forName(entityClassName);
-            EntityImplementation entityImplementation = context.environment().getEntityImplementation(entityClass);
+            EntityImplementation entityImplementation = context.environment().entityImplementation(entityClass);
             checkThat(value(entityImplementation.getStorage() == InternalStorage.instance()).isTrue());
 
-            EntityServices services = context.getEntityServices(entityClass);
+            AggregateServices services = context.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
             InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();
             logger.debug("Field value {}", jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {

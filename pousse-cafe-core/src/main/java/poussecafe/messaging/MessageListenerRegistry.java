@@ -1,5 +1,6 @@
 package poussecafe.messaging;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -7,8 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.Environment;
-import poussecafe.exception.PousseCafeException;
+import poussecafe.environment.Environment;
 
 import static java.util.Collections.emptySet;
 import static poussecafe.check.AssertionSpecification.value;
@@ -20,9 +20,6 @@ public class MessageListenerRegistry {
 
     public void registerListener(MessageListener listener) {
         logger.debug("Registering listener {}", listener);
-        if(!environment.getDefinedMessages().contains(listener.messageClass())) {
-            throw new PousseCafeException("Message " + listener.messageClass().getName() + " is not defined");
-        }
         Set<MessageListener> registeredListeners = getOrCreateSet(listener.messageClass());
         registeredListeners.add(listener);
     }
@@ -40,7 +37,7 @@ public class MessageListenerRegistry {
     }
 
     public Set<MessageListener> getListeners(Class<? extends Message> messageImplementationClass) {
-        Class<? extends Message> messageClass = environment.getMessageClass(messageImplementationClass);
+        Class<? extends Message> messageClass = environment.definedMessageClass(messageImplementationClass);
         if(messageClass == null) {
             return getListenersForMessageClass(messageImplementationClass);
         } else {
@@ -56,6 +53,6 @@ public class MessageListenerRegistry {
     }
 
     private Set<MessageListener> getListenersForMessageClass(Class<? extends Message> key) {
-        return Optional.ofNullable(listeners.get(key)).orElse(emptySet());
+        return Optional.ofNullable(listeners.get(key)).map(Collections::unmodifiableSet).orElse(emptySet());
     }
 }

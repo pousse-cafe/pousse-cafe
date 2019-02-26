@@ -56,8 +56,10 @@ public class OrderManagementTest extends MetaApplicationTest {
         description.customerKey = customerKey;
         description.reference = "ref";
         description.units = 1;
-        context().getDomainProcess(OrderPlacement.class).placeOrder(new PlaceOrder(productKey, description));
+        orderPlacement.placeOrder(new PlaceOrder(productKey, description));
     }
+
+    private OrderPlacement orderPlacement;
 
     private void thenOrderCreated() {
         assertThat(find(Order.class, orderKey()), notNullValue());

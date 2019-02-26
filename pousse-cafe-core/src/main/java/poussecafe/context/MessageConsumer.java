@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.domain.MessageFactory;
+import poussecafe.environment.MessageFactory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.MessageListener;

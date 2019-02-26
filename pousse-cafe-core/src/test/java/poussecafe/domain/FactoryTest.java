@@ -1,6 +1,7 @@
 package poussecafe.domain;
 
 import org.junit.Test;
+import poussecafe.environment.EntityFactory;
 import poussecafe.exception.AssertionFailedException;
 import poussecafe.util.ReflectionUtils;
 

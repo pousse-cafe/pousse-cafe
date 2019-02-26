@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
-import poussecafe.context.EntityServices;
+import poussecafe.context.AggregateServices;
 import poussecafe.context.MessageSenderLocator;
 import poussecafe.context.MetaApplicationContext;
-import poussecafe.domain.MessageFactory;
 import poussecafe.domain.Repository;
+import poussecafe.environment.MessageFactory;
 import poussecafe.process.DomainProcess;
 
 @Configuration
@@ -29,7 +29,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
         MessageSenderLocator messageSenderLocator = pousseCafeContext.getMessageSenderLocator();
         registerInstance(beanName(messageSenderLocator), messageSenderLocator);
 
-        MessageFactory componentFactory = pousseCafeContext.getMessageFactory();
+        MessageFactory componentFactory = pousseCafeContext.environment().messageFactory();
         registerInstance(beanName(componentFactory), componentFactory);
     }
 
@@ -38,13 +38,13 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     private MetaApplicationContext pousseCafeContext;
 
     private void registerEntityServices() {
-        for(EntityServices services : pousseCafeContext.getAllEntityServices()) {
+        for(AggregateServices services : pousseCafeContext.environment().aggregateServices()) {
             registeringFactory(services);
             registeringRepository(services);
         }
     }
 
-    private void registeringFactory(EntityServices services) {
+    private void registeringFactory(AggregateServices services) {
         String beanName = beanName(services.getFactory());
         logger.debug("Registering factory {}", services.getFactory().getClass().getSimpleName());
         registerInstance(beanName, services.getFactory());
@@ -60,7 +60,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
         beanFactory.registerSingleton(beanName, instance);
     }
 
-    private void registeringRepository(EntityServices services) {
+    private void registeringRepository(AggregateServices services) {
         Repository<?, ?, ?> repository = services.getRepository();
         String beanName = beanName(repository);
         logger.debug("Registering repository {}", repository.getClass().getSimpleName());
@@ -68,7 +68,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private void registerDomainProcesses() {
-        for(DomainProcess process : pousseCafeContext.getAllDomainProcesses()) {
+        for(DomainProcess process : pousseCafeContext.environment().domainProcesses()) {
             String beanName = beanName(process);
             logger.debug("Registering domain process {}", process.getClass().getSimpleName());
             registerInstance(beanName, process);
@@ -76,7 +76,7 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private void registerServices() {
-        for(Object service : pousseCafeContext.getAllServices()) {
+        for(Object service : pousseCafeContext.environment().services()) {
             String beanName = beanName(service);
             logger.debug("Registering service {}", service.getClass().getSimpleName());
             registerInstance(beanName, service);

@@ -55,9 +55,10 @@ public class MessagingTest extends MetaApplicationTest {
 
     private void thenMessageCreatedWithContent(ContentType contentType) {
         waitUntilAllMessageQueuesEmpty();
-        MessageRepository repository = (MessageRepository) context().getEntityServices(Message.class).getRepository();
-        List<Message> messages = repository.findByCustomer(customerKey);
+        List<Message> messages = messageRepository.findByCustomer(customerKey);
         assertThat(messages.size(), is(1));
         assertThat(messages.get(0).getContentType(), is(contentType));
     }
+
+    private MessageRepository messageRepository;
 }

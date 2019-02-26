@@ -1,6 +1,7 @@
 package poussecafe.context;
 
 import poussecafe.domain.EntityImplementation;
+import poussecafe.environment.Environment;
 import poussecafe.storage.TransactionRunner;
 
 import static poussecafe.check.AssertionSpecification.value;
@@ -16,7 +17,7 @@ public class TransactionRunnerLocator {
     private Environment environment;
 
     public TransactionRunner locateTransactionRunner(Class<?> entityClass) {
-        EntityImplementation implementation = environment.getEntityImplementation(entityClass);
+        EntityImplementation implementation = environment.entityImplementation(entityClass);
         return implementation.getStorage().getTransactionRunner();
     }
 
