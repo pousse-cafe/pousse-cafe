@@ -2,8 +2,8 @@ package poussecafe.messaging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.MessageConsumer;
-import poussecafe.context.RawAndAdaptedMessage;
+import poussecafe.runtime.MessageConsumer;
+import poussecafe.runtime.RawAndAdaptedMessage;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;

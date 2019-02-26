@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.ListAttribute;
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.step.StepDoc;

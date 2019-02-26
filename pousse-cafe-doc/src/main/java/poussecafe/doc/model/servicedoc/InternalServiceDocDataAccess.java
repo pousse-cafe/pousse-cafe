@@ -1,7 +1,7 @@
 package poussecafe.doc.model.servicedoc;
 
 import java.util.List;
-import poussecafe.contextconfigurer.DataAccessImplementation;
+import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;

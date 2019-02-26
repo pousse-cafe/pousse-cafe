@@ -1,6 +1,6 @@
 package poussecafe.process;
 
-import poussecafe.context.TransactionRunnerLocator;
+import poussecafe.runtime.TransactionRunnerLocator;
 
 public abstract class TransactionAwareService {
 

@@ -1,7 +1,7 @@
 package poussecafe.doc.model.entitydoc;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;

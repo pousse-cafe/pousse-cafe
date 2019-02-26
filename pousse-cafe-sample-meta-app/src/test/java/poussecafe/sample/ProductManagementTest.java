@@ -2,28 +2,28 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.BoundedContext;
+import poussecafe.environment.BoundedContext;
 import poussecafe.sample.command.AddUnits;
 import poussecafe.sample.command.CreateProduct;
 import poussecafe.sample.domain.Product;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.process.ProductManagement;
-import poussecafe.test.MetaApplicationTest;
+import poussecafe.test.PousseCafeTest;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class ProductManagementTest extends MetaApplicationTest {
+public class ProductManagementTest extends PousseCafeTest {
 
     private ProductKey productKey;
 
     private AddUnits addUnits;
 
     @Override
-    protected List<BoundedContext> testBundle() {
-        return asList(SampleMetaAppBoundedContextDefinition.configure().defineAndImplementDefault().build());
+    protected List<BoundedContext> boundedContexts() {
+        return asList(SampleBoundedContextDefinition.configure().defineAndImplementDefault().build());
     }
 
     @Test

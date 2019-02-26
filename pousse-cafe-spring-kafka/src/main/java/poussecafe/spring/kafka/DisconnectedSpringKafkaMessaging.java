@@ -2,12 +2,12 @@ package poussecafe.spring.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.MessageConsumer;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
+import poussecafe.runtime.MessageConsumer;
 
 public class DisconnectedSpringKafkaMessaging extends Messaging {
 

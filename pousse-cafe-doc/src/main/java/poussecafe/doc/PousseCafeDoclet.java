@@ -4,7 +4,7 @@ import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import java.io.File;
 import java.util.Objects;
-import poussecafe.context.MetaApplicationContext;
+import poussecafe.runtime.Runtime;
 
 public class PousseCafeDoclet {
 
@@ -13,19 +13,18 @@ public class PousseCafeDoclet {
         rootDocWrapper = new RootDocWrapper(rootDoc);
         Logger.setRootDoc(rootDocWrapper);
 
-        context = new MetaApplicationContext();
-        context.addBoundedContext(PousseCafeDoc.configure()
-                .defineAndImplementDefault()
-                .build());
+        runtime = new Runtime.Builder()
+                .withBoundedContext(PousseCafeDoc.configure().defineAndImplementDefault().build())
+                .build();
     }
 
     private RootDocWrapper rootDocWrapper;
 
-    private MetaApplicationContext context;
+    private Runtime runtime;
 
     public void start() {
         Logger.info("Starting Pousse-Café doclet...");
-        context.start();
+        runtime.start();
 
         analyzeCode();
         createOutputFolder();
@@ -44,7 +43,7 @@ public class PousseCafeDoclet {
 
     private void detectBoundedContexts() {
         BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator();
-        context.injectDependencies(boundedContextCreator);
+        runtime.injectDependenciesInto(boundedContextCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -55,19 +54,19 @@ public class PousseCafeDoclet {
 
     private void detectBoundedContextComponents() {
         AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(rootDocWrapper);
-        context.injectDependencies(aggregateDocCreator);
+        runtime.injectDependenciesInto(aggregateDocCreator);
 
         ServiceDocCreator serviceDocCreator = new ServiceDocCreator(rootDocWrapper);
-        context.injectDependencies(serviceDocCreator);
+        runtime.injectDependenciesInto(serviceDocCreator);
 
         EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
-        context.injectDependencies(entityDocCreator);
+        runtime.injectDependenciesInto(entityDocCreator);
 
         ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
-        context.injectDependencies(valueObjectDocCreator);
+        runtime.injectDependenciesInto(valueObjectDocCreator);
 
         FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
-        context.injectDependencies(factoryDocCreator);
+        runtime.injectDependenciesInto(factoryDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -82,7 +81,7 @@ public class PousseCafeDoclet {
 
     private void detectDomainProcesses() {
         DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
-        context.injectDependencies(domainProcessDocCreator);
+        runtime.injectDependenciesInto(domainProcessDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -93,7 +92,7 @@ public class PousseCafeDoclet {
 
     private void detectRelations() {
         RelationCreator relationCreator = new RelationCreator(rootDocWrapper);
-        context.injectDependencies(relationCreator);
+        runtime.injectDependenciesInto(relationCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -109,19 +108,19 @@ public class PousseCafeDoclet {
 
     private void writeGraphs() {
         GraphImagesWriter graphsWriter = new GraphImagesWriter(rootDocWrapper);
-        context.injectDependencies(graphsWriter);
+        runtime.injectDependenciesInto(graphsWriter);
         graphsWriter.writeImages();
     }
 
     private void writeHtml() {
         HtmlWriter htmlWriter = new HtmlWriter(rootDocWrapper);
-        context.injectDependencies(htmlWriter);
+        runtime.injectDependenciesInto(htmlWriter);
         htmlWriter.writeHtml();
     }
 
     private void writePdf() {
         PdfWriter pdfWriter = new PdfWriter(rootDocWrapper);
-        context.injectDependencies(pdfWriter);
+        runtime.injectDependenciesInto(pdfWriter);
         pdfWriter.writePdf();
     }
 

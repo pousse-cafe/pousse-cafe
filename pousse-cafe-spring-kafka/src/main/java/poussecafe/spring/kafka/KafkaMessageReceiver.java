@@ -1,9 +1,9 @@
 package poussecafe.spring.kafka;
 
 import java.util.Objects;
-import poussecafe.context.MessageConsumer;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
+import poussecafe.runtime.MessageConsumer;
 
 public class KafkaMessageReceiver extends MessageReceiver {
 

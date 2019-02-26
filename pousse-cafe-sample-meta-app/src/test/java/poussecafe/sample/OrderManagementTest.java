@@ -2,7 +2,7 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.BoundedContext;
+import poussecafe.environment.BoundedContext;
 import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Order;
@@ -10,14 +10,14 @@ import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderKey;
 import poussecafe.sample.domain.ProductKey;
 import poussecafe.sample.process.OrderPlacement;
-import poussecafe.test.MetaApplicationTest;
+import poussecafe.test.PousseCafeTest;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class OrderManagementTest extends MetaApplicationTest {
+public class OrderManagementTest extends PousseCafeTest {
 
     private CustomerKey customerKey;
 
@@ -26,8 +26,8 @@ public class OrderManagementTest extends MetaApplicationTest {
     private OrderDescription description;
 
     @Override
-    protected List<BoundedContext> testBundle() {
-        return asList(SampleMetaAppBoundedContextDefinition.configure().defineAndImplementDefault().build());
+    protected List<BoundedContext> boundedContexts() {
+        return asList(SampleBoundedContextDefinition.configure().defineAndImplementDefault().build());
     }
 
     @Test

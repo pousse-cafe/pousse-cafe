@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import poussecafe.context.OptimisticLockingException;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
+import poussecafe.runtime.OptimisticLockingException;
 
 public abstract class MongoDataAccess<K, D extends EntityAttributes<K>, M extends Serializable> implements EntityDataAccess<K, D> {
 

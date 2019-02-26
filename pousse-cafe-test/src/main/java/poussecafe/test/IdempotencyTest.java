@@ -4,7 +4,7 @@ import poussecafe.exception.SameOperationException;
 
 import static org.junit.Assert.assertTrue;
 
-public abstract class IdempotencyTest extends MetaApplicationTest {
+public abstract class IdempotencyTest extends PousseCafeTest {
 
     protected void whenRunningSameOperation() {
         runOperation();

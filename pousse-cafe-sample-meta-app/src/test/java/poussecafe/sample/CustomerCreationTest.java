@@ -2,24 +2,24 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.BoundedContext;
+import poussecafe.environment.BoundedContext;
 import poussecafe.sample.command.CreateCustomer;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.process.CustomerCreation;
-import poussecafe.test.MetaApplicationTest;
+import poussecafe.test.PousseCafeTest;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class CustomerCreationTest extends MetaApplicationTest {
+public class CustomerCreationTest extends PousseCafeTest {
 
     private CustomerKey customerKey;
 
     @Override
-    protected List<BoundedContext> testBundle() {
-        return asList(SampleMetaAppBoundedContextDefinition.configure().defineAndImplementDefault().build());
+    protected List<BoundedContext> boundedContexts() {
+        return asList(SampleBoundedContextDefinition.configure().defineAndImplementDefault().build());
     }
 
     @Test

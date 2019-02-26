@@ -1,7 +1,7 @@
 package poussecafe.doc.model.relation;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 

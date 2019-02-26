@@ -2,7 +2,7 @@ package poussecafe.sample.domain.mongo;
 
 import org.springframework.data.annotation.Id;
 import poussecafe.attribute.Attribute;
-import poussecafe.contextconfigurer.DataImplementation;
+import poussecafe.discovery.DataImplementation;
 import poussecafe.sample.domain.Customer;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;

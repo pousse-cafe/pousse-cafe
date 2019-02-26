@@ -1,8 +1,8 @@
 package poussecafe.storage;
 
-import poussecafe.context.MessageSenderLocator;
 import poussecafe.domain.MessageCollection;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.MessageSenderLocator;
 
 import static poussecafe.check.AssertionSpecification.value;
 import static poussecafe.check.Checks.checkThat;

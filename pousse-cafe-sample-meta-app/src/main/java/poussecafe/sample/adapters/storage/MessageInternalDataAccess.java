@@ -1,7 +1,7 @@
 package poussecafe.sample.adapters.storage;
 
 import java.util.List;
-import poussecafe.contextconfigurer.DataAccessImplementation;
+import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.sample.domain.CustomerKey;
 import poussecafe.sample.domain.Message;
 import poussecafe.sample.domain.MessageDataAccess;

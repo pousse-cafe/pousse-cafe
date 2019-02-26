@@ -2,7 +2,7 @@ package <adaptersPackage>;
 
 <if(demoAttribute)>import java.util.List;<endif>
 import org.springframework.beans.factory.annotation.Autowired;
-import poussecafe.contextconfigurer.DataAccessImplementation;
+import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.spring.mongo.storage.MongoDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 

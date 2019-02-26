@@ -1,8 +1,8 @@
 package poussecafe.messaging.internal;
 
-import poussecafe.context.MessageConsumer;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
+import poussecafe.runtime.MessageConsumer;
 
 public class InternalMessaging extends Messaging {
 

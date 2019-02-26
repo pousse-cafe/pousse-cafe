@@ -2,7 +2,7 @@ package poussecafe.domain;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.context.TestDomainEvent3;
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.messaging.DomainEventListener;
 
 @Aggregate(

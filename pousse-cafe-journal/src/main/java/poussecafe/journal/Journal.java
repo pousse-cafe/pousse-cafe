@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-import poussecafe.contextconfigurer.BoundedContextConfigurer;
+import poussecafe.discovery.BoundedContextConfigurer;
 
 public class Journal {
 

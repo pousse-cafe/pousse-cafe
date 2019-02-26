@@ -3,6 +3,7 @@ package poussecafe.context;
 import java.lang.reflect.Method;
 import org.junit.Test;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.DeclaredMessageListenerIdBuilder;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;

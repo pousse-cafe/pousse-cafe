@@ -3,11 +3,11 @@ package poussecafe.sample.app;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import poussecafe.context.MessagingAndStorage;
-import poussecafe.context.MetaApplicationContext;
 import poussecafe.journal.Journal;
 import poussecafe.messaging.internal.InternalMessaging;
-import poussecafe.sample.SampleMetaAppBoundedContextDefinition;
+import poussecafe.runtime.MessagingAndStorage;
+import poussecafe.runtime.Runtime;
+import poussecafe.sample.SampleBoundedContextDefinition;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 @Configuration
@@ -15,19 +15,23 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 public class AppConfiguration {
 
     @Bean
-    public MetaApplicationContext pousseCafeApplicationContext() {
-        MetaApplicationContext context = new MetaApplicationContext();
+    public Runtime pousseCafeRuntime() {
         MessagingAndStorage messagingAndStorage = new MessagingAndStorage(InternalMessaging.instance(),
                 SpringMongoDbStorage.instance());
-        context.addBoundedContext(Journal.configure()
-                .defineThenImplement()
-                .messagingAndStorage(messagingAndStorage)
-                .build());
-        context.addBoundedContext(SampleMetaAppBoundedContextDefinition.configure()
-                .defineThenImplement()
-                .messagingAndStorage(messagingAndStorage)
-                .build());
+
+        Runtime context = new Runtime.Builder()
+            .withBoundedContext(Journal.configure()
+                    .defineThenImplement()
+                    .messagingAndStorage(messagingAndStorage)
+                    .build())
+            .withBoundedContext(SampleBoundedContextDefinition.configure()
+                    .defineThenImplement()
+                    .messagingAndStorage(messagingAndStorage)
+                    .build())
+            .build();
+
         context.start();
+
         return context;
     }
 }

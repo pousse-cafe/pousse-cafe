@@ -5,8 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.context.AggregateMessageListenerRunner;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.runtime.AggregateMessageListenerRunner;
 
 import static poussecafe.util.ReferenceEquals.referenceEquals;
 

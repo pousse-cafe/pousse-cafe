@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import poussecafe.context.AggregateServices;
-import poussecafe.context.ServiceImplementation;
-import poussecafe.domain.EntityImplementation;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
@@ -20,6 +17,7 @@ import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
+import poussecafe.runtime.AggregateServices;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;

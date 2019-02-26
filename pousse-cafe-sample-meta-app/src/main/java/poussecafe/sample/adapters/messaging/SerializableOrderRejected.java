@@ -3,7 +3,7 @@ package poussecafe.sample.adapters.messaging;
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.contextconfigurer.MessageImplementation;
+import poussecafe.discovery.MessageImplementation;
 import poussecafe.sample.domain.OrderDescription;
 import poussecafe.sample.domain.OrderRejected;
 import poussecafe.sample.domain.ProductKey;

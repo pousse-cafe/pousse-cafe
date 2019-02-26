@@ -3,10 +3,10 @@ package poussecafe.messaging.internal;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
-import poussecafe.context.MessageConsumer;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
+import poussecafe.runtime.MessageConsumer;
 
 public class InternalMessagingQueue {
 

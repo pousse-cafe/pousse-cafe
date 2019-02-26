@@ -1,6 +1,6 @@
 package poussecafe.messaging;
 
-import poussecafe.context.MessageConsumer;
+import poussecafe.runtime.MessageConsumer;
 
 public abstract class Messaging {
 

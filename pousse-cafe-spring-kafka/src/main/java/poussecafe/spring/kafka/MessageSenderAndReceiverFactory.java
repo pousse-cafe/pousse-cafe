@@ -11,9 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.stereotype.Component;
-import poussecafe.context.MessageConsumer;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
+import poussecafe.runtime.MessageConsumer;
 
 @Component
 public class MessageSenderAndReceiverFactory implements InitializingBean, MessageListener<String, String> {

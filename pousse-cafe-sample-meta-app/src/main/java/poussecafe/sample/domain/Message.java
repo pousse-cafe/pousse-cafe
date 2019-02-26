@@ -1,6 +1,6 @@
 package poussecafe.sample.domain;
 
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 

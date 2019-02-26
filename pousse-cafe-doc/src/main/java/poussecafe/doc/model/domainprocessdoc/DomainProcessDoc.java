@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.MapAttribute;
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;

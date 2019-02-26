@@ -1,13 +1,9 @@
 package poussecafe.sample.domain;
 
-import poussecafe.contextconfigurer.Aggregate;
+import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.DomainException;
 import poussecafe.domain.EntityAttributes;
-
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.equalTo;
-import static poussecafe.check.Predicates.greaterThan;
-import static poussecafe.domain.DomainCheckSpecification.value;
 
 @Aggregate(
   factory = ProductFactory.class,
@@ -32,7 +28,9 @@ public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
     }
 
     public void addUnits(int units) {
-        checkThat(value(units).verifies(greaterThan(0).or(equalTo(0))).because("Cannot add negative number of units"));
+        if(units <= 0) {
+            throw new DomainException("Cannot add negative number of units");
+        }
         attributes().setAvailableUnits(attributes().getAvailableUnits() + units);
         attributes().setTotalUnits(attributes().getTotalUnits() + units);
     }

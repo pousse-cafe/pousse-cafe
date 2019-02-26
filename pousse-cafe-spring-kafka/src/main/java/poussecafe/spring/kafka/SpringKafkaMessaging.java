@@ -2,10 +2,10 @@ package poussecafe.spring.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.context.MessageConsumer;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
+import poussecafe.runtime.MessageConsumer;
 
 public class SpringKafkaMessaging extends Messaging {
 

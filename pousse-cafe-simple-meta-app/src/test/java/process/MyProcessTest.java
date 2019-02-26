@@ -2,14 +2,14 @@ package process;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.context.BoundedContext;
-import poussecafe.simplemetaapp.MyBoundedContextConfiguration;
-import poussecafe.simplemetaapp.domain.MyAggregate;
-import poussecafe.simplemetaapp.domain.MyAggregateKey;
-import poussecafe.simplemetaapp.process.CreateAggregate;
-import poussecafe.simplemetaapp.process.MyCommand;
-import poussecafe.simplemetaapp.process.MyProcess;
-import poussecafe.test.MetaApplicationTest;
+import poussecafe.environment.BoundedContext;
+import poussecafe.simple.MyBoundedContextConfiguration;
+import poussecafe.simple.domain.MyAggregate;
+import poussecafe.simple.domain.MyAggregateKey;
+import poussecafe.simple.process.CreateAggregate;
+import poussecafe.simple.process.MyCommand;
+import poussecafe.simple.process.MyProcess;
+import poussecafe.test.PousseCafeTest;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 /*
  * This class features the way of testing a domain process end-to-end.
  */
-public class MyProcessTest extends MetaApplicationTest {
+public class MyProcessTest extends PousseCafeTest {
 
     private MyAggregateKey key;
 
@@ -28,7 +28,7 @@ public class MyProcessTest extends MetaApplicationTest {
      * The context is configured with provided bounded contexts.
      */
     @Override
-    protected List<BoundedContext> testBundle() {
+    protected List<BoundedContext> boundedContexts() {
         return asList(MyBoundedContextConfiguration.configure().defineAndImplementDefault().build());
     }
 

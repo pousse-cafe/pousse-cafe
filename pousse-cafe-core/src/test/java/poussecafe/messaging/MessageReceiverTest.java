@@ -1,8 +1,8 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
-import poussecafe.context.MessageConsumer;
-import poussecafe.context.RawAndAdaptedMessage;
+import poussecafe.runtime.MessageConsumer;
+import poussecafe.runtime.RawAndAdaptedMessage;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
