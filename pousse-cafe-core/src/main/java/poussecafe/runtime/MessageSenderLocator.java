@@ -1,6 +1,7 @@
 package poussecafe.runtime;
 
 import java.util.List;
+import java.util.Objects;
 import poussecafe.environment.Environment;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -10,11 +11,30 @@ import poussecafe.messaging.MessagingConnection;
 
 public class MessageSenderLocator {
 
-    MessageSenderLocator(List<MessagingConnection> connections) {
-        this.connections = connections;
+    public static class Builder {
+
+        private MessageSenderLocator locator = new MessageSenderLocator();
+
+        public Builder environment(Environment environment) {
+            locator.environment = environment;
+            return this;
+        }
+
+        public Builder connections(List<MessagingConnection> connections) {
+            locator.connections = connections;
+            return this;
+        }
+
+        public MessageSenderLocator build() {
+            Objects.requireNonNull(locator.environment);
+            Objects.requireNonNull(locator.connections);
+            return locator;
+        }
     }
 
-    private List<MessagingConnection> connections;
+    private MessageSenderLocator() {
+
+    }
 
     public MessageSender locate(Class<? extends Message> messageClassOrImplementation) {
         Class<? extends Message> messageClass = environment.definedMessageClass(messageClassOrImplementation);
@@ -30,4 +50,6 @@ public class MessageSenderLocator {
                 .findFirst()
                 .orElseThrow(() -> new PousseCafeException("No connection found for messaging " + messaging));
     }
+
+    private List<MessagingConnection> connections;
 }

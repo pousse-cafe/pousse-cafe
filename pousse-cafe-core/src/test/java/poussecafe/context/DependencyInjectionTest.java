@@ -4,15 +4,16 @@ import poussecafe.injector.Injector;
 
 import static org.junit.Assert.assertTrue;
 
-public class DependencyInjectionTest {
+public abstract class DependencyInjectionTest {
 
     protected void givenInjectorAndServices() {
-        injector = new Injector();
         dependency1 = new Service1();
         dependency2 = new Service2();
 
-        injector.registerInjectableService(dependency1);
-        injector.registerInjectableService(dependency2);
+        injector = new Injector.Builder()
+                .registerInjectableService(dependency1)
+                .registerInjectableService(dependency2)
+                .build();
     }
 
     protected Injector injector;
@@ -24,8 +25,7 @@ public class DependencyInjectionTest {
     protected DependencyAware service;
 
     protected void whenInjectingDependencies() {
-        injector.addInjectionCandidate(service);
-        injector.injectDependencies();
+        injector.injectDependenciesInto(service);
     }
 
     protected void thenServiceHasAllDependencies() {

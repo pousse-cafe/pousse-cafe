@@ -20,11 +20,18 @@ public class Runtime {
     public static class Builder {
 
         public Builder() {
+            injectorBuilder = new Injector.Builder();
             runtime = new Runtime();
+
+            injectorBuilder.registerInjectableService(runtime.configuration);
+            injectorBuilder.registerInjectableService(runtime.transactionRunnerLocator);
+
             environmentBuilder = new EnvironmentBuilder()
-                .injector(runtime.injector)
+                .injectorBuilder(injectorBuilder)
                 .transactionRunnerLocator(runtime.transactionRunnerLocator);
         }
+
+        private Injector.Builder injectorBuilder = new Injector.Builder();
 
         private Runtime runtime;
 
@@ -60,22 +67,29 @@ public class Runtime {
 
         private void load() {
             configureContext();
-            runtime.injector.injectDependencies();
+            injectDependencies();
         }
 
         private void configureContext() {
-            configureMessageConsumer();
             configureMessageSenderLocator();
+            configureMessageConsumer();
             configureMessageEmissionPolicies();
+            runtime.injector = injectorBuilder.build();
         }
 
         private void configureMessageConsumer() {
-            runtime.injector.addInjectionCandidate(runtime.messageConsumer);
+            runtime.messageConsumer = new MessageConsumer.Builder()
+                    .environment(runtime.environment)
+                    .messageSenderLocator(runtime.messageSenderLocator)
+                    .build();
         }
 
         private void configureMessageSenderLocator() {
-            runtime.injector.addInjectionCandidate(runtime.messageSenderLocator);
-            runtime.injector.registerInjectableService(runtime.messageSenderLocator);
+            runtime.messageSenderLocator = new MessageSenderLocator.Builder()
+                    .environment(runtime.environment)
+                    .connections(runtime.connections)
+                    .build();
+            injectorBuilder.registerInjectableService(runtime.messageSenderLocator);
         }
 
         private void configureMessageEmissionPolicies() {
@@ -83,26 +97,23 @@ public class Runtime {
                 storage.getMessageSendingPolicy().setMessageSenderLocator(runtime.messageSenderLocator);
             }
         }
+
+        private void injectDependencies() {
+            runtime.environment.injectionCandidates().forEach(runtime.injector::injectDependenciesInto);
+        }
     }
 
     private Runtime() {
-        configuration = new Configuration();
-        transactionRunnerLocator = new TransactionRunnerLocator();
-        messageConsumer = new MessageConsumer();
-        messageSenderLocator = new MessageSenderLocator(connections);
 
-        injector = new Injector();
-        injector.registerInjectableService(configuration);
-        injector.registerInjectableService(transactionRunnerLocator);
     }
 
-    private Configuration configuration;
+    private Configuration configuration = new Configuration();
 
     private Environment environment;
 
     private Injector injector;
 
-    private TransactionRunnerLocator transactionRunnerLocator;
+    private TransactionRunnerLocator transactionRunnerLocator = new TransactionRunnerLocator();
 
     private MessageConsumer messageConsumer;
 
@@ -114,6 +125,14 @@ public class Runtime {
 
     public Environment environment() {
         return environment;
+    }
+
+    public Injector injector() {
+        return injector;
+    }
+
+    public MessageSenderLocator messageSenderLocator() {
+        return messageSenderLocator;
     }
 
     public synchronized void start() {
@@ -158,10 +177,6 @@ public class Runtime {
         }
     }
 
-    public synchronized void injectDependenciesInto(Object service) {
-        injector.injectDependencies(service);
-    }
-
     public synchronized void registerListenersOf(Object service) {
         ServiceMessageListenerDiscoverer explorer = new ServiceMessageListenerDiscoverer.Builder()
                 .service(service)
@@ -169,10 +184,6 @@ public class Runtime {
                 .build();
         explorer.discoverListeners().stream()
             .forEach(environment::registerMessageListener);
-    }
-
-    public MessageSenderLocator messageSenderLocator() {
-        return messageSenderLocator;
     }
 
     public List<MessagingConnection> messagingConnections() {

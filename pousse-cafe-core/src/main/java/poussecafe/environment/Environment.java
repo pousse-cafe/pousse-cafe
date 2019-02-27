@@ -1,8 +1,10 @@
 package poussecafe.environment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +24,7 @@ import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toList;
 
 public class Environment {
 
@@ -196,5 +199,20 @@ public class Environment {
 
     public <R extends Repository<?, ?, ?>> Optional<R> repository(Class<?> repositoryClass) {
         return repositoryOf(entityOfFactoryOrRepository(repositoryClass));
+    }
+
+    public Collection<Object> injectionCandidates() {
+        List<Object> candidates = new ArrayList<>();
+        for(AggregateServices aggregateServices : entityServicesMap.values()) {
+            candidates.add(aggregateServices.getFactory());
+            candidates.add(aggregateServices.getRepository());
+        }
+        candidates.addAll(serviceInstances.values());
+        candidates.addAll(processInstances.values());
+        candidates.addAll(messageListenerRegistry.allListeners().stream()
+                .filter(listener -> listener.runner().isPresent())
+                .map(listener -> listener.runner().get())
+                .collect(toList()));
+        return candidates;
     }
 }

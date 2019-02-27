@@ -1,8 +1,11 @@
 package poussecafe.messaging;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -54,5 +57,11 @@ public class MessageListenerRegistry {
 
     private Set<MessageListener> getListenersForMessageClass(Class<? extends Message> key) {
         return Optional.ofNullable(listeners.get(key)).map(Collections::unmodifiableSet).orElse(emptySet());
+    }
+
+    public Collection<MessageListener> allListeners() {
+        List<MessageListener> allListeners = new ArrayList<>();
+        listeners.values().forEach(allListeners::addAll);
+        return allListeners;
     }
 }

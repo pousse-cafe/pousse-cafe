@@ -10,7 +10,6 @@ import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.injector.Injector;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerDefinition;
@@ -39,15 +38,9 @@ public class MessageListenerFactory {
             return this;
         }
 
-        public Builder injector(Injector injector) {
-            factory.injector = injector;
-            return this;
-        }
-
         public MessageListenerFactory build() {
             Objects.requireNonNull(factory.environment);
             Objects.requireNonNull(factory.transactionRunnerLocator);
-            Objects.requireNonNull(factory.injector);
             return factory;
         }
     }
@@ -197,16 +190,15 @@ public class MessageListenerFactory {
     }
 
     private MessageListener buildAggregateRootListener(MessageListenerDefinition definition) {
+        Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner().orElseThrow(() -> new DomainException("Aggregate root message listeners must have a runner"));
+        AggregateMessageListenerRunner runner = ReflectionUtils.newInstance(runnerClass);
         return buildMessageListenerBuilder(definition)
-                .consumer(buildAggregateRootMessageConsumer(definition))
+                .consumer(buildAggregateRootMessageConsumer(definition, runner))
+                .runner(Optional.of(runner))
                 .build();
     }
 
-    protected Consumer<Message> buildAggregateRootMessageConsumer(MessageListenerDefinition definition) {
-        Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner().orElseThrow(() -> new DomainException("Aggregate root message listeners must have a runner"));
-        AggregateMessageListenerRunner runner = ReflectionUtils.newInstance(runnerClass);
-        injector.addInjectionCandidate(runner);
-
+    protected Consumer<Message> buildAggregateRootMessageConsumer(MessageListenerDefinition definition, AggregateMessageListenerRunner runner) {
         Method method = definition.method();
         Class entityClass = method.getDeclaringClass();
         AggregateServices entityServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
@@ -228,6 +220,4 @@ public class MessageListenerFactory {
             }
         };
     }
-
-    private Injector injector;
 }

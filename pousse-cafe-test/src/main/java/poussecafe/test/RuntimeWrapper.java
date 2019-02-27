@@ -36,7 +36,7 @@ public class RuntimeWrapper {
 
     private JsonDataReader jsonDataReader = new JsonDataReader();
 
-    public Runtime context() {
+    public Runtime runtime() {
         return context;
     }
 

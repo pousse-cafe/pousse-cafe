@@ -43,7 +43,7 @@ public class PousseCafeDoclet {
 
     private void detectBoundedContexts() {
         BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator();
-        runtime.injectDependenciesInto(boundedContextCreator);
+        runtime.injector().injectDependenciesInto(boundedContextCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -54,19 +54,19 @@ public class PousseCafeDoclet {
 
     private void detectBoundedContextComponents() {
         AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(aggregateDocCreator);
+        runtime.injector().injectDependenciesInto(aggregateDocCreator);
 
         ServiceDocCreator serviceDocCreator = new ServiceDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(serviceDocCreator);
+        runtime.injector().injectDependenciesInto(serviceDocCreator);
 
         EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(entityDocCreator);
+        runtime.injector().injectDependenciesInto(entityDocCreator);
 
         ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(valueObjectDocCreator);
+        runtime.injector().injectDependenciesInto(valueObjectDocCreator);
 
         FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(factoryDocCreator);
+        runtime.injector().injectDependenciesInto(factoryDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -81,7 +81,7 @@ public class PousseCafeDoclet {
 
     private void detectDomainProcesses() {
         DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(domainProcessDocCreator);
+        runtime.injector().injectDependenciesInto(domainProcessDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -92,7 +92,7 @@ public class PousseCafeDoclet {
 
     private void detectRelations() {
         RelationCreator relationCreator = new RelationCreator(rootDocWrapper);
-        runtime.injectDependenciesInto(relationCreator);
+        runtime.injector().injectDependenciesInto(relationCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
@@ -108,19 +108,19 @@ public class PousseCafeDoclet {
 
     private void writeGraphs() {
         GraphImagesWriter graphsWriter = new GraphImagesWriter(rootDocWrapper);
-        runtime.injectDependenciesInto(graphsWriter);
+        runtime.injector().injectDependenciesInto(graphsWriter);
         graphsWriter.writeImages();
     }
 
     private void writeHtml() {
         HtmlWriter htmlWriter = new HtmlWriter(rootDocWrapper);
-        runtime.injectDependenciesInto(htmlWriter);
+        runtime.injector().injectDependenciesInto(htmlWriter);
         htmlWriter.writeHtml();
     }
 
     private void writePdf() {
         PdfWriter pdfWriter = new PdfWriter(rootDocWrapper);
-        runtime.injectDependenciesInto(pdfWriter);
+        runtime.injector().injectDependenciesInto(pdfWriter);
         pdfWriter.writePdf();
     }
 

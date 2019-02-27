@@ -1,7 +1,9 @@
 package poussecafe.messaging;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import poussecafe.runtime.AggregateMessageListenerRunner;
 
 public class MessageListener {
 
@@ -24,10 +26,17 @@ public class MessageListener {
             return this;
         }
 
+        @SuppressWarnings("rawtypes")
+        public Builder runner(Optional<AggregateMessageListenerRunner> runner) {
+            listener.runner = runner;
+            return this;
+        }
+
         public MessageListener build() {
             Objects.requireNonNull(listener.id);
             Objects.requireNonNull(listener.messageClass);
             Objects.requireNonNull(listener.consumer);
+            Objects.requireNonNull(listener.runner);
             return listener;
         }
     }
@@ -52,5 +61,13 @@ public class MessageListener {
 
     public Consumer<Message> consumer() {
         return consumer;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Optional<AggregateMessageListenerRunner> runner = Optional.empty();
+
+    @SuppressWarnings("rawtypes")
+    public Optional<AggregateMessageListenerRunner> runner() {
+        return runner;
     }
 }

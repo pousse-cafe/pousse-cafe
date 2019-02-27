@@ -18,7 +18,7 @@ public abstract class PousseCafeTest {
         Runtime context = new Runtime.Builder()
             .withBoundedContexts(boundedContexts())
             .build();
-        context.injectDependenciesInto(this);
+        context.injector().injectDependenciesInto(this);
         context.registerListenersOf(this);
         context.start();
         wrapper = new RuntimeWrapper(context);
@@ -27,7 +27,7 @@ public abstract class PousseCafeTest {
     protected abstract List<BoundedContext> boundedContexts();
 
     protected Runtime context() {
-        return wrapper.context();
+        return wrapper.runtime();
     }
 
     protected <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
@@ -40,7 +40,7 @@ public abstract class PousseCafeTest {
     }
 
     protected <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
-        return wrapper.context().environment().messageFactory().newMessage(eventClass);
+        return wrapper.runtime().environment().messageFactory().newMessage(eventClass);
     }
 
     protected void addDomainEvent(DomainEvent event) {
@@ -58,7 +58,7 @@ public abstract class PousseCafeTest {
     @After
     public void tearDownInternalMessaging() {
         if(wrapper != null) {
-            wrapper.context().stop();
+            wrapper.runtime().stop();
         }
     }
 }

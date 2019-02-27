@@ -1,16 +1,14 @@
 package poussecafe.runtime;
 
+import java.util.Objects;
 import poussecafe.environment.EntityImplementation;
 import poussecafe.environment.Environment;
 import poussecafe.storage.TransactionRunner;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-
 public class TransactionRunnerLocator {
 
-    public void setEnvironment(Environment environment) {
-        checkThat(value(environment).notNull());
+    void setEnvironment(Environment environment) {
+        Objects.requireNonNull(environment);
         this.environment = environment;
     }
 

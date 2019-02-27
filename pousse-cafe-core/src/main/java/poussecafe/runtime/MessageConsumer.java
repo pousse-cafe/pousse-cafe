@@ -3,24 +3,49 @@ package poussecafe.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.environment.MessageFactory;
+import poussecafe.environment.Environment;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.support.model.FailedConsumption;
 import poussecafe.support.model.SuccessfulConsumption;
 import poussecafe.util.ExceptionUtils;
 
 public class MessageConsumer {
 
+    public static class Builder {
+
+        private MessageConsumer messageConsumer = new MessageConsumer();
+
+        public Builder environment(Environment environment) {
+            messageConsumer.environment = environment;
+            return this;
+        }
+
+        public Builder messageSenderLocator(MessageSenderLocator messageSenderLocator) {
+            messageConsumer.messageSenderLocator = messageSenderLocator;
+            return this;
+        }
+
+        public MessageConsumer build() {
+            Objects.requireNonNull(messageConsumer.environment);
+            Objects.requireNonNull(messageConsumer.messageSenderLocator);
+            return messageConsumer;
+        }
+    }
+
+    private MessageConsumer() {
+
+    }
+
     public synchronized void consumeMessage(RawAndAdaptedMessage message) {
         logger.debug("Handling received message {}", message.adapted());
         String consumptionId = UUID.randomUUID().toString();
-        Collection<MessageListener> listeners = listenerRegistry.getListeners(message.adapted().getClass());
+        Collection<MessageListener> listeners = environment.messageListenersOf(message.adapted().getClass());
         List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);
@@ -28,7 +53,7 @@ public class MessageConsumer {
         logger.debug("Message {} handled (consumption ID {})", message.adapted(), consumptionId);
     }
 
-    private MessageListenerRegistry listenerRegistry;
+    private Environment environment;
 
     private List<MessageListener> consumeMessage(RawAndAdaptedMessage message,
             String consumptionId,
@@ -81,7 +106,7 @@ public class MessageConsumer {
         logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.adapted(), listener);
         if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
-                SuccessfulConsumption event = messageFactory.newMessage(SuccessfulConsumption.class);
+                SuccessfulConsumption event = environment.messageFactory().newMessage(SuccessfulConsumption.class);
                 event.consumptionId().value(consumptionId);
                 event.listenerId().value(listener.id());
                 event.rawMessage().value(rawMessageOrDefault(receivedMessage));
@@ -91,8 +116,6 @@ public class MessageConsumer {
             }
         }
     }
-
-    private MessageFactory messageFactory;
 
     private String rawMessageOrDefault(RawAndAdaptedMessage receivedMessage) {
         if(receivedMessage.raw() instanceof String) {
@@ -111,7 +134,7 @@ public class MessageConsumer {
         logger.error("Consumption of message {} by listener {} failed", receivedMessage.adapted(), listener, e);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
-                FailedConsumption event = messageFactory.newMessage(FailedConsumption.class);
+                FailedConsumption event = environment.messageFactory().newMessage(FailedConsumption.class);
                 event.consumptionId().value(consumptionId);
                 event.listenerId().value(listener.id());
                 event.rawMessage().value(rawMessageOrDefault(receivedMessage));

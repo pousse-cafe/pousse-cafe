@@ -2,43 +2,49 @@ package poussecafe.injector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.util.ReflectionUtils;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
+import static java.util.stream.Collectors.toList;
 
 public class Injector {
 
-    private Map<Class<?>, Object> injectableServices = new HashMap<>();
+    public static class Builder {
 
-    private Set<Object> injectionCandidates = new HashSet<>();
+        private Injector injector = new Injector();
 
-    public void registerInjectableService(Object service) {
-        injectableServices.put(service.getClass(), service);
-    }
+        public Builder registerInjectableService(Object service) {
+            Objects.requireNonNull(service);
+            injector.injectableServices.put(service.getClass(), service);
+            return this;
+        }
 
-    public void registerInjectableService(Class<?> forClass, Object service) {
-        checkThat(value(forClass.isAssignableFrom(service.getClass())).isTrue().because("Service must subclass forClass"));
-        injectableServices.put(forClass, service);
-    }
+        public Builder registerInjectableService(Class<?> forClass, Object service) {
+            if(!forClass.isAssignableFrom(service.getClass())) {
+                throw new PousseCafeException("Service must subclass forClass");
+            }
+            injector.injectableServices.put(forClass, service);
+            return this;
+        }
 
-    public void addInjectionCandidate(Object candidate) {
-        injectionCandidates.add(candidate);
-    }
-
-    public void injectDependencies() {
-        for (Object service : injectionCandidates) {
-            injectDependencies(service);
+        public Injector build() {
+            return injector;
         }
     }
 
-    public void injectDependencies(Object component) {
+    private Injector() {
+
+    }
+
+    private Map<Class<?>, Object> injectableServices = new HashMap<>();
+
+    public void injectDependenciesInto(Object component) {
         logger.debug("Injecting dependencies in {}", component.getClass().getName());
         tryUsingSetters(component);
         tryUsingMembers(component);
@@ -58,5 +64,11 @@ public class Injector {
             FieldDependencyInjector dependencyInjector = new FieldDependencyInjector(service, field, injectableServices);
             dependencyInjector.trySettingDependency();
         }
+    }
+
+    public Collection<Object> injectableServices() {
+        return injectableServices.values().stream()
+                .distinct()
+                .collect(toList());
     }
 }

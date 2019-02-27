@@ -138,12 +138,12 @@ public class EnvironmentBuilder {
         environment.serviceImplementations.put(serviceClass, implementation);
     }
 
-    public EnvironmentBuilder injector(Injector injector) {
+    public EnvironmentBuilder injectorBuilder(Injector.Builder injector) {
         this.injector = injector;
         return this;
     }
 
-    private Injector injector;
+    private Injector.Builder injector;
 
     public EnvironmentBuilder transactionRunnerLocator(TransactionRunnerLocator transactionRunnerLocator) {
         this.transactionRunnerLocator = transactionRunnerLocator;
@@ -159,7 +159,6 @@ public class EnvironmentBuilder {
         checkEnvironment();
 
         injector.registerInjectableService(environment);
-        injector.registerInjectableService(environment.messageListenerRegistry);
         injector.registerInjectableService(environment.entityFactory());
         injector.registerInjectableService(environment.messageFactory());
 
@@ -250,11 +249,9 @@ public class EnvironmentBuilder {
 
         Repository repository = entityServices.getRepository();
         injector.registerInjectableService(repository);
-        injector.addInjectionCandidate(repository);
 
         Factory factory = entityServices.getFactory();
         injector.registerInjectableService(factory);
-        injector.addInjectionCandidate(factory);
     }
 
     private void registerServices() {
@@ -262,7 +259,6 @@ public class EnvironmentBuilder {
             if(!ReflectionUtils.isAbstract(serviceClass)) {
                 Object service = ReflectionUtils.newInstance(serviceClass);
                 injector.registerInjectableService(service);
-                injector.addInjectionCandidate(service);
                 environment.registerServiceInstance(serviceClass, service);
             }
         }
@@ -270,7 +266,6 @@ public class EnvironmentBuilder {
         for (ServiceImplementation serviceImplementation : environment.serviceImplementations.values()) {
             Object service = ReflectionUtils.newInstance(serviceImplementation.serviceImplementationClass());
             injector.registerInjectableService(serviceImplementation.serviceClass(), service);
-            injector.addInjectionCandidate(service);
             environment.registerServiceInstance(serviceImplementation.serviceClass(), service);
         }
     }
@@ -278,7 +273,6 @@ public class EnvironmentBuilder {
     private void registerDomainProcesses() {
         for (Class<?> processClass : definedDomainProcesses) {
             DomainProcess process = (DomainProcess) ReflectionUtils.newInstance(processClass);
-            injector.addInjectionCandidate(process);
             injector.registerInjectableService(process);
             environment.registerDomainProcessInstance(process);
         }
@@ -288,7 +282,6 @@ public class EnvironmentBuilder {
         MessageListenerFactory messageListenerFactory = new MessageListenerFactory.Builder()
                 .environment(environment)
                 .transactionRunnerLocator(transactionRunnerLocator)
-                .injector(injector)
                 .build();
         for(MessageListenerDefinition definition : definedListeners) {
             MessageListener listener = messageListenerFactory.build(definition);
