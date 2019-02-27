@@ -1,11 +1,11 @@
-package poussecafe.simple.adapters;
+package poussecafe.myboundedcontext.adapters;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
-import poussecafe.simple.domain.MyAggregateKey;
-import poussecafe.simple.domain.MyDomainEvent;
+import poussecafe.myboundedcontext.domain.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.MyDomainEvent;
 
 @MessageImplementation(message = MyDomainEvent.class)
 @SuppressWarnings("serial")
@@ -13,11 +13,8 @@ public class MyDomainEventData implements Serializable, MyDomainEvent {
 
     @Override
     public Attribute<MyAggregateKey> key() {
-        return AttributeBuilder.simple(MyAggregateKey.class)
-                .from(String.class)
-                .adapt(MyAggregateKey::new)
+        return AttributeBuilder.stringKey(MyAggregateKey.class)
                 .get(() -> id)
-                .adapt(MyAggregateKey::getValue)
                 .set(value -> id = value)
                 .build();
     }

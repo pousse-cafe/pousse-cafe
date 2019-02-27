@@ -1,4 +1,4 @@
-package poussecafe.simple.domain;
+package poussecafe.myboundedcontext.domain;
 import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
 

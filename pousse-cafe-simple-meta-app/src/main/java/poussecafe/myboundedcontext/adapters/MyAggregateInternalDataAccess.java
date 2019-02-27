@@ -1,8 +1,8 @@
-package poussecafe.simple.adapters;
+package poussecafe.myboundedcontext.adapters;
 
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.simple.domain.MyAggregate;
-import poussecafe.simple.domain.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.MyAggregate;
+import poussecafe.myboundedcontext.domain.MyAggregateKey;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 

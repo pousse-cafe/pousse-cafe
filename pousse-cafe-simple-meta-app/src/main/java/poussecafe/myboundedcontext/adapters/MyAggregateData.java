@@ -1,10 +1,10 @@
-package poussecafe.simple.adapters;
+package poussecafe.myboundedcontext.adapters;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.simple.domain.MyAggregate;
-import poussecafe.simple.domain.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.MyAggregate;
+import poussecafe.myboundedcontext.domain.MyAggregateKey;
 
 @SuppressWarnings("serial")
 public class MyAggregateData implements MyAggregate.Attributes, Serializable {
@@ -15,11 +15,8 @@ public class MyAggregateData implements MyAggregate.Attributes, Serializable {
      */
     @Override
     public Attribute<MyAggregateKey> key() {
-        return AttributeBuilder.simple(MyAggregateKey.class)
-                .from(String.class)
-                .adapt(MyAggregateKey::new)
+        return AttributeBuilder.stringKey(MyAggregateKey.class)
                 .get(() -> key)
-                .adapt(MyAggregateKey::getValue)
                 .set(value -> key = value)
                 .build();
     }

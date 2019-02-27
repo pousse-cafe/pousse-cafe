@@ -3,12 +3,11 @@ package process;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.environment.BoundedContext;
-import poussecafe.simple.MyBoundedContextConfiguration;
-import poussecafe.simple.domain.MyAggregate;
-import poussecafe.simple.domain.MyAggregateKey;
-import poussecafe.simple.process.CreateAggregate;
-import poussecafe.simple.process.MyCommand;
-import poussecafe.simple.process.MyProcess;
+import poussecafe.myboundedcontext.MyBoundedContext;
+import poussecafe.myboundedcontext.domain.MyAggregate;
+import poussecafe.myboundedcontext.domain.MyAggregateKey;
+import poussecafe.myboundedcontext.process.DoSomeActionParameters;
+import poussecafe.myboundedcontext.process.MyProcess;
 import poussecafe.test.PousseCafeTest;
 
 import static java.util.Arrays.asList;
@@ -20,16 +19,12 @@ import static org.junit.Assert.assertThat;
  */
 public class MyProcessTest extends PousseCafeTest {
 
-    private MyAggregateKey key;
-
-    private int x;
-
     /*
      * The context is configured with provided bounded contexts.
      */
     @Override
     protected List<BoundedContext> boundedContexts() {
-        return asList(MyBoundedContextConfiguration.configure().defineAndImplementDefault().build());
+        return asList(MyBoundedContext.configure().defineAndImplementDefault().build());
     }
 
     /*
@@ -44,19 +39,21 @@ public class MyProcessTest extends PousseCafeTest {
     }
 
     private void givenAvailableAggregate() {
-        key = new MyAggregateKey("key");
-        myProcess.handle(new CreateAggregate(key));
+        parameters.key = new MyAggregateKey("key");
+        myProcess.createMyAggregate(parameters.key);
     }
+
+    private DoSomeActionParameters parameters = new DoSomeActionParameters();
 
     private MyProcess myProcess;
 
     private void whenProcessingCommand() {
-        x = 10;
-        myProcess.handle(new MyCommand(key, x));
+        parameters.x = 10;
+        myProcess.doSomeAction(parameters);
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = find(MyAggregate.class, key);
-        assertThat(aggregate.attributes().x().value(), equalTo(x));
+        MyAggregate aggregate = find(MyAggregate.class, parameters.key);
+        assertThat(aggregate.attributes().x().value(), equalTo(parameters.x));
     }
 }

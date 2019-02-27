@@ -1,13 +1,10 @@
-package poussecafe.simple.domain;
+package poussecafe.myboundedcontext.domain;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.DomainException;
 import poussecafe.domain.EntityAttributes;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.greaterThan;
 
 /*
  * A simple aggregate root
@@ -22,7 +19,10 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Attri
      * Below action updates aggregate's state and triggers the emission of a Domain Event in case of success
      */
     public void doSomeAction(int x) {
-        checkThat(value(x).verifies(greaterThan(0)).because("X cannot be <=0"));
+        if(x <= 0) {
+            throw new DomainException("X cannot be <=0");
+        }
+
         attributes().x().value(x);
 
         MyDomainEvent event = newDomainEvent(MyDomainEvent.class);

@@ -1,16 +1,16 @@
-package poussecafe.simple;
+package poussecafe.myboundedcontext;
 
 import poussecafe.discovery.BoundedContextConfigurer;
 
-public class MyBoundedContextConfiguration {
+public class MyBoundedContext {
 
-    private MyBoundedContextConfiguration() {
+    private MyBoundedContext() {
 
     }
 
     public static BoundedContextConfigurer configure() {
         return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.simple")
+                .packagePrefix("poussecafe.myboundedcontext")
                 .build();
     }
 }
