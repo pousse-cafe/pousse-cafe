@@ -2,10 +2,8 @@ package poussecafe.injector;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Objects;
 import poussecafe.exception.PousseCafeException;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class SetterDependencyInjector extends DependencyInjector {
 
@@ -20,12 +18,12 @@ public class SetterDependencyInjector extends DependencyInjector {
     }
 
     private void setService(Object service) {
-        checkThat(value(service).notNull().because("Service cannot be null"));
+        Objects.requireNonNull(service);
         this.service = service;
     }
 
     private void setMethod(Method method) {
-        checkThat(value(method).notNull().because("Method cannot be null"));
+        Objects.requireNonNull(method);
         this.method = method;
     }
 

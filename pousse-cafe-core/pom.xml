@@ -36,6 +36,11 @@
       <artifactId>pousse-cafe-attribute</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pousse-cafe-framework</groupId>
+      <artifactId>pousse-cafe-injector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

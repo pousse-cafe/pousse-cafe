@@ -3,12 +3,10 @@ package poussecafe.injector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class FieldDependencyInjector extends DependencyInjector {
 
@@ -23,12 +21,12 @@ public class FieldDependencyInjector extends DependencyInjector {
     }
 
     private void setService(Object service) {
-        checkThat(value(service).notNull().because("Service cannot be null"));
+        Objects.requireNonNull(service);
         this.service = service;
     }
 
     private void setField(Field field) {
-        checkThat(value(field).notNull().because("Field cannot be null"));
+        Objects.requireNonNull(field);
         this.field = field;
     }
 

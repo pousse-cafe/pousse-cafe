@@ -1,9 +1,7 @@
 package poussecafe.injector;
 
 import java.util.Map;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
+import java.util.Objects;
 
 public abstract class DependencyInjector {
 
@@ -14,7 +12,7 @@ public abstract class DependencyInjector {
     }
 
     private void setInjectableServices(Map<Class<?>, Object> injectableServices) {
-        checkThat(value(injectableServices).notNull().because("Injectable services cannot be null"));
+        Objects.requireNonNull(injectableServices, "Injectable services cannot be null");
         this.injectableServices = injectableServices;
     }
 

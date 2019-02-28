@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
@@ -34,6 +35,11 @@ public class Injector {
         }
 
         public Injector build() {
+            return injector;
+        }
+
+        public Injector buildAndInject() {
+            injector.injectableServices().forEach(injector::injectDependenciesInto);
             return injector;
         }
     }
@@ -70,5 +76,10 @@ public class Injector {
         return injectableServices.values().stream()
                 .distinct()
                 .collect(toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> instanceOf(Class<T> serviceClass) {
+        return (Optional<T>) Optional.ofNullable(injectableServices.get(serviceClass));
     }
 }

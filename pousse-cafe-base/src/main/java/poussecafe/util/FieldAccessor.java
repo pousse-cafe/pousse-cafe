@@ -1,9 +1,7 @@
 package poussecafe.util;
 
 import java.lang.reflect.Field;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
+import java.util.Objects;
 
 public class FieldAccessor {
 
@@ -25,7 +23,7 @@ public class FieldAccessor {
     }
 
     private void setTarget(Object target) {
-        checkThat(value(target).notNull().because("Target cannot be null"));
+        Objects.requireNonNull(target);
         this.target = target;
     }
 
