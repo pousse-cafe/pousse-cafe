@@ -19,13 +19,12 @@ import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.environment.AggregateDefinition;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.messaging.DomainEventListener;
+import poussecafe.messaging.AggregateMessageListenerRunner;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.VoidAggregateMessageListenerRunner;
 import poussecafe.process.DomainProcess;
-import poussecafe.runtime.AggregateMessageListenerRunner;
 import poussecafe.storage.Storage;
 
 import static java.util.stream.Collectors.toList;
@@ -177,7 +176,7 @@ class ClassPathExplorer {
     private Collection<MessageListenerDefinition> discoverListenersOfClass(Class<?> containerClass) {
         List<MessageListenerDefinition> definitions = new ArrayList<>();
         for(Method method : containerClass.getDeclaredMethods()) {
-            DomainEventListener annotation = method.getAnnotation(DomainEventListener.class);
+            MessageListener annotation = method.getAnnotation(MessageListener.class);
             if(annotation != null) {
                 logger.debug("Defining listener for method {}", method);
                 definitions.add(new MessageListenerDefinition.Builder()

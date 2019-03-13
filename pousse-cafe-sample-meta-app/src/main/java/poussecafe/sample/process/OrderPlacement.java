@@ -1,6 +1,6 @@
 package poussecafe.sample.process;
 
-import poussecafe.messaging.DomainEventListener;
+import poussecafe.discovery.MessageListener;
 import poussecafe.process.DomainProcess;
 import poussecafe.sample.command.PlaceOrder;
 import poussecafe.sample.domain.Order;
@@ -28,7 +28,7 @@ public class OrderPlacement extends DomainProcess {
         });
     }
 
-    @DomainEventListener
+    @MessageListener
     public void updateProcessManager(OrderPlaced event) {
         OrderDescription description = event.description().value();
         OrderKey key = new OrderKey(event.productKey().value(), description.customerKey, description.reference);

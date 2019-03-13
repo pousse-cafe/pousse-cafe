@@ -7,8 +7,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import poussecafe.environment.AggregateServices;
 import poussecafe.process.DomainProcess;
-import poussecafe.runtime.AggregateServices;
 import poussecafe.runtime.Runtime;
 
 @Component

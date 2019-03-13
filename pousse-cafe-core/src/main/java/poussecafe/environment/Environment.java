@@ -19,7 +19,6 @@ import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
-import poussecafe.runtime.AggregateServices;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;

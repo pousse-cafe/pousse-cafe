@@ -74,7 +74,7 @@ public abstract class Entity<K, D extends EntityAttributes<K>> {
         this.storage = storage;
     }
 
-    public void addDomainEvent(DomainEvent event) {
+    public void emitDomainEvent(DomainEvent event) {
         messageCollection().addMessage(event);
     }
 

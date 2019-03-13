@@ -17,7 +17,6 @@ import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessageListener;
 import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.process.DomainProcess;
-import poussecafe.runtime.AggregateServices;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.ReflectionUtils;
 

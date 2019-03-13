@@ -1,7 +1,7 @@
 package poussecafe.sample.process;
 
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.DomainEvent;
-import poussecafe.messaging.DomainEventListener;
 import poussecafe.process.DomainProcess;
 import poussecafe.sample.domain.ContentChooser;
 import poussecafe.sample.domain.CustomerKey;
@@ -21,7 +21,7 @@ public class Messaging extends DomainProcess {
 
     private ContentChooser contentChooser;
 
-    @DomainEventListener
+    @MessageListener
     public void createMessage(OrderRejected event) {
         logger.info("Creating message for rejected order");
         createMessageWithContent(event.description().value().customerKey, event);
@@ -34,19 +34,19 @@ public class Messaging extends DomainProcess {
         runInTransaction(Message.class, () -> repository.add(message));
     }
 
-    @DomainEventListener
+    @MessageListener
     public void createMessage(OrderCreated event) {
         logger.info("Creating message for created order");
         createMessageWithContent(event.orderKey().value().getCustomerKey(), event);
     }
 
-    @DomainEventListener
+    @MessageListener
     public void createMessage(OrderSettled event) {
         logger.info("Creating message for settled order");
         createMessageWithContent(event.orderKey().value().getCustomerKey(), event);
     }
 
-    @DomainEventListener
+    @MessageListener
     public void createMessage(OrderReadyForShipping event) {
         logger.info("Creating message for order ready-for-shipping");
         createMessageWithContent(event.orderKey().value().getCustomerKey(), event);

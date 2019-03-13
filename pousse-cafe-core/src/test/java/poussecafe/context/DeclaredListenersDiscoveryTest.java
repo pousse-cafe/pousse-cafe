@@ -3,10 +3,10 @@ package poussecafe.context;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.Test;
+import poussecafe.discovery.DeclaredMessageListenerFactory;
+import poussecafe.discovery.ServiceMessageListenerDiscoverer;
+import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.messaging.MessageListener;
-import poussecafe.runtime.DeclaredMessageListenerFactory;
-import poussecafe.runtime.DeclaredMessageListenerIdBuilder;
-import poussecafe.runtime.ServiceMessageListenerDiscoverer;
 
 import static org.junit.Assert.assertTrue;
 

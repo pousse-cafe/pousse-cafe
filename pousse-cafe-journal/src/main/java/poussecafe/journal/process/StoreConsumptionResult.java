@@ -1,9 +1,9 @@
 package poussecafe.journal.process;
 
+import poussecafe.discovery.MessageListener;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
 import poussecafe.journal.domain.JournalEntryRepository;
-import poussecafe.messaging.DomainEventListener;
 import poussecafe.process.DomainProcess;
 import poussecafe.support.model.FailedConsumption;
 import poussecafe.support.model.SuccessfulConsumption;
@@ -14,13 +14,13 @@ public class StoreConsumptionResult extends DomainProcess {
 
     private JournalEntryFactory entryFactory;
 
-    @DomainEventListener
+    @MessageListener
     public void storeSuccessfulConsumption(SuccessfulConsumption event) {
         JournalEntry entry = entryFactory.buildEntry(event);
         runInTransaction(JournalEntry.class, () -> entryRepository.add(entry));
     }
 
-    @DomainEventListener
+    @MessageListener
     public void storeFailedConsumption(FailedConsumption event) {
         JournalEntry entry = entryFactory.buildEntry(event);
         runInTransaction(JournalEntry.class, () -> entryRepository.add(entry));

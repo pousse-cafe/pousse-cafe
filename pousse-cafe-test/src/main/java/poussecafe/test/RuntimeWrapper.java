@@ -12,12 +12,12 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Repository;
+import poussecafe.environment.AggregateServices;
 import poussecafe.environment.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessagingQueue.InternalMessageReceiver;
-import poussecafe.runtime.AggregateServices;
 import poussecafe.runtime.Runtime;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
@@ -66,7 +66,7 @@ public class RuntimeWrapper {
         }
     }
 
-    public void addDomainEvent(DomainEvent event) {
+    public void emitDomainEvent(DomainEvent event) {
         context.messageSenderLocator().locate(event.getClass()).sendMessage(event);
         waitUntilAllMessageQueuesEmpty();
     }

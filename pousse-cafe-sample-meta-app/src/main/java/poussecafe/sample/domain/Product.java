@@ -41,14 +41,14 @@ public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
             OrderRejected event = newDomainEvent(OrderRejected.class);
             event.productKey().valueOf(attributes().key());
             event.description().value(description);
-            addDomainEvent(event);
+            emitDomainEvent(event);
         } else {
             attributes().setAvailableUnits(unitsAvailable - description.units);
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
             event.productKey().valueOf(attributes().key());
             event.description().value(description);
-            addDomainEvent(event);
+            emitDomainEvent(event);
         }
     }
 

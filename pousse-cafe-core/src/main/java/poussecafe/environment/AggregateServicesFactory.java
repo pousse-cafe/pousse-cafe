@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
-import poussecafe.runtime.AggregateServices;
 import poussecafe.util.ReflectionUtils;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })

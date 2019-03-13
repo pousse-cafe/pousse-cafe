@@ -3,7 +3,6 @@ package poussecafe.messaging;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import poussecafe.runtime.AggregateMessageListenerRunner;
 
 public class MessageListener {
 

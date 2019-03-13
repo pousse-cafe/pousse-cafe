@@ -3,7 +3,7 @@ package poussecafe.domain;
 import poussecafe.attribute.Attribute;
 import poussecafe.context.TestDomainEvent3;
 import poussecafe.discovery.Aggregate;
-import poussecafe.messaging.DomainEventListener;
+import poussecafe.discovery.MessageListener;
 
 @Aggregate(
   factory = SimpleAggregateFactory.class,
@@ -11,7 +11,7 @@ import poussecafe.messaging.DomainEventListener;
 )
 public class SimpleAggregate extends AggregateRoot<SimpleAggregateKey, SimpleAggregate.Attributes> {
 
-    @DomainEventListener(runner = SimpleAggregateTouchRunner.class)
+    @MessageListener(runner = SimpleAggregateTouchRunner.class)
     public void touch(TestDomainEvent3 event) {
         attributes().data().value("touched");
     }

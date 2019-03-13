@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
+import poussecafe.discovery.DeclaredMessageListenerFactory;
+import poussecafe.discovery.ServiceMessageListenerDiscoverer;
 import poussecafe.environment.BoundedContext;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;

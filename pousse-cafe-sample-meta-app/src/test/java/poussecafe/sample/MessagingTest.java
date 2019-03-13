@@ -50,7 +50,7 @@ public class MessagingTest extends PousseCafeTest {
         OrderRejected event = new SerializableOrderRejected();
         event.productKey().value(productKey);
         event.description().value(orderDescription);
-        addDomainEvent(event);
+        emitDomainEvent(event);
     }
 
     private void thenMessageCreatedWithContent(ContentType contentType) {

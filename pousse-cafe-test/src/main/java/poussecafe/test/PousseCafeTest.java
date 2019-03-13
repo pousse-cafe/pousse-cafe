@@ -30,7 +30,7 @@ public abstract class PousseCafeTest {
         return wrapper.runtime();
     }
 
-    protected <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
+    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K key) {
         return wrapper.find(entityClass, key);
     }
@@ -43,11 +43,11 @@ public abstract class PousseCafeTest {
         return wrapper.runtime().environment().messageFactory().newMessage(eventClass);
     }
 
-    protected void addDomainEvent(DomainEvent event) {
-        wrapper.addDomainEvent(event);
+    public void emitDomainEvent(DomainEvent event) {
+        wrapper.emitDomainEvent(event);
     }
 
-    protected void loadDataFile(String path) {
+    public void loadDataFile(String path) {
         wrapper.loadDataFile(path);
     }
 

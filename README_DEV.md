@@ -14,7 +14,7 @@ Deployment is automatically handled by Travis (see .travis.yml for details) exce
 
 The archetype package needs to be deployed separately:
 
-    ( cd pousse-cafe-simple-meta-app/ ; ./scripts/archetype_mvn.sh deploy )
+    ( cd pousse-cafe-sample-bounded-context/ ; ./scripts/archetype_mvn.sh deploy )
 
 ## Other releases
 

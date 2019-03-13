@@ -31,7 +31,7 @@ public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
     public void onAdd() {
         MessageCreated event = newDomainEvent(MessageCreated.class);
         event.messageKey().valueOf(attributes().key());
-        addDomainEvent(event);
+        emitDomainEvent(event);
     }
 
     public static interface Attributes extends EntityAttributes<MessageKey> {
