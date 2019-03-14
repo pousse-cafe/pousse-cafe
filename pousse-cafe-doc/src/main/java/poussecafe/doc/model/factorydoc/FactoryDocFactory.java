@@ -5,7 +5,6 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.doc.model.step.StepDocExtractor;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
@@ -24,14 +23,10 @@ public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, Factor
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());
 
-        factoryDoc.stepDocs(stepDocExtractor.extractStepDocs(name, classDoc));
-
         return factoryDoc;
     }
 
     private ComponentDocFactory componentDocFactory;
-
-    private StepDocExtractor stepDocExtractor;
 
     public static boolean isFactoryDoc(ClassDoc classDoc) {
         return ClassDocPredicates.documentsWithSuperclass(classDoc, Factory.class);

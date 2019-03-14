@@ -1,12 +1,13 @@
-package poussecafe.doc.model.step;
+package poussecafe.doc.model.messagelistenerdoc;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.domain.DomainException;
 
-import java.util.Objects;
+import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class StepMethodSignature {
 
@@ -85,19 +86,9 @@ public class StepMethodSignature {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) {
-            return true;
-        }
-        if(obj == null) {
-            return false;
-        }
-        if(getClass() != obj.getClass()) {
-            return false;
-        }
-        StepMethodSignature other = (StepMethodSignature) obj;
-        return new EqualsBuilder()
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(componentMethodName, other.componentMethodName)
                 .append(consumedEventName, other.consumedEventName)
-                .build();
+                .build());
     }
 }

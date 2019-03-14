@@ -41,12 +41,14 @@ ${domain.name} Domain Model
         <#list domain.boundedContexts as context>
         <li><a href="#${context.id}">${context.name}</a></li>
         <ol>
+          <#if context.aggregates?size gt 0>
           <li><a href="#${context.id}_aggregates">Aggregates</a></li>
           <ol>
             <#list context.aggregates as aggregate>
             <li><a href="#${context.id}_${aggregate.id}">${aggregate.name}</a></li>
             </#list>
           </ol>
+          </#if>
           <#if context.services?size gt 0>
           <li><a href="#${context.id}_services">Services</a></li>
           <ol>
@@ -133,6 +135,7 @@ ${context.description}
   <img src="img/${context.id}.png"/>
 </div>
 
+<#if context.aggregates?size gt 0>
 <h3 id="${context.id}_aggregates">Aggregates</h3>
 
 <#list context.aggregates as aggregate>
@@ -162,6 +165,7 @@ ${aggregate.description}
 </div>
 
 </#list>
+</#if>
 
 <#if context.services?size gt 0>
 <h3 id="${context.id}_services">Services</h3>

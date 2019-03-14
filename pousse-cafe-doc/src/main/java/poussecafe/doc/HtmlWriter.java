@@ -15,6 +15,8 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.DomainProcessSteps;
+import poussecafe.doc.model.DomainProcessStepsFactory;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
@@ -254,9 +256,12 @@ public class HtmlWriter {
         view.put("id", domainProcessDoc.id());
         view.put("name", domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
         view.put("description", domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
-        view.put("steps", domainProcessDoc.orderedSteps().stream().filter(step -> !step.external()).map(this::adapt).collect(toList()));
+        DomainProcessSteps domainProcessSteps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc);
+        view.put("steps", domainProcessSteps.orderedSteps().stream().filter(step -> !step.external()).map(this::adapt).collect(toList()));
         return view;
     }
+
+    private DomainProcessStepsFactory domainProcessStepsFactory;
 
     private HashMap<String, Object> adapt(Step step) {
         HashMap<String, Object> view = new HashMap<>();

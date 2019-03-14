@@ -68,6 +68,9 @@ public class PousseCafeDoclet {
         FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
         runtime.injector().injectDependenciesInto(factoryDocCreator);
 
+        MessageListenerDocCreator messageListenerDocCreator = new MessageListenerDocCreator(rootDocWrapper);
+        runtime.injector().injectDependenciesInto(messageListenerDocCreator);
+
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
                 .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(aggregateDocCreator)
@@ -75,6 +78,7 @@ public class PousseCafeDoclet {
                 .classDocConsumer(entityDocCreator)
                 .classDocConsumer(valueObjectDocCreator)
                 .classDocConsumer(factoryDocCreator)
+                .classDocConsumer(messageListenerDocCreator)
                 .build();
         codeAnalyzer.analyzeCode();
     }

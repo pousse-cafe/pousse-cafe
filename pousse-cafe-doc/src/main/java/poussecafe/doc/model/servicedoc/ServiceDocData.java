@@ -30,12 +30,12 @@ public class ServiceDocData implements ServiceDoc.Attributes, Serializable {
         return new Attribute<BoundedContextComponentDoc>() {
             @Override
             public BoundedContextComponentDoc value() {
-                return boundedContextComponentDoc.toModel();
+                return boundedContextComponentDoc.adapt();
             }
 
             @Override
             public void value(BoundedContextComponentDoc value) {
-                boundedContextComponentDoc = BoundedContextComponentDocData.of(value);
+                boundedContextComponentDoc = BoundedContextComponentDocData.adapt(value);
             }
         };
     }

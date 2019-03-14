@@ -1,14 +1,9 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import poussecafe.attribute.Attribute;
-import poussecafe.attribute.ConvertingListAttribute;
-import poussecafe.attribute.ListAttribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.doc.model.step.StepDoc;
-import poussecafe.doc.model.step.StepDocData;
 
 @SuppressWarnings("serial")
 public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
@@ -35,12 +30,12 @@ public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
         return new Attribute<BoundedContextComponentDoc>() {
             @Override
             public BoundedContextComponentDoc value() {
-                return componentDoc.toModel();
+                return componentDoc.adapt();
             }
 
             @Override
             public void value(BoundedContextComponentDoc value) {
-                componentDoc = BoundedContextComponentDocData.of(value);
+                componentDoc = BoundedContextComponentDocData.adapt(value);
             }
         };
     }
@@ -63,21 +58,4 @@ public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
     }
 
     private String keyClassName;
-
-    @Override
-    public ListAttribute<StepDoc> stepDocs() {
-        return new ConvertingListAttribute<StepDocData, StepDoc>(stepDocs) {
-            @Override
-            protected StepDoc convertFrom(StepDocData from) {
-                return from.toModel();
-            }
-
-            @Override
-            protected StepDocData convertTo(StepDoc from) {
-                return StepDocData.of(from);
-            }
-        };
-    }
-
-    private ArrayList<StepDocData> stepDocs = new ArrayList<>();
 }

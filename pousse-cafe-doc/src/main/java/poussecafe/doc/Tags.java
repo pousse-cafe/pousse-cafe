@@ -6,8 +6,6 @@ public interface Tags {
 
     String STEP = "step";
 
-    String EVENTUALLY = "eventually";
-
     String TO_EXTERNAL = "to_external";
 
     String FROM_EXTERNAL = "from_external";

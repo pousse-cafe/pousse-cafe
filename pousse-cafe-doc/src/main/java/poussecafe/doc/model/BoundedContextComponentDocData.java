@@ -6,7 +6,7 @@ import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 @SuppressWarnings("serial")
 public class BoundedContextComponentDocData implements Serializable {
 
-    public static BoundedContextComponentDocData of(BoundedContextComponentDoc boundedContextComponentDoc) {
+    public static BoundedContextComponentDocData adapt(BoundedContextComponentDoc boundedContextComponentDoc) {
         BoundedContextComponentDocData data = new BoundedContextComponentDocData();
         data.componentDoc = ComponentDocData.of(boundedContextComponentDoc.componentDoc());
         data.boundedContextId = boundedContextComponentDoc.boundedContextDocKey().getValue();
@@ -17,7 +17,7 @@ public class BoundedContextComponentDocData implements Serializable {
 
     public String boundedContextId;
 
-    public BoundedContextComponentDoc toModel() {
+    public BoundedContextComponentDoc adapt() {
         return new BoundedContextComponentDoc.Builder()
                 .componentDoc(componentDoc.toModel())
                 .boundedContextDocKey(BoundedContextDocKey.ofPackageName(boundedContextId))

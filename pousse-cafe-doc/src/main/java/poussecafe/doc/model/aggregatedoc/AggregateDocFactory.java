@@ -5,7 +5,6 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.doc.model.step.StepDocExtractor;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
@@ -28,14 +27,10 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
 
         aggregateDoc.attributes().keyClassName().value(keyClassName(aggregateClassDoc));
 
-        aggregateDoc.stepDocs(stepDocExtractor.extractStepDocs(name, aggregateClassDoc));
-
         return aggregateDoc;
     }
 
     private ComponentDocFactory componentDocFactory;
-
-    private StepDocExtractor stepDocExtractor;
 
     private String keyClassName(ClassDoc aggregateClassDoc) {
         return aggregateClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();

@@ -6,7 +6,7 @@ public class ToStep {
 
         private ToStep toStep = new ToStep();
 
-        public Builder name(String name) {
+        public Builder name(StepName name) {
             toStep.name = name;
             return this;
         }
@@ -25,9 +25,9 @@ public class ToStep {
 
     }
 
-    private String name;
+    private StepName name;
 
-    public String name() {
+    public StepName name() {
         return name;
     }
 

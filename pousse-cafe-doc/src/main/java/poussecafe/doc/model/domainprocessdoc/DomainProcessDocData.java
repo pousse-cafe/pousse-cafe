@@ -1,12 +1,18 @@
 package poussecafe.doc.model.domainprocessdoc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import poussecafe.attribute.Attribute;
-import poussecafe.attribute.ConvertingMapAttribute;
+import poussecafe.attribute.AttributeBuilder;
+import poussecafe.attribute.ListAttribute;
 import poussecafe.attribute.MapAttribute;
+import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
+import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.messagelistenerdoc.StepMethodSignatureData;
 
 @SuppressWarnings("serial")
 public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serializable {
@@ -33,12 +39,12 @@ public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serial
         return new Attribute<BoundedContextComponentDoc>() {
             @Override
             public BoundedContextComponentDoc value() {
-                return componentDoc.toModel();
+                return componentDoc.adapt();
             }
 
             @Override
             public void value(BoundedContextComponentDoc value) {
-                componentDoc = BoundedContextComponentDocData.of(value);
+                componentDoc = BoundedContextComponentDocData.adapt(value);
             }
         };
     }
@@ -46,29 +52,32 @@ public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serial
     private BoundedContextComponentDocData componentDoc;
 
     @Override
-    public MapAttribute<String, Step> steps() {
-        return new ConvertingMapAttribute<String, StepData, String, Step>(steps) {
-            @Override
-            protected String convertFromKey(String from) {
-                return from;
-            }
-
-            @Override
-            protected Step convertFromValue(StepData from) {
-                return from.toModel();
-            }
-
-            @Override
-            protected String convertToKey(String from) {
-                return from;
-            }
-
-            @Override
-            protected StepData convertToValue(Step from) {
-                return StepData.of(from);
-            }
-        };
+    public ListAttribute<StepMethodSignature> steps() {
+        return AttributeBuilder.list(StepMethodSignature.class)
+                .fromAutoAdapting(StepMethodSignatureData.class)
+                .withList(steps)
+                .build();
     }
 
-    private HashMap<String, StepData> steps = new HashMap<>();
+    private ArrayList<StepMethodSignatureData> steps = new ArrayList<>();
+
+    @Override
+    public MapAttribute<StepName, List<StepName>> toExternals() {
+        return AttributeBuilder.map(StepName.class, DataAdapters.parametrizedListClass(StepName.class))
+                .fromAdapting(StepNameAdapter.instance(), DataAdapters.listWithAdapter(StepNameAdapter.instance()))
+                .withMap(toExternals)
+                .build();
+    }
+
+    private HashMap<String, List<String>> toExternals = new HashMap<>();
+
+    @Override
+    public MapAttribute<StepName, List<StepName>> fromExternals() {
+        return AttributeBuilder.map(StepName.class, DataAdapters.parametrizedListClass(StepName.class))
+                .fromAdapting(StepNameAdapter.instance(), DataAdapters.listWithAdapter(StepNameAdapter.instance()))
+                .withMap(fromExternals)
+                .build();
+    }
+
+    private HashMap<String, List<String>> fromExternals = new HashMap<>();
 }

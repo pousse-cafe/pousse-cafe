@@ -5,25 +5,19 @@ import com.sun.javadoc.MethodDoc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import poussecafe.doc.AnnotationsResolver;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.doc.model.factorydoc.FactoryDoc;
-import poussecafe.doc.model.factorydoc.FactoryDocRepository;
-import poussecafe.doc.model.step.StepDoc;
-import poussecafe.doc.model.step.StepMethodSignature;
+import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 import poussecafe.process.DomainProcess;
-
-import static java.util.stream.Collectors.toList;
 
 public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
@@ -35,12 +29,15 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         String name = name(doc);
         DomainProcessDocKey key = DomainProcessDocKey.ofClassName(doc.qualifiedName());
         DomainProcessDoc domainProcessDoc = newAggregateWithKey(key);
-        domainProcessDoc.boundedContextComponentDoc(new BoundedContextComponentDoc.Builder()
+        domainProcessDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());
 
-        domainProcessDoc.steps(extractSteps(boundedContextDocKey, doc));
+        List<StepMethodSignature> steps = extractSteps(doc);
+        domainProcessDoc.attributes().steps().value(steps);
+        domainProcessDoc.attributes().fromExternals().value(fromExternals(doc));
+        domainProcessDoc.attributes().toExternals().value(toExternals(doc));
 
         return domainProcessDoc;
     }
@@ -55,83 +52,15 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         return doc.simpleTypeName();
     }
 
-    private List<Step> extractSteps(BoundedContextDocKey boundedContextDocKey, ClassDoc doc) {
-        HashMap<String, Step> steps = new HashMap<>();
-
-        HashMap<String, List<StepMethodSignature>> eventToStep = new HashMap<>();
+    private List<StepMethodSignature> extractSteps(ClassDoc doc) {
+        List<StepMethodSignature> steps = new ArrayList<>();
         for(MethodDoc methodDoc : doc.methods()) {
             if(AnnotationsResolver.isStep(methodDoc)) {
-                StepMethodSignature stepMethodSignature = stepMethodSignature(methodDoc);
-                if(stepMethodSignature.consumedEventName().isPresent()) {
-                    String consumedEventName = stepMethodSignature.consumedEventName().get();
-                    List<StepMethodSignature> signatures = eventToStep.get(consumedEventName);
-                    if(signatures == null) {
-                        signatures = new ArrayList<>();
-                        eventToStep.put(consumedEventName, signatures);
-                    }
-                    signatures.add(stepMethodSignature);
-                }
+                StepMethodSignature signature = stepMethodSignature(methodDoc);
+                steps.add(signature);
             }
         }
-
-        for(MethodDoc methodDoc : doc.methods()) {
-            if(AnnotationsResolver.isStep(methodDoc)) {
-                StepDoc stepDoc = locateStepDoc(boundedContextDocKey, methodDoc);
-
-                List<ToStep> toSteps = new ArrayList<>();
-                List<String> tos = locateTos(methodDoc, stepDoc, eventToStep);
-                toSteps.addAll(toDirectSteps(tos));
-
-                List<String> toExternals = AnnotationsResolver.toExternal(methodDoc);
-                for(String toExternal : toExternals) {
-                    Step toExternalStep = steps.get(toExternal);
-                    if(toExternalStep == null) {
-                        toExternalStep = new Step.Builder()
-                                .componentDoc(new ComponentDoc.Builder()
-                                        .name(toExternal)
-                                        .description("")
-                                        .build())
-                                .external(true)
-                                .build();
-                        steps.put(toExternal, toExternalStep);
-                    }
-                }
-
-                toSteps.addAll(toDirectSteps(toExternals));
-
-                toSteps.addAll(toEventualSteps(AnnotationsResolver.eventually(methodDoc)));
-                steps.put(stepDoc.componentDoc().name(), new Step.Builder()
-                        .componentDoc(stepDoc.componentDoc())
-                        .tos(toSteps)
-                        .build());
-
-                List<String> fromExternals = AnnotationsResolver.fromExternal(methodDoc);
-                for(String fromExternal : fromExternals) {
-                    Step fromExternalStep = steps.get(fromExternal);
-                    ToStep additionalToStep = new ToStep.Builder()
-                            .name(stepDoc.componentDoc().name())
-                            .directly(true)
-                            .build();
-                    if(fromExternalStep == null) {
-                        fromExternalStep = new Step.Builder()
-                                .componentDoc(new ComponentDoc.Builder()
-                                        .name(fromExternal)
-                                        .description("")
-                                        .build())
-                                .external(true)
-                                .to(additionalToStep)
-                                .build();
-                    } else {
-                        fromExternalStep = new Step.Builder()
-                                .step(fromExternalStep)
-                                .to(additionalToStep)
-                                .build();
-                    }
-                    steps.put(fromExternalStep.componentDoc().name(), fromExternalStep);
-                }
-            }
-        }
-        return steps.values().stream().collect(toList());
+        return steps;
     }
 
     private StepMethodSignature stepMethodSignature(MethodDoc methodDoc) {
@@ -147,18 +76,6 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
                 .build();
     }
 
-    private List<String> locateTos(MethodDoc methodDoc, StepDoc stepDoc,
-            HashMap<String, List<StepMethodSignature>> eventToStep) {
-        List<String> tos = new ArrayList<>();
-        for(String producedEvent : stepDoc.producedEvents()) {
-            List<StepMethodSignature> signatures = eventToStep.get(producedEvent);
-            if(signatures != null) {
-                tos.addAll(signatures.stream().map(StepMethodSignature::toString).collect(toList()));
-            }
-        }
-        return tos;
-    }
-
     private Optional<String> consumedEvent(MethodDoc methodDoc) {
         if(methodDoc.parameters().length > 0 &&
                 methodDoc.parameters()[0].type().asClassDoc() != null &&
@@ -169,51 +86,35 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         }
     }
 
-    private StepDoc locateStepDoc(BoundedContextDocKey boundedContextDocKey,
-            MethodDoc methodDoc) {
-        StepMethodSignature stepMethodSignature = stepMethodSignature(methodDoc);
-        AggregateDoc aggregateDoc = aggregateDocRepository
-                .findByBoundedContextKeyAndName(boundedContextDocKey, stepMethodSignature.componentMethodName().componentName());
-        if(aggregateDoc != null) {
-            return aggregateDoc
-                    .stepDocBySignature(stepMethodSignature)
-                    .orElseThrow(() -> new DomainException("Method not found " + stepMethodSignature));
-        } else {
-            FactoryDoc factoryDoc = factoryDocRepository
-                    .findByBoundedContextKeyAndName(boundedContextDocKey, stepMethodSignature.componentMethodName().componentName());
-            if(factoryDoc != null) {
-                return factoryDoc
-                        .stepDocBySignature(stepMethodSignature)
-                        .orElseThrow(() -> new DomainException("Method not found " + stepMethodSignature));
-            } else {
-                throw new DomainException("Method not found " + stepMethodSignature);
+    private Map<StepName, List<StepName>> fromExternals(ClassDoc doc) {
+        return externals(doc, AnnotationsResolver::fromExternal);
+    }
+
+    private Map<StepName, List<StepName>> externals(ClassDoc doc, Function<MethodDoc, List<String>> externalsSupplier) {
+        Map<StepName, List<StepName>> steps = new HashMap<>();
+        for(MethodDoc methodDoc : doc.methods()) {
+            if(AnnotationsResolver.isStep(methodDoc)) {
+                List<String> externals = externalsSupplier.apply(methodDoc);
+                if(!externals.isEmpty()) {
+                    StepMethodSignature signature = stepMethodSignature(methodDoc);
+                    StepName stepName = new StepName(signature);
+                    List<StepName> tos;
+                    if(steps.containsKey(stepName)) {
+                        tos = steps.get(stepName);
+                    } else {
+                        tos = new ArrayList<>();
+                        steps.put(stepName, tos);
+                    }
+                    for(String to : externals) {
+                        tos.add(new StepName(to));
+                    }
+                }
             }
         }
+        return steps;
     }
 
-    private FactoryDocRepository factoryDocRepository;
-
-    private AggregateDocRepository aggregateDocRepository;
-
-    private List<ToStep> toDirectSteps(List<String> tos) {
-        List<ToStep> toSteps = new ArrayList<>();
-        for(String to : tos) {
-            toSteps.add(new ToStep.Builder()
-                    .name(to)
-                    .directly(true)
-                    .build());
-        }
-        return toSteps;
-    }
-
-    private List<ToStep> toEventualSteps(List<String> tos) {
-        List<ToStep> toSteps = new ArrayList<>();
-        for(String to : tos) {
-            toSteps.add(new ToStep.Builder()
-                    .name(to)
-                    .directly(false)
-                    .build());
-        }
-        return toSteps;
+    private Map<StepName, List<StepName>> toExternals(ClassDoc doc) {
+        return externals(doc, AnnotationsResolver::toExternal);
     }
 }

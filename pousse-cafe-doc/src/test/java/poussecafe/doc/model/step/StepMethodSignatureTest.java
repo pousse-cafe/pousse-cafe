@@ -3,6 +3,7 @@ package poussecafe.doc.model.step;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
+import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -13,7 +14,7 @@ public class StepMethodSignatureTest {
     public void signatureStringWithEventIsExpected() {
         givenStepMethodSignature(new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .aggregateName("A")
+                        .componentName("A")
                         .methodName("b")
                         .build())
                 .consumedEventName(Optional.of("E"))
@@ -44,7 +45,7 @@ public class StepMethodSignatureTest {
         whenParsingSignatureString();
         thenSignatureIs(new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .aggregateName("A")
+                        .componentName("A")
                         .methodName("b")
                         .build())
                 .consumedEventName(Optional.of("E"))
@@ -67,7 +68,7 @@ public class StepMethodSignatureTest {
     public void signatureStringWithoutEventIsExpected() {
         givenStepMethodSignature(new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .aggregateName("A")
+                        .componentName("A")
                         .methodName("b")
                         .build())
                 .consumedEventName(Optional.empty())
@@ -82,7 +83,7 @@ public class StepMethodSignatureTest {
         whenParsingSignatureString();
         thenSignatureIs(new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .aggregateName("A")
+                        .componentName("A")
                         .methodName("b")
                         .build())
                 .consumedEventName(Optional.empty())

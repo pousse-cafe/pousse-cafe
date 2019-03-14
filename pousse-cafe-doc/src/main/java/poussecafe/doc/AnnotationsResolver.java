@@ -49,10 +49,6 @@ public class AnnotationsResolver {
         return values;
     }
 
-    public static List<String> eventually(MethodDoc methodDoc) {
-        return tags(methodDoc, Tags.EVENTUALLY);
-    }
-
     public static List<String> toExternal(MethodDoc methodDoc) {
         return tags(methodDoc, Tags.TO_EXTERNAL);
     }

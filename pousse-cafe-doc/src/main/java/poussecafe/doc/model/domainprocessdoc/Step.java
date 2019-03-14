@@ -85,4 +85,8 @@ public class Step implements ValueObject {
     public boolean external() {
         return external;
     }
+
+    public StepName stepName() {
+        return new StepName(componentDoc.name());
+    }
 }

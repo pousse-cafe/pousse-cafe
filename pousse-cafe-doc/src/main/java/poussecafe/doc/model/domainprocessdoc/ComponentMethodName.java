@@ -12,8 +12,8 @@ public class ComponentMethodName {
 
         private ComponentMethodName signature = new ComponentMethodName();
 
-        public Builder aggregateName(String aggregateName) {
-            signature.aggregateName = aggregateName;
+        public Builder componentName(String aggregateName) {
+            signature.componentName = aggregateName;
             return this;
         }
 
@@ -23,7 +23,7 @@ public class ComponentMethodName {
         }
 
         public ComponentMethodName build() {
-            Objects.requireNonNull(signature.aggregateName);
+            Objects.requireNonNull(signature.componentName);
             Objects.requireNonNull(signature.methodName);
             return signature;
         }
@@ -33,10 +33,10 @@ public class ComponentMethodName {
 
     }
 
-    private String aggregateName;
+    private String componentName;
 
     public String componentName() {
-        return aggregateName;
+        return componentName;
     }
 
     private String methodName;
@@ -47,7 +47,7 @@ public class ComponentMethodName {
 
     @Override
     public String toString() {
-        return aggregateName + "." + methodName;
+        return componentName + "." + methodName;
     }
 
     public static ComponentMethodName parse(String signatureString) {
@@ -59,7 +59,7 @@ public class ComponentMethodName {
         String aggregateName = parts[0];
         String methodName = parts[1];
         return new ComponentMethodName.Builder()
-                .aggregateName(aggregateName)
+                .componentName(aggregateName)
                 .methodName(methodName)
                 .build();
     }
@@ -67,7 +67,7 @@ public class ComponentMethodName {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(aggregateName)
+                .append(componentName)
                 .append(methodName)
                 .build();
     }
@@ -85,7 +85,7 @@ public class ComponentMethodName {
         }
         ComponentMethodName other = (ComponentMethodName) obj;
         return new EqualsBuilder()
-                .append(aggregateName, other.aggregateName)
+                .append(componentName, other.componentName)
                 .append(methodName, other.methodName)
                 .build();
     }

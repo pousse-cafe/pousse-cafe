@@ -7,22 +7,41 @@ import poussecafe.messaging.Message;
 public class DeclaredMessageListenerIdBuilder {
 
     public DeclaredMessageListenerIdBuilder messageClass(Class<? extends Message> messageClass) {
-        this.messageClass = messageClass;
+        messageClassName = messageClass.getName();
         return this;
     }
 
-    private Class<? extends Message> messageClass;
+    private String messageClassName;
 
     public DeclaredMessageListenerIdBuilder method(Method method) {
-        this.method = method;
+        declaringClassName = method.getDeclaringClass().getName();
+        methodName = method.getName();
         return this;
     }
 
-    private Method method;
+    private String declaringClassName;
+
+    private String methodName;
+
+    public DeclaredMessageListenerIdBuilder declaringClassName(String declaringClassName) {
+        this.declaringClassName = declaringClassName;
+        return this;
+    }
+
+    public DeclaredMessageListenerIdBuilder methodName(String methodName) {
+        this.methodName = methodName;
+        return this;
+    }
+
+    public DeclaredMessageListenerIdBuilder messageClassName(String messageClassName) {
+        this.messageClassName = messageClassName;
+        return this;
+    }
 
     public String build() {
-        Objects.requireNonNull(messageClass);
-        Objects.requireNonNull(method);
-        return method.getDeclaringClass().getCanonicalName() + "::" + method.getName() + "(" + messageClass.getCanonicalName() + ")";
+        Objects.requireNonNull(declaringClassName);
+        Objects.requireNonNull(methodName);
+        Objects.requireNonNull(messageClassName);
+        return declaringClassName + "::" + methodName + "(" + messageClassName + ")";
     }
 }

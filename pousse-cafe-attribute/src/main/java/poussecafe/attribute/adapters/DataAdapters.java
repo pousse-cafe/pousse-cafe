@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 import poussecafe.attribute.AutoAdaptingDataAdapter;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.util.StringKey;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class DataAdapters {
 
@@ -121,5 +125,24 @@ public class DataAdapters {
                 return valueToStore;
             }
         };
+    }
+
+    public static <U, T> DataAdapter<List<U>, List<T>> listWithAdapter(DataAdapter<U, T> adapter) {
+        return new DataAdapter<List<U>, List<T>>() {
+            @Override
+            public List<T> adaptGet(List<U> storedValue) {
+                return storedValue.stream().map(adapter::adaptGet).collect(toList());
+            }
+
+            @Override
+            public List<U> adaptSet(List<T> valueToStore) {
+                return valueToStore.stream().map(adapter::adaptSet).collect(toList());
+            }
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Class<List<T>> parametrizedListClass(Class<T> elementType) {
+        return (Class<List<T>>) emptyList().getClass();
     }
 }
