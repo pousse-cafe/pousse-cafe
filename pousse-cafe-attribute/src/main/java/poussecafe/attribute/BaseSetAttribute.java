@@ -1,6 +1,8 @@
 package poussecafe.attribute;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -51,4 +53,13 @@ public class BaseSetAttribute<T> implements SetAttribute<T> {
         return set.remove(item);
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return set.iterator();
+    }
+
+    @Override
+    public void addAll(Collection<T> value) {
+        set.addAll(value);
+    }
 }

@@ -1,7 +1,8 @@
 package poussecafe.doc.model.processstepdoc;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.attribute.ListAttribute;
+import poussecafe.attribute.OptionalAttribute;
+import poussecafe.attribute.SetAttribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
@@ -17,8 +18,14 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocKey, ProcessStep
 
         Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 
-        Attribute<StepMethodSignature> stepMethodSignature();
+        OptionalAttribute<String> processName();
 
-        ListAttribute<String> producedEvents();
+        OptionalAttribute<StepMethodSignature> stepMethodSignature();
+
+        SetAttribute<String> producedEvents();
+
+        SetAttribute<String> toExternals();
+
+        SetAttribute<String> fromExternals();
     }
 }

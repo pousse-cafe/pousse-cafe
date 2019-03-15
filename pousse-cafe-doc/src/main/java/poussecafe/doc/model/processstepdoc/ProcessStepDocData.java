@@ -1,10 +1,11 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.attribute.ListAttribute;
+import poussecafe.attribute.OptionalAttribute;
+import poussecafe.attribute.SetAttribute;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
 
@@ -33,17 +34,27 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     private BoundedContextComponentDocData boundedContextComponentDoc;
 
     @Override
-    public ListAttribute<String> producedEvents() {
-        return AttributeBuilder.list(String.class)
-                .withList(producedEvents)
+    public SetAttribute<String> producedEvents() {
+        return AttributeBuilder.set(String.class)
+                .withSet(producedEvents)
                 .build();
     }
 
-    private ArrayList<String> producedEvents = new ArrayList<>();
+    private HashSet<String> producedEvents = new HashSet<>();
 
     @Override
-    public Attribute<StepMethodSignature> stepMethodSignature() {
-        return AttributeBuilder.simple(StepMethodSignature.class)
+    public OptionalAttribute<String> processName() {
+        return AttributeBuilder.optional(String.class)
+                .get(() -> processName)
+                .set(value -> processName = value)
+                .build();
+    }
+
+    private String processName;
+
+    @Override
+    public OptionalAttribute<StepMethodSignature> stepMethodSignature() {
+        return AttributeBuilder.optional(StepMethodSignature.class)
                 .fromAutoAdapting(StepMethodSignatureData.class)
                 .get(() -> stepMethodSignature)
                 .set(value -> stepMethodSignature = value)
@@ -51,4 +62,22 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     }
 
     private StepMethodSignatureData stepMethodSignature;
+
+    @Override
+    public SetAttribute<String> toExternals() {
+        return AttributeBuilder.set(String.class)
+                .withSet(toExternals)
+                .build();
+    }
+
+    private HashSet<String> toExternals = new HashSet<>();
+
+    @Override
+    public SetAttribute<String> fromExternals() {
+        return AttributeBuilder.set(String.class)
+                .withSet(fromExternals)
+                .build();
+    }
+
+    private HashSet<String> fromExternals = new HashSet<>();
 }

@@ -17,4 +17,8 @@ public interface Tags {
     String EVENT = "event";
 
     String BOUNDED_CONTEXT = "bounded_context";
+
+    String PROCESS = "process";
+
+    String PROCESS_DESCRIPTION = "process_description";
 }

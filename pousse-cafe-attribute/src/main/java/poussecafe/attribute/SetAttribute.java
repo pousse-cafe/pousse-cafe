@@ -1,9 +1,10 @@
 package poussecafe.attribute;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public interface SetAttribute<T> extends Attribute<Set<T>> {
+public interface SetAttribute<T> extends Attribute<Set<T>>, Iterable<T> {
 
     boolean add(T item);
 
@@ -14,4 +15,6 @@ public interface SetAttribute<T> extends Attribute<Set<T>> {
     int size();
 
     boolean remove(T item);
+
+    void addAll(Collection<T> value);
 }

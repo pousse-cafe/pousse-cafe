@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -50,4 +51,8 @@ public class BaseListAttribute<T> implements ListAttribute<T> {
         return list.iterator();
     }
 
+    @Override
+    public void addAll(Collection<T> values) {
+        list.addAll(values);
+    }
 }

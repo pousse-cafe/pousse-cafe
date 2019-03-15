@@ -9,12 +9,11 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
-import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
+import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.domain.Service;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class DomainProcessStepsFactory implements Service {
@@ -22,31 +21,39 @@ public class DomainProcessStepsFactory implements Service {
     public DomainProcessSteps buildDomainProcessSteps(DomainProcessDoc domainProcessDoc) {
         HashMap<StepName, Step> steps = new HashMap<>();
 
-        HashMap<String, List<StepMethodSignature>> eventToStep = new HashMap<>();
-        for(StepMethodSignature stepMethodSignature : domainProcessDoc.attributes().steps()) {
-            Optional<String> consumedEventName = stepMethodSignature.consumedEventName();
+        BoundedContextComponentDoc boundedContextComponentDoc = domainProcessDoc.attributes().boundedContextComponentDoc().value();
+        BoundedContextDocKey boundedContextDocKey = boundedContextComponentDoc.boundedContextDocKey();
+        String processName = boundedContextComponentDoc.componentDoc().name();
+
+        HashMap<String, List<String>> eventToStep = new HashMap<>();
+        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(boundedContextDocKey, processName);
+        for(ProcessStepDoc processStepDoc : processStepDocs) {
+            Optional<String> consumedEventName;
+            Optional<StepMethodSignature> optionalStepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
+            if(optionalStepMethodSignature.isPresent()) {
+                consumedEventName = optionalStepMethodSignature.get().consumedEventName();
+            } else {
+                consumedEventName = Optional.empty();
+            }
+
             if(consumedEventName.isPresent()) {
                 String presentConsumedEventName = consumedEventName.get();
-                List<StepMethodSignature> signatures = eventToStep.get(presentConsumedEventName);
+                List<String> signatures = eventToStep.get(presentConsumedEventName);
                 if(signatures == null) {
                     signatures = new ArrayList<>();
                     eventToStep.put(presentConsumedEventName, signatures);
                 }
-                signatures.add(stepMethodSignature);
+                signatures.add(processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
             }
         }
 
-        for(StepMethodSignature stepMethodSignature : domainProcessDoc.attributes().steps()) {
-            ProcessStepDoc messageListenerDoc = locateStepDoc(
-                    domainProcessDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey(),
-                    stepMethodSignature);
-
+        for(ProcessStepDoc processStepDoc : processStepDocs) {
             List<ToStep> toSteps = new ArrayList<>();
-            List<StepName> tos = locateTos(messageListenerDoc, eventToStep);
+            List<StepName> tos = locateTos(processStepDoc, eventToStep);
             toSteps.addAll(toDirectSteps(tos));
 
-            StepName currentStepName = new StepName(stepMethodSignature);
-            List<StepName> toExternals = domainProcessDoc.attributes().toExternals().get(currentStepName).orElse(emptyList());
+            StepName currentStepName = new StepName(processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+            List<StepName> toExternals = processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList());
             for(StepName toExternal : toExternals) {
                 Step toExternalStep = steps.get(toExternal);
                 if(toExternalStep == null) {
@@ -62,13 +69,13 @@ public class DomainProcessStepsFactory implements Service {
             }
             toSteps.addAll(toDirectSteps(toExternals));
 
-            ComponentDoc messageListenerComponentDoc = messageListenerDoc.attributes().boundedContextComponentDoc().value().componentDoc();
+            ComponentDoc messageListenerComponentDoc = processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc();
             steps.put(currentStepName, new Step.Builder()
                     .componentDoc(messageListenerComponentDoc)
                     .tos(toSteps)
                     .build());
 
-            List<StepName> fromExternals = domainProcessDoc.attributes().fromExternals().get(currentStepName).orElse(emptyList());
+            List<StepName> fromExternals = processStepDoc.attributes().fromExternals().value().stream().map(StepName::new).collect(toList());
             for(StepName fromExternal : fromExternals) {
                 ToStep additionalToStep = new ToStep.Builder()
                         .name(currentStepName)
@@ -97,24 +104,19 @@ public class DomainProcessStepsFactory implements Service {
         return new DomainProcessSteps(steps);
     }
 
+    private ProcessStepDocRepository messageListenerDocRepository;
+
     private List<StepName> locateTos(ProcessStepDoc stepDoc,
-            HashMap<String, List<StepMethodSignature>> eventToStep) {
+            HashMap<String, List<String>> eventToStep) {
         List<StepName> tos = new ArrayList<>();
         for(String producedEvent : stepDoc.attributes().producedEvents()) {
-            List<StepMethodSignature> signatures = eventToStep.get(producedEvent);
+            List<String> signatures = eventToStep.get(producedEvent);
             if(signatures != null) {
                 tos.addAll(signatures.stream().map(StepName::new).collect(toList()));
             }
         }
         return tos;
     }
-
-    private ProcessStepDoc locateStepDoc(BoundedContextDocKey boundedContextDocKey,
-            StepMethodSignature stepMethodSignature) {
-        return messageListenerDocRepository.getByStepMethodSignature(boundedContextDocKey, stepMethodSignature);
-    }
-
-    private ProcessStepDocRepository messageListenerDocRepository;
 
     private List<ToStep> toDirectSteps(List<StepName> tos) {
         List<ToStep> toSteps = new ArrayList<>();

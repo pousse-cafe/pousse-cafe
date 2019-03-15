@@ -3,6 +3,7 @@ package poussecafe.doc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.doc.process.ProcessStepDocCreation;
 import poussecafe.domain.Repository;
@@ -17,6 +18,7 @@ public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
     protected boolean isComponentDoc(ClassDoc classDoc) {
         return AggregateDocFactory.isAggregateDoc(classDoc) ||
                 FactoryDocFactory.isFactoryDoc(classDoc) ||
+                DomainProcessDocFactory.isDomainProcessDoc(classDoc) ||
                 ClassDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
     }
 
@@ -28,7 +30,7 @@ public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
     @Override
     protected void addDoc(BoundedContextDocKey boundedContextDocKey,
             ClassDoc componentClassDoc) {
-        processStepDocCreation.addProcessStepDoc(boundedContextDocKey, componentClassDoc);
+        processStepDocCreation.createOrUpdateProcessStepDoc(boundedContextDocKey, componentClassDoc);
     }
 
     private ProcessStepDocCreation processStepDocCreation;

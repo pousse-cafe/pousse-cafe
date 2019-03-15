@@ -1,10 +1,12 @@
 package poussecafe.doc.model.processstepdoc;
 
+import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.exception.PousseCafeException;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
+
+import static java.util.stream.Collectors.toList;
 
 @DataAccessImplementation(
     aggregateRoot = ProcessStepDoc.class,
@@ -14,11 +16,12 @@ import poussecafe.storage.internal.InternalStorage;
 public class InternalProcessStepDocDataAccess extends InternalDataAccess<ProcessStepDocKey, ProcessStepDocData> implements ProcessStepDataAccess<ProcessStepDocData> {
 
     @Override
-    public ProcessStepDocData getByStepMethodSignature(BoundedContextDocKey boundedContextDocKey,
-            StepMethodSignature stepMethodSignature) {
+    public List<ProcessStepDocData> findByDomainProcess(BoundedContextDocKey boundedContextDocKey,
+            String processName) {
         return findAll().stream()
+                .filter(data -> data.processName().value().isPresent())
                 .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDocKey))
-                .filter(data -> data.stepMethodSignature().valueEquals(stepMethodSignature))
-                .findFirst().orElseThrow(() -> new PousseCafeException("No process step doc for signature " + stepMethodSignature));
+                .filter(data -> data.processName().value().get().equals(processName))
+                .collect(toList());
     }
 }

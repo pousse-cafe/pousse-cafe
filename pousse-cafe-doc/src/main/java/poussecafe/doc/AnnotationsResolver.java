@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import poussecafe.exception.PousseCafeException;
 
+import static java.util.stream.Collectors.toList;
+
 public class AnnotationsResolver {
 
     public static boolean isIgnored(Doc doc) {
@@ -75,5 +77,13 @@ public class AnnotationsResolver {
 
     public static String boundedContext(PackageDoc packageDoc) {
         return optionalTag(packageDoc, Tags.BOUNDED_CONTEXT).orElseThrow(PousseCafeException::new);
+    }
+
+    public static List<String> process(MethodDoc methodDoc) {
+        return tags(methodDoc, Tags.PROCESS);
+    }
+
+    public static List<ProcessDescription> processDescription(MethodDoc doc) {
+        return tags(doc, Tags.PROCESS_DESCRIPTION).stream().map(ProcessDescription::parse).collect(toList());
     }
 }

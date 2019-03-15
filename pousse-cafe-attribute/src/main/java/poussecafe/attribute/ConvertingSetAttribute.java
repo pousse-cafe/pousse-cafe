@@ -1,9 +1,12 @@
 package poussecafe.attribute;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
@@ -52,5 +55,15 @@ public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
     @Override
     public boolean remove(T item) {
         return setAttribute.remove(convertTo(item));
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return value().iterator();
+    }
+
+    @Override
+    public void addAll(Collection<T> values) {
+        setAttribute.addAll(values.stream().map(this::convertTo).collect(toList()));
     }
 }
