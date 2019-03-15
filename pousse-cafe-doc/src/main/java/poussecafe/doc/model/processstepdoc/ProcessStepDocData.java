@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,11 +9,11 @@ import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
 
 @SuppressWarnings("serial")
-public class MessageListenerDocData implements Serializable, MessageListenerDoc.Attributes {
+public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attributes {
 
     @Override
-    public Attribute<MessageListenerDocKey> key() {
-        return AttributeBuilder.stringKey(MessageListenerDocKey.class)
+    public Attribute<ProcessStepDocKey> key() {
+        return AttributeBuilder.stringKey(ProcessStepDocKey.class)
                 .get(() -> id)
                 .set(value -> id = value)
                 .build();

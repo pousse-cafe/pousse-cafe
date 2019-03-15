@@ -9,9 +9,9 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
-import poussecafe.doc.model.messagelistenerdoc.MessageListenerDoc;
-import poussecafe.doc.model.messagelistenerdoc.MessageListenerDocRepository;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
+import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.domain.Service;
 
 import static java.util.Collections.emptyList;
@@ -37,7 +37,7 @@ public class DomainProcessStepsFactory implements Service {
         }
 
         for(StepMethodSignature stepMethodSignature : domainProcessDoc.attributes().steps()) {
-            MessageListenerDoc messageListenerDoc = locateStepDoc(
+            ProcessStepDoc messageListenerDoc = locateStepDoc(
                     domainProcessDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey(),
                     stepMethodSignature);
 
@@ -97,7 +97,7 @@ public class DomainProcessStepsFactory implements Service {
         return new DomainProcessSteps(steps);
     }
 
-    private List<StepName> locateTos(MessageListenerDoc stepDoc,
+    private List<StepName> locateTos(ProcessStepDoc stepDoc,
             HashMap<String, List<StepMethodSignature>> eventToStep) {
         List<StepName> tos = new ArrayList<>();
         for(String producedEvent : stepDoc.attributes().producedEvents()) {
@@ -109,12 +109,12 @@ public class DomainProcessStepsFactory implements Service {
         return tos;
     }
 
-    private MessageListenerDoc locateStepDoc(BoundedContextDocKey boundedContextDocKey,
+    private ProcessStepDoc locateStepDoc(BoundedContextDocKey boundedContextDocKey,
             StepMethodSignature stepMethodSignature) {
         return messageListenerDocRepository.getByStepMethodSignature(boundedContextDocKey, stepMethodSignature);
     }
 
-    private MessageListenerDocRepository messageListenerDocRepository;
+    private ProcessStepDocRepository messageListenerDocRepository;
 
     private List<ToStep> toDirectSteps(List<StepName> tos) {
         List<ToStep> toSteps = new ArrayList<>();

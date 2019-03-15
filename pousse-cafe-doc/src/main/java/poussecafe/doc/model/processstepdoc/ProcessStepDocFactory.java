@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import com.sun.javadoc.MethodDoc;
 import java.util.List;
@@ -8,12 +8,12 @@ import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.domain.Factory;
 
-public class MessageListenerDocFactory extends Factory<MessageListenerDocKey, MessageListenerDoc, MessageListenerDoc.Attributes> {
+public class ProcessStepDocFactory extends Factory<ProcessStepDocKey, ProcessStepDoc, ProcessStepDoc.Attributes> {
 
-    public MessageListenerDoc createMessageListenerDoc(BoundedContextDocKey boundedContextDocKey,
+    public ProcessStepDoc createMessageListenerDoc(BoundedContextDocKey boundedContextDocKey,
             StepMethodSignature stepMethodSignature,
             MethodDoc messageListenerMethod) {
-        MessageListenerDocKey key = new MessageListenerDocKey(stepMethodSignature);
+        ProcessStepDocKey key = new ProcessStepDocKey(stepMethodSignature);
         return createMessageListenerDoc(
                 key,
                 new BoundedContextComponentDoc.Builder()
@@ -30,12 +30,12 @@ public class MessageListenerDocFactory extends Factory<MessageListenerDocKey, Me
         return AnnotationsResolver.event(methodDoc);
     }
 
-    public MessageListenerDoc createMessageListenerDoc(
-            MessageListenerDocKey key,
+    public ProcessStepDoc createMessageListenerDoc(
+            ProcessStepDocKey key,
             BoundedContextComponentDoc boundedContextComponentDoc,
             StepMethodSignature stepMethodSignature,
             List<String> producedEvents) {
-        MessageListenerDoc doc = newAggregateWithKey(key);
+        ProcessStepDoc doc = newAggregateWithKey(key);
 
         doc.attributes().boundedContextComponentDoc().value(boundedContextComponentDoc);
 

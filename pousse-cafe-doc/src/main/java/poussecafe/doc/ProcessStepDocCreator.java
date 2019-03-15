@@ -4,12 +4,12 @@ import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
-import poussecafe.doc.process.MessageListenerDocCreation;
+import poussecafe.doc.process.ProcessStepDocCreation;
 import poussecafe.domain.Repository;
 
-public class MessageListenerDocCreator extends BoundedContextComponentDocCreator {
+public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
 
-    public MessageListenerDocCreator(RootDocWrapper rootDocWrapper) {
+    public ProcessStepDocCreator(RootDocWrapper rootDocWrapper) {
         super(rootDocWrapper);
     }
 
@@ -28,8 +28,8 @@ public class MessageListenerDocCreator extends BoundedContextComponentDocCreator
     @Override
     protected void addDoc(BoundedContextDocKey boundedContextDocKey,
             ClassDoc componentClassDoc) {
-        messageListenerDocCreation.addMessageListenerDoc(boundedContextDocKey, componentClassDoc);
+        processStepDocCreation.addProcessStepDoc(boundedContextDocKey, componentClassDoc);
     }
 
-    private MessageListenerDocCreation messageListenerDocCreation;
+    private ProcessStepDocCreation processStepDocCreation;
 }

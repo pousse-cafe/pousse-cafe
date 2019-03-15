@@ -7,7 +7,7 @@ import poussecafe.attribute.MapAttribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 

@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
@@ -15,12 +15,12 @@ import poussecafe.domain.Service;
 
 import static java.util.stream.Collectors.toList;
 
-public class MessageListenerDocExtractor implements Service {
+public class ProcessStepDocExtractor implements Service {
 
-    public List<MessageListenerDoc> extractMessageListenerDocs(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
-        List<MessageListenerDoc> stepDocs = new ArrayList<>();
+    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
+        List<ProcessStepDoc> stepDocs = new ArrayList<>();
         for(MethodDoc methodDoc : classDoc.methods()) {
-            Optional<String> consumedDomainEvent = consumedDomainEvent(methodDoc);
+            Optional<String> consumedDomainEvent = consumedMessage(methodDoc);
             List<String> producedEvents = extractProducedEvents(methodDoc);
             if(AnnotationsResolver.isStep(methodDoc) ||
                     (methodDoc.isPublic() && (consumedDomainEvent.isPresent() || !producedEvents.isEmpty()))) {
@@ -29,7 +29,7 @@ public class MessageListenerDocExtractor implements Service {
                     List<StepMethodSignature> methodSignatures = customStepSignatures.stream().map(StepMethodSignature::parse).collect(toList());
                     for(StepMethodSignature signature : methodSignatures) {
                         Logger.info("Extracting custom step " + signature);
-                        MessageListenerDocKey messageListenerDocKey = new MessageListenerDocKey(signature.toString());
+                        ProcessStepDocKey messageListenerDocKey = new ProcessStepDocKey(signature.toString());
                         BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
                                 .boundedContextDocKey(boundedContextDocKey)
                                 .componentDoc(new ComponentDoc.Builder()
@@ -58,10 +58,10 @@ public class MessageListenerDocExtractor implements Service {
         return stepDocs;
     }
 
-    private MessageListenerDocFactory messageListenerDocFactory;
+    private ProcessStepDocFactory messageListenerDocFactory;
 
-    private Optional<String> consumedDomainEvent(MethodDoc methodDoc) {
-        return new ConsumedDomainEventExtractor(methodDoc).consumedDomainEvent();
+    private Optional<String> consumedMessage(MethodDoc methodDoc) {
+        return new ConsumedMessageExtractor(methodDoc).consumedDomainEvent();
     }
 
     private List<String> extractProducedEvents(MethodDoc methodDoc) {

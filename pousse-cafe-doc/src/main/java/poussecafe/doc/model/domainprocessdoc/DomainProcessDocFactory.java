@@ -13,7 +13,7 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;

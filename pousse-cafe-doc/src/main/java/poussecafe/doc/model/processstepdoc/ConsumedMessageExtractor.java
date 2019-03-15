@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.FieldDoc;
@@ -10,9 +10,9 @@ import java.util.Optional;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.domain.DomainEvent;
 
-public class ConsumedDomainEventExtractor {
+public class ConsumedMessageExtractor {
 
-    public ConsumedDomainEventExtractor(MethodDoc methodDoc) {
+    public ConsumedMessageExtractor(MethodDoc methodDoc) {
         Objects.requireNonNull(methodDoc);
         this.methodDoc = methodDoc;
     }
@@ -26,13 +26,13 @@ public class ConsumedDomainEventExtractor {
                     ClassDocPredicates.documentsWithSuperinterface(parameterClassDoc.get(), DomainEvent.class)) {
                 return Optional.of(parameterClassDoc.get().typeName());
             } else if(parameterClassDoc.isPresent()) {
-                return consumedDomainEvent(parameterClassDoc.get());
+                return consumedMessage(parameterClassDoc.get());
             }
         }
         return Optional.empty();
     }
 
-    private Optional<String> consumedDomainEvent(ClassDoc classDoc) {
+    private Optional<String> consumedMessage(ClassDoc classDoc) {
         if(alreadyExplored(classDoc)) {
             return Optional.empty();
         }
@@ -43,7 +43,7 @@ public class ConsumedDomainEventExtractor {
             if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
-                return consumedDomainEvent(fieldType.get());
+                return consumedMessage(fieldType.get());
             }
         }
         for(MethodDoc methodDoc : classDoc.methods()) {
@@ -51,7 +51,7 @@ public class ConsumedDomainEventExtractor {
             if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
-                return consumedDomainEvent(fieldType.get());
+                return consumedMessage(fieldType.get());
             }
         }
         return Optional.empty();

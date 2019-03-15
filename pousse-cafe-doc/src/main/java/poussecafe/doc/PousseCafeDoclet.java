@@ -68,7 +68,7 @@ public class PousseCafeDoclet {
         FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
         runtime.injector().injectDependenciesInto(factoryDocCreator);
 
-        MessageListenerDocCreator messageListenerDocCreator = new MessageListenerDocCreator(rootDocWrapper);
+        ProcessStepDocCreator messageListenerDocCreator = new ProcessStepDocCreator(rootDocWrapper);
         runtime.injector().injectDependenciesInto(messageListenerDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()

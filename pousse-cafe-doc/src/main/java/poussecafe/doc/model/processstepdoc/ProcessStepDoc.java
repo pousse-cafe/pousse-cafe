@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.ListAttribute;
@@ -8,12 +8,12 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
-    factory = MessageListenerDocFactory.class,
-    repository = MessageListenerDocRepository.class
+    factory = ProcessStepDocFactory.class,
+    repository = ProcessStepDocRepository.class
 )
-public class MessageListenerDoc extends AggregateRoot<MessageListenerDocKey, MessageListenerDoc.Attributes> {
+public class ProcessStepDoc extends AggregateRoot<ProcessStepDocKey, ProcessStepDoc.Attributes> {
 
-    public static interface Attributes extends EntityAttributes<MessageListenerDocKey> {
+    public static interface Attributes extends EntityAttributes<ProcessStepDocKey> {
 
         Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 

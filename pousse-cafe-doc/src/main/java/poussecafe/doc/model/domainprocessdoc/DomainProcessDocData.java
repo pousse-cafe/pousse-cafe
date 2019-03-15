@@ -11,8 +11,8 @@ import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.BoundedContextComponentDocData;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignatureData;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.StepMethodSignatureData;
 
 @SuppressWarnings("serial")
 public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serializable {

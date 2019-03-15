@@ -1,6 +1,6 @@
 package poussecafe.doc.model.domainprocessdoc;
 
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.util.StringKey;
 
 public class StepName extends StringKey {

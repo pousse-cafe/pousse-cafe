@@ -1,4 +1,4 @@
-package poussecafe.doc.model.messagelistenerdoc;
+package poussecafe.doc.model.processstepdoc;
 
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
@@ -7,18 +7,18 @@ import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
 @DataAccessImplementation(
-    aggregateRoot = MessageListenerDoc.class,
-    dataImplementation = MessageListenerDocData.class,
+    aggregateRoot = ProcessStepDoc.class,
+    dataImplementation = ProcessStepDocData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalMessageListenerDocDataAccess extends InternalDataAccess<MessageListenerDocKey, MessageListenerDocData> implements MessageListenerDataAccess<MessageListenerDocData> {
+public class InternalProcessStepDocDataAccess extends InternalDataAccess<ProcessStepDocKey, ProcessStepDocData> implements ProcessStepDataAccess<ProcessStepDocData> {
 
     @Override
-    public MessageListenerDocData getByStepMethodSignature(BoundedContextDocKey boundedContextDocKey,
+    public ProcessStepDocData getByStepMethodSignature(BoundedContextDocKey boundedContextDocKey,
             StepMethodSignature stepMethodSignature) {
         return findAll().stream()
                 .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDocKey))
                 .filter(data -> data.stepMethodSignature().valueEquals(stepMethodSignature))
-                .findFirst().orElseThrow(PousseCafeException::new);
+                .findFirst().orElseThrow(() -> new PousseCafeException("No process step doc for signature " + stepMethodSignature));
     }
 }

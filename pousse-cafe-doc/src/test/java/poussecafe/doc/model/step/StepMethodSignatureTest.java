@@ -3,7 +3,7 @@ package poussecafe.doc.model.step;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
-import poussecafe.doc.model.messagelistenerdoc.StepMethodSignature;
+import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
