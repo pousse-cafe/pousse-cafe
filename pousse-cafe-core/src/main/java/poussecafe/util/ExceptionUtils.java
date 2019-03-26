@@ -4,9 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import poussecafe.exception.SevereException;
+import poussecafe.exception.PousseCafeException;
 
 public class ExceptionUtils {
+
+    private ExceptionUtils() {
+
+    }
 
     public static String getStackTrace(Exception e) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -16,7 +20,7 @@ public class ExceptionUtils {
         try {
             return outputStream.toString(Charset.defaultCharset().name());
         } catch (UnsupportedEncodingException e1) {
-            throw new SevereException("Unable to encode stack trace", e1);
+            throw new PousseCafeException("Unable to encode stack trace", e1);
         }
     }
 }

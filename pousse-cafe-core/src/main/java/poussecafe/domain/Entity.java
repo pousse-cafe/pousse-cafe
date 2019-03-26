@@ -3,16 +3,15 @@ package poussecafe.domain;
 import java.util.Objects;
 import poussecafe.environment.EntityFactory;
 import poussecafe.environment.MessageFactory;
+import poussecafe.environment.NewEntityInstanceSpecification;
+import poussecafe.storage.MessageCollection;
 import poussecafe.storage.Storage;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public abstract class Entity<K, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     public void attributes(Object data) {
-        checkThat(value(data).notNull().because("Data cannot be null"));
+        Objects.requireNonNull(data);
         this.attributes = (D) data;
     }
 
@@ -95,9 +94,9 @@ public abstract class Entity<K, D extends EntityAttributes<K>> {
     }
 
     public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
-        E entity = entityFactory.newEntity(new EntitySpecification.Builder<E>()
-                .withComponentClass(entityClass)
-                .withData(true)
+        E entity = entityFactory.newEntity(new NewEntityInstanceSpecification.Builder<E>()
+                .entityClass(entityClass)
+                .instantiateData(true)
                 .build());
         entity.storage(storage);
         entity.messageCollection(messageCollection);

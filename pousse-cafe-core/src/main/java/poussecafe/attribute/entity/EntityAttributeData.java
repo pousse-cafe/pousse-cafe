@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute.entity;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.domain.Entity;

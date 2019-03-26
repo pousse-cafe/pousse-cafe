@@ -3,6 +3,8 @@ package poussecafe.property;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import poussecafe.attribute.entity.EntityAttributeBuilder;
+import poussecafe.attribute.entity.EntityMapAttribute;
 import poussecafe.domain.Entity;
 import poussecafe.domain.SimpleEntityData;
 import poussecafe.entity.SimpleEntity;

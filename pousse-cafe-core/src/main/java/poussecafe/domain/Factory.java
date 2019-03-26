@@ -1,15 +1,14 @@
 package poussecafe.domain;
 
+import java.util.Objects;
 import poussecafe.environment.EntityFactory;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
+import poussecafe.environment.NewEntityInstanceSpecification;
 
 public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     public void setEntityClass(Class<?> entityClass) {
-        checkThat(value(entityClass).notNull().because("Entity class cannot be null"));
+        Objects.requireNonNull(entityClass);
         this.entityClass = (Class<A>) entityClass;
     }
 
@@ -20,10 +19,10 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
     }
 
     protected A newAggregateWithKey(K key) {
-        checkThat(value(key).notNull().because("Key cannot be null"));
-        A entity = entityFactory.newEntity(new EntitySpecification.Builder<A>()
-                .withComponentClass(entityClass)
-                .withData(true)
+        Objects.requireNonNull(key);
+        A entity = entityFactory.newEntity(new NewEntityInstanceSpecification.Builder<A>()
+                .entityClass(entityClass)
+                .instantiateData(true)
                 .build());
         entity.attributes().key().value(key);
         return entity;

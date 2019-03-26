@@ -1,20 +1,17 @@
 package poussecafe.environment;
 
+import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.util.AbstractBuilder;
 import poussecafe.util.ReferenceEquals;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class AggregateDefinition {
 
-    public Class<?> getEntityClass() {
-        return entityClass;
+    public Class<?> getAggregateRootClass() {
+        return aggregateRootClass;
     }
 
-    private Class<?> entityClass;
+    private Class<?> aggregateRootClass;
 
     public boolean hasFactory() {
         return factoryClass != null;
@@ -38,30 +35,34 @@ public class AggregateDefinition {
         return repositoryClass != null;
     }
 
-    public static class Builder extends AbstractBuilder<AggregateDefinition> {
+    public static class Builder {
 
         public Builder() {
-            super(new AggregateDefinition());
+            definition = new AggregateDefinition();
         }
 
-        public Builder withEntityClass(Class<?> entityClass) {
-            product().entityClass = entityClass;
+        private AggregateDefinition definition;
+
+        public Builder withAggregateRoot(Class<?> aggregateRootClass) {
+            definition.aggregateRootClass = aggregateRootClass;
             return this;
         }
 
         public Builder withFactoryClass(Class<?> factoryClass) {
-            product().factoryClass = factoryClass;
+            definition.factoryClass = factoryClass;
             return this;
         }
 
         public Builder withRepositoryClass(Class<?> repositoryClass) {
-            product().repositoryClass = repositoryClass;
+            definition.repositoryClass = repositoryClass;
             return this;
         }
 
-        @Override
-        protected void checkProduct(AggregateDefinition product) {
-            checkThat(value(product.entityClass).notNull().because("Entity class cannot be null"));
+        public AggregateDefinition build() {
+            Objects.requireNonNull(definition.aggregateRootClass);
+            Objects.requireNonNull(definition.factoryClass);
+            Objects.requireNonNull(definition.repositoryClass);
+            return definition;
         }
     }
 
@@ -72,7 +73,7 @@ public class AggregateDefinition {
     @Override
     public boolean equals(Object obj) {
         return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
-                .append(entityClass, other.entityClass)
+                .append(aggregateRootClass, other.aggregateRootClass)
                 .append(factoryClass, other.factoryClass)
                 .append(repositoryClass, other.repositoryClass)
                 .build());
@@ -81,7 +82,7 @@ public class AggregateDefinition {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(entityClass)
+                .append(aggregateRootClass)
                 .append(factoryClass)
                 .append(repositoryClass)
                 .build();

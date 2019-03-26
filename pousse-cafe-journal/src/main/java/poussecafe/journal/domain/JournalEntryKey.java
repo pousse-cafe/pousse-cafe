@@ -1,13 +1,10 @@
 package poussecafe.journal.domain;
 
+import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.emptyOrNullString;
-import static poussecafe.check.Predicates.not;
 import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class JournalEntryKey {
@@ -26,7 +23,7 @@ public class JournalEntryKey {
     }
 
     private void setConsumptionId(String consumptionId) {
-        checkThat(value(consumptionId).verifies(not(emptyOrNullString())).because("Message ID cannot be null"));
+        Objects.requireNonNull(consumptionId);
         this.consumptionId = consumptionId;
     }
 
@@ -35,7 +32,7 @@ public class JournalEntryKey {
     }
 
     private void setListenerId(String listenerId) {
-        checkThat(value(listenerId).verifies(not(emptyOrNullString())).because("Listener ID cannot be null"));
+        Objects.requireNonNull(listenerId);
         this.listenerId = listenerId;
     }
 

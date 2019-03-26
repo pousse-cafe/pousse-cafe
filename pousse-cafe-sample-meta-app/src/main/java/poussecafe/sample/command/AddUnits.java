@@ -1,11 +1,7 @@
 package poussecafe.sample.command;
 
+import java.util.Objects;
 import poussecafe.sample.domain.ProductKey;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.equalTo;
-import static poussecafe.check.Predicates.greaterThan;
 
 public class AddUnits {
 
@@ -23,7 +19,7 @@ public class AddUnits {
     }
 
     private void setProductKey(ProductKey productKey) {
-        checkThat(value(productKey).notNull().because("Product key cannot be null"));
+        Objects.requireNonNull(productKey);
         this.productKey = productKey;
     }
 
@@ -32,7 +28,9 @@ public class AddUnits {
     }
 
     private void setUnits(int units) {
-        checkThat(value(units).verifies(greaterThan(0).or(equalTo(0))).because("Units must be >=0"));
+        if(units < 0) {
+            throw new IllegalArgumentException("Units must be >=0");
+        }
         this.units = units;
     }
 

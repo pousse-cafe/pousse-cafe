@@ -19,7 +19,7 @@ public class AggregateServicesFactory {
     public AggregateServices buildEntityServices(AggregateDefinition definition) {
         Repository repository = newRepository(definition.getRepositoryClass());
         Factory factory = newFactory(definition.getFactoryClass());
-        return new AggregateServices(definition.getEntityClass(), repository, factory);
+        return new AggregateServices(definition.getAggregateRootClass(), repository, factory);
     }
 
     public Repository newRepository(Class<? extends Repository> repositoryClass) {

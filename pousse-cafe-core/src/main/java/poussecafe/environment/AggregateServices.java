@@ -1,10 +1,8 @@
 package poussecafe.environment;
 
+import java.util.Objects;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class AggregateServices {
 
@@ -26,7 +24,7 @@ public class AggregateServices {
     }
 
     private void setEntityClass(Class<?> entityClass) {
-        checkThat(value(entityClass).notNull().because("Entity class cannot be null"));
+        Objects.requireNonNull(entityClass);
         this.entityClass = entityClass;
     }
 
@@ -35,7 +33,7 @@ public class AggregateServices {
     }
 
     private void setRepository(Repository<?, ?, ?> repository) {
-        checkThat(value(repository).notNull().because("Repository cannot be null"));
+        Objects.requireNonNull(repository);
         this.repository = repository;
     }
 
@@ -44,7 +42,7 @@ public class AggregateServices {
     }
 
     private void setFactory(Factory<?, ?, ?> factory) {
-        checkThat(value(factory).notNull().because("Factory cannot be null"));
+        Objects.requireNonNull(factory);
         this.factory = factory;
     }
 

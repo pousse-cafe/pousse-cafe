@@ -1,11 +1,9 @@
 package poussecafe.sample.domain;
 
+import java.util.Objects;
 import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 @Aggregate(
   factory = MessageFactory.class,
@@ -14,12 +12,12 @@ import static poussecafe.check.Checks.checkThat;
 public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
 
     void setCustomerKey(CustomerKey customerKey) {
-        checkThat(value(customerKey).notNull().because("Customer key cannot be null"));
+        Objects.requireNonNull(customerKey);
         attributes().setCustomerKey(customerKey);
     }
 
     public void setContentType(ContentType type) {
-        checkThat(value(type).notNull().because("Content type cannot be null"));
+        Objects.requireNonNull(type);
         attributes().setContentType(type);
     }
 

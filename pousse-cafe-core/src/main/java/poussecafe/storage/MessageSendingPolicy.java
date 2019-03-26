@@ -1,11 +1,8 @@
 package poussecafe.storage;
 
-import poussecafe.domain.MessageCollection;
+import java.util.Objects;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.MessageSenderLocator;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public abstract class MessageSendingPolicy {
 
@@ -22,7 +19,7 @@ public abstract class MessageSendingPolicy {
     }
 
     public void setMessageSenderLocator(MessageSenderLocator messageSenderLocator) {
-        checkThat(value(messageSenderLocator).notNull().because("Message sender locator cannot be null"));
+        Objects.requireNonNull(messageSenderLocator);
         this.messageSenderLocator = messageSenderLocator;
     }
 

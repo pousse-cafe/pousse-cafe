@@ -19,7 +19,7 @@ public class ReadWriteOptionalAttributeWithAdapterBuilder<U, T> {
     public OptionalAttribute<T> build() {
         return new OptionalAttribute<T>() {
             @Override
-            public T getNullable() {
+            public T nullableValue() {
                 U storedValue = getter.get();
                 if(storedValue == null) {
                     return null;

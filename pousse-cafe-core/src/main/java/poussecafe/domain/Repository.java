@@ -3,17 +3,17 @@ package poussecafe.domain;
 import java.util.List;
 import java.util.Objects;
 import poussecafe.environment.EntityFactory;
+import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.exception.NotFoundException;
+import poussecafe.storage.MessageCollection;
 
 import static java.util.stream.Collectors.toList;
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     public void setEntityClass(Class<?> entityClass) {
-        checkThat(value(entityClass).notNull().because("Entity class cannot be null"));
+        Objects.requireNonNull(entityClass);
         this.entityClass = (Class<A>) entityClass;
     }
 
@@ -32,16 +32,16 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     private EntityDataAccess<K, D> dataAccess;
 
     private void checkKey(K key) {
-        checkThat(value(key).notNull().because("Key cannot be null"));
+        Objects.requireNonNull(key);
     }
 
     protected A wrap(D data) {
         if(data == null) {
             return null;
         } else {
-            return componentFactory.newEntity(new EntitySpecification.Builder<A>()
-                    .withComponentClass(entityClass)
-                    .withExistingData(data)
+            return componentFactory.newEntity(new NewEntityInstanceSpecification.Builder<A>()
+                    .entityClass(entityClass)
+                    .existingData(data)
                     .build());
         }
     }
@@ -78,8 +78,8 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     private void checkEntity(A entity) {
-        checkThat(value(entity).notNull().because("Entity cannot be null"));
-        checkThat(value(entity.attributes()).notNull().because("Entity data cannot be null"));
+        Objects.requireNonNull(entity);
+        Objects.requireNonNull(entity.attributes());
     }
 
     public void update(A entity) {
@@ -128,7 +128,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     @SuppressWarnings("unchecked")
     public void setDataAccess(Object dataAccess) {
-        checkThat(value(dataAccess).notNull().because("Data access cannot be null"));
+        Objects.requireNonNull(dataAccess);
         this.dataAccess = (EntityDataAccess<K, D>) dataAccess;
     }
 

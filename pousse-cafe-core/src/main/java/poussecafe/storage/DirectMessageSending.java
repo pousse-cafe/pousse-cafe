@@ -1,7 +1,5 @@
 package poussecafe.storage;
 
-import poussecafe.domain.MessageCollection;
-
 public class DirectMessageSending extends MessageSendingPolicy {
 
     @Override

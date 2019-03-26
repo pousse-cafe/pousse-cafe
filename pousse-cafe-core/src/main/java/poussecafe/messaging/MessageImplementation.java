@@ -1,44 +1,37 @@
 package poussecafe.messaging;
 
-import poussecafe.util.AbstractBuilder;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
+import java.util.Objects;
 
 public class MessageImplementation {
 
-    public Class<? extends Message> getMessageClass() {
-        return messageClass;
-    }
-
-    private Class<? extends Message> messageClass;
-
-    public static class Builder extends AbstractBuilder<MessageImplementation> {
+    public static class Builder {
 
         public Builder() {
-            super(new MessageImplementation());
+            implementation = new MessageImplementation();
         }
 
-        public Builder withMessageClass(Class<? extends Message> messageClass) {
-            product().messageClass = messageClass;
+        private MessageImplementation implementation;
+
+        public Builder messageClass(Class<? extends Message> messageClass) {
+            implementation.messageClass = messageClass;
             return this;
         }
 
-        public Builder withMessageImplementationClass(Class<? extends Message> messageImplementationClass) {
-            product().messageImplementationClass = messageImplementationClass;
+        public Builder messageImplementationClass(Class<? extends Message> messageImplementationClass) {
+            implementation.messageImplementationClass = messageImplementationClass;
             return this;
         }
 
-        public Builder withMessaging(Messaging messaging) {
-            product().messaging = messaging;
+        public Builder messaging(Messaging messaging) {
+            implementation.messaging = messaging;
             return this;
         }
 
-        @Override
-        protected void checkProduct(MessageImplementation product) {
-            checkThat(value(product.messageClass).notNull().because("Message class cannot be null"));
-            checkThat(value(product.messageImplementationClass).notNull().because("Message implementation class cannot be null"));
-            checkThat(value(product.messaging).notNull().because("Messaging cannot be null"));
+        public MessageImplementation build() {
+            Objects.requireNonNull(implementation.messageClass);
+            Objects.requireNonNull(implementation.messageImplementationClass);
+            Objects.requireNonNull(implementation.messaging);
+            return implementation;
         }
     }
 
@@ -46,15 +39,21 @@ public class MessageImplementation {
 
     }
 
+    private Class<? extends Message> messageClass;
+
+    public Class<? extends Message> messageClass() {
+        return messageClass;
+    }
+
     private Class<? extends Message> messageImplementationClass;
 
-    public Class<? extends Message> getMessageImplementationClass() {
+    public Class<? extends Message> messageImplementationClass() {
         return messageImplementationClass;
     }
 
     private Messaging messaging;
 
-    public Messaging getMessaging() {
+    public Messaging messaging() {
         return messaging;
     }
 }

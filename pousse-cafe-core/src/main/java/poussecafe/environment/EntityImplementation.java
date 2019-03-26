@@ -1,47 +1,46 @@
 package poussecafe.environment;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.storage.Storage;
-import poussecafe.util.AbstractBuilder;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class EntityImplementation {
 
-    public static class Builder extends AbstractBuilder<EntityImplementation> {
+    public static class Builder {
 
         public Builder() {
-            super(new EntityImplementation());
+            implementation = new EntityImplementation();
         }
 
+        private EntityImplementation implementation;
+
         public Builder withEntityClass(Class<?> entityClass) {
-            product().entityClass = entityClass;
+            implementation.entityClass = entityClass;
             return this;
         }
 
         public Builder withDataFactory(Supplier<Object> dataFactory) {
-            product().dataFactory = dataFactory;
+            implementation.dataFactory = dataFactory;
             return this;
         }
 
         public Builder withDataAccessFactory(Supplier<Object> dataAccessFactory) {
-            product().dataAccessFactory = dataAccessFactory;
+            implementation.dataAccessFactory = dataAccessFactory;
             return this;
         }
 
         public Builder withStorage(Storage storage) {
-            product().storage = storage;
+            implementation.storage = storage;
             return this;
         }
 
-        @Override
-        protected void checkProduct(EntityImplementation product) {
-            checkThat(value(product.entityClass).notNull().because("Entity class cannot be null"));
-            checkThat(value(product.dataFactory).notNull().because("Entity data factory cannot be null"));
-            if(product.dataAccessFactory != null) {
-                checkThat(value(product.storage).notNull().because("Storage cannot be null"));
+        public EntityImplementation build() {
+            Objects.requireNonNull(implementation.entityClass);
+            Objects.requireNonNull(implementation.dataFactory);
+            if(implementation.dataAccessFactory != null) {
+                Objects.requireNonNull(implementation.storage);
             }
+            return implementation;
         }
     }
 

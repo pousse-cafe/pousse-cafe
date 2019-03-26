@@ -40,9 +40,9 @@ public class MessagingUnitBuilder {
     private poussecafe.messaging.MessageImplementation buildNonRootEntityImplementation(Class<Message> entityDataClass) {
         MessageImplementation annotation = entityDataClass.getAnnotation(MessageImplementation.class);
         return new poussecafe.messaging.MessageImplementation.Builder()
-                .withMessageClass(annotation.message())
-                .withMessageImplementationClass(entityDataClass)
-                .withMessaging(messaging)
+                .messageClass(annotation.message())
+                .messageImplementationClass(entityDataClass)
+                .messaging(messaging)
                 .build();
     }
 }

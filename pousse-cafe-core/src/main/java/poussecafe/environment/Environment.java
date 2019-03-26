@@ -109,7 +109,7 @@ public class Environment {
 
     Class<?> messageImplementationClass(Class<?> messageClass) {
         MessageImplementation implementation = messageImplementation(messageClass);
-        return implementation.getMessageImplementationClass();
+        return implementation.messageImplementationClass();
     }
 
     private MessageImplementation messageImplementation(Class<?> messageClass) {

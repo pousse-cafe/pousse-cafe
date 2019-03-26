@@ -4,10 +4,6 @@ import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-import static poussecafe.check.Predicates.greaterThan;
-
 @Aggregate(
   factory = OrderFactory.class,
   repository = OrderRepository.class
@@ -15,7 +11,9 @@ import static poussecafe.check.Predicates.greaterThan;
 public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
 
     void setUnits(int units) {
-        checkThat(value(units).verifies(greaterThan(0)).because("More than 0 units have to be ordered"));
+        if(units <= 0) {
+            throw new IllegalArgumentException("More than 0 units have to be ordered");
+        }
         attributes().setUnits(units);
     }
 

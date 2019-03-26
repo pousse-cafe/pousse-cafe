@@ -22,9 +22,6 @@ import poussecafe.runtime.Runtime;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
-
 public class RuntimeWrapper {
 
     public RuntimeWrapper(Runtime context) {
@@ -78,9 +75,7 @@ public class RuntimeWrapper {
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.reader().readTree(json);
-            jsonNode.fieldNames().forEachRemaining(entityClassName -> {
-                loadEntity(entityClassName, jsonNode);
-            });
+            jsonNode.fieldNames().forEachRemaining(entityClassName -> loadEntity(entityClassName, jsonNode));
         } catch (Exception e) {
             throw new PousseCafeException("Unable to load data file", e);
         }
@@ -92,7 +87,9 @@ public class RuntimeWrapper {
         try {
             Class<?> entityClass = Class.forName(entityClassName);
             EntityImplementation entityImplementation = context.environment().entityImplementation(entityClass);
-            checkThat(value(entityImplementation.getStorage() == InternalStorage.instance()).isTrue());
+            if(entityImplementation.getStorage() != InternalStorage.instance()) {
+                throw new PousseCafeException("Unsupported test storage");
+            }
 
             AggregateServices services = context.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
             InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();

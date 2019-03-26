@@ -11,7 +11,7 @@ public class ReadWriteOptionalAttributeBuilder<T> {
     public OptionalAttribute<T> build() {
         return new OptionalAttribute<T>() {
             @Override
-            public T getNullable() {
+            public T nullableValue() {
                 return compositeAttribute.getter.get();
             }
 

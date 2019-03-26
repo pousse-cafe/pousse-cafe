@@ -3,7 +3,6 @@ package poussecafe.environment;
 import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.domain.Entity;
-import poussecafe.domain.EntitySpecification;
 import poussecafe.storage.Storage;
 import poussecafe.util.ReflectionUtils;
 
@@ -36,15 +35,15 @@ public class EntityFactory {
 
     private Environment environment;
 
-    public <E extends Entity<?, ?>> E newEntity(EntitySpecification<E> specification) {
-        Class<E> entityClass = specification.getPrimitiveClass();
+    public <E extends Entity<?, ?>> E newEntity(NewEntityInstanceSpecification<E> specification) {
+        Class<E> entityClass = specification.entityClass();
         E entity = ReflectionUtils.newInstance(entityClass);
 
         entity.entityFactory(this);
         entity.messageFactory(messageFactory);
 
-        if(specification.getExistingData() != null) {
-            entity.attributes(specification.getExistingData());
+        if(specification.existingData() != null) {
+            entity.attributes(specification.existingData());
         }
 
         Storage storage = environment.storageOfEntity(entityClass);
@@ -55,7 +54,7 @@ public class EntityFactory {
 
         if(environment.entityImplementations.containsKey(entityClass)) {
             Object data = null;
-            if(specification.isWithData()) {
+            if(specification.instantiateData()) {
                 data = supplyEntityDataImplementation(entityClass);
                 entity.attributes(data);
             }

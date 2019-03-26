@@ -1,9 +1,7 @@
 package poussecafe.sample.command;
 
+import java.util.Objects;
 import poussecafe.sample.domain.OrderKey;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class SettleOrder {
 
@@ -18,7 +16,7 @@ public class SettleOrder {
     }
 
     private void setOrderKey(OrderKey orderKey) {
-        checkThat(value(orderKey).notNull().because("Product key cannot be null"));
+        Objects.requireNonNull(orderKey);
         this.orderKey = orderKey;
     }
 }

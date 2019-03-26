@@ -51,7 +51,7 @@ class ClassPathExplorer {
 
             Aggregate annotation = aggregateRootClass.getAnnotation(Aggregate.class);
             definitions.add(new AggregateDefinition.Builder()
-                    .withEntityClass(aggregateRootClass)
+                    .withAggregateRoot(aggregateRootClass)
                     .withFactoryClass(annotation.factory())
                     .withRepositoryClass(annotation.repository())
                     .build());

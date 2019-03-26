@@ -1,5 +1,6 @@
-package poussecafe.property;
+package poussecafe.attribute.entity;
 
+import java.util.Objects;
 import java.util.function.Function;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
@@ -10,18 +11,16 @@ import poussecafe.domain.EntityAttributes;
  * @param <K> Attribute key type
  * @param <E> Attribute value type
  */
-public class AdaptedEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
+public class AdaptingEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
 
-    AdaptedEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> keyAdapter) {
+    AdaptingEntityMapAttributeBuilder(Class<E> entityClass) {
         this.entityClass = entityClass;
-        this.keyAdapter = keyAdapter;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> keyAdapter;
-
-    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> read() {
+    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptOnGet(Function<J, K> keyAdapter) {
+        Objects.requireNonNull(keyAdapter);
         return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, keyAdapter);
     }
 }

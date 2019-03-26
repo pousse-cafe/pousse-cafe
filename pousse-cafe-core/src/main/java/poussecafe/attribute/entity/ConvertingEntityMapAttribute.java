@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute.entity;
 
 import java.util.Map;
 import poussecafe.attribute.ConvertingMapAttribute;

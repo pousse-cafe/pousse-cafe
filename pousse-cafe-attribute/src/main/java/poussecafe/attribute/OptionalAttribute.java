@@ -7,11 +7,11 @@ public abstract class OptionalAttribute<T> implements Attribute<Optional<T>> {
 
     @Override
     public Optional<T> value() {
-        T nullableValue = getNullable();
+        T nullableValue = nullableValue();
         return Optional.ofNullable(nullableValue);
     }
 
-    public abstract T getNullable();
+    public abstract T nullableValue();
 
     @Override
     public void value(Optional<T> value) {

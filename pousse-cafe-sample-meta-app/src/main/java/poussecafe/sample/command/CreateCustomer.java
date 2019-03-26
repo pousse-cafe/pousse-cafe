@@ -1,9 +1,7 @@
 package poussecafe.sample.command;
 
+import java.util.Objects;
 import poussecafe.sample.domain.CustomerKey;
-
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class CreateCustomer {
 
@@ -18,7 +16,7 @@ public class CreateCustomer {
     }
 
     private void setCustomerKey(CustomerKey customerKey) {
-        checkThat(value(customerKey).notNull().because("Customer key cannot be null"));
+        Objects.requireNonNull(customerKey);
         this.customerKey = customerKey;
     }
 

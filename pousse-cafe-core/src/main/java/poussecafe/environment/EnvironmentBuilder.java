@@ -48,7 +48,7 @@ public class EnvironmentBuilder {
     }
 
     private void withAggregateDefinition(AggregateDefinition definition) {
-        Class<?> entityClass = definition.getEntityClass();
+        Class<?> entityClass = definition.getAggregateRootClass();
         if(aggregateDefinitions.containsKey(entityClass)) {
             if(definition.equals(aggregateDefinitions.get(entityClass))) {
                 return;
@@ -101,14 +101,14 @@ public class EnvironmentBuilder {
 
     private void withMessageImplementation(MessageImplementation implementation) {
         Objects.requireNonNull(implementation);
-        Class<? extends Message> messageClass = implementation.getMessageClass();
+        Class<? extends Message> messageClass = implementation.messageClass();
         if(!definedMessages.contains(messageClass)) {
             throw new PousseCafeException("Trying to implement a message that was not defined: " + messageClass);
         }
 
         MessageImplementation existingImplementation = environment.messageImplementations.get(messageClass);
         if(existingImplementation != null) {
-            if(existingImplementation.getMessageImplementationClass() != implementation.getMessageImplementationClass()) {
+            if(existingImplementation.messageImplementationClass() != implementation.messageImplementationClass()) {
                 throw new PousseCafeException("Conflicting implementations detected for message " + messageClass);
             } else {
                 return;
@@ -116,9 +116,9 @@ public class EnvironmentBuilder {
         }
 
         environment.messageImplementations.put(messageClass, implementation);
-        environment.messageClassesPerImplementation.put(implementation.getMessageImplementationClass(), messageClass);
-        environment.messagings.add(implementation.getMessaging());
-        environment.messagingByMessageClass.put(messageClass, implementation.getMessaging());
+        environment.messageClassesPerImplementation.put(implementation.messageImplementationClass(), messageClass);
+        environment.messagings.add(implementation.messaging());
+        environment.messagingByMessageClass.put(messageClass, implementation.messaging());
     }
 
     private void withServiceImplementation(ServiceImplementation implementation) {

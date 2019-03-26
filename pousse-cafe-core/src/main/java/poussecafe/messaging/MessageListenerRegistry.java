@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -14,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import poussecafe.environment.Environment;
 
 import static java.util.Collections.emptySet;
-import static poussecafe.check.AssertionSpecification.value;
-import static poussecafe.check.Checks.checkThat;
 
 public class MessageListenerRegistry {
 
@@ -51,7 +50,7 @@ public class MessageListenerRegistry {
     private Environment environment;
 
     public void setEnvironment(Environment environment) {
-        checkThat(value(environment).notNull());
+        Objects.requireNonNull(environment);
         this.environment = environment;
     }
 

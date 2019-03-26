@@ -1,4 +1,4 @@
-package poussecafe.domain;
+package poussecafe.storage;
 
 import java.util.List;
 import poussecafe.messaging.Message;
