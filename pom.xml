@@ -171,8 +171,8 @@
     <module>pousse-cafe-spring-mongo</module>
     <module>pousse-cafe-journal-spring-mongo</module>
     <module>pousse-cafe-sample-bounded-context</module>
-    <module>pousse-cafe-sample-meta-app</module>
-    <module>pousse-cafe-sample-app</module>
+    <module>pousse-cafe-shop</module>
+    <module>pousse-cafe-shop-app</module>
     <module>pousse-cafe-maven-plugin</module>
     <module>pousse-cafe-spring-kafka</module>
     <module>pousse-cafe-jackson</module>

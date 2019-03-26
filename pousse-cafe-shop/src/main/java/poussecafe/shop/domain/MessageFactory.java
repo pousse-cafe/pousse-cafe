@@ -1,0 +1,13 @@
+package poussecafe.shop.domain;
+
+import java.util.UUID;
+import poussecafe.domain.Factory;
+
+public class MessageFactory extends Factory<MessageKey, Message, Message.Attributes> {
+
+    public Message buildMessage(CustomerKey customerKey) {
+        Message message = newAggregateWithKey(new MessageKey(UUID.randomUUID().toString()));
+        message.setCustomerKey(customerKey);
+        return message;
+    }
+}
