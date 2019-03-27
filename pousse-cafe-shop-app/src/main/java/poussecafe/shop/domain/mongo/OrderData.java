@@ -2,7 +2,8 @@ package poussecafe.shop.domain.mongo;
 
 import org.springframework.data.annotation.Id;
 import poussecafe.attribute.Attribute;
-import poussecafe.shop.adapters.storage.SerializableOrderKey;
+import poussecafe.attribute.AttributeBuilder;
+import poussecafe.shop.adapters.storage.OrderKeyData;
 import poussecafe.shop.domain.Order;
 import poussecafe.shop.domain.OrderKey;
 
@@ -10,32 +11,23 @@ public class OrderData implements Order.Attributes {
 
     @Override
     public Attribute<OrderKey> key() {
-        return new Attribute<OrderKey>() {
-            @Override
-            public OrderKey value() {
-                return key.toOrderKey();
-            }
-
-            @Override
-            public void value(OrderKey value) {
-                key = new SerializableOrderKey(value);
-            }
-        };
+        return AttributeBuilder.simple(OrderKey.class)
+                .fromAutoAdapting(OrderKeyData.class)
+                .get(() -> key)
+                .set(value -> key = value)
+                .build();
     }
 
     @Id
-    private SerializableOrderKey key;
+    private OrderKeyData key;
 
     @Override
-    public void setUnits(int units) {
-        this.units = units;
+    public Attribute<Integer> units() {
+        return AttributeBuilder.simple(Integer.class)
+                .get(() -> units)
+                .set(value -> units = value)
+                .build();
     }
 
     private int units;
-
-    @Override
-    public int getUnits() {
-        return units;
-    }
-
 }

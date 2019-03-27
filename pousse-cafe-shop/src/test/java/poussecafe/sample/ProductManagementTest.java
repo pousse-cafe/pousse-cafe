@@ -1,31 +1,18 @@
 package poussecafe.sample;
 
-import java.util.List;
 import org.junit.Test;
-import poussecafe.environment.BoundedContext;
-import poussecafe.shop.Shop;
 import poussecafe.shop.command.AddUnits;
 import poussecafe.shop.command.CreateProduct;
 import poussecafe.shop.domain.Product;
 import poussecafe.shop.domain.ProductKey;
-import poussecafe.shop.process.ProductManagement;
-import poussecafe.test.PousseCafeTest;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class ProductManagementTest extends PousseCafeTest {
+public class ProductManagementTest extends ShopTest {
 
     private ProductKey productKey;
-
-    private AddUnits addUnits;
-
-    @Override
-    protected List<BoundedContext> boundedContexts() {
-        return asList(Shop.configure().defineAndImplementDefault().build());
-    }
 
     @Test
     public void productCanBeCreated() {
@@ -43,10 +30,10 @@ public class ProductManagementTest extends PousseCafeTest {
     }
 
     protected void createProduct() {
-        productManagement.createProduct(new CreateProduct(productKey));
+        CreateProduct command = newCommand(CreateProduct.class);
+        command.productKey().value(productKey);
+        submitCommand(command);
     }
-
-    private ProductManagement productManagement;
 
     private void thenProductCreated() {
         assertThat(find(Product.class, productKey), notNullValue());
@@ -65,13 +52,17 @@ public class ProductManagementTest extends PousseCafeTest {
     }
 
     private void whenSubmittingAddUnitsCommand() {
-        addUnits = new AddUnits(productKey, 10);
-        productManagement.addUnits(addUnits);
+        addUnits = newCommand(AddUnits.class);
+        addUnits.productKey().value(productKey);
+        addUnits.units().value(1);
+        submitCommand(addUnits);
     }
+
+    private AddUnits addUnits;
 
     private void thenProductHasAddedUnits() {
         Product product = find(Product.class, productKey);
-        assertThat(product.getAvailableUnits(), is(addUnits.getUnits()));
-        assertThat(product.getTotalUnits(), is(addUnits.getUnits()));
+        assertThat(product.attributes().availableUnits().value(), is(addUnits.units().value()));
+        assertThat(product.attributes().totalUnits().value(), is(addUnits.units().value()));
     }
 }

@@ -133,7 +133,7 @@ public class Runtime {
         return injector;
     }
 
-    public MessageSenderLocator messageSenderLocator() {
+    MessageSenderLocator messageSenderLocator() {
         return messageSenderLocator;
     }
 
@@ -190,5 +190,13 @@ public class Runtime {
 
     public List<MessagingConnection> messagingConnections() {
         return Collections.unmodifiableList(connections);
+    }
+
+    public <C extends Command> C newCommand(Class<C> commandClass) {
+        return environment.messageFactory().newMessage(commandClass);
+    }
+
+    public void submitCommand(Command command) {
+        messageSenderLocator.locate(command.getClass()).sendMessage(command);
     }
 }

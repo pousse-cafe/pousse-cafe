@@ -7,6 +7,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.environment.BoundedContext;
+import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
 public abstract class PousseCafeTest {
@@ -60,5 +61,13 @@ public abstract class PousseCafeTest {
         if(wrapper != null) {
             wrapper.runtime().stop();
         }
+    }
+
+    public <C extends Command> C newCommand(Class<C> commandClass) {
+        return wrapper.runtime().newCommand(commandClass);
+    }
+
+    public void submitCommand(Command command) {
+        wrapper.submitCommand(command);
     }
 }

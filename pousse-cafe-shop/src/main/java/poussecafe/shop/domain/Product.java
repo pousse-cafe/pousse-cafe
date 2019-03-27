@@ -1,9 +1,13 @@
 package poussecafe.shop.domain;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.shop.command.AddUnits;
+import poussecafe.shop.command.PlaceOrder;
 
 @Aggregate(
   factory = ProductFactory.class,
@@ -11,39 +15,35 @@ import poussecafe.domain.EntityAttributes;
 )
 public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
 
-    void setTotalUnits(int units) {
-        attributes().setTotalUnits(units);
-    }
-
-    public int getTotalUnits() {
-        return attributes().getTotalUnits();
-    }
-
-    void setAvailableUnits(int units) {
-        attributes().setAvailableUnits(units);
-    }
-
-    public int getAvailableUnits() {
-        return attributes().getAvailableUnits();
-    }
-
-    public void addUnits(int units) {
+    /**
+     * @process ProductManagement
+     */
+    @MessageListener(runner = AddUnitsRunner.class)
+    public void addUnits(AddUnits command) {
+        int units = command.units().value();
         if(units <= 0) {
             throw new DomainException("Cannot add negative number of units");
         }
-        attributes().setAvailableUnits(attributes().getAvailableUnits() + units);
-        attributes().setTotalUnits(attributes().getTotalUnits() + units);
+        attributes().availableUnits().value(attributes().availableUnits().value() + units);
+        attributes().totalUnits().value(attributes().totalUnits().value() + units);
     }
 
-    public void placeOrder(OrderDescription description) {
-        int unitsAvailable = attributes().getAvailableUnits();
-        if (description.units > unitsAvailable) {
+    /**
+     * @process OrderPlacement
+     * @event OrderRejected
+     * @event OrderPlaced
+     */
+    @MessageListener(runner = PlaceOrderRunner.class)
+    public void placeOrder(PlaceOrder command) {
+        int unitsAvailable = attributes().availableUnits().value();
+        OrderDescription description = command.description().value();
+        if (description.units() > unitsAvailable) {
             OrderRejected event = newDomainEvent(OrderRejected.class);
             event.productKey().valueOf(attributes().key());
             event.description().value(description);
             emitDomainEvent(event);
         } else {
-            attributes().setAvailableUnits(unitsAvailable - description.units);
+            attributes().availableUnits().value(unitsAvailable - description.units());
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
             event.productKey().valueOf(attributes().key());
@@ -54,13 +54,9 @@ public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
 
     public static interface Attributes extends EntityAttributes<ProductKey> {
 
-        void setTotalUnits(int units);
+        Attribute<Integer> totalUnits();
 
-        int getTotalUnits();
-
-        void setAvailableUnits(int units);
-
-        int getAvailableUnits();
+        Attribute<Integer> availableUnits();
     }
 
 }

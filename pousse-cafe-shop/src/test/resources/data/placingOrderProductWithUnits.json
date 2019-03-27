@@ -1,7 +1,7 @@
 {
     "poussecafe.shop.domain.Product": [
         {
-            "productKey": "product-1",
+            "productId": "product-1",
             "totalUnits": 10,
             "availableUnits": 10
         }

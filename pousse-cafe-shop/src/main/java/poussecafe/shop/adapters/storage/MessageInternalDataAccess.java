@@ -20,7 +20,7 @@ public class MessageInternalDataAccess extends InternalDataAccess<MessageKey, Me
 
     @Override
     protected List<Object> extractIndexedData(MessageData data) {
-        return asList(data.getCustomerKey());
+        return asList(data.customerKey().value());
     }
 
     @Override

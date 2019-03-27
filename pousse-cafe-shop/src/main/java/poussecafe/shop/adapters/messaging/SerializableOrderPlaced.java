@@ -28,13 +28,11 @@ public class SerializableOrderPlaced implements Serializable, OrderPlaced {
     @Override
     public Attribute<OrderDescription> description() {
         return AttributeBuilder.simple(OrderDescription.class)
-                .from(SerializableOrderDescription.class)
-                .adapt(SerializableOrderDescription::adapt)
+                .fromAutoAdapting(OrderDescriptionData.class)
                 .get(() -> description)
-                .adapt(SerializableOrderDescription::adapt)
                 .set(value -> description = value)
                 .build();
     }
 
-    private SerializableOrderDescription description;
+    private OrderDescriptionData description;
 }

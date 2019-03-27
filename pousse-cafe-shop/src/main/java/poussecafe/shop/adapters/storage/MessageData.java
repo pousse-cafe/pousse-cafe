@@ -2,6 +2,7 @@ package poussecafe.shop.adapters.storage;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.shop.domain.ContentType;
 import poussecafe.shop.domain.CustomerKey;
 import poussecafe.shop.domain.Message;
@@ -12,43 +13,31 @@ public class MessageData implements Message.Attributes, Serializable {
 
     @Override
     public Attribute<MessageKey> key() {
-        return new Attribute<MessageKey>() {
-            @Override
-            public MessageKey value() {
-                return new MessageKey(key);
-            }
-
-            @Override
-            public void value(MessageKey value) {
-                key = value.getValue();
-            }
-        };
+        return AttributeBuilder.stringKey(MessageKey.class)
+                .get(() -> key)
+                .set(value -> key = value)
+                .build();
     }
 
     private String key;
 
     @Override
-    public void setCustomerKey(CustomerKey customerKey) {
-        this.customerKey = customerKey.getValue();
+    public Attribute<CustomerKey> customerKey() {
+        return AttributeBuilder.stringKey(CustomerKey.class)
+                .get(() -> customerId)
+                .set(value -> customerId = value)
+                .build();
     }
 
-    private String customerKey;
+    private String customerId;
 
     @Override
-    public CustomerKey getCustomerKey() {
-        return new CustomerKey(customerKey);
-    }
-
-    @Override
-    public void setContentType(ContentType type) {
-        contentType = type;
+    public Attribute<ContentType> contentType() {
+        return AttributeBuilder.simple(ContentType.class)
+                .get(() -> contentType)
+                .set(value -> contentType = value)
+                .build();
     }
 
     private ContentType contentType;
-
-    @Override
-    public ContentType getContentType() {
-        return contentType;
-    }
-
 }

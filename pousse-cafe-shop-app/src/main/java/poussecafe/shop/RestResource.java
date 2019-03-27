@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import poussecafe.runtime.Runtime;
 import poussecafe.shop.command.CreateProduct;
 import poussecafe.shop.domain.Product;
 import poussecafe.shop.domain.ProductKey;
 import poussecafe.shop.domain.ProductRepository;
-import poussecafe.shop.process.ProductManagement;
 
 @RestController
 public class RestResource {
@@ -21,13 +21,16 @@ public class RestResource {
     private ProductRepository productRepository;
 
     @Autowired
-    private ProductManagement productManagement;
+    private Runtime runtime;
 
     @PostMapping(path = "/product")
     public void createProduct(@RequestBody CreateProductView input) {
         logger.info("Creating product with key {}", input.key);
         ProductKey productKey = new ProductKey(input.key);
-        productManagement.createProduct(new CreateProduct(productKey));
+
+        CreateProduct command = runtime.newCommand(CreateProduct.class);
+        command.productKey().value(productKey);
+        runtime.submitCommand(command);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,8 +43,8 @@ public class RestResource {
 
         ProductView view = new ProductView();
         view.key = key;
-        view.availableUnits = product.getAvailableUnits();
-        view.totalUnits = product.getTotalUnits();
+        view.availableUnits = product.attributes().availableUnits().value();
+        view.totalUnits = product.attributes().totalUnits().value();
         return view;
     }
 }

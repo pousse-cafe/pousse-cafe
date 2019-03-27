@@ -1,22 +1,10 @@
 package poussecafe.shop.command;
 
-import java.util.Objects;
+import poussecafe.attribute.Attribute;
+import poussecafe.runtime.Command;
 import poussecafe.shop.domain.OrderKey;
 
-public class SettleOrder {
+public interface SettleOrder extends Command {
 
-    private OrderKey orderKey;
-
-    public SettleOrder(OrderKey orderKey) {
-        setOrderKey(orderKey);
-    }
-
-    public OrderKey getOrderKey() {
-        return orderKey;
-    }
-
-    private void setOrderKey(OrderKey orderKey) {
-        Objects.requireNonNull(orderKey);
-        this.orderKey = orderKey;
-    }
+    Attribute<OrderKey> orderKey();
 }

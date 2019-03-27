@@ -2,6 +2,7 @@ package poussecafe.shop.adapters.storage;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.shop.domain.Order;
 import poussecafe.shop.domain.OrderKey;
 
@@ -10,31 +11,22 @@ public class OrderData implements Order.Attributes, Serializable {
 
     @Override
     public Attribute<OrderKey> key() {
-        return new Attribute<OrderKey>() {
-            @Override
-            public OrderKey value() {
-                return productKey.toOrderKey();
-            }
-
-            @Override
-            public void value(OrderKey value) {
-                productKey = new SerializableOrderKey(value);
-            }
-        };
+        return AttributeBuilder.simple(OrderKey.class)
+                .fromAutoAdapting(OrderKeyData.class)
+                .get(() -> key)
+                .set(value -> key = value)
+                .build();
     }
 
-    private SerializableOrderKey productKey;
+    private OrderKeyData key;
 
     @Override
-    public void setUnits(int units) {
-        this.units = units;
+    public Attribute<Integer> units() {
+        return AttributeBuilder.simple(Integer.class)
+                .get(() -> units)
+                .set(value -> units = value)
+                .build();
     }
 
     private int units;
-
-    @Override
-    public int getUnits() {
-        return units;
-    }
-
 }

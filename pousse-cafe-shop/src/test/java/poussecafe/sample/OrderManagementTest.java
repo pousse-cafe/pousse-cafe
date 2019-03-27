@@ -1,35 +1,24 @@
 package poussecafe.sample;
 
-import java.util.List;
 import org.junit.Test;
-import poussecafe.environment.BoundedContext;
-import poussecafe.shop.Shop;
 import poussecafe.shop.command.PlaceOrder;
 import poussecafe.shop.domain.CustomerKey;
 import poussecafe.shop.domain.Order;
 import poussecafe.shop.domain.OrderDescription;
 import poussecafe.shop.domain.OrderKey;
 import poussecafe.shop.domain.ProductKey;
-import poussecafe.shop.process.OrderPlacement;
-import poussecafe.test.PousseCafeTest;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class OrderManagementTest extends PousseCafeTest {
+public class OrderManagementTest extends ShopTest {
 
     private CustomerKey customerKey;
 
     private ProductKey productKey;
 
     private OrderDescription description;
-
-    @Override
-    protected List<BoundedContext> boundedContexts() {
-        return asList(Shop.configure().defineAndImplementDefault().build());
-    }
 
     @Test
     public void placingOrderCreatesOrder() {
@@ -53,21 +42,23 @@ public class OrderManagementTest extends PousseCafeTest {
     }
 
     private void whenPlacingOrder() {
-        description = new OrderDescription();
-        description.customerKey = customerKey;
-        description.reference = "ref";
-        description.units = 1;
-        orderPlacement.placeOrder(new PlaceOrder(productKey, description));
+        PlaceOrder command = newCommand(PlaceOrder.class);
+        command.productKey().value(productKey);
+        description = new OrderDescription.Builder()
+                .customerKey(customerKey)
+                .reference("ref")
+                .units(1)
+                .build();
+        command.description().value(description);
+        submitCommand(command);
     }
-
-    private OrderPlacement orderPlacement;
 
     private void thenOrderCreated() {
         assertThat(find(Order.class, orderKey()), notNullValue());
     }
 
     private OrderKey orderKey() {
-        return new OrderKey(productKey, description.customerKey, description.reference);
+        return new OrderKey(productKey, description.customerKey(), description.reference());
     }
 
     @Test

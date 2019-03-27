@@ -188,7 +188,8 @@ public class MessageListenerFactory {
     }
 
     private MessageListener buildAggregateRootListener(MessageListenerDefinition definition) {
-        Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner().orElseThrow(() -> new DomainException("Aggregate root message listeners must have a runner"));
+        Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner()
+                .orElseThrow(() -> new DomainException(definition.method().toString() + " message listeners must have a runner"));
         AggregateMessageListenerRunner runner = ReflectionUtils.newInstance(runnerClass);
         return buildMessageListenerBuilder(definition)
                 .consumer(buildAggregateRootMessageConsumer(definition, runner))

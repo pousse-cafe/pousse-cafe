@@ -2,8 +2,6 @@ package poussecafe.sample;
 
 import java.util.List;
 import org.junit.Test;
-import poussecafe.environment.BoundedContext;
-import poussecafe.shop.Shop;
 import poussecafe.shop.adapters.messaging.SerializableOrderRejected;
 import poussecafe.shop.domain.ContentType;
 import poussecafe.shop.domain.CustomerKey;
@@ -12,24 +10,17 @@ import poussecafe.shop.domain.MessageRepository;
 import poussecafe.shop.domain.OrderDescription;
 import poussecafe.shop.domain.OrderRejected;
 import poussecafe.shop.domain.ProductKey;
-import poussecafe.test.PousseCafeTest;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MessagingTest extends PousseCafeTest {
+public class MessagingTest extends ShopTest {
 
     private CustomerKey customerKey;
 
     private ProductKey productKey;
 
     private OrderDescription orderDescription;
-
-    @Override
-    protected List<BoundedContext> boundedContexts() {
-        return asList(Shop.configure().defineAndImplementDefault().build());
-    }
 
     @Test
     public void rejectedOrderTriggersNotification() {
@@ -41,10 +32,11 @@ public class MessagingTest extends PousseCafeTest {
     private void givenOrder() {
         customerKey = new CustomerKey("customer-id");
         productKey = new ProductKey("product-id");
-        orderDescription = new OrderDescription();
-        orderDescription.customerKey = customerKey;
-        orderDescription.reference = "ref";
-        orderDescription.units = 1;
+        orderDescription = new OrderDescription.Builder()
+                .customerKey(customerKey)
+                .reference("ref")
+                .units(1)
+                .build();
     }
 
     private void whenOrderRejected() {
@@ -58,7 +50,7 @@ public class MessagingTest extends PousseCafeTest {
         waitUntilAllMessageQueuesEmpty();
         List<Message> messages = messageRepository.findByCustomer(customerKey);
         assertThat(messages.size(), is(1));
-        assertThat(messages.get(0).getContentType(), is(contentType));
+        assertThat(messages.get(0).attributes().contentType().value(), is(contentType));
     }
 
     private MessageRepository messageRepository;

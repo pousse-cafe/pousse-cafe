@@ -18,7 +18,9 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessagingQueue.InternalMessageReceiver;
+import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
+import poussecafe.runtime.RuntimeFriend;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -26,22 +28,25 @@ public class RuntimeWrapper {
 
     public RuntimeWrapper(Runtime context) {
         Objects.requireNonNull(context);
-        this.context = context;
+        runtime = context;
+        runtimeFriend = new RuntimeFriend(runtime);
     }
 
-    private Runtime context;
+    private Runtime runtime;
+
+    private RuntimeFriend runtimeFriend;
 
     private JsonDataReader jsonDataReader = new JsonDataReader();
 
     public Runtime runtime() {
-        return context;
+        return runtime;
     }
 
     @SuppressWarnings("unchecked")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K key) {
         waitUntilAllMessageQueuesEmpty();
-        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) context
+        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
                 .orElseThrow(PousseCafeException::new);
@@ -50,7 +55,7 @@ public class RuntimeWrapper {
 
     public void waitUntilAllMessageQueuesEmpty() {
         try {
-            for(MessagingConnection connection : context.messagingConnections()) {
+            for(MessagingConnection connection : runtime.messagingConnections()) {
                 MessageReceiver receiver = connection.messageReceiver();
                 if(receiver instanceof InternalMessageReceiver) {
                     InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
@@ -64,7 +69,7 @@ public class RuntimeWrapper {
     }
 
     public void emitDomainEvent(DomainEvent event) {
-        context.messageSenderLocator().locate(event.getClass()).sendMessage(event);
+        runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
         waitUntilAllMessageQueuesEmpty();
     }
 
@@ -86,12 +91,12 @@ public class RuntimeWrapper {
         logger.info("Loading data for entity {}", entityClassName);
         try {
             Class<?> entityClass = Class.forName(entityClassName);
-            EntityImplementation entityImplementation = context.environment().entityImplementation(entityClass);
+            EntityImplementation entityImplementation = runtime.environment().entityImplementation(entityClass);
             if(entityImplementation.getStorage() != InternalStorage.instance()) {
                 throw new PousseCafeException("Unsupported test storage");
             }
 
-            AggregateServices services = context.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
+            AggregateServices services = runtime.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
             InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();
             logger.debug("Field value {}", jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
@@ -106,4 +111,9 @@ public class RuntimeWrapper {
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    public void submitCommand(Command command) {
+        runtime.submitCommand(command);
+        waitUntilAllMessageQueuesEmpty();
+    }
 }

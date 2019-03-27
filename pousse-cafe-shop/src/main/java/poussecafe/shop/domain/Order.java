@@ -1,8 +1,12 @@
 package poussecafe.shop.domain;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.shop.command.SettleOrder;
+import poussecafe.shop.command.ShipOrder;
 
 @Aggregate(
   factory = OrderFactory.class,
@@ -10,25 +14,34 @@ import poussecafe.domain.EntityAttributes;
 )
 public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
 
-    void setUnits(int units) {
-        if(units <= 0) {
-            throw new IllegalArgumentException("More than 0 units have to be ordered");
-        }
-        attributes().setUnits(units);
-    }
-
-    public void settle() {
+    /**
+     * @process Messaging
+     * @process OrderSettlement
+     * @event OrderSettled
+     */
+    @MessageListener(runner = SettleRunner.class)
+    public void settle(SettleOrder command) {
         OrderSettled event = newDomainEvent(OrderSettled.class);
         event.orderKey().valueOf(attributes().key());
         emitDomainEvent(event);
     }
 
-    public void ship() {
+    /**
+     * @process OrderShippment
+     * @process Messaging
+     * @event OrderReadyForShipping
+     */
+    @MessageListener(runner = ShipOrderRunner.class)
+    public void ship(ShipOrder command) {
         OrderReadyForShipping event = newDomainEvent(OrderReadyForShipping.class);
         event.orderKey().valueOf(attributes().key());
         emitDomainEvent(event);
     }
 
+    /**
+     * @process Messaging
+     * @event OrderCreated
+     */
     @Override
     public void onAdd() {
         OrderCreated event = newDomainEvent(OrderCreated.class);
@@ -38,9 +51,7 @@ public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
 
     public static interface Attributes extends EntityAttributes<OrderKey> {
 
-        void setUnits(int units);
-
-        int getUnits();
+        Attribute<Integer> units();
     }
 
 }

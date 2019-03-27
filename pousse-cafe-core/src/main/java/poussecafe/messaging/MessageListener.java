@@ -3,6 +3,7 @@ package poussecafe.messaging;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class MessageListener {
 
@@ -68,5 +69,12 @@ public class MessageListener {
     @SuppressWarnings("rawtypes")
     public Optional<AggregateMessageListenerRunner> runner() {
         return runner;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append(id)
+                .build();
     }
 }

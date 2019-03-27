@@ -1,28 +1,10 @@
 package poussecafe.shop.command;
 
-import java.util.Objects;
+import poussecafe.attribute.Attribute;
+import poussecafe.runtime.Command;
 import poussecafe.shop.domain.ProductKey;
 
-public class CreateProduct {
+public interface CreateProduct extends Command {
 
-    private ProductKey productKey;
-
-    public CreateProduct(ProductKey productKey) {
-        setProductKey(productKey);
-    }
-
-    public ProductKey getProductKey() {
-        return productKey;
-    }
-
-    public void setProductKey(ProductKey productKey) {
-        Objects.requireNonNull(productKey);
-        this.productKey = productKey;
-    }
-
-    @Override
-    public String toString() {
-        return "CreateProduct [productKey=" + productKey + "]";
-    }
-
+    Attribute<ProductKey> productKey();
 }

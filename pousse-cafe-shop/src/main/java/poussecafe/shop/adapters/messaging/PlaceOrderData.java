@@ -4,21 +4,18 @@ import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
+import poussecafe.shop.command.PlaceOrder;
 import poussecafe.shop.domain.OrderDescription;
-import poussecafe.shop.domain.OrderRejected;
 import poussecafe.shop.domain.ProductKey;
 
-@MessageImplementation(message = OrderRejected.class)
+@MessageImplementation(message = PlaceOrder.class)
 @SuppressWarnings("serial")
-public class SerializableOrderRejected implements Serializable, OrderRejected {
+public class PlaceOrderData implements Serializable, PlaceOrder {
 
     @Override
     public Attribute<ProductKey> productKey() {
-        return AttributeBuilder.simple(ProductKey.class)
-                .from(String.class)
-                .adapt(ProductKey::new)
+        return AttributeBuilder.stringKey(ProductKey.class)
                 .get(() -> productId)
-                .adapt(ProductKey::getValue)
                 .set(value -> productId = value)
                 .build();
     }

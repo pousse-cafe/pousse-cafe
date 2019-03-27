@@ -1,6 +1,6 @@
 package poussecafe.shop.domain;
 
-import java.util.Objects;
+import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
@@ -11,20 +11,10 @@ import poussecafe.domain.EntityAttributes;
 )
 public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
 
-    void setCustomerKey(CustomerKey customerKey) {
-        Objects.requireNonNull(customerKey);
-        attributes().setCustomerKey(customerKey);
-    }
-
-    public void setContentType(ContentType type) {
-        Objects.requireNonNull(type);
-        attributes().setContentType(type);
-    }
-
-    public ContentType getContentType() {
-        return attributes().getContentType();
-    }
-
+    /**
+     * @process Messaging
+     * @event MessageCreated
+     */
     @Override
     public void onAdd() {
         MessageCreated event = newDomainEvent(MessageCreated.class);
@@ -34,13 +24,9 @@ public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
 
     public static interface Attributes extends EntityAttributes<MessageKey> {
 
-        void setCustomerKey(CustomerKey customerKey);
+        Attribute<CustomerKey> customerKey();
 
-        CustomerKey getCustomerKey();
-
-        void setContentType(ContentType type);
-
-        ContentType getContentType();
+        Attribute<ContentType> contentType();
     }
 
 }
