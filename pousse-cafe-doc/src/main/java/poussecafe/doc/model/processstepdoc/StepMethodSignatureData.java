@@ -27,7 +27,7 @@ public class StepMethodSignatureData implements Serializable {
                         .componentName(componentName)
                         .methodName(methodName)
                         .build())
-                .consumedEventName(Optional.ofNullable(eventName))
+                .consumedMessageName(Optional.ofNullable(eventName))
                 .build();
     }
 }

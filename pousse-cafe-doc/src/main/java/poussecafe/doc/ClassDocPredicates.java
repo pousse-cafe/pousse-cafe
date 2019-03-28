@@ -32,4 +32,36 @@ public class ClassDocPredicates {
         }
         return false;
     }
+
+    public static boolean documentsSubclassOf(ClassDoc classDoc, Class<?> expectedSuperclass) {
+        if(expectedSuperclass.isInterface()) {
+            return documentsImplementationOf(classDoc, expectedSuperclass);
+        } else {
+            return documentsExtensionOf(classDoc, expectedSuperclass);
+        }
+    }
+
+    private static boolean documentsImplementationOf(ClassDoc classDoc,
+            Class<?> expectedSuperclass) {
+        if(documentsWithSuperinterface(classDoc, expectedSuperclass)) {
+            return true;
+        } else {
+            ClassDoc superClass = classDoc.superclass();
+            if(superClass != null && documentsImplementationOf(superClass, expectedSuperclass)) {
+                return true;
+            } else {
+                for(ClassDoc superInterface : classDoc.interfaces()) {
+                    if(documentsImplementationOf(superInterface, expectedSuperclass)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+
+    private static boolean documentsExtensionOf(ClassDoc classDoc,
+            Class<?> expectedSuperclass) {
+        throw new UnsupportedOperationException();
+    }
 }

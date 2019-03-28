@@ -91,7 +91,6 @@ public class Runtime {
                     .environment(runtime.environment)
                     .connections(runtime.connections)
                     .build();
-            injectorBuilder.registerInjectableService(runtime.messageSenderLocator);
         }
 
         private void configureMessageEmissionPolicies() {

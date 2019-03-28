@@ -20,7 +20,7 @@ public class StepMethodSignature {
             return this;
         }
 
-        public Builder consumedEventName(Optional<String> consumedEventName) {
+        public Builder consumedMessageName(Optional<String> consumedEventName) {
             signature.consumedEventName = consumedEventName;
             return this;
         }
@@ -71,7 +71,7 @@ public class StepMethodSignature {
             }
             return new StepMethodSignature.Builder()
                     .componentMethodName(aggregateMethodName)
-                    .consumedEventName(consumedEvent)
+                    .consumedMessageName(consumedEvent)
                     .build();
         }
     }

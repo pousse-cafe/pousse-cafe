@@ -17,7 +17,7 @@ public class StepMethodSignatureTest {
                         .componentName("A")
                         .methodName("b")
                         .build())
-                .consumedEventName(Optional.of("E"))
+                .consumedMessageName(Optional.of("E"))
                 .build());
         whenBuildingSignatureString();
         thenSignatureStringIs("A.b(E)");
@@ -48,7 +48,7 @@ public class StepMethodSignatureTest {
                         .componentName("A")
                         .methodName("b")
                         .build())
-                .consumedEventName(Optional.of("E"))
+                .consumedMessageName(Optional.of("E"))
                 .build());
     }
 
@@ -71,7 +71,7 @@ public class StepMethodSignatureTest {
                         .componentName("A")
                         .methodName("b")
                         .build())
-                .consumedEventName(Optional.empty())
+                .consumedMessageName(Optional.empty())
                 .build());
         whenBuildingSignatureString();
         thenSignatureStringIs("A.b()");
@@ -86,7 +86,7 @@ public class StepMethodSignatureTest {
                         .componentName("A")
                         .methodName("b")
                         .build())
-                .consumedEventName(Optional.empty())
+                .consumedMessageName(Optional.empty())
                 .build());
     }
 }

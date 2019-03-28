@@ -51,7 +51,7 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private Optional<String> consumedMessage(MethodDoc methodDoc) {
-        return new ConsumedMessageExtractor(methodDoc).consumedDomainEvent();
+        return new ConsumedMessageExtractor(methodDoc).consumedMessage();
     }
 
     private List<String> extractProducedEvents(MethodDoc methodDoc) {
@@ -94,7 +94,7 @@ public class ProcessStepDocExtractor implements Service {
             ComponentMethodName componentMethodName = ComponentMethodName.parse(customStepSignatures.get(0));
             return asList(new StepMethodSignature.Builder()
                     .componentMethodName(componentMethodName)
-                    .consumedEventName(consumedEvent)
+                    .consumedMessageName(consumedEvent)
                     .build());
         } else {
             return customStepSignatures.stream().map(StepMethodSignature::parse).collect(toList());
@@ -128,13 +128,13 @@ public class ProcessStepDocExtractor implements Service {
     private ProcessStepDoc extractDeclaredStep(BoundedContextDocKey boundedContextDocKey,
             MethodDoc methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.qualifiedName());
-        Optional<String> consumedDomainEvent = consumedMessage(methodDoc);
+        Optional<String> consumedMessage = consumedMessage(methodDoc);
         StepMethodSignature stepMethodSignature = new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
                         .componentName(methodDoc.containingClass().name())
                         .methodName(methodDoc.name())
                         .build())
-                .consumedEventName(consumedDomainEvent)
+                .consumedMessageName(consumedMessage)
                 .build();
         ProcessStepDocKey key = new ProcessStepDocKey(stepMethodSignature);
         BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()

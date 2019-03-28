@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.domain.DomainEvent;
+import poussecafe.messaging.Message;
 
 public class ConsumedMessageExtractor {
 
@@ -19,11 +19,11 @@ public class ConsumedMessageExtractor {
 
     private MethodDoc methodDoc;
 
-    public Optional<String> consumedDomainEvent() {
+    public Optional<String> consumedMessage() {
         for(Parameter parameter : methodDoc.parameters()) {
             Optional<ClassDoc> parameterClassDoc = Optional.ofNullable(parameter.type().asClassDoc());
             if(parameterClassDoc.isPresent() &&
-                    ClassDocPredicates.documentsWithSuperinterface(parameterClassDoc.get(), DomainEvent.class)) {
+                    ClassDocPredicates.documentsSubclassOf(parameterClassDoc.get(), Message.class)) {
                 return Optional.of(parameterClassDoc.get().typeName());
             } else if(parameterClassDoc.isPresent()) {
                 return consumedMessage(parameterClassDoc.get());
@@ -40,7 +40,7 @@ public class ConsumedMessageExtractor {
 
         for(FieldDoc fieldDoc : classDoc.fields()) {
             Optional<ClassDoc> fieldType = Optional.ofNullable(fieldDoc.type().asClassDoc());
-            if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
+            if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsSubclassOf(fieldType.get(), Message.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
                 return consumedMessage(fieldType.get());
@@ -48,7 +48,7 @@ public class ConsumedMessageExtractor {
         }
         for(MethodDoc methodDoc : classDoc.methods()) {
             Optional<ClassDoc> fieldType = Optional.ofNullable(methodDoc.returnType().asClassDoc());
-            if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsWithSuperinterface(fieldType.get(), DomainEvent.class)) {
+            if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsSubclassOf(fieldType.get(), Message.class)) {
                 return Optional.of(fieldType.get().typeName());
             } else if(fieldType.isPresent()) {
                 return consumedMessage(fieldType.get());
