@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import poussecafe.discovery.DeclaredMessageListenerFactory;
 import poussecafe.discovery.ServiceMessageListenerDiscoverer;
+import poussecafe.domain.DomainEvent;
 import poussecafe.environment.BoundedContext;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;
@@ -197,5 +198,13 @@ public class Runtime {
 
     public void submitCommand(Command command) {
         messageSenderLocator.locate(command.getClass()).sendMessage(command);
+    }
+
+    public <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
+        return environment.messageFactory().newMessage(eventClass);
+    }
+
+    public void emitDomainEvent(DomainEvent event) {
+        messageSenderLocator.locate(event.getClass()).sendMessage(event);
     }
 }

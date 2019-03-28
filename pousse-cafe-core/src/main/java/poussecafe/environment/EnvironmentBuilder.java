@@ -159,7 +159,6 @@ public class EnvironmentBuilder {
 
         injector.registerInjectableService(environment);
         injector.registerInjectableService(environment.entityFactory());
-        injector.registerInjectableService(environment.messageFactory());
 
         registerAggregateServices();
         registerServices();
