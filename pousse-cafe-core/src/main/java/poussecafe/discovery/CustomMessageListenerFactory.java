@@ -3,13 +3,13 @@ package poussecafe.discovery;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
+import poussecafe.environment.MessageListenerPriority;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 
-public abstract class AnnotatedMethodServiceMessageListenerFactory implements ServiceMessageListenerFactory {
+public class CustomMessageListenerFactory {
 
-    @Override
-    public poussecafe.messaging.MessageListener build(Object target,
+    public poussecafe.environment.MessageListener build(Object target,
             Method method) {
         MessageListener annotation = method.getAnnotation(MessageListener.class);
         if(annotation == null) {
@@ -24,13 +24,22 @@ public abstract class AnnotatedMethodServiceMessageListenerFactory implements Se
                     .method(method)
                     .build();
         }
-        return new poussecafe.messaging.MessageListener.Builder()
+        return new poussecafe.environment.MessageListener.Builder()
                 .id(listenerId)
                 .messageClass(messageClass)
                 .consumer(buildMessageConsumer(target, method))
+                .priority(MessageListenerPriority.CUSTOM)
                 .build();
     }
 
-    protected abstract Consumer<Message> buildMessageConsumer(Object target,
-            Method method);
+    protected Consumer<Message> buildMessageConsumer(Object target,
+            Method method) {
+        return message -> {
+            try {
+                method.invoke(target, message);
+            } catch (Exception e) {
+                throw new PousseCafeException("Unable to invoke declared listener", e);
+            }
+        };
+    }
 }

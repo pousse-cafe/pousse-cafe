@@ -14,8 +14,6 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.injector.Injector;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
-import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.process.DomainProcess;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.ReflectionUtils;
@@ -243,12 +241,12 @@ public class EnvironmentBuilder {
 
     @SuppressWarnings("rawtypes")
     private void registerAggregateServices(AggregateServices entityServices) {
-        environment.entityServicesMap.put(entityServices.getEntityClass(), entityServices);
+        environment.entityServicesMap.put(entityServices.aggregateRootEntityClass(), entityServices);
 
-        Repository repository = entityServices.getRepository();
+        Repository repository = entityServices.repository();
         injector.registerInjectableService(repository);
 
-        Factory factory = entityServices.getFactory();
+        Factory factory = entityServices.factory();
         injector.registerInjectableService(factory);
     }
 

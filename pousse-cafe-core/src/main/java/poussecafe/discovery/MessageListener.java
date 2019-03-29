@@ -2,8 +2,7 @@ package poussecafe.discovery;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import poussecafe.messaging.AggregateMessageListenerRunner;
-import poussecafe.messaging.VoidAggregateMessageListenerRunner;
+import poussecafe.environment.AggregateMessageListenerRunner;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

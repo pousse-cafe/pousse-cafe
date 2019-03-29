@@ -1,19 +1,20 @@
 package poussecafe.runtime;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.environment.Environment;
+import poussecafe.environment.MessageListener;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
-import poussecafe.messaging.MessageListener;
 import poussecafe.support.model.FailedConsumption;
 import poussecafe.support.model.SuccessfulConsumption;
 import poussecafe.util.ExceptionUtils;
+
+import static java.util.stream.Collectors.toList;
 
 public class MessageConsumer {
 
@@ -45,7 +46,9 @@ public class MessageConsumer {
     public synchronized void consumeMessage(RawAndAdaptedMessage message) {
         logger.debug("Handling received message {}", message.adapted());
         String consumptionId = UUID.randomUUID().toString();
-        Collection<MessageListener> listeners = environment.messageListenersOf(message.adapted().getClass());
+        List<MessageListener> listeners = environment.messageListenersOf(message.adapted().getClass()).stream()
+                .sorted()
+                .collect(toList());
         List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);
@@ -57,7 +60,7 @@ public class MessageConsumer {
 
     private List<MessageListener> consumeMessage(RawAndAdaptedMessage message,
             String consumptionId,
-            Collection<MessageListener> listeners) {
+            List<MessageListener> listeners) {
         List<MessageListener> toRetry = new ArrayList<>();
         for (MessageListener listener : listeners) {
             try {

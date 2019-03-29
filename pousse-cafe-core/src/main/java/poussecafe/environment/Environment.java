@@ -15,8 +15,6 @@ import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
-import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerRegistry;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
@@ -182,18 +180,16 @@ public class Environment {
         return messageListenerRegistry.getListeners(messageClass);
     }
 
-    @SuppressWarnings("unchecked")
     public <F extends Factory<?, ?, ?>> Optional<F> factoryOf(Class<?> aggregateRootClass) {
-        return (Optional<F>) aggregateServicesOf(aggregateRootClass).map(AggregateServices::getFactory);
+        return aggregateServicesOf(aggregateRootClass).map(AggregateServices::factory);
     }
 
     public <F extends Factory<?, ?, ?>> Optional<F> factory(Class<?> factoryClass) {
         return factoryOf(entityOfFactoryOrRepository(factoryClass));
     }
 
-    @SuppressWarnings("unchecked")
     public <R extends Repository<?, ?, ?>> Optional<R> repositoryOf(Class<?> aggregateRootClass) {
-        return (Optional<R>) aggregateServicesOf(aggregateRootClass).map(AggregateServices::getRepository);
+        return aggregateServicesOf(aggregateRootClass).map(AggregateServices::repository);
     }
 
     public <R extends Repository<?, ?, ?>> Optional<R> repository(Class<?> repositoryClass) {
@@ -203,8 +199,8 @@ public class Environment {
     public Collection<Object> injectionCandidates() {
         List<Object> candidates = new ArrayList<>();
         for(AggregateServices aggregateServices : entityServicesMap.values()) {
-            candidates.add(aggregateServices.getFactory());
-            candidates.add(aggregateServices.getRepository());
+            candidates.add(aggregateServices.factory());
+            candidates.add(aggregateServices.repository());
         }
         candidates.addAll(serviceInstances.values());
         candidates.addAll(processInstances.values());

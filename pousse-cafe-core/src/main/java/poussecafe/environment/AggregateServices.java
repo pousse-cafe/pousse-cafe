@@ -4,44 +4,45 @@ import java.util.Objects;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class AggregateServices {
 
-    private Class<?> entityClass;
+    private Class aggregateRootEntityClass;
 
-    private Repository<?, ?, ?> repository;
+    private Repository repository;
 
-    private Factory<?, ?, ?> factory;
+    private Factory factory;
 
-    public AggregateServices(Class<?> entityClass, Repository<?, ?, ?> repository,
-            Factory<?, ?, ?> factory) {
-        setEntityClass(entityClass);
-        setRepository(repository);
-        setFactory(factory);
+    public AggregateServices(Class entityClass, Repository repository,
+            Factory factory) {
+        aggregateRootEntityClass(entityClass);
+        repository(repository);
+        factory(factory);
     }
 
-    public Class<?> getEntityClass() {
-        return entityClass;
+    public Class aggregateRootEntityClass() {
+        return aggregateRootEntityClass;
     }
 
-    private void setEntityClass(Class<?> entityClass) {
+    private void aggregateRootEntityClass(Class<?> entityClass) {
         Objects.requireNonNull(entityClass);
-        this.entityClass = entityClass;
+        aggregateRootEntityClass = entityClass;
     }
 
-    public Repository<?, ?, ?> getRepository() {
-        return repository;
+    public <R extends Repository<?, ?, ?>> R repository() {
+        return (R) repository;
     }
 
-    private void setRepository(Repository<?, ?, ?> repository) {
+    private void repository(Repository repository) {
         Objects.requireNonNull(repository);
         this.repository = repository;
     }
 
-    public Factory<?, ?, ?> getFactory() {
-        return factory;
+    public <F extends Factory<?, ?, ?>> F factory() {
+        return (F) factory;
     }
 
-    private void setFactory(Factory<?, ?, ?> factory) {
+    private void factory(Factory factory) {
         Objects.requireNonNull(factory);
         this.factory = factory;
     }

@@ -3,10 +3,9 @@ package poussecafe.context;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.Test;
-import poussecafe.discovery.DeclaredMessageListenerFactory;
-import poussecafe.discovery.ServiceMessageListenerDiscoverer;
+import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
-import poussecafe.messaging.MessageListener;
+import poussecafe.environment.MessageListener;
 
 import static org.junit.Assert.assertTrue;
 
@@ -26,14 +25,13 @@ public class DeclaredListenersDiscoveryTest {
     }
 
     private void whenDiscoveringDeclaredListeners() {
-        workflowExplorer = new ServiceMessageListenerDiscoverer.Builder()
+        workflowExplorer = new CustomMessageListenerDiscoverer.Builder()
                 .service(service)
-                .messageListenerFactory(new DeclaredMessageListenerFactory())
                 .build();
         discoveredListeners = workflowExplorer.discoverListeners();
     }
 
-    private ServiceMessageListenerDiscoverer workflowExplorer;
+    private CustomMessageListenerDiscoverer workflowExplorer;
 
     private List<MessageListener> discoveredListeners;
 

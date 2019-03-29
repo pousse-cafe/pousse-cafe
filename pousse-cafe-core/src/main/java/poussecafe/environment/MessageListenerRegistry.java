@@ -1,4 +1,4 @@
-package poussecafe.messaging;
+package poussecafe.environment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.environment.Environment;
+import poussecafe.messaging.Message;
 
 import static java.util.Collections.emptySet;
 

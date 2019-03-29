@@ -18,12 +18,11 @@ import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.environment.AggregateDefinition;
+import poussecafe.environment.AggregateMessageListenerRunner;
+import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.messaging.AggregateMessageListenerRunner;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.messaging.Messaging;
-import poussecafe.messaging.VoidAggregateMessageListenerRunner;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 

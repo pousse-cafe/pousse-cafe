@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
-import poussecafe.discovery.DeclaredMessageListenerFactory;
-import poussecafe.discovery.ServiceMessageListenerDiscoverer;
+import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
 import poussecafe.environment.BoundedContext;
 import poussecafe.environment.Environment;
@@ -180,9 +179,8 @@ public class Runtime {
     }
 
     public synchronized void registerListenersOf(Object service) {
-        ServiceMessageListenerDiscoverer explorer = new ServiceMessageListenerDiscoverer.Builder()
+        CustomMessageListenerDiscoverer explorer = new CustomMessageListenerDiscoverer.Builder()
                 .service(service)
-                .messageListenerFactory(new DeclaredMessageListenerFactory())
                 .build();
         explorer.discoverListeners().stream()
             .forEach(environment::registerMessageListener);

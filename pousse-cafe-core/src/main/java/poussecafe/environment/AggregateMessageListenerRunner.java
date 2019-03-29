@@ -1,4 +1,4 @@
-package poussecafe.messaging;
+package poussecafe.environment;
 
 import java.util.Set;
 

@@ -1,11 +1,16 @@
-package poussecafe.messaging;
+package poussecafe.environment;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import poussecafe.messaging.Message;
 
-public class MessageListener {
+import static poussecafe.util.ReferenceEquals.referenceEquals;
+
+public class MessageListener implements Comparable<MessageListener> {
 
     public static class Builder {
 
@@ -32,11 +37,22 @@ public class MessageListener {
             return this;
         }
 
+        public Builder priority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        private Integer priority;
+
         public MessageListener build() {
             Objects.requireNonNull(listener.id);
             Objects.requireNonNull(listener.messageClass);
             Objects.requireNonNull(listener.consumer);
             Objects.requireNonNull(listener.runner);
+
+            Objects.requireNonNull(priority);
+            listener.priority = priority;
+
             return listener;
         }
     }
@@ -71,10 +87,39 @@ public class MessageListener {
         return runner;
     }
 
+    private int priority;
+
+    public int priority() {
+        return priority;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append(id)
+                .build();
+    }
+
+    @Override
+    public int compareTo(MessageListener o) {
+        return priority - o.priority;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(id, other.id)
+                .append(messageClass, other.messageClass)
+                .append(priority, other.priority)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(id)
+                .append(messageClass)
+                .append(priority)
                 .build();
     }
 }

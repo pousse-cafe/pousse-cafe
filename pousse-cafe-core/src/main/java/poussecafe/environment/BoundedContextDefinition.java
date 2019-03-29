@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import poussecafe.domain.Service;
 import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.process.DomainProcess;
 
 import static java.util.Collections.unmodifiableSet;

@@ -14,10 +14,10 @@ import poussecafe.environment.AggregateServices;
 import poussecafe.environment.BoundedContext;
 import poussecafe.environment.BoundedContextDefinition;
 import poussecafe.environment.EntityImplementation;
+import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.MessageImplementation;
-import poussecafe.messaging.MessageListener;
-import poussecafe.messaging.MessageListenerDefinition;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.runtime.Runtime;
@@ -116,9 +116,9 @@ public class RuntimeTest {
         AggregateServices services;
 
         services = runtime.environment().aggregateServicesOf(SimpleAggregate.class).orElseThrow(PousseCafeException::new);
-        assertThat(services.getEntityClass(), equalTo(SimpleAggregate.class));
-        assertThat(services.getFactory(), notNullValue());
-        assertThat(services.getRepository(), notNullValue());
+        assertThat(services.aggregateRootEntityClass(), equalTo(SimpleAggregate.class));
+        assertThat(services.factory(), notNullValue());
+        assertThat(services.repository(), notNullValue());
     }
 
     @Test

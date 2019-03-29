@@ -97,7 +97,7 @@ public class RuntimeWrapper {
             }
 
             AggregateServices services = runtime.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
-            InternalDataAccess dataAccess = (InternalDataAccess) services.getRepository().dataAccess();
+            InternalDataAccess dataAccess = (InternalDataAccess) services.repository().dataAccess();
             logger.debug("Field value {}", jsonNode.get(entityClassName));
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading {}", dataJson);

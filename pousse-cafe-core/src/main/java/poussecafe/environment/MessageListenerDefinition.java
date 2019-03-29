@@ -1,4 +1,4 @@
-package poussecafe.messaging;
+package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.Message;
 
 import static poussecafe.util.ReferenceEquals.referenceEquals;
 
@@ -74,6 +75,23 @@ public class MessageListenerDefinition {
     @SuppressWarnings("unchecked")
     public Class<? extends Message> messageClass() {
         return (Class<? extends Message>) method.getParameterTypes()[0];
+    }
+
+    public MessageListener.Builder messageListenerBuilder() {
+        return new MessageListener.Builder()
+                .id(id())
+                .messageClass(messageClass());
+    }
+
+    private String id() {
+        if(!customId.isPresent()) {
+            return new DeclaredMessageListenerIdBuilder()
+                    .messageClass(messageClass())
+                    .method(method)
+                    .build();
+        } else {
+            return customId.get();
+        }
     }
 
     @Override
