@@ -2,11 +2,10 @@ package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
-
-import java.util.Objects;
 
 public class CodeExplorer {
 
@@ -44,13 +43,20 @@ public class CodeExplorer {
     private ClassDoc rootClassDoc;
 
     public void explore() {
-        PathFinder finder = new PathFinder.Builder()
+        pathFinder().start();
+    }
+
+    private PathFinder pathFinder() {
+        return new PathFinder.Builder()
                 .start(rootClassDoc)
                 .basePackage(basePackage)
                 .classMatcher(this::classMatcher)
                 .pathHandler(this::pathHandler)
                 .build();
-        finder.start();
+    }
+
+    public void explore(ClassDoc start) {
+        pathFinder().explore(start);
     }
 
     private boolean classMatcher(ClassDoc candidateClassDoc) {

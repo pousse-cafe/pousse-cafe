@@ -6,10 +6,9 @@ import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.Type;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import java.util.Objects;
 
 public class PathFinder {
 
@@ -58,7 +57,7 @@ public class PathFinder {
         explore(start);
     }
 
-    private void explore(ClassDoc classDoc) {
+    public void explore(ClassDoc classDoc) {
         if(!classDoc.containingPackage().name().startsWith(basePackage) || alreadyExplored.contains(classDoc)) {
             return;
         }

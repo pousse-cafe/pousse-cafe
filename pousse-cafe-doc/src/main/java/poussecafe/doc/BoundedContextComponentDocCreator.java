@@ -25,7 +25,7 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Clas
                 Logger.debug("Adding " + componentName() + " with class " + classDoc.qualifiedTypeName());
                 addDoc(boundedContextDoc.attributes().key().value(), classDoc);
             } else {
-                Logger.warn("Could not add component with missing bounded context " + classDoc.qualifiedName());
+                Logger.warn("Could not add component with missing bounded context: " + classDoc.qualifiedName());
             }
         }
     }

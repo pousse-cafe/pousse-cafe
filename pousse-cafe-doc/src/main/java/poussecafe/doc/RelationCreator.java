@@ -35,8 +35,10 @@ public class RelationCreator implements Consumer<ClassDoc> {
         if(EntityDocFactory.isEntityDoc(classDoc)) {
             tryRelationEntityKey(classDoc);
         }
-        if(AggregateDocFactory.isAggregateDoc(classDoc) || EntityDocFactory.isEntityDoc(classDoc) ||
-                ValueObjectDocFactory.isValueObjectDoc(classDoc)) {
+        if(AggregateDocFactory.isAggregateDoc(classDoc) || EntityDocFactory.isEntityDoc(classDoc)) {
+            tryAttributes(classDoc);
+        }
+        if(ValueObjectDocFactory.isValueObjectDoc(classDoc)) {
             CodeExplorer codeExplorer = new CodeExplorer.Builder()
                     .basePackage(rootDocWrapper.basePackage())
                     .rootClassDoc(classDoc)
@@ -116,5 +118,15 @@ public class RelationCreator implements Consumer<ClassDoc> {
         parameters.fromComponent = component(from);
         parameters.toComponent = component(to);
         componentLinking.linkComponents(parameters);
+    }
+
+    private void tryAttributes(ClassDoc classDoc) {
+        ClassDoc attributesClassDoc = classDoc.superclassType().asParameterizedType().typeArguments()[1].asClassDoc();
+        CodeExplorer pathFinder = new CodeExplorer.Builder()
+                .rootClassDoc(classDoc)
+                .basePackage(rootDocWrapper.basePackage())
+                .classRelationBuilder(this::classRelationBuilder)
+                .build();
+        pathFinder.explore(attributesClassDoc);
     }
 }

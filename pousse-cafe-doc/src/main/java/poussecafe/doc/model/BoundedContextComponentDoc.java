@@ -1,8 +1,9 @@
 package poussecafe.doc.model;
 
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.domain.ValueObject;
 
-public class BoundedContextComponentDoc {
+public class BoundedContextComponentDoc implements ValueObject {
 
     public static class Builder {
 

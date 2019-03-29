@@ -3,6 +3,7 @@ package poussecafe.doc;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import poussecafe.doc.model.GraphFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
