@@ -17,6 +17,7 @@ public abstract class PousseCafeTest {
     @Before
     public void configureContext() {
         Runtime context = new Runtime.Builder()
+            .failFast(true)
             .withBoundedContexts(boundedContexts())
             .build();
         context.injector().injectDependenciesInto(this);
@@ -37,7 +38,7 @@ public abstract class PousseCafeTest {
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {
-        wrapper.waitUntilAllMessageQueuesEmpty();
+        wrapper.waitUntilEndOfMessageProcessing();
     }
 
     protected <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {

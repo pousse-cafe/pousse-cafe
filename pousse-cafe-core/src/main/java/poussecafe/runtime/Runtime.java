@@ -54,6 +54,13 @@ public class Runtime {
             return this;
         }
 
+        public Builder failFast(boolean failFast) {
+            this.failFast = failFast;
+            return this;
+        }
+
+        private boolean failFast;
+
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
             builtRuntime.start();
@@ -81,6 +88,7 @@ public class Runtime {
 
         private void configureMessageConsumer() {
             runtime.messageConsumer = new MessageConsumer.Builder()
+                    .failFast(failFast)
                     .environment(runtime.environment)
                     .messageSenderLocator(runtime.messageSenderLocator)
                     .build();
@@ -110,27 +118,27 @@ public class Runtime {
 
     private Configuration configuration = new Configuration();
 
+    public Configuration configuration() {
+        return configuration;
+    }
+
     private Environment environment;
 
+    public Environment environment() {
+        return environment;
+    }
+
     private Injector injector;
+
+    public Injector injector() {
+        return injector;
+    }
 
     private TransactionRunnerLocator transactionRunnerLocator = new TransactionRunnerLocator();
 
     private MessageConsumer messageConsumer;
 
     private MessageSenderLocator messageSenderLocator;
-
-    public Configuration configuration() {
-        return configuration;
-    }
-
-    public Environment environment() {
-        return environment;
-    }
-
-    public Injector injector() {
-        return injector;
-    }
 
     MessageSenderLocator messageSenderLocator() {
         return messageSenderLocator;

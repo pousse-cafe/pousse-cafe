@@ -32,6 +32,11 @@ public class MessageConsumer {
             return this;
         }
 
+        public Builder failFast(boolean failFast) {
+            messageConsumer.failFast = failFast;
+            return this;
+        }
+
         public MessageConsumer build() {
             Objects.requireNonNull(messageConsumer.environment);
             Objects.requireNonNull(messageConsumer.messageSenderLocator);
@@ -43,7 +48,15 @@ public class MessageConsumer {
 
     }
 
+    private boolean failFast;
+
+    private boolean consumptionFailure;
+
     public synchronized void consumeMessage(RawAndAdaptedMessage message) {
+        if(consumptionInterrupted()) {
+            throw new FailFastException();
+        }
+
         logger.debug("Handling received message {}", message.adapted());
         String consumptionId = UUID.randomUUID().toString();
         List<MessageListener> listeners = environment.messageListenersOf(message.adapted().getClass()).stream()
@@ -54,6 +67,10 @@ public class MessageConsumer {
             retryConsumption(message, consumptionId, toRetryInitially);
         }
         logger.debug("Message {} handled (consumption ID {})", message.adapted(), consumptionId);
+    }
+
+    private boolean consumptionInterrupted() {
+        return failFast && consumptionFailure;
     }
 
     private Environment environment;
@@ -99,7 +116,13 @@ public class MessageConsumer {
             listener.consumer().accept(receivedMessage.adapted());
             notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
         } catch (Exception e) {
-            notifyFailedConsumption(consumptionId, receivedMessage, listener, e);
+            if(failFast) {
+                logger.error("Failing fast on exception from listener {}", listener, e);
+                consumptionFailure = true;
+                throw new FailFastException();
+            } else {
+                notifyFailedConsumption(consumptionId, receivedMessage, listener, e);
+            }
         }
     }
 

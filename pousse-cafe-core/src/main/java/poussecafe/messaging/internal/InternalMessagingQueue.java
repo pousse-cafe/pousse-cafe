@@ -25,7 +25,7 @@ public class InternalMessagingQueue {
 
         @Override
         protected void actuallyStartReceiving() {
-            Thread t = new Thread(() -> {
+            receptionThread = new Thread(() -> {
                 while (true) {
                     try {
                         available.acquire();
@@ -38,6 +38,7 @@ public class InternalMessagingQueue {
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
+                        interrupted = true;
                         return;
                     } finally {
                         // Catch-all, thread must continue to run until explicitly stopped
@@ -45,10 +46,14 @@ public class InternalMessagingQueue {
                     }
                 }
             });
-            t.setDaemon(true);
-            t.setName("internal message queue");
-            t.start();
+            receptionThread.setDaemon(true);
+            receptionThread.setName("internal message queue");
+            receptionThread.start();
         }
+
+        private Thread receptionThread;
+
+        private boolean interrupted;
 
         @Override
         protected void actuallyStopReceiving() {
@@ -60,6 +65,16 @@ public class InternalMessagingQueue {
 
         public InternalMessagingQueue queue() {
             return InternalMessagingQueue.this;
+        }
+
+        @Override
+        protected void actuallyInterruptReception() {
+            receptionThread.interrupt();
+            mutex.release();
+        }
+
+        public boolean isInterrupted() {
+            return interrupted;
         }
     }
 
@@ -94,11 +109,15 @@ public class InternalMessagingQueue {
         return messageSender;
     }
 
-    public void waitUntilEmpty()
+    public void waitUntilEmptyOrInterrupted()
             throws InterruptedException {
         boolean messagesQueued;
         do {
             mutex.acquire();
+            if(messageReceiver.isInterrupted()) {
+                mutex.release();
+                return;
+            }
             messagesQueued = !queue.isEmpty();
             mutex.release();
         } while (messagesQueued);

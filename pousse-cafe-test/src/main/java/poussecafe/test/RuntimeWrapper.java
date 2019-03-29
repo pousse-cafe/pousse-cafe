@@ -45,7 +45,7 @@ public class RuntimeWrapper {
     @SuppressWarnings("unchecked")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K key) {
-        waitUntilAllMessageQueuesEmpty();
+        waitUntilEndOfMessageProcessing();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
@@ -53,13 +53,13 @@ public class RuntimeWrapper {
         return (T) repository.find(key);
     }
 
-    public void waitUntilAllMessageQueuesEmpty() {
+    public void waitUntilEndOfMessageProcessing() {
         try {
             for(MessagingConnection connection : runtime.messagingConnections()) {
                 MessageReceiver receiver = connection.messageReceiver();
                 if(receiver instanceof InternalMessageReceiver) {
                     InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
-                    internalMessageReceiver.queue().waitUntilEmpty();
+                    internalMessageReceiver.queue().waitUntilEmptyOrInterrupted();
                 }
             }
         } catch (InterruptedException e) {
@@ -70,7 +70,7 @@ public class RuntimeWrapper {
 
     public void emitDomainEvent(DomainEvent event) {
         runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
-        waitUntilAllMessageQueuesEmpty();
+        waitUntilEndOfMessageProcessing();
     }
 
     public void loadDataFile(String path) {
@@ -114,6 +114,6 @@ public class RuntimeWrapper {
 
     public void submitCommand(Command command) {
         runtime.submitCommand(command);
-        waitUntilAllMessageQueuesEmpty();
+        waitUntilEndOfMessageProcessing();
     }
 }

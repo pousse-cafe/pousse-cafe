@@ -3,6 +3,7 @@ package poussecafe.messaging;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumer;
 import poussecafe.runtime.RawAndAdaptedMessage;
 
@@ -24,10 +25,26 @@ public abstract class MessageReceiver {
     protected void onMessage(Object receivedMessage) {
         Objects.requireNonNull(receivedMessage);
         Message message = messageAdapter.adaptSerializedMessage(receivedMessage);
-        messageConsumer.consumeMessage(new RawAndAdaptedMessage.Builder()
-                .raw(receivedMessage)
-                .adapted(message)
-                .build());
+        try {
+            messageConsumer.consumeMessage(new RawAndAdaptedMessage.Builder()
+                    .raw(receivedMessage)
+                    .adapted(message)
+                    .build());
+        } catch (FailFastException e) {
+            interruptReception();
+        }
+    }
+
+    protected synchronized void interruptReception() {
+        if(!started) {
+            return;
+        }
+        started = false;
+        actuallyInterruptReception();
+    }
+
+    protected void actuallyInterruptReception() {
+        throw new UnsupportedOperationException();
     }
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -36,8 +53,8 @@ public abstract class MessageReceiver {
         if (started) {
             return;
         }
-        actuallyStartReceiving();
         started = true;
+        actuallyStartReceiving();
     }
 
     private boolean started;
@@ -52,8 +69,8 @@ public abstract class MessageReceiver {
         if(!started) {
             return;
         }
-        actuallyStopReceiving();
         started = false;
+        actuallyStopReceiving();
     }
 
     protected abstract void actuallyStopReceiving();
