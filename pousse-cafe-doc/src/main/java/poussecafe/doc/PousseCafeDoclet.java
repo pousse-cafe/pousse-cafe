@@ -4,6 +4,8 @@ import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import java.io.File;
 import java.util.Objects;
+import poussecafe.doc.model.ClassDocRepository;
+import poussecafe.exception.PousseCafeException;
 import poussecafe.runtime.Runtime;
 
 public class PousseCafeDoclet {
@@ -26,12 +28,20 @@ public class PousseCafeDoclet {
         Logger.info("Starting Pousse-Café doclet...");
         runtime.start();
 
+        registerClassDocs();
         analyzeCode();
         createOutputFolder();
 
         writeGraphs();
         writeHtml();
         writePdf();
+    }
+
+    private void registerClassDocs() {
+        runtime.environment()
+                .service(ClassDocRepository.class)
+                .orElseThrow(PousseCafeException::new)
+                .registerClassDocs(rootDocWrapper.rootDoc());
     }
 
     private void analyzeCode() {
@@ -117,7 +127,9 @@ public class PousseCafeDoclet {
     }
 
     private void writeHtml() {
-        HtmlWriter htmlWriter = new HtmlWriter(rootDocWrapper);
+        HtmlWriter htmlWriter = new HtmlWriter.Builder()
+                .rootDocWrapper(rootDocWrapper)
+                .build();
         runtime.injector().injectDependenciesInto(htmlWriter);
         htmlWriter.writeHtml();
     }
@@ -147,6 +159,9 @@ public class PousseCafeDoclet {
             return 2;
         }
         if ("-basePackage".equals(option)) {
+            return 2;
+        }
+        if ("-includeGeneratedDate".equals(option)) {
             return 2;
         }
         return 0;

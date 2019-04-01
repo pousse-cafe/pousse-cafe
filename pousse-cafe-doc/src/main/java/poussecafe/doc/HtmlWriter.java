@@ -43,9 +43,23 @@ import static java.util.stream.Collectors.toList;
 
 public class HtmlWriter {
 
-    public HtmlWriter(RootDocWrapper rootDocWrapper) {
-        Objects.requireNonNull(rootDocWrapper);
-        this.rootDocWrapper = rootDocWrapper;
+    public static class Builder {
+
+        private HtmlWriter writer = new HtmlWriter();
+
+        public Builder rootDocWrapper(RootDocWrapper rootDocWrapper) {
+            writer.rootDocWrapper = rootDocWrapper;
+            return this;
+        }
+
+        public HtmlWriter build() {
+            Objects.requireNonNull(writer.rootDocWrapper);
+            return writer;
+        }
+    }
+
+    private HtmlWriter() {
+
     }
 
     private RootDocWrapper rootDocWrapper;
@@ -72,6 +86,8 @@ public class HtmlWriter {
                                     .collect(toList()));
 
             HashMap<String, Object> model = new HashMap<>();
+            PousseCafeDocletConfiguration configuration = rootDocWrapper.configuration();
+            model.put("includeGenerationDate", configuration.includeGenerationDate());
             model.put("domain", domain);
             model.put("generationDate", new Date());
             model.put("ubiquitousLanguage",

@@ -3,7 +3,9 @@ package poussecafe.doc.model.domainprocessdoc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import poussecafe.doc.AnnotationsResolver;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.ProcessDescription;
@@ -44,24 +46,48 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
     private ComponentDocFactory componentDocFactory;
 
     public List<DomainProcessDoc> createDomainProcesses(BoundedContextDocKey boundedContextDocKey, MethodDoc methodDoc) {
+        if(!isDomainProcessDoc(methodDoc)) {
+            throw new DomainException("Method " + methodDoc.name() + " does not define any domain process");
+        }
+
         List<ProcessDescription> descriptions = AnnotationsResolver.processDescription(methodDoc);
+        Set<String> detectedDomainProcesses = new HashSet<>();
         List<DomainProcessDoc> processes = new ArrayList<>();
         for(ProcessDescription description : descriptions) {
-            DomainProcessDocKey key = new DomainProcessDocKey(methodDoc.qualifiedName() + "#" + description.name());
-            DomainProcessDoc doc = newAggregateWithKey(key);
-            doc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                    .boundedContextDocKey(boundedContextDocKey)
-                    .componentDoc(new ComponentDoc.Builder()
-                            .name(description.name())
-                            .description(description.description())
-                            .build())
-                    .build());
+            detectedDomainProcesses.add(description.name());
+            DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, methodDoc, description);
             processes.add(doc);
+        }
+        List<String> names = AnnotationsResolver.process(methodDoc);
+        for(String name : names) {
+            if(!detectedDomainProcesses.contains(name)) {
+                detectedDomainProcesses.add(name);
+                DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, methodDoc, new ProcessDescription.Builder()
+                        .name(name)
+                        .description("")
+                        .build());
+                processes.add(doc);
+            }
         }
         return processes;
     }
 
+    private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocKey boundedContextDocKey,
+            MethodDoc methodDoc,
+            ProcessDescription description) {
+        DomainProcessDocKey key = new DomainProcessDocKey(methodDoc.qualifiedName() + "#" + description.name());
+        DomainProcessDoc doc = newAggregateWithKey(key);
+        doc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
+                .boundedContextDocKey(boundedContextDocKey)
+                .componentDoc(new ComponentDoc.Builder()
+                        .name(description.name())
+                        .description(description.description())
+                        .build())
+                .build());
+        return doc;
+    }
+
     public static boolean isDomainProcessDoc(MethodDoc doc) {
-        return !AnnotationsResolver.processDescription(doc).isEmpty();
+        return !(AnnotationsResolver.processDescription(doc).isEmpty() && AnnotationsResolver.process(doc).isEmpty());
     }
 }

@@ -35,7 +35,9 @@ public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
             domainProcessDocCreation.addDomainProcessDoc(boundedContextDocKey, componentClassDoc);
         } else {
             for(MethodDoc doc : componentClassDoc.methods()) {
-                domainProcessDocCreation.addDomainProcessDocs(boundedContextDocKey, doc);
+                if(DomainProcessDocFactory.isDomainProcessDoc(doc)) {
+                    domainProcessDocCreation.addDomainProcessDocs(boundedContextDocKey, doc);
+                }
             }
         }
     }

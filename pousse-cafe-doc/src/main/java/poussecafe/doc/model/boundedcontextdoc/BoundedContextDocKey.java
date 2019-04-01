@@ -9,7 +9,7 @@ public class BoundedContextDocKey extends StringKey implements ValueObject {
         return new BoundedContextDocKey(packageName);
     }
 
-    private BoundedContextDocKey(String value) {
+    public BoundedContextDocKey(String value) {
         super(value);
     }
 

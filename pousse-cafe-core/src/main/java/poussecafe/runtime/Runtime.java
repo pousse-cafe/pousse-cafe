@@ -25,6 +25,7 @@ public class Runtime {
             injectorBuilder = new Injector.Builder();
             runtime = new Runtime();
 
+            injectorBuilder.registerInjectableService(runtime);
             injectorBuilder.registerInjectableService(runtime.configuration);
             injectorBuilder.registerInjectableService(runtime.transactionRunnerLocator);
 

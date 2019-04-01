@@ -3,9 +3,11 @@ package poussecafe.doc.process;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import java.util.List;
+import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessDocKey;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.process.DomainProcess;
 
@@ -23,7 +25,18 @@ public class DomainProcessDocCreation extends DomainProcess {
     public void addDomainProcessDocs(BoundedContextDocKey boundedContextKey, MethodDoc classDoc) {
         List<DomainProcessDoc> docs = domainProcessDocFactory.createDomainProcesses(boundedContextKey, classDoc);
         for(DomainProcessDoc doc : docs) {
-            runInTransaction(DomainProcessDoc.class, () -> domainProcessDocRepository.add(doc));
+            DomainProcessDocKey docKey = doc.attributes().key().value();
+            BoundedContextComponentDoc boundedContextComponentDoc = doc.attributes().boundedContextComponentDoc().value();
+            if(domainProcessDocRepository.find(docKey) != null &&
+                    boundedContextComponentDoc.componentDoc().hasDescription()) {
+                runInTransaction(DomainProcessDoc.class, () -> {
+                    DomainProcessDoc existingDoc = domainProcessDocRepository.get(docKey);
+                    existingDoc.attributes().boundedContextComponentDoc().value(boundedContextComponentDoc);
+                    domainProcessDocRepository.update(existingDoc);
+                });
+            } else {
+                runInTransaction(DomainProcessDoc.class, () -> domainProcessDocRepository.add(doc));
+            }
         }
     }
 }

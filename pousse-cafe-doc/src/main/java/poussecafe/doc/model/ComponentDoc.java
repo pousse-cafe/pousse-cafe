@@ -1,9 +1,8 @@
 package poussecafe.doc.model;
 
+import java.util.Objects;
 import java.util.Optional;
 import poussecafe.domain.ValueObject;
-
-import java.util.Objects;
 
 public class ComponentDoc implements ValueObject {
 
@@ -65,5 +64,9 @@ public class ComponentDoc implements ValueObject {
 
     public boolean trivial() {
         return trivial;
+    }
+
+    public boolean hasDescription() {
+        return !description.isEmpty();
     }
 }

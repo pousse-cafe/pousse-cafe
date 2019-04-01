@@ -1,0 +1,13 @@
+graph {
+splines=spline;
+overlap=false;
+"BoundedContextComponentDoc" -- "BoundedContextDocKey" [style=solid];
+"BoundedContextComponentDoc" -- "ProcessStepDoc" [style=solid];
+"BoundedContextDoc" -- "BoundedContextDocKey" [style=dotted];
+"BoundedContextComponentDoc" -- "ComponentDoc" [style=solid];
+"BoundedContextComponentDoc"[shape=ellipse];
+"ComponentDoc"[shape=ellipse];
+"ProcessStepDoc"[shape=box,style=bold];
+"BoundedContextDoc"[shape=box,style=bold];
+"BoundedContextDocKey"[shape=ellipse];
+}

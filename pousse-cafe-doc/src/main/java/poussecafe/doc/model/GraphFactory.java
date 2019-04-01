@@ -3,7 +3,6 @@ package poussecafe.doc.model;
 import poussecafe.doc.AggregateGraphFactory;
 import poussecafe.doc.BoundedContextGraphFactory;
 import poussecafe.doc.DomainProcessGraphFactory;
-import poussecafe.doc.AggregateGraphFactory.Builder;
 import poussecafe.doc.graph.DirectedGraph;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;

@@ -1,0 +1,9 @@
+graph {
+splines=spline;
+overlap=false;
+"BoundedContextDoc" -- "BoundedContextDocKey" [style=solid];
+"BoundedContextDoc" -- "ComponentDoc" [style=solid];
+"ComponentDoc"[shape=ellipse];
+"BoundedContextDoc"[shape=box,style=bold];
+"BoundedContextDocKey"[shape=ellipse];
+}

@@ -1,10 +1,10 @@
 package poussecafe.doc;
 
-import com.sun.tools.javadoc.Main;
 import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -13,62 +13,44 @@ public class PousseCafeDocletTest {
 
     @Test
     public void docletGeneratesExpectedDoc() {
-        givenInvokationParameters();
+        givenDocletConfiguration();
+        givenEmptyOutputDirectory();
         whenExecutingDoclet();
         thenGeneratedDocContainsExpectedData();
     }
 
-    private void givenInvokationParameters() {
-        domain = "Pousse-Café Doc";
-        version = "Test";
-        outputDirectory = System.getProperty("java.io.tmpdir") + "/ddd-doc/";
-        basePackage = "poussecafe.doc";
-
-        String sourcePath = System.getProperty("user.dir") + "/src/main/java/";
-        args.add("-sourcepath"); args.add(sourcePath);
-        args.add("-output"); args.add(outputDirectory);
-        args.add("-domain"); args.add(domain);
-        args.add("-version"); args.add(version);
-        args.add("-basePackage"); args.add(basePackage);
-
-        args.add("poussecafe.doc");
-        File sourceDirectory = new File(sourcePath + "poussecafe/doc/");
-        args.addAll(subPackages(sourceDirectory, "poussecafe.doc"));
+    private void givenDocletConfiguration() {
+        configuration = new PousseCafeDocletConfiguration.Builder()
+                .domainName("Pousse-Café Doc")
+                .version("Test")
+                .sourceDirectory(System.getProperty("user.dir") + "/src/main/java/")
+                .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc/")
+                .rootPackage("poussecafe.doc")
+                .includeGenerationDate(false)
+                .build();
     }
 
-    private List<String> subPackages(File sourceDirectory, String currentPackage) {
-        List<String> subPackages = new ArrayList<>();
-        for(File file : sourceDirectory.listFiles()) {
-            if(file.isDirectory()) {
-                String directoryName = file.getName();
-                String subPackage = currentPackage + "." + directoryName;
-                subPackages.add(subPackage);
-                subPackages.addAll(subPackages(new File(sourceDirectory, directoryName), subPackage));
-            }
-        }
-        return subPackages;
+    private PousseCafeDocletConfiguration configuration;
+
+    private void givenEmptyOutputDirectory() {
+        File outputDirectory = new File(configuration.outputDirectory());
+        new File(outputDirectory, "index.html").delete();
     }
-
-    private String domain;
-
-    private String version;
-
-    private String outputDirectory;
-
-    private String basePackage;
-
-    private List<String> args = new ArrayList<>();
 
     private void whenExecutingDoclet() {
-        Main.execute("javadoc",
-                new PrintWriter(System.out),
-                new PrintWriter(System.out),
-                new PrintWriter(System.out),
-                "poussecafe.doc.PousseCafeDoclet",
-                args.toArray(new String[args.size()]));
+        new PousseCafeDocletExecutor(configuration).execute();
     }
 
     private void thenGeneratedDocContainsExpectedData() {
-        assertTrue(new File(outputDirectory, "index.html").exists());
+        Path expectedDocDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "expected-doc");
+        Path targetDirectory = Paths.get(configuration.outputDirectory());
+        try {
+            Files.walkFileTree(expectedDocDirectory, new FileContentComparator.Builder()
+                    .targetDirectory(targetDirectory)
+                    .expectedDirectory(expectedDocDirectory)
+                    .build());
+        } catch (IOException e) {
+            assertTrue(false);
+        }
     }
 }

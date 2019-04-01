@@ -43,10 +43,10 @@ public class ProcessStepDocExtractor implements Service {
         if(DomainProcessDocFactory.isDomainProcessDoc(methodDoc.containingClass())) {
             return AnnotationsResolver.isStep(methodDoc);
         } else {
-            Optional<String> consumedDomainEvent = consumedMessage(methodDoc);
+            Optional<String> consumedMessage = consumedMessage(methodDoc);
             List<String> producedEvents = extractProducedEvents(methodDoc);
             return AnnotationsResolver.isStep(methodDoc) ||
-                    (methodDoc.isPublic() && (consumedDomainEvent.isPresent() || !producedEvents.isEmpty()));
+                    (methodDoc.isPublic() && (consumedMessage.isPresent() || !producedEvents.isEmpty()));
         }
     }
 

@@ -172,6 +172,12 @@ public class Environment {
         return unmodifiableCollection(serviceInstances.values());
     }
 
+    public <S> Optional<S> service(Class<S> serviceClass) {
+        @SuppressWarnings("unchecked")
+        S service = (S) serviceInstances.get(serviceClass);
+        return Optional.ofNullable(service);
+    }
+
     public void registerMessageListener(MessageListener listener) {
         messageListenerRegistry.registerListener(listener);
     }

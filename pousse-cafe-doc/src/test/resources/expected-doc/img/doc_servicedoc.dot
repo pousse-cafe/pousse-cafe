@@ -1,0 +1,15 @@
+graph {
+splines=spline;
+overlap=false;
+"BoundedContextComponentDoc" -- "BoundedContextDocKey" [style=solid];
+"BoundedContextDoc" -- "BoundedContextDocKey" [style=dotted];
+"ServiceDoc" -- "ServiceDocKey" [style=solid];
+"BoundedContextComponentDoc" -- "ServiceDoc" [style=solid];
+"BoundedContextComponentDoc" -- "ComponentDoc" [style=solid];
+"ServiceDoc"[shape=box,style=bold];
+"BoundedContextComponentDoc"[shape=ellipse];
+"ComponentDoc"[shape=ellipse];
+"BoundedContextDoc"[shape=box,style=bold];
+"BoundedContextDocKey"[shape=ellipse];
+"ServiceDocKey"[shape=ellipse];
+}

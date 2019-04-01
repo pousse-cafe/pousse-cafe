@@ -15,6 +15,17 @@ public class RootDocWrapper {
         return rootDoc;
     }
 
+    public PousseCafeDocletConfiguration configuration() {
+        return new PousseCafeDocletConfiguration.Builder()
+                .basePackage(basePackage())
+                .domainName(domainName())
+                .version(version())
+                .outputDirectory(outputPath())
+                .sourceDirectory(sourceDirectory())
+                .includeGenerationDate(includeGeneratedDate())
+                .build();
+    }
+
     public Optional<String> readOptionValue(String name) {
         for (String[] option : rootDoc.options()) {
             if (option[0].equals("-" + name)) {
@@ -28,6 +39,10 @@ public class RootDocWrapper {
         return readOptionValue("output").orElseThrow(RuntimeException::new);
     }
 
+    public String sourceDirectory() {
+        return readOptionValue("sourcepath").orElseThrow(RuntimeException::new);
+    }
+
     public String version() {
         return readOptionValue("version").orElse("Undefined");
     }
@@ -38,6 +53,10 @@ public class RootDocWrapper {
 
     public String basePackage() {
         return readOptionValue("basePackage").orElseThrow(RuntimeException::new);
+    }
+
+    public boolean includeGeneratedDate() {
+        return new Boolean(readOptionValue("includeGeneratedDate").orElse("true"));
     }
 
     public void debug(String message) {

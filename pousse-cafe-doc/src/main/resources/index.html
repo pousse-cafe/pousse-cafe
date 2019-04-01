@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
@@ -20,8 +19,8 @@
 
 <div class="cover">
     <p>${domain.name} Domain Model</p>
-    <p class="version">Version ${domain.version}</p>
-    <p class="generatedDate">Generated on ${generationDate?datetime?iso_utc}</p>
+    <p class="version">Version ${domain.version}</p><#if includeGenerationDate>
+    <p class="generatedDate">Generated on ${generationDate?datetime?iso_utc}</p></#if>
 </div>
 
 <div class="header">
