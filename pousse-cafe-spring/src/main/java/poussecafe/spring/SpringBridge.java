@@ -26,8 +26,10 @@ public class SpringBridge implements BeanFactoryPostProcessor {
     }
 
     private void registerInstance(Object instance) {
-        logger.debug("Registering {}", instance.getClass());
-        beanFactory.registerSingleton(beanName(instance), instance);
+        if(instance != pousseCafeRuntime) {
+            logger.debug("Registering {}", instance.getClass());
+            beanFactory.registerSingleton(beanName(instance), instance);
+        }
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());

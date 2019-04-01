@@ -30,7 +30,7 @@ public class <name>Attributes implements <name>.Attributes<if(storage_internal)>
 <if(demoAttribute)>
     @Override
     public Attribute\<String> name() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> name)
                 .set(value -> name = value)
                 .build();

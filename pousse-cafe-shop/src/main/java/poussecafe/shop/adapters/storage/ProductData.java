@@ -21,7 +21,7 @@ public class ProductData implements Product.Attributes, Serializable {
 
     @Override
     public Attribute<Integer> totalUnits() {
-        return AttributeBuilder.simple(Integer.class)
+        return AttributeBuilder.single(Integer.class)
                 .get(() -> totalUnits)
                 .set(value -> totalUnits = value)
                 .build();
@@ -31,7 +31,7 @@ public class ProductData implements Product.Attributes, Serializable {
 
     @Override
     public Attribute<Integer> availableUnits() {
-        return AttributeBuilder.simple(Integer.class)
+        return AttributeBuilder.single(Integer.class)
                 .get(() -> availableUnits)
                 .set(value -> availableUnits = value)
                 .build();

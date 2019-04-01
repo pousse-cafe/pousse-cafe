@@ -9,7 +9,7 @@ public class SimpleEntityData implements SimpleEntity.Attributes {
 
     @Override
     public Attribute<StringKey> key() {
-        return AttributeBuilder.simple(StringKey.class)
+        return AttributeBuilder.single(StringKey.class)
                 .from(String.class)
                 .adapt(StringKey::new)
                 .get(() -> key)

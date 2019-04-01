@@ -23,7 +23,7 @@ public class AddUnitsData implements Serializable, AddUnits {
 
     @Override
     public Attribute<Integer> units() {
-        return AttributeBuilder.simple(Integer.class)
+        return AttributeBuilder.single(Integer.class)
                 .get(() -> units)
                 .set(value -> units = value)
                 .build();

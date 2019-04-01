@@ -14,7 +14,7 @@ public class ShipOrderData implements Serializable, ShipOrder {
 
     @Override
     public Attribute<OrderKey> orderKey() {
-        return AttributeBuilder.simple(OrderKey.class)
+        return AttributeBuilder.single(OrderKey.class)
                 .fromAutoAdapting(OrderKeyData.class)
                 .get(() -> orderKey)
                 .set(value -> orderKey = value)

@@ -24,7 +24,7 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
 
     @Override
     public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return AttributeBuilder.simple(BoundedContextComponentDoc.class)
+        return AttributeBuilder.single(BoundedContextComponentDoc.class)
                 .fromAutoAdapting(BoundedContextComponentDocData.class)
                 .get(() -> boundedContextComponentDoc)
                 .set(value -> boundedContextComponentDoc = value)

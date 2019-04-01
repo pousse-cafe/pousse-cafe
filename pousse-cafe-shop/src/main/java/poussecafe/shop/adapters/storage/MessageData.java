@@ -33,7 +33,7 @@ public class MessageData implements Message.Attributes, Serializable {
 
     @Override
     public Attribute<ContentType> contentType() {
-        return AttributeBuilder.simple(ContentType.class)
+        return AttributeBuilder.single(ContentType.class)
                 .get(() -> contentType)
                 .set(value -> contentType = value)
                 .build();

@@ -3,9 +3,9 @@ package poussecafe.attribute;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SimpleAttributeBuilder<T> {
+public class SingleAttributeBuilder<T> {
 
-    SimpleAttributeBuilder(Class<T> valueClass) {
+    SingleAttributeBuilder(Class<T> valueClass) {
         this.valueClass = valueClass;
     }
 

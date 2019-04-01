@@ -11,7 +11,7 @@ public class OrderData implements Order.Attributes, Serializable {
 
     @Override
     public Attribute<OrderKey> key() {
-        return AttributeBuilder.simple(OrderKey.class)
+        return AttributeBuilder.single(OrderKey.class)
                 .fromAutoAdapting(OrderKeyData.class)
                 .get(() -> key)
                 .set(value -> key = value)
@@ -22,7 +22,7 @@ public class OrderData implements Order.Attributes, Serializable {
 
     @Override
     public Attribute<Integer> units() {
-        return AttributeBuilder.simple(Integer.class)
+        return AttributeBuilder.single(Integer.class)
                 .get(() -> units)
                 .set(value -> units = value)
                 .build();

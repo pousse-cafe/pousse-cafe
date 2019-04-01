@@ -23,7 +23,7 @@ public class CreateAggregateDocData implements Serializable, CreateAggregateDoc 
 
     @Override
     public Attribute<String> className() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> className)
                 .set(value -> className = value)
                 .build();

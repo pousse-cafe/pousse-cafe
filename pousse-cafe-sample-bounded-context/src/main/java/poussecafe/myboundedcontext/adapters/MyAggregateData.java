@@ -25,7 +25,7 @@ public class MyAggregateData implements MyAggregate.Attributes, Serializable {
 
     @Override
     public Attribute<Integer> x() {
-        return AttributeBuilder.simple(Integer.class)
+        return AttributeBuilder.single(Integer.class)
                 .get(() -> x)
                 .set(value -> x = value)
                 .build();

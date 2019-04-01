@@ -12,7 +12,7 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
 
     @Override
     public Attribute<String> consumptionId() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> consumptionId)
                 .set(value -> consumptionId = value)
                 .build();
@@ -22,7 +22,7 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
 
     @Override
     public Attribute<String> listenerId() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> listenerId)
                 .set(value -> listenerId = value)
                 .build();
@@ -32,7 +32,7 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
 
     @Override
     public Attribute<String> rawMessage() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> rawMessage)
                 .set(value -> rawMessage = value)
                 .build();
@@ -42,7 +42,7 @@ public class FailedConsumptionData implements Serializable, FailedConsumption {
 
     @Override
     public Attribute<String> error() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> error)
                 .set(value -> error = value)
                 .build();

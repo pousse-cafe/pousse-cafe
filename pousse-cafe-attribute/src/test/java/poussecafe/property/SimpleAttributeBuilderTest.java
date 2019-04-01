@@ -18,7 +18,7 @@ public class SimpleAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
-        propertyWithoutConversion = AttributeBuilder.simple(String.class)
+        propertyWithoutConversion = AttributeBuilder.single(String.class)
                 .get(() -> value)
                 .set(newValue -> value = newValue)
                 .build();
@@ -49,7 +49,7 @@ public class SimpleAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.simple(StringKey.class)
+        propertyWithConversion = AttributeBuilder.single(StringKey.class)
                 .from(String.class)
                 .adapt(StringKey::new)
                 .get(() -> value)

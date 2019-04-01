@@ -24,7 +24,7 @@ public class PlaceOrderData implements Serializable, PlaceOrder {
 
     @Override
     public Attribute<OrderDescription> description() {
-        return AttributeBuilder.simple(OrderDescription.class)
+        return AttributeBuilder.single(OrderDescription.class)
                 .fromAutoAdapting(OrderDescriptionData.class)
                 .get(() -> description)
                 .set(value -> description = value)

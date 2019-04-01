@@ -24,7 +24,7 @@ public class SimpleAggregateData implements SimpleAggregate.Attributes {
 
     @Override
     public Attribute<String> data() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> data)
                 .set(value -> data = value)
                 .build();

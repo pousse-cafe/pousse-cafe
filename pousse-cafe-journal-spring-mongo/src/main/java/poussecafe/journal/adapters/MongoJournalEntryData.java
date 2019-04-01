@@ -11,7 +11,7 @@ public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
     public Attribute<JournalEntryKey> key() {
-        return AttributeBuilder.simple(JournalEntryKey.class)
+        return AttributeBuilder.single(JournalEntryKey.class)
                 .fromAutoAdapting(SerializableJournalEntryKey.class)
                 .get(() -> key)
                 .set(value -> key = value)
@@ -23,7 +23,7 @@ public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
     public Attribute<String> rawMessage() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> rawMessage)
                 .set(value -> rawMessage = value)
                 .build();
@@ -33,7 +33,7 @@ public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
     public Attribute<String> error() {
-        return AttributeBuilder.simple(String.class)
+        return AttributeBuilder.single(String.class)
                 .get(() -> error)
                 .set(value -> error = value)
                 .build();
@@ -43,7 +43,7 @@ public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
     public Attribute<ConsumptionStatus> status() {
-        return AttributeBuilder.simple(ConsumptionStatus.class)
+        return AttributeBuilder.single(ConsumptionStatus.class)
                 .get(() -> status)
                 .set(value -> status = value)
                 .build();

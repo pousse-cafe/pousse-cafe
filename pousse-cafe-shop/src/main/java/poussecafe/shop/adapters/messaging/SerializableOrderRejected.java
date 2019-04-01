@@ -14,7 +14,7 @@ public class SerializableOrderRejected implements Serializable, OrderRejected {
 
     @Override
     public Attribute<ProductKey> productKey() {
-        return AttributeBuilder.simple(ProductKey.class)
+        return AttributeBuilder.single(ProductKey.class)
                 .from(String.class)
                 .adapt(ProductKey::new)
                 .get(() -> productId)
@@ -27,7 +27,7 @@ public class SerializableOrderRejected implements Serializable, OrderRejected {
 
     @Override
     public Attribute<OrderDescription> description() {
-        return AttributeBuilder.simple(OrderDescription.class)
+        return AttributeBuilder.single(OrderDescription.class)
                 .fromAutoAdapting(OrderDescriptionData.class)
                 .get(() -> description)
                 .set(value -> description = value)

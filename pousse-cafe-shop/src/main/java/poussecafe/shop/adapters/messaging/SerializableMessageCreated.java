@@ -13,7 +13,7 @@ public class SerializableMessageCreated implements Serializable, MessageCreated 
 
     @Override
     public Attribute<MessageKey> messageKey() {
-        return AttributeBuilder.simple(MessageKey.class)
+        return AttributeBuilder.single(MessageKey.class)
                 .from(String.class)
                 .adapt(MessageKey::new)
                 .get(() -> messageId)

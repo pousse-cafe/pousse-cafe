@@ -15,9 +15,9 @@ public class AttributeBuilder {
 
     }
 
-    public static <T> SimpleAttributeBuilder<T> simple(Class<T> valueClass) {
+    public static <T> SingleAttributeBuilder<T> single(Class<T> valueClass) {
         Objects.requireNonNull(valueClass);
-        return new SimpleAttributeBuilder<>(valueClass);
+        return new SingleAttributeBuilder<>(valueClass);
     }
 
     public static <T> ListAttributeBuilder<T> list(Class<T> elementClass) { // NOSONAR

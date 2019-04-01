@@ -13,7 +13,7 @@ public class SerializableOrderReadyForShipping implements Serializable, OrderRea
 
     @Override
     public Attribute<OrderKey> orderKey() {
-        return AttributeBuilder.simple(OrderKey.class)
+        return AttributeBuilder.single(OrderKey.class)
                 .from(SerializableOrderKey.class)
                 .adapt(SerializableOrderKey::adapt)
                 .get(() -> orderKey)
