@@ -24,4 +24,26 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
                 .filter(data -> data.processName().value().get().equals(processName))
                 .collect(toList());
     }
+
+    @Override
+    public List<ProcessStepDocData> findConsuming(BoundedContextDocId boundedContextDocId,
+            String eventName) {
+        return findAll().stream()
+                .filter(data -> data.processName().value().isPresent())
+                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocId().equals(boundedContextDocId))
+                .filter(data -> data.stepMethodSignature().value().isPresent())
+                .filter(data -> data.stepMethodSignature().value().get().consumedEventName().isPresent())
+                .filter(data -> data.stepMethodSignature().value().get().consumedEventName().get().equals(eventName))
+                .collect(toList());
+    }
+
+    @Override
+    public List<ProcessStepDocData> findProducing(BoundedContextDocId boundedContextDocId,
+            String eventName) {
+        return findAll().stream()
+                .filter(data -> data.processName().value().isPresent())
+                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocId().equals(boundedContextDocId))
+                .filter(data -> data.producedEvents().contains(eventName))
+                .collect(toList());
+    }
 }

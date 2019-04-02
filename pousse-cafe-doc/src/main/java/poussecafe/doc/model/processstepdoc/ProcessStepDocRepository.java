@@ -16,4 +16,14 @@ public class ProcessStepDocRepository extends Repository<ProcessStepDoc, Process
     public ProcessStepDataAccess<ProcessStepDoc.Attributes> dataAccess() {
         return (ProcessStepDataAccess<Attributes>) super.dataAccess();
     }
+
+    public List<ProcessStepDoc> findConsuming(BoundedContextDocId boundedContextDocId,
+            String eventName) {
+        return wrap(dataAccess().findConsuming(boundedContextDocId, eventName));
+    }
+
+    public List<ProcessStepDoc> findProducing(BoundedContextDocId boundedContextDocId,
+            String eventName) {
+        return wrap(dataAccess().findProducing(boundedContextDocId, eventName));
+    }
 }

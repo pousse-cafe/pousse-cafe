@@ -8,4 +8,10 @@ public interface ProcessStepDataAccess<D extends ProcessStepDoc.Attributes> exte
 
     List<D> findByDomainProcess(BoundedContextDocId boundedContextDocId,
             String processName);
+
+    List<D> findConsuming(BoundedContextDocId boundedContextDocId,
+            String eventName);
+
+    List<D> findProducing(BoundedContextDocId boundedContextDocId,
+            String eventName);
 }
