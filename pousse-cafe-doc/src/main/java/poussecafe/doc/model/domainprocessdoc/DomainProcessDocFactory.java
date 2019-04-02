@@ -55,14 +55,14 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         List<DomainProcessDoc> processes = new ArrayList<>();
         for(ProcessDescription description : descriptions) {
             detectedDomainProcesses.add(description.name());
-            DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, methodDoc, description);
+            DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, description);
             processes.add(doc);
         }
         List<String> names = AnnotationsResolver.process(methodDoc);
         for(String name : names) {
             if(!detectedDomainProcesses.contains(name)) {
                 detectedDomainProcesses.add(name);
-                DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, methodDoc, new ProcessDescription.Builder()
+                DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, new ProcessDescription.Builder()
                         .name(name)
                         .description("")
                         .build());
@@ -73,9 +73,8 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
     }
 
     private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocKey boundedContextDocKey,
-            MethodDoc methodDoc,
             ProcessDescription description) {
-        DomainProcessDocKey key = new DomainProcessDocKey(methodDoc.qualifiedName() + "#" + description.name());
+        DomainProcessDocKey key = new DomainProcessDocKey(boundedContextDocKey.getValue() + "." + description.name());
         DomainProcessDoc doc = newAggregateWithKey(key);
         doc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocKey(boundedContextDocKey)

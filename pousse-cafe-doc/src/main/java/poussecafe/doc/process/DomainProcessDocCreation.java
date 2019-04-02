@@ -27,13 +27,15 @@ public class DomainProcessDocCreation extends DomainProcess {
         for(DomainProcessDoc doc : docs) {
             DomainProcessDocKey docKey = doc.attributes().key().value();
             BoundedContextComponentDoc boundedContextComponentDoc = doc.attributes().boundedContextComponentDoc().value();
-            if(domainProcessDocRepository.find(docKey) != null &&
-                    boundedContextComponentDoc.componentDoc().hasDescription()) {
-                runInTransaction(DomainProcessDoc.class, () -> {
-                    DomainProcessDoc existingDoc = domainProcessDocRepository.get(docKey);
-                    existingDoc.attributes().boundedContextComponentDoc().value(boundedContextComponentDoc);
-                    domainProcessDocRepository.update(existingDoc);
-                });
+            DomainProcessDoc existingDoc = domainProcessDocRepository.find(docKey);
+            if(existingDoc != null) {
+                if(boundedContextComponentDoc.componentDoc().hasDescription()) {
+                    runInTransaction(DomainProcessDoc.class, () -> {
+                        DomainProcessDoc toUpdate = domainProcessDocRepository.get(docKey);
+                        toUpdate.attributes().boundedContextComponentDoc().value(boundedContextComponentDoc);
+                        domainProcessDocRepository.update(toUpdate);
+                    });
+                }
             } else {
                 runInTransaction(DomainProcessDoc.class, () -> domainProcessDocRepository.add(doc));
             }

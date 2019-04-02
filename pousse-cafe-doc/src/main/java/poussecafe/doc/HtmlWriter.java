@@ -190,7 +190,8 @@ public class HtmlWriter {
 
     private List<EntityDoc> findEntities(AggregateDocKey aggregateDocKey) {
         return findEntities(aggregateDocKey.getValue()).stream()
-                .map(entityDocRepository::get)
+                .map(entityDocRepository::find)
+                .filter(Objects::nonNull)
                 .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .collect(toList());
     }

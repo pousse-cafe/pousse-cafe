@@ -139,19 +139,19 @@ public class AggregateGraphFactory {
     }
 
     private String name(Component component) {
-        switch(component.type()) {
-        case AGGREGATE:
-            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
-        case ENTITY:
-            return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
-        case VALUE_OBJECT:
-            try {
-                return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
-            } catch (NotFoundException e) {
-                return component.className();
+        try {
+            switch(component.type()) {
+            case AGGREGATE:
+                return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+            case ENTITY:
+                return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+            case VALUE_OBJECT:
+                    return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+            default:
+                throw new IllegalArgumentException("Unsupported component type " + component.type());
             }
-        default:
-            throw new IllegalArgumentException("Unsupported component type " + component.type());
+        } catch (NotFoundException e) {
+            return component.className();
         }
     }
 

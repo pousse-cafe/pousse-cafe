@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
 
 public class PousseCafeDocletTest {
@@ -23,9 +24,9 @@ public class PousseCafeDocletTest {
         configuration = new PousseCafeDocletConfiguration.Builder()
                 .domainName("Pousse-Café Doc")
                 .version("Test")
-                .sourceDirectory(System.getProperty("user.dir") + "/src/main/java/")
+                .sourcePath(asList(System.getProperty("user.dir") + "/src/main/java/"))
                 .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc/")
-                .rootPackage("poussecafe.doc")
+                .basePackage("poussecafe.doc")
                 .includeGenerationDate(false)
                 .build();
     }

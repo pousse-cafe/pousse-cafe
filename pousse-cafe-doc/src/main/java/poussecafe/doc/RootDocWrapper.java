@@ -1,7 +1,10 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.RootDoc;
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.Arrays.asList;
 
 public class RootDocWrapper {
 
@@ -21,7 +24,7 @@ public class RootDocWrapper {
                 .domainName(domainName())
                 .version(version())
                 .outputDirectory(outputPath())
-                .sourceDirectory(sourceDirectory())
+                .sourcePath(sourcePath())
                 .includeGenerationDate(includeGeneratedDate())
                 .build();
     }
@@ -39,8 +42,9 @@ public class RootDocWrapper {
         return readOptionValue("output").orElseThrow(RuntimeException::new);
     }
 
-    public String sourceDirectory() {
-        return readOptionValue("sourcepath").orElseThrow(RuntimeException::new);
+    public List<String> sourcePath() {
+        return asList(readOptionValue("sourcepath").orElseThrow(RuntimeException::new)
+                .split(SystemDependentInformation.pathElementSeparatorRegEx()));
     }
 
     public String version() {

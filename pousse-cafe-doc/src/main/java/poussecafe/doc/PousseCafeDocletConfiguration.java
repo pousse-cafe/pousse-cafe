@@ -1,6 +1,10 @@
 package poussecafe.doc;
 
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.Collections.emptyList;
 
 public class PousseCafeDocletConfiguration {
 
@@ -28,13 +32,8 @@ public class PousseCafeDocletConfiguration {
             return this;
         }
 
-        public Builder sourceDirectory(String sourceDirectory) {
-            configuration.sourceDirectory = sourceDirectory;
-            return this;
-        }
-
-        public Builder rootPackage(String rootPackage) {
-            configuration.rootPackage = rootPackage;
+        public Builder sourcePath(List<String> sourcePath) {
+            configuration.sourcePath = sourcePath;
             return this;
         }
 
@@ -58,7 +57,20 @@ public class PousseCafeDocletConfiguration {
             return this;
         }
 
+        public Builder classPath(List<String> classPath) {
+            configuration.classPath = classPath;
+            return this;
+        }
+
         public PousseCafeDocletConfiguration build() {
+            Objects.requireNonNull(configuration.domainName);
+            Objects.requireNonNull(configuration.version);
+            Objects.requireNonNull(configuration.outputDirectory);
+            Objects.requireNonNull(configuration.basePackage);
+            if(configuration.sourcePath == null || configuration.sourcePath.isEmpty()) {
+                throw new IllegalStateException("Source path must contain at least one element");
+            }
+            Objects.requireNonNull(configuration.classPath);
             if(configuration.errorWriter == null) {
                 configuration.errorWriter = new PrintWriter(System.err);
                 configuration.warningWriter = new PrintWriter(System.err);
@@ -96,16 +108,10 @@ public class PousseCafeDocletConfiguration {
         return basePackage;
     }
 
-    private String sourceDirectory;
+    private List<String> sourcePath;
 
-    public String sourceDirectory() {
-        return sourceDirectory;
-    }
-
-    private String rootPackage;
-
-    public String rootPackage() {
-        return rootPackage;
+    public List<String> sourceDirectory() {
+        return sourcePath;
     }
 
     private PrintWriter errorWriter;
@@ -126,9 +132,15 @@ public class PousseCafeDocletConfiguration {
         return noticeWriter;
     }
 
-    private boolean includeGenerationDate;
+    private boolean includeGenerationDate = true;
 
     public boolean includeGenerationDate() {
         return includeGenerationDate;
+    }
+
+    private List<String> classPath = emptyList();
+
+    public List<String> classPath() {
+        return classPath;
     }
 }
