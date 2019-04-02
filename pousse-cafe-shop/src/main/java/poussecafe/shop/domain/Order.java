@@ -12,7 +12,7 @@ import poussecafe.shop.command.ShipOrder;
   factory = OrderFactory.class,
   repository = OrderRepository.class
 )
-public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
+public class Order extends AggregateRoot<OrderId, Order.Attributes> {
 
     /**
      * @process Messaging
@@ -22,7 +22,7 @@ public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
     @MessageListener(runner = SettleRunner.class)
     public void settle(SettleOrder command) {
         OrderSettled event = newDomainEvent(OrderSettled.class);
-        event.orderKey().valueOf(attributes().key());
+        event.orderId().valueOf(attributes().identifier());
         emitDomainEvent(event);
     }
 
@@ -34,7 +34,7 @@ public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
     @MessageListener(runner = ShipOrderRunner.class)
     public void ship(ShipOrder command) {
         OrderReadyForShipping event = newDomainEvent(OrderReadyForShipping.class);
-        event.orderKey().valueOf(attributes().key());
+        event.orderId().valueOf(attributes().identifier());
         emitDomainEvent(event);
     }
 
@@ -45,11 +45,11 @@ public class Order extends AggregateRoot<OrderKey, Order.Attributes> {
     @Override
     public void onAdd() {
         OrderCreated event = newDomainEvent(OrderCreated.class);
-        event.orderKey().valueOf(attributes().key());
+        event.orderId().valueOf(attributes().identifier());
         emitDomainEvent(event);
     }
 
-    public static interface Attributes extends EntityAttributes<OrderKey> {
+    public static interface Attributes extends EntityAttributes<OrderId> {
 
         Attribute<Integer> units();
     }

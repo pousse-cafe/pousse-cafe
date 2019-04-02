@@ -5,19 +5,19 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.shop.domain.MessageCreated;
-import poussecafe.shop.domain.MessageKey;
+import poussecafe.shop.domain.MessageId;
 
 @MessageImplementation(message = MessageCreated.class)
 @SuppressWarnings("serial")
 public class SerializableMessageCreated implements Serializable, MessageCreated {
 
     @Override
-    public Attribute<MessageKey> messageKey() {
-        return AttributeBuilder.single(MessageKey.class)
+    public Attribute<MessageId> messageId() {
+        return AttributeBuilder.single(MessageId.class)
                 .from(String.class)
-                .adapt(MessageKey::new)
+                .adapt(MessageId::new)
                 .get(() -> messageId)
-                .adapt(MessageKey::getValue)
+                .adapt(MessageId::getValue)
                 .set(value -> messageId = value)
                 .build();
     }

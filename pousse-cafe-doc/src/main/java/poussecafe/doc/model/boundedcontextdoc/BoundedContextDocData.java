@@ -9,15 +9,15 @@ import poussecafe.doc.model.ComponentDocData;
 public class BoundedContextDocData implements BoundedContextDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<BoundedContextDocKey> key() {
-        return new Attribute<BoundedContextDocKey>() {
+    public Attribute<BoundedContextDocId> identifier() {
+        return new Attribute<BoundedContextDocId>() {
             @Override
-            public BoundedContextDocKey value() {
-                return BoundedContextDocKey.ofPackageName(id);
+            public BoundedContextDocId value() {
+                return BoundedContextDocId.ofPackageName(id);
             }
 
             @Override
-            public void value(BoundedContextDocKey value) {
+            public void value(BoundedContextDocId value) {
                 id = value.getValue();
             }
         };

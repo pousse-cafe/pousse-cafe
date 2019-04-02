@@ -1,33 +1,33 @@
 package poussecafe.shop.domain;
 
-public class OrderKey {
+public class OrderId {
 
-    private ProductKey productKey;
+    private ProductId productId;
 
-    private CustomerKey customerKey;
+    private CustomerId customerId;
 
     private String reference;
 
-    public OrderKey(ProductKey productKey, CustomerKey customerKey, String reference) {
-        setProductKey(productKey);
-        setCustomerKey(customerKey);
+    public OrderId(ProductId productId, CustomerId customerId, String reference) {
+        setProductId(productId);
+        setCustomerId(customerId);
         setReference(reference);
     }
 
-    public ProductKey getProductKey() {
-        return productKey;
+    public ProductId getProductId() {
+        return productId;
     }
 
-    private void setProductKey(ProductKey productKey) {
-        this.productKey = productKey;
+    private void setProductId(ProductId productId) {
+        this.productId = productId;
     }
 
-    public CustomerKey getCustomerKey() {
-        return customerKey;
+    public CustomerId getCustomerId() {
+        return customerId;
     }
 
-    private void setCustomerKey(CustomerKey customerKey) {
-        this.customerKey = customerKey;
+    private void setCustomerId(CustomerId customerId) {
+        this.customerId = customerId;
     }
 
     public String getReference() {
@@ -42,8 +42,8 @@ public class OrderKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((customerKey == null) ? 0 : customerKey.hashCode());
-        result = prime * result + ((productKey == null) ? 0 : productKey.hashCode());
+        result = prime * result + ((customerId == null) ? 0 : customerId.hashCode());
+        result = prime * result + ((productId == null) ? 0 : productId.hashCode());
         result = prime * result + ((reference == null) ? 0 : reference.hashCode());
         return result;
     }
@@ -59,19 +59,19 @@ public class OrderKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        OrderKey other = (OrderKey) obj;
-        if (customerKey == null) {
-            if (other.customerKey != null) {
+        OrderId other = (OrderId) obj;
+        if (customerId == null) {
+            if (other.customerId != null) {
                 return false;
             }
-        } else if (!customerKey.equals(other.customerKey)) {
+        } else if (!customerId.equals(other.customerId)) {
             return false;
         }
-        if (productKey == null) {
-            if (other.productKey != null) {
+        if (productId == null) {
+            if (other.productId != null) {
                 return false;
             }
-        } else if (!productKey.equals(other.productKey)) {
+        } else if (!productId.equals(other.productId)) {
             return false;
         }
         if (reference == null) {
@@ -86,7 +86,7 @@ public class OrderKey {
 
     @Override
     public String toString() {
-        return "OrderKey [productKey=" + productKey + ", customerKey=" + customerKey + ", reference=" + reference + "]";
+        return "OrderId [productId=" + productId + ", customerId=" + customerId + ", reference=" + reference + "]";
     }
 
 }

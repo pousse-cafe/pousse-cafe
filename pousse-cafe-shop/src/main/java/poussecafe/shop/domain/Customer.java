@@ -8,9 +8,9 @@ import poussecafe.domain.EntityAttributes;
     factory = CustomerFactory.class,
     repository = CustomerRepository.class
 )
-public class Customer extends AggregateRoot<CustomerKey, Customer.Attributes> {
+public class Customer extends AggregateRoot<CustomerId, Customer.Attributes> {
 
-    public static interface Attributes extends EntityAttributes<CustomerKey> {
+    public static interface Attributes extends EntityAttributes<CustomerId> {
 
     }
 

@@ -1,7 +1,7 @@
 package poussecafe.shop.adapters.messaging;
 
 import java.io.Serializable;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 import poussecafe.shop.domain.OrderDescription;
 
 @SuppressWarnings("serial")
@@ -9,7 +9,7 @@ public class OrderDescriptionData implements Serializable {
 
     public static OrderDescriptionData adapt(OrderDescription description) {
         OrderDescriptionData data = new OrderDescriptionData();
-        data.customerId = description.customerKey().getValue();
+        data.customerId = description.customerId().getValue();
         data.reference = description.reference();
         data.units = description.units();
         return data;
@@ -23,7 +23,7 @@ public class OrderDescriptionData implements Serializable {
 
     public OrderDescription adapt() {
         return new OrderDescription.Builder()
-                .customerKey(new CustomerKey(customerId))
+                .customerId(new CustomerId(customerId))
                 .reference(reference)
                 .units(units)
                 .build();

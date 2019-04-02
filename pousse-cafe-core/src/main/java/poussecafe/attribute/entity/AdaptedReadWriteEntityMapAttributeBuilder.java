@@ -6,29 +6,29 @@ import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <E> Attribute value type
  */
 public class AdaptedReadWriteEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
 
     AdaptedReadWriteEntityMapAttributeBuilder(
             Class<E> entityClass,
-            Function<J, K> readKeyAdapter,
-            Function<K, J> writeKeyAdapter,
+            Function<J, K> readIdAdapter,
+            Function<K, J> writeIdAdapter,
             Map<J, U> map) {
         this.entityClass = entityClass;
-        this.readKeyAdapter = readKeyAdapter;
-        this.writeKeyAdapter = writeKeyAdapter;
+        this.readIdAdapter = readIdAdapter;
+        this.writeIdAdapter = writeIdAdapter;
         this.map = map;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> readKeyAdapter;
+    private Function<J, K> readIdAdapter;
 
-    private Function<K, J> writeKeyAdapter;
+    private Function<K, J> writeIdAdapter;
 
     private Map<J, U> map;
 
@@ -36,12 +36,12 @@ public class AdaptedReadWriteEntityMapAttributeBuilder<J, U extends EntityAttrib
         return new ConvertingEntityMapAttribute<J, U, K, E>(map, entityClass) {
             @Override
             protected K convertFromKey(J from) {
-                return readKeyAdapter.apply(from);
+                return readIdAdapter.apply(from);
             }
 
             @Override
             protected J convertToKey(K from) {
-                return writeKeyAdapter.apply(from);
+                return writeIdAdapter.apply(from);
             }
         };
     }

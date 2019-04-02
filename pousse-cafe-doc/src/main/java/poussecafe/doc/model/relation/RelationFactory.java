@@ -2,10 +2,10 @@ package poussecafe.doc.model.relation;
 
 import poussecafe.domain.Factory;
 
-public class RelationFactory extends Factory<RelationKey, Relation, Relation.Attributes> {
+public class RelationFactory extends Factory<RelationId, Relation, Relation.Attributes> {
 
     public Relation newRelation(NewRelationParameters parameters) {
-        Relation relation = newAggregateWithKey(new RelationKey(parameters.fromComponent.className(), parameters.toComponent.className()));
+        Relation relation = newAggregateWithId(new RelationId(parameters.fromComponent.className(), parameters.toComponent.className()));
         relation.fromType(parameters.fromComponent.type());
         relation.toType(parameters.toComponent.type());
         return relation;

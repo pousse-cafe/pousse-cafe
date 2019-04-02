@@ -3,7 +3,7 @@ package process;
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.ADomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -22,7 +22,7 @@ public class MyAggregateCreationWithADomainEvent extends MyBoundedContextTest {
 
     private void givenADomainEvent() {
         event = newDomainEvent(ADomainEvent.class);
-        event.key().value(new MyAggregateKey("a-key"));
+        event.identifier().value(new MyAggregateId("a-id"));
     }
 
     private ADomainEvent event;
@@ -32,7 +32,7 @@ public class MyAggregateCreationWithADomainEvent extends MyBoundedContextTest {
     }
 
     private void thenAggregateCreated() {
-        MyAggregate aggregate = find(MyAggregate.class, event.key().value());
+        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
         assertThat(aggregate, notNullValue());
     }
 }

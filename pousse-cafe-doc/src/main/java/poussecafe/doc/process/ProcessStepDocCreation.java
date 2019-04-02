@@ -4,17 +4,17 @@ import com.sun.javadoc.ClassDoc;
 import java.util.List;
 import java.util.Optional;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocExtractor;
-import poussecafe.doc.model.processstepdoc.ProcessStepDocKey;
+import poussecafe.doc.model.processstepdoc.ProcessStepDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.process.DomainProcess;
 
 public class ProcessStepDocCreation extends DomainProcess {
 
-    public void createOrUpdateProcessStepDoc(BoundedContextDocKey boundedContextKey, ClassDoc classDoc) {
-        List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(boundedContextKey, classDoc);
+    public void createOrUpdateProcessStepDoc(BoundedContextDocId boundedContextId, ClassDoc classDoc) {
+        List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(boundedContextId, classDoc);
         for(ProcessStepDoc doc : docs) {
             createOrUpdate(doc);
         }
@@ -23,12 +23,12 @@ public class ProcessStepDocCreation extends DomainProcess {
     private ProcessStepDocExtractor processStepDocExtractor;
 
     private void createOrUpdate(ProcessStepDoc doc) {
-        ProcessStepDocKey key = doc.attributes().key().value();
-        if(processStepRepository.find(key) == null) {
+        ProcessStepDocId id = doc.attributes().identifier().value();
+        if(processStepRepository.find(id) == null) {
             runInTransaction(BoundedContextDoc.class, () -> processStepRepository.add(doc));
         } else {
             runInTransaction(BoundedContextDoc.class, () -> {
-                ProcessStepDoc processStepDoc = processStepRepository.get(key);
+                ProcessStepDoc processStepDoc = processStepRepository.get(id);
                 Optional<String> processName = processStepDoc.attributes().processName().value();
                 if(!processName.isPresent()) {
                     processStepDoc.attributes().processName().valueOf(doc.attributes().processName());

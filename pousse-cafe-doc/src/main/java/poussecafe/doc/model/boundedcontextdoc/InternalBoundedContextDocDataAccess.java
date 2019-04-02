@@ -9,13 +9,13 @@ import poussecafe.storage.internal.InternalStorage;
     dataImplementation = BoundedContextDocData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalBoundedContextDocDataAccess extends InternalDataAccess<BoundedContextDocKey, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
+public class InternalBoundedContextDocDataAccess extends InternalDataAccess<BoundedContextDocId, BoundedContextDocData> implements BoundedContextDocDataAccess<BoundedContextDocData> {
 
     @Override
     public BoundedContextDocData findByPackageNamePrefixing(String packageName) {
         return findAll()
                 .stream()
-                .filter(data -> packageName.startsWith(data.key().value().getValue()))
+                .filter(data -> packageName.startsWith(data.identifier().value().getValue()))
                 .findFirst()
                 .orElse(null);
     }

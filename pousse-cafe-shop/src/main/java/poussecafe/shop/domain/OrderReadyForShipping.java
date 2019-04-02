@@ -5,5 +5,5 @@ import poussecafe.domain.DomainEvent;
 
 public interface OrderReadyForShipping extends DomainEvent {
 
-    Attribute<OrderKey> orderKey();
+    Attribute<OrderId> orderId();
 }

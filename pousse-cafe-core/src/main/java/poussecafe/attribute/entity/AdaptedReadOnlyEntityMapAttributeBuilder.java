@@ -8,21 +8,21 @@ import poussecafe.domain.EntityAttributes;
 import java.util.Objects;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <E> Attribute value type
  */
 public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
 
-    AdaptedReadOnlyEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> keyAdapter) {
+    AdaptedReadOnlyEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> idAdapter) {
         this.entityClass = entityClass;
-        this.keyAdapter = keyAdapter;
+        this.idAdapter = idAdapter;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> keyAdapter;
+    private Function<J, K> idAdapter;
 
     public EntityMapAttribute<K, E> build(Map<J, U> map) {
         return new ConvertingEntityMapAttribute<J, U, K, E>(map, entityClass) {
@@ -34,13 +34,13 @@ public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttribu
 
             @Override
             protected K convertFromKey(J from) {
-                return keyAdapter.apply(from);
+                return idAdapter.apply(from);
             }
         };
     }
 
-    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptOnSet(Function<K, J> keyAdapter) {
-        Objects.requireNonNull(keyAdapter);
-        return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, this.keyAdapter, keyAdapter);
+    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptOnSet(Function<K, J> idAdapter) {
+        Objects.requireNonNull(idAdapter);
+        return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, this.idAdapter, idAdapter);
     }
 }

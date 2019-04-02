@@ -7,14 +7,14 @@ import poussecafe.attribute.AttributeBuilder;
 <if(storage_spring_mongo)>import org.springframework.data.annotation.Version;<endif>
 
 import <modelPackage>.<name>;
-import <modelPackage>.<name>Key;
+import <modelPackage>.<name>Id;
 
 <if(storage_internal)>@SuppressWarnings("serial")<endif>
 public class <name>Attributes implements <name>.Attributes<if(storage_internal)>, Serializable<endif> {
 
     @Override
-    public Attribute\<<name>Key> key() {
-        return AttributeBuilder.stringKey(<name>Key.class)
+    public Attribute\<<name>Id> identifier() {
+        return AttributeBuilder.stringId(<name>Id.class)
                 .get(() -> id)
                 .set(value -> id = value)
                 .build();

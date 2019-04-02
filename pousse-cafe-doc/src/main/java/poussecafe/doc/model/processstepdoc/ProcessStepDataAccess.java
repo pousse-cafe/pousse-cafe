@@ -1,11 +1,11 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.EntityDataAccess;
 
-public interface ProcessStepDataAccess<D extends ProcessStepDoc.Attributes> extends EntityDataAccess<ProcessStepDocKey, D> {
+public interface ProcessStepDataAccess<D extends ProcessStepDoc.Attributes> extends EntityDataAccess<ProcessStepDocId, D> {
 
-    List<D> findByDomainProcess(BoundedContextDocKey boundedContextDocKey,
+    List<D> findByDomainProcess(BoundedContextDocId boundedContextDocId,
             String processName);
 }

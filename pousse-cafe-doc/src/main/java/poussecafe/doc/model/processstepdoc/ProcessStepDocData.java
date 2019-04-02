@@ -13,8 +13,8 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attributes {
 
     @Override
-    public Attribute<ProcessStepDocKey> key() {
-        return AttributeBuilder.stringKey(ProcessStepDocKey.class)
+    public Attribute<ProcessStepDocId> identifier() {
+        return AttributeBuilder.stringId(ProcessStepDocId.class)
                 .get(() -> id)
                 .set(value -> id = value)
                 .build();

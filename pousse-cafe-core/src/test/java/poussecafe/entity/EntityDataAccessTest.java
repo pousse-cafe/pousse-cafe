@@ -33,7 +33,7 @@ public abstract class EntityDataAccessTest {
     protected abstract EntityDataAccess<String, Attributes> newDataAccess();
 
     private void whenFindingData() {
-        foundData = dataAccess.findData(key1());
+        foundData = dataAccess.findData(id1());
     }
 
     private void thenFoundDataIs(Attributes expected) {
@@ -62,25 +62,25 @@ public abstract class EntityDataAccessTest {
     }
 
     private Attributes data1() {
-        Attributes data = data(key1());
+        Attributes data = data(id1());
         data.setX(10);
         return data;
     }
 
-    private Attributes data(String key) {
+    private Attributes data(String id) {
         Attributes data = newData();
-        data.key().value(key);
+        data.identifier().value(id);
         return data;
     }
 
-    private String key1() {
-        return "key1";
+    private String id1() {
+        return "id1";
     }
 
     protected abstract Attributes newData();
 
     private void whenFindingAddedData() {
-        foundData = dataAccess.findData(addedData.key().value());
+        foundData = dataAccess.findData(addedData.identifier().value());
     }
 
     @Test(expected = Exception.class)
@@ -104,11 +104,11 @@ public abstract class EntityDataAccessTest {
     private void whenUpdatingAddedData() {
         Attributes data = data2();
         dataAccess.updateData(data);
-        foundData = dataAccess.findData(data.key().value());
+        foundData = dataAccess.findData(data.identifier().value());
     }
 
     private Attributes data2() {
-        Attributes data = data(key1());
+        Attributes data = data(id1());
         data.setX(12);
         return data;
     }
@@ -121,8 +121,8 @@ public abstract class EntityDataAccessTest {
     }
 
     private void whenDeletingAddedData() {
-        dataAccess.deleteData(addedData.key().value());
-        foundData = dataAccess.findData(addedData.key().value());
+        dataAccess.deleteData(addedData.identifier().value());
+        foundData = dataAccess.findData(addedData.identifier().value());
     }
 
     public static interface Attributes extends EntityAttributes<String> {

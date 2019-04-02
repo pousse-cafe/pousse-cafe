@@ -52,13 +52,13 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
 
     @Override
     public void accept(Message message) {
-        Set targetAggregatesKey = runner.targetAggregatesKeys(message);
+        Set targetAggregatesId = runner.targetAggregatesIds(message);
         Repository repository = aggregateServices.repository();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
-        for(Object key : targetAggregatesKey) {
+        for(Object id : targetAggregatesId) {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
             transactionRunner.runInTransaction(() -> {
-                AggregateRoot targetAggregateRoot = repository.get(key);
+                AggregateRoot targetAggregateRoot = repository.get(id);
                 targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
                 MethodInvoker invoker = new MethodInvoker.Builder()
                         .method(method)

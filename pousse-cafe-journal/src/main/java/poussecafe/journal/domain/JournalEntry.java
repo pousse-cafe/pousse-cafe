@@ -9,9 +9,9 @@ import poussecafe.domain.EntityAttributes;
   factory = JournalEntryFactory.class,
   repository = JournalEntryRepository.class
 )
-public class JournalEntry extends AggregateRoot<JournalEntryKey, JournalEntry.Attributes> {
+public class JournalEntry extends AggregateRoot<JournalEntryId, JournalEntry.Attributes> {
 
-    public static interface Attributes extends EntityAttributes<JournalEntryKey> {
+    public static interface Attributes extends EntityAttributes<JournalEntryId> {
 
         Attribute<String> rawMessage();
 

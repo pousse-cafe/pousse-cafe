@@ -8,8 +8,8 @@ public class OrderDescription {
 
         private OrderDescription description = new OrderDescription();
 
-        public Builder customerKey(CustomerKey customerKey) {
-            description.customerKey = customerKey;
+        public Builder customerId(CustomerId customerId) {
+            description.customerId = customerId;
             return this;
         }
 
@@ -24,7 +24,7 @@ public class OrderDescription {
         }
 
         public OrderDescription build() {
-            Objects.requireNonNull(description.customerKey);
+            Objects.requireNonNull(description.customerId);
             Objects.requireNonNull(description.reference);
             if(description.units <= 0) {
                 throw new IllegalArgumentException();
@@ -37,10 +37,10 @@ public class OrderDescription {
 
     }
 
-    private CustomerKey customerKey;
+    private CustomerId customerId;
 
-    public CustomerKey customerKey() {
-        return customerKey;
+    public CustomerId customerId() {
+        return customerId;
     }
 
     private String reference;

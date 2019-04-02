@@ -23,16 +23,16 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         return entityClass;
     }
 
-    public A find(K key) {
-        checkKey(key);
-        D data = dataAccess.findData(key);
+    public A find(K id) {
+        checkId(id);
+        D data = dataAccess.findData(id);
         return wrap(data);
     }
 
     private EntityDataAccess<K, D> dataAccess;
 
-    private void checkKey(K key) {
-        Objects.requireNonNull(key);
+    private void checkId(K id) {
+        Objects.requireNonNull(id);
     }
 
     protected A wrap(D data) {
@@ -48,10 +48,10 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     private EntityFactory componentFactory;
 
-    public A get(K key) {
-        A entity = find(key);
+    public A get(K id) {
+        A entity = find(id);
         if (entity == null) {
-            throw new NotFoundException("Entity with key " + key + " not found");
+            throw new NotFoundException("Entity with id " + id + " not found");
         } else {
             return entity;
         }
@@ -102,9 +102,9 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
-    public void delete(K key) {
-        checkKey(key);
-        A entity = find(key);
+    public void delete(K id) {
+        checkId(id);
+        A entity = find(id);
         if (entity != null) {
             delete(entity);
         }
@@ -113,7 +113,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public void delete(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
-        dataAccess.deleteData(entity.attributes().key().value());
+        dataAccess.deleteData(entity.attributes().identifier().value());
         considerMessageSendingAfterDelete(entity, messageCollection);
     }
 

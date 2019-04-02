@@ -3,7 +3,7 @@ package process;
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.AnotherDomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -27,7 +27,7 @@ public class MyAggregateUpdateWithAnotherDomainEvent extends MyBoundedContextTes
 
     private void givenAnotherDomainEvent() {
         event = newDomainEvent(AnotherDomainEvent.class);
-        event.key().value(new MyAggregateKey("aggregate-key"));
+        event.identifier().value(new MyAggregateId("aggregate-id"));
         event.x().value(42);
     }
 
@@ -38,7 +38,7 @@ public class MyAggregateUpdateWithAnotherDomainEvent extends MyBoundedContextTes
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = find(MyAggregate.class, event.key().value());
+        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
         assertThat(aggregate.attributes().x().value(), is(event.x().value()));
     }
 }

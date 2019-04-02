@@ -5,7 +5,7 @@ import poussecafe.discovery.MessageListener;
 import poussecafe.myboundedcontext.domain.MyDomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateFactory;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateRepository;
 import poussecafe.process.DomainProcess;
 
@@ -20,10 +20,10 @@ import poussecafe.process.DomainProcess;
 public class MyProcess extends DomainProcess {
 
     /*
-     * Creates a new aggregate given its key.
+     * Creates a new aggregate given its id.
      */
-    public void createMyAggregate(MyAggregateKey key) {
-        MyAggregate aggregate = factory.createAggregate(key);
+    public void createMyAggregate(MyAggregateId id) {
+        MyAggregate aggregate = factory.createAggregate(id);
         runInTransaction(MyAggregate.class, () -> repository.add(aggregate));
     }
 
@@ -35,7 +35,7 @@ public class MyProcess extends DomainProcess {
      */
     public void doSomeAction(DoSomethingParameters command) {
         runInTransaction(MyAggregate.class, () -> {
-            MyAggregate aggregate = repository.get(command.key);
+            MyAggregate aggregate = repository.get(command.id);
             aggregate.doSomething(command.x);
             repository.update(aggregate);
         });
@@ -43,7 +43,7 @@ public class MyProcess extends DomainProcess {
 
     public static class DoSomethingParameters {
 
-        public MyAggregateKey key;
+        public MyAggregateId id;
 
         public int x;
     }
@@ -55,6 +55,6 @@ public class MyProcess extends DomainProcess {
      */
     @MessageListener
     public void handle(MyDomainEvent event) {
-        LoggerFactory.getLogger(getClass()).info("Some action was succesfully executed on {}", event.key().value());
+        LoggerFactory.getLogger(getClass()).info("Some action was succesfully executed on {}", event.identifier().value());
     }
 }

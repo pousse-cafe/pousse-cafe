@@ -9,7 +9,7 @@ import poussecafe.domain.EntityAttributes;
   factory = MessageFactory.class,
   repository = MessageRepository.class
 )
-public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
+public class Message extends AggregateRoot<MessageId, Message.Attributes> {
 
     /**
      * @process Messaging
@@ -18,13 +18,13 @@ public class Message extends AggregateRoot<MessageKey, Message.Attributes> {
     @Override
     public void onAdd() {
         MessageCreated event = newDomainEvent(MessageCreated.class);
-        event.messageKey().valueOf(attributes().key());
+        event.messageId().valueOf(attributes().identifier());
         emitDomainEvent(event);
     }
 
-    public static interface Attributes extends EntityAttributes<MessageKey> {
+    public static interface Attributes extends EntityAttributes<MessageId> {
 
-        Attribute<CustomerKey> customerKey();
+        Attribute<CustomerId> customerId();
 
         Attribute<ContentType> contentType();
     }

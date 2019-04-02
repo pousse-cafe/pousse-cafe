@@ -2,7 +2,7 @@ package poussecafe.doc.model.domainprocessdoc;
 
 import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -13,10 +13,10 @@ import static java.util.stream.Collectors.toList;
     dataImplementation = DomainProcessDocData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalDomainProcessDocDataAccess extends InternalDataAccess<DomainProcessDocKey, DomainProcessDocData> implements DomainProcessDocDataAccess<DomainProcessDocData> {
+public class InternalDomainProcessDocDataAccess extends InternalDataAccess<DomainProcessDocId, DomainProcessDocData> implements DomainProcessDocDataAccess<DomainProcessDocData> {
 
     @Override
-    public List<DomainProcessDocData> findByBoundedContextKey(BoundedContextDocKey key) {
-        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(key)).collect(toList());
+    public List<DomainProcessDocData> findByBoundedContextId(BoundedContextDocId id) {
+        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocId().equals(id)).collect(toList());
     }
 }

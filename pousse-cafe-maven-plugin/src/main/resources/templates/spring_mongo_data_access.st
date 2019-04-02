@@ -8,14 +8,14 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 import <modelPackage>.<name>;
 import <modelPackage>.<name>DataAccess;
-import <modelPackage>.<name>Key;
+import <modelPackage>.<name>Id;
 
 @DataAccessImplementation(
     aggregateRoot = <name>.class,
     dataImplementation = <name>Attributes.class,
     storageName = SpringMongoDbStorage.NAME
 )
-public class <name>MongoDataAccess extends MongoDataAccess\<<name>Key, <name>Attributes, String> implements <name>DataAccess\<<name>Attributes> {
+public class <name>MongoDataAccess extends MongoDataAccess\<<name>Id, <name>Attributes, String> implements <name>DataAccess\<<name>Attributes> {
 
 <if(demoAttribute)>
     @Override
@@ -25,7 +25,7 @@ public class <name>MongoDataAccess extends MongoDataAccess\<<name>Key, <name>Att
 <endif>
 
     @Override
-    protected String convertKey(<name>Key key) {
+    protected String convertId(<name>Id key) {
         return key.getValue();
     }
 

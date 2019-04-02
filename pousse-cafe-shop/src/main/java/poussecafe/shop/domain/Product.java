@@ -13,7 +13,7 @@ import poussecafe.shop.command.PlaceOrder;
   factory = ProductFactory.class,
   repository = ProductRepository.class
 )
-public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
+public class Product extends AggregateRoot<ProductId, Product.Attributes> {
 
     /**
      * @process ProductManagement
@@ -39,20 +39,20 @@ public class Product extends AggregateRoot<ProductKey, Product.Attributes> {
         OrderDescription description = command.description().value();
         if (description.units() > unitsAvailable) {
             OrderRejected event = newDomainEvent(OrderRejected.class);
-            event.productKey().valueOf(attributes().key());
+            event.productId().valueOf(attributes().identifier());
             event.description().value(description);
             emitDomainEvent(event);
         } else {
             attributes().availableUnits().value(unitsAvailable - description.units());
 
             OrderPlaced event = newDomainEvent(OrderPlaced.class);
-            event.productKey().valueOf(attributes().key());
+            event.productId().valueOf(attributes().identifier());
             event.description().value(description);
             emitDomainEvent(event);
         }
     }
 
-    public static interface Attributes extends EntityAttributes<ProductKey> {
+    public static interface Attributes extends EntityAttributes<ProductId> {
 
         Attribute<Integer> totalUnits();
 

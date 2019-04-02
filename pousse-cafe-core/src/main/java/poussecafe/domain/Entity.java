@@ -7,7 +7,7 @@ import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.storage.MessageCollection;
 import poussecafe.storage.Storage;
 
-public abstract class Entity<K, D extends EntityAttributes<K>> {
+public abstract class Entity<I, D extends EntityAttributes<I>> {
 
     @SuppressWarnings("unchecked")
     public void attributes(Object data) {

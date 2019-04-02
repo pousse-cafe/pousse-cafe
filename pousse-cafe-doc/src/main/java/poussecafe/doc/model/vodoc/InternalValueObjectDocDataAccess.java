@@ -9,6 +9,6 @@ import poussecafe.storage.internal.InternalStorage;
     dataImplementation = ValueObjectDocData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalValueObjectDocDataAccess extends InternalDataAccess<ValueObjectDocKey, ValueObjectDocData> implements ValueObjectDocDataAccess<ValueObjectDocData> {
+public class InternalValueObjectDocDataAccess extends InternalDataAccess<ValueObjectDocId, ValueObjectDocData> implements ValueObjectDocDataAccess<ValueObjectDocData> {
 
 }

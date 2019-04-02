@@ -73,7 +73,7 @@ public class UbiquitousLanguageFactory implements Service {
     }
 
     private String boundedContextName(BoundedContextComponentDoc doc) {
-        return boundedContextDocRepository.get(doc.boundedContextDocKey()).attributes().componentDoc().value().name();
+        return boundedContextDocRepository.get(doc.boundedContextDocId()).attributes().componentDoc().value().name();
     }
 
     private BoundedContextDocRepository boundedContextDocRepository;

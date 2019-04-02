@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.junit.Test;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,35 +40,35 @@ public class OptionalAttributeBuilderTest {
 
     private Optional<String> newValue = Optional.of("new");
 
-    private OptionalAttribute<StringKey> propertyWithConversion;
+    private OptionalAttribute<StringId> propertyWithConversion;
 
     private Optional<String> valueWithoutConversion;
 
-    private void thenValueWithConvertionIs(Optional<StringKey> value) {
+    private void thenValueWithConvertionIs(Optional<StringId> value) {
         assertThat(valueWithConversion, is(value));
     }
 
-    private Optional<StringKey> valueWithConversion;
+    private Optional<StringId> valueWithConversion;
 
     @Test
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
-        thenValueWithConvertionIs(newValue.map(StringKey::new));
+        thenValueWithConvertionIs(newValue.map(StringId::new));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.optional(StringKey.class)
+        propertyWithConversion = AttributeBuilder.optional(StringId.class)
                 .from(String.class)
-                .adapt(StringKey::new)
+                .adapt(StringId::new)
                 .get(() -> value)
-                .adapt(StringKey::getValue)
+                .adapt(StringId::getValue)
                 .set(newValue -> value = newValue)
                 .build();
     }
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.map(StringKey::new));
+        propertyWithConversion.value(newValue.map(StringId::new));
         valueWithConversion = propertyWithConversion.value();
     }
 }

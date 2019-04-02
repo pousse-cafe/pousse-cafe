@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.journal.adapters.SerializableJournalEntryKey;
+import poussecafe.journal.adapters.SerializableJournalEntryId;
 import poussecafe.journal.domain.JournalEntry;
-import poussecafe.journal.domain.JournalEntryKey;
+import poussecafe.journal.domain.JournalEntryId;
 import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.spring.mongo.storage.MongoDataAccess;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
@@ -16,7 +16,7 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
     dataImplementation = MongoJournalEntryData.class,
     storageName = SpringMongoDbStorage.NAME
 )
-public class MongoJournalEntryDataAccess extends MongoDataAccess<JournalEntryKey, MongoJournalEntryData, SerializableJournalEntryKey>
+public class MongoJournalEntryDataAccess extends MongoDataAccess<JournalEntryId, MongoJournalEntryData, SerializableJournalEntryId>
         implements poussecafe.journal.domain.JournalEntryDataAccess<MongoJournalEntryData> {
 
     @Autowired
@@ -33,12 +33,12 @@ public class MongoJournalEntryDataAccess extends MongoDataAccess<JournalEntryKey
     }
 
     @Override
-    protected SerializableJournalEntryKey convertKey(JournalEntryKey key) {
-        return new SerializableJournalEntryKey(key);
+    protected SerializableJournalEntryId convertId(JournalEntryId id) {
+        return new SerializableJournalEntryId(id);
     }
 
     @Override
-    protected MongoRepository<MongoJournalEntryData, SerializableJournalEntryKey> mongoRepository() {
+    protected MongoRepository<MongoJournalEntryData, SerializableJournalEntryId> mongoRepository() {
         return repository;
     }
 

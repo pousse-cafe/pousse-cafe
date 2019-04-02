@@ -3,7 +3,7 @@ package poussecafe.doc;
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.commands.CreateAggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.runtime.Runtime;
 
 public class AggregateDocCreator extends BoundedContextComponentDocCreator {
@@ -23,10 +23,10 @@ public class AggregateDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc) {
         CreateAggregateDoc command = runtime.newCommand(CreateAggregateDoc.class);
-        command.boundedContextKey().value(boundedContextDocKey);
+        command.boundedContextId().value(boundedContextDocId);
         command.className().value(componentClassDoc.qualifiedName());
         runtime.submitCommand(command);
     }

@@ -9,15 +9,15 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class FactoryDocData implements FactoryDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<FactoryDocKey> key() {
-        return new Attribute<FactoryDocKey>() {
+    public Attribute<FactoryDocId> identifier() {
+        return new Attribute<FactoryDocId>() {
             @Override
-            public FactoryDocKey value() {
-                return FactoryDocKey.ofClassName(className);
+            public FactoryDocId value() {
+                return FactoryDocId.ofClassName(className);
             }
 
             @Override
-            public void value(FactoryDocKey value) {
+            public void value(FactoryDocId value) {
                 className = value.getValue();
             }
         };

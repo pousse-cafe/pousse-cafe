@@ -2,11 +2,11 @@ package poussecafe.util;
 
 import java.util.Objects;
 
-public class StringKey {
+public class StringId {
 
     private String id;
 
-    public StringKey(String value) {
+    public StringId(String value) {
         Objects.requireNonNull(value);
         id = value;
     }
@@ -34,7 +34,7 @@ public class StringKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        StringKey other = (StringKey) obj;
+        StringId other = (StringId) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

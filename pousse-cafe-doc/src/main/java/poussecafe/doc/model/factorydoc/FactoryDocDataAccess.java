@@ -1,13 +1,13 @@
 package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.EntityDataAccess;
 
-public interface FactoryDocDataAccess<D extends FactoryDoc.Attributes> extends EntityDataAccess<FactoryDocKey, D> {
+public interface FactoryDocDataAccess<D extends FactoryDoc.Attributes> extends EntityDataAccess<FactoryDocId, D> {
 
-    List<D> findByBoundedContextKey(BoundedContextDocKey key);
+    List<D> findByBoundedContextId(BoundedContextDocId id);
 
-    D findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
+    D findByBoundedContextIdAndName(BoundedContextDocId boundedContextDocId,
             String factoryName);
 }

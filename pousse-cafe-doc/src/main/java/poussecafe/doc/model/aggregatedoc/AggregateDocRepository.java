@@ -1,13 +1,13 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.Repository;
 
-public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocKey, AggregateDoc.Attributes> {
+public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocId, AggregateDoc.Attributes> {
 
-    public List<AggregateDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return wrap(dataAccess().findByBoundedContextKey(key));
+    public List<AggregateDoc> findByBoundedContextId(BoundedContextDocId id) {
+        return wrap(dataAccess().findByBoundedContextId(id));
     }
 
     @Override
@@ -19,12 +19,12 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
         return wrap(dataAccess().findAll());
     }
 
-    public List<AggregateDoc> findByKeyClassName(String qualifiedName) {
-        return wrap(dataAccess().findByKeyClassName(qualifiedName));
+    public List<AggregateDoc> findByIdClassName(String qualifiedName) {
+        return wrap(dataAccess().findByIdClassName(qualifiedName));
     }
 
-    public AggregateDoc findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
+    public AggregateDoc findByBoundedContextIdAndName(BoundedContextDocId boundedContextDocId,
             String aggregateName) {
-        return wrap(dataAccess().findByBoundedContextKeyAndName(boundedContextDocKey, aggregateName));
+        return wrap(dataAccess().findByBoundedContextIdAndName(boundedContextDocId, aggregateName));
     }
 }

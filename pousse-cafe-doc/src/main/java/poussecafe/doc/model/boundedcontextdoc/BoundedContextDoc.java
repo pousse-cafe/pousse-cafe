@@ -11,21 +11,21 @@ import poussecafe.domain.EntityAttributes;
     factory = BoundedContextDocFactory.class,
     repository = BoundedContextDocRepository.class
 )
-public class BoundedContextDoc extends AggregateRoot<BoundedContextDocKey, BoundedContextDoc.Attributes> {
+public class BoundedContextDoc extends AggregateRoot<BoundedContextDocId, BoundedContextDoc.Attributes> {
 
     void componentDoc(ComponentDoc componentDoc) {
         attributes().componentDoc().value(componentDoc);
     }
 
     public String packageName() {
-        return attributes().key().value().getValue();
+        return attributes().identifier().value().getValue();
     }
 
     public String id() {
         return StringNormalizer.normalizeString(attributes().componentDoc().value().name());
     }
 
-    public static interface Attributes extends EntityAttributes<BoundedContextDocKey> {
+    public static interface Attributes extends EntityAttributes<BoundedContextDocId> {
 
         Attribute<ComponentDoc> componentDoc();
     }

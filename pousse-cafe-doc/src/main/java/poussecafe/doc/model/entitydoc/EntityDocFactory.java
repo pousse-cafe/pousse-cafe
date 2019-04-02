@@ -4,34 +4,34 @@ import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
 import poussecafe.domain.Factory;
 
-public class EntityDocFactory extends Factory<EntityDocKey, EntityDoc, EntityDoc.Attributes> {
+public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.Attributes> {
 
-    public EntityDoc newEntityDoc(BoundedContextDocKey boundedContextKey, ClassDoc entityClassDoc) {
+    public EntityDoc newEntityDoc(BoundedContextDocId boundedContextId, ClassDoc entityClassDoc) {
         if(!isEntityDoc(entityClassDoc)) {
             throw new DomainException("Class " + entityClassDoc.name() + " is not an entity");
         }
 
         String name = name(entityClassDoc);
-        EntityDocKey key = EntityDocKey.ofClassName(entityClassDoc.qualifiedTypeName());
-        EntityDoc entityDoc = newAggregateWithKey(key);
+        EntityDocId id = EntityDocId.ofClassName(entityClassDoc.qualifiedTypeName());
+        EntityDoc entityDoc = newAggregateWithId(id);
         entityDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextKey)
+                .boundedContextDocId(boundedContextId)
                 .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))
                 .build());
 
-        entityDoc.keyClassName(keyClassName(entityClassDoc));
+        entityDoc.idClassName(idClassName(entityClassDoc));
 
         return entityDoc;
     }
 
     private ComponentDocFactory componentDocFactory;
 
-    private String keyClassName(ClassDoc entityClassDoc) {
+    private String idClassName(ClassDoc entityClassDoc) {
         return entityClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();
     }
 

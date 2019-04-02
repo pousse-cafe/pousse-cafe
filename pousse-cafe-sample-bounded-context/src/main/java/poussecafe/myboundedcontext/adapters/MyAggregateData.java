@@ -4,7 +4,7 @@ import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
 @SuppressWarnings("serial")
 public class MyAggregateData implements MyAggregate.Attributes, Serializable {
@@ -14,14 +14,14 @@ public class MyAggregateData implements MyAggregate.Attributes, Serializable {
      * builders allow to directly expose the value or adapt it before.
      */
     @Override
-    public Attribute<MyAggregateKey> key() {
-        return AttributeBuilder.stringKey(MyAggregateKey.class)
-                .get(() -> key)
-                .set(value -> key = value)
+    public Attribute<MyAggregateId> identifier() {
+        return AttributeBuilder.stringId(MyAggregateId.class)
+                .get(() -> id)
+                .set(value -> id = value)
                 .build();
     }
 
-    private String key;
+    private String id;
 
     @Override
     public Attribute<Integer> x() {

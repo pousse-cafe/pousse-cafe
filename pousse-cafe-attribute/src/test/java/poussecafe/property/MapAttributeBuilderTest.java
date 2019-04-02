@@ -6,7 +6,7 @@ import java.util.Map;
 import org.junit.Test;
 import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,9 +56,9 @@ public class MapAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private Map<StringKey, BigDecimal> valueWithConversion;
+    private Map<StringId, BigDecimal> valueWithConversion;
 
-    private void thenValueWithConvertionIs(Map<StringKey, BigDecimal> value) {
+    private void thenValueWithConvertionIs(Map<StringId, BigDecimal> value) {
         assertThat(valueWithConversion, is(value));
     }
 
@@ -70,21 +70,21 @@ public class MapAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.map(StringKey.class, BigDecimal.class)
+        propertyWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
                 .from(String.class, String.class)
-                .adaptOnGet(StringKey::new, BigDecimal::new)
-                .adaptOnSet(StringKey::getValue, BigDecimal::toString)
+                .adaptOnGet(StringId::new, BigDecimal::new)
+                .adaptOnSet(StringId::getValue, BigDecimal::toString)
                 .withMap(value)
                 .build();
     }
 
-    private MapAttribute<StringKey, BigDecimal> propertyWithConversion;
+    private MapAttribute<StringId, BigDecimal> propertyWithConversion;
 
     private void whenWritingValueWithConversion() {
         propertyWithConversion.value(newValue
                 .entrySet()
                 .stream()
-                .collect(toMap(entry -> new StringKey(entry.getKey()), entry -> new BigDecimal(entry.getValue()))));
+                .collect(toMap(entry -> new StringId(entry.getKey()), entry -> new BigDecimal(entry.getValue()))));
         valueWithConversion = propertyWithConversion.value();
     }
 }

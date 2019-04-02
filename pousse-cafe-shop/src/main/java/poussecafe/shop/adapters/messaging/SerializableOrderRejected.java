@@ -6,19 +6,19 @@ import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.shop.domain.OrderDescription;
 import poussecafe.shop.domain.OrderRejected;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 
 @MessageImplementation(message = OrderRejected.class)
 @SuppressWarnings("serial")
 public class SerializableOrderRejected implements Serializable, OrderRejected {
 
     @Override
-    public Attribute<ProductKey> productKey() {
-        return AttributeBuilder.single(ProductKey.class)
+    public Attribute<ProductId> productId() {
+        return AttributeBuilder.single(ProductId.class)
                 .from(String.class)
-                .adapt(ProductKey::new)
+                .adapt(ProductId::new)
                 .get(() -> productId)
-                .adapt(ProductKey::getValue)
+                .adapt(ProductId::getValue)
                 .set(value -> productId = value)
                 .build();
     }

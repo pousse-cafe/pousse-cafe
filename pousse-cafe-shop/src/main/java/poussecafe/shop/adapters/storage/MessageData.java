@@ -4,26 +4,26 @@ import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.shop.domain.ContentType;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 import poussecafe.shop.domain.Message;
-import poussecafe.shop.domain.MessageKey;
+import poussecafe.shop.domain.MessageId;
 
 @SuppressWarnings("serial")
 public class MessageData implements Message.Attributes, Serializable {
 
     @Override
-    public Attribute<MessageKey> key() {
-        return AttributeBuilder.stringKey(MessageKey.class)
-                .get(() -> key)
-                .set(value -> key = value)
+    public Attribute<MessageId> identifier() {
+        return AttributeBuilder.stringId(MessageId.class)
+                .get(() -> id)
+                .set(value -> id = value)
                 .build();
     }
 
-    private String key;
+    private String id;
 
     @Override
-    public Attribute<CustomerKey> customerKey() {
-        return AttributeBuilder.stringKey(CustomerKey.class)
+    public Attribute<CustomerId> customerId() {
+        return AttributeBuilder.stringId(CustomerId.class)
                 .get(() -> customerId)
                 .set(value -> customerId = value)
                 .build();

@@ -7,12 +7,12 @@ import poussecafe.doc.commands.CreateAggregateDoc;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ClassDocRepository;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, AggregateDoc.Attributes> {
+public class AggregateDocFactory extends Factory<AggregateDocId, AggregateDoc, AggregateDoc.Attributes> {
 
     /**
      * @process AggregateDocCreation
@@ -25,17 +25,17 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
             throw new DomainException("Class " + aggregateClassDoc.name() + " is not an aggregate root");
         }
 
-        AggregateDocKey key = AggregateDocKey.ofClassName(aggregateClassDoc.qualifiedTypeName());
-        AggregateDoc aggregateDoc = newAggregateWithKey(key);
+        AggregateDocId id = AggregateDocId.ofClassName(aggregateClassDoc.qualifiedTypeName());
+        AggregateDoc aggregateDoc = newAggregateWithId(id);
 
         String name = name(aggregateClassDoc);
-        BoundedContextDocKey boundedContextDocKey = command.boundedContextKey().value();
+        BoundedContextDocId boundedContextDocId = command.boundedContextId().value();
         aggregateDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextDocKey)
+                .boundedContextDocId(boundedContextDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 
-        aggregateDoc.attributes().keyClassName().value(keyClassName(aggregateClassDoc));
+        aggregateDoc.attributes().idClassName().value(idClassName(aggregateClassDoc));
 
         return aggregateDoc;
     }
@@ -44,7 +44,7 @@ public class AggregateDocFactory extends Factory<AggregateDocKey, AggregateDoc, 
 
     private ComponentDocFactory componentDocFactory;
 
-    private String keyClassName(ClassDoc aggregateClassDoc) {
+    private String idClassName(ClassDoc aggregateClassDoc) {
         return aggregateClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();
     }
 

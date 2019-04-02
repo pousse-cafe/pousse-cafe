@@ -73,6 +73,9 @@ public abstract class GoatTest {
 
     protected void thenMojoExecutionSuccess(boolean success) {
         if(success) {
+            if(mojoExecutionException != null) {
+                mojoExecutionException.printStackTrace();
+            }
             assertNull(mojoExecutionException);
         } else {
             assertNotNull(mojoExecutionException);

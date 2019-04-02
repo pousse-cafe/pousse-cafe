@@ -5,7 +5,7 @@ import java.util.Set;
 import org.junit.Test;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.attribute.SetAttribute;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
@@ -49,28 +49,28 @@ public class SetAttributeBuilderTest {
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
-        thenValueWithConvertionIs(value.stream().map(StringKey::new).collect(toSet()));
+        thenValueWithConvertionIs(value.stream().map(StringId::new).collect(toSet()));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.set(StringKey.class)
+        propertyWithConversion = AttributeBuilder.set(StringId.class)
                 .from(String.class)
-                .adaptOnGet(StringKey::new)
-                .adaptOnSet(StringKey::getValue)
+                .adaptOnGet(StringId::new)
+                .adaptOnSet(StringId::getValue)
                 .withSet(value)
                 .build();
     }
 
-    private SetAttribute<StringKey> propertyWithConversion;
+    private SetAttribute<StringId> propertyWithConversion;
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.stream().map(StringKey::new).collect(toSet()));
+        propertyWithConversion.value(newValue.stream().map(StringId::new).collect(toSet()));
         valueWithConversion = propertyWithConversion.value();
     }
 
-    private Set<StringKey> valueWithConversion;
+    private Set<StringId> valueWithConversion;
 
-    private void thenValueWithConvertionIs(Set<StringKey> value) {
+    private void thenValueWithConvertionIs(Set<StringId> value) {
         assertThat(valueWithConversion, is(value));
     }
 }

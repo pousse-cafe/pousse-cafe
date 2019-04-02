@@ -44,16 +44,16 @@ public class ModelSourceGenerator {
     private File modelDirectory;
 
     public void generate() {
-        writeAggregateRootKeySource();
+        writeAggregateRootIdSource();
         writeAggregateRootSource();
         writeDataAccessSource();
         writeRepositorySource();
         writeFactorySource();
     }
 
-    private void writeAggregateRootKeySource() {
-        File outputFile = new File(modelDirectory, aggregateName + "Key.java");
-        sourceWriter.writeSource(outputFile, "key");
+    private void writeAggregateRootIdSource() {
+        File outputFile = new File(modelDirectory, aggregateName + "Id.java");
+        sourceWriter.writeSource(outputFile, "id");
     }
 
     private void writeAggregateRootSource() {

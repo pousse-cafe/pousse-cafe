@@ -6,10 +6,10 @@ import poussecafe.myboundedcontext.domain.AnotherDomainEvent;
 
 import static poussecafe.collection.Collections.asSet;
 
-public class DoSomethingElseRunner extends DefaultAggregateMessageListenerRunner<AnotherDomainEvent, MyAggregateKey, MyAggregate> {
+public class DoSomethingElseRunner extends DefaultAggregateMessageListenerRunner<AnotherDomainEvent, MyAggregateId, MyAggregate> {
 
     @Override
-    public Set<MyAggregateKey> targetAggregatesKeys(AnotherDomainEvent message) {
-        return asSet(message.key().value());
+    public Set<MyAggregateId> targetAggregatesIds(AnotherDomainEvent message) {
+        return asSet(message.identifier().value());
     }
 }

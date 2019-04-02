@@ -3,10 +3,10 @@ package poussecafe.shop.domain;
 import java.util.List;
 import poussecafe.domain.Repository;
 
-public class MessageRepository extends Repository<Message, MessageKey, Message.Attributes> {
+public class MessageRepository extends Repository<Message, MessageId, Message.Attributes> {
 
-    public List<Message> findByCustomer(CustomerKey customerKey) {
-        return wrap(dataAccess().findByCustomer(customerKey));
+    public List<Message> findByCustomer(CustomerId customerId) {
+        return wrap(dataAccess().findByCustomer(customerId));
     }
 
     @Override

@@ -5,7 +5,7 @@ import poussecafe.domain.DomainEvent;
 
 public interface OrderPlaced extends DomainEvent {
 
-    Attribute<ProductKey> productKey();
+    Attribute<ProductId> productId();
 
     Attribute<OrderDescription> description();
 }

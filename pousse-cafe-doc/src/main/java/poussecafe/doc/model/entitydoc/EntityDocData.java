@@ -9,15 +9,15 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class EntityDocData implements EntityDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<EntityDocKey> key() {
-        return new Attribute<EntityDocKey>() {
+    public Attribute<EntityDocId> identifier() {
+        return new Attribute<EntityDocId>() {
             @Override
-            public EntityDocKey value() {
-                return EntityDocKey.ofClassName(className);
+            public EntityDocId value() {
+                return EntityDocId.ofClassName(className);
             }
 
             @Override
-            public void value(EntityDocKey value) {
+            public void value(EntityDocId value) {
                 className = value.getValue();
             }
         };
@@ -43,19 +43,19 @@ public class EntityDocData implements EntityDoc.Attributes, Serializable {
     private BoundedContextComponentDocData boundedContextComponentDoc;
 
     @Override
-    public Attribute<String> keyClassName() {
+    public Attribute<String> idClassName() {
         return new Attribute<String>() {
             @Override
             public String value() {
-                return keyClassName;
+                return idClassName;
             }
 
             @Override
             public void value(String value) {
-                keyClassName = value;
+                idClassName = value;
             }
         };
     }
 
-    private String keyClassName;
+    private String idClassName;
 }

@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 public class AttributeBuilder {
 
@@ -34,8 +34,8 @@ public class AttributeBuilder {
         return builder;
     }
 
-    public static <K, V> MapAttributeBuilder<K, V> map(Class<K> keyClass, Class<V> valueClass) {
-        Objects.requireNonNull(keyClass);
+    public static <K, V> MapAttributeBuilder<K, V> map(Class<K> idClass, Class<V> valueClass) {
+        Objects.requireNonNull(idClass);
         Objects.requireNonNull(valueClass);
         return new MapAttributeBuilder<>();
     }
@@ -54,31 +54,31 @@ public class AttributeBuilder {
         return new IntegerAttributeBuilder();
     }
 
-    public static <T extends StringKey> PrimitiveAttributeBuilder<String, T> stringKey(Class<T> stringKeyClass) {
-        return simple(DataAdapters.stringKey(stringKeyClass));
+    public static <T extends StringId> PrimitiveAttributeBuilder<String, T> stringId(Class<T> stringIdClass) {
+        return single(DataAdapters.stringId(stringIdClass));
     }
 
-    public static <U, T> PrimitiveAttributeBuilder<U, T> simple(DataAdapter<U, T> dataAdapter) {
+    public static <U, T> PrimitiveAttributeBuilder<U, T> single(DataAdapter<U, T> dataAdapter) {
         return new PrimitiveAttributeBuilder<>(dataAdapter);
     }
 
     public static PrimitiveAttributeBuilder<String, OffsetDateTime> offsetDateTime() {
-        return simple(DataAdapters.stringOffsetDateTime());
+        return single(DataAdapters.stringOffsetDateTime());
     }
 
     public static PrimitiveAttributeBuilder<String, LocalDateTime> localDateTime() {
-        return simple(DataAdapters.stringLocalDateTime());
+        return single(DataAdapters.stringLocalDateTime());
     }
 
     public static PrimitiveAttributeBuilder<String, LocalDate> localDate() {
-        return simple(DataAdapters.stringLocalDate());
+        return single(DataAdapters.stringLocalDate());
     }
 
     public static PrimitiveAttributeBuilder<String, BigDecimal> bigDecimal() {
-        return simple(DataAdapters.stringBigDecimal());
+        return single(DataAdapters.stringBigDecimal());
     }
 
     public static <E extends Enum<E>> PrimitiveAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
-        return simple(DataAdapters.stringEnum(enumClass));
+        return single(DataAdapters.stringEnum(enumClass));
     }
 }

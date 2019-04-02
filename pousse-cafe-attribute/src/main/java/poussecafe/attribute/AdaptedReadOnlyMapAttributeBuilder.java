@@ -4,25 +4,25 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <V> Attribute value type
  */
 public class AdaptedReadOnlyMapAttributeBuilder<J, U, K, V> {
 
-    AdaptedReadOnlyMapAttributeBuilder(Function<J, K> keyAdapter, Function<U, V> valueAdapter) {
-        this.keyAdapter = keyAdapter;
+    AdaptedReadOnlyMapAttributeBuilder(Function<J, K> idAdapter, Function<U, V> valueAdapter) {
+        this.idAdapter = idAdapter;
         this.valueAdapter = valueAdapter;
     }
 
-    private Function<J, K> keyAdapter;
+    private Function<J, K> idAdapter;
 
     private Function<U, V> valueAdapter;
 
-    public AdaptingReadWriteMapAttributeBuilder<J, U, K, V> adaptOnSet(Function<K, J> keyAdapter, Function<V, U> valueAdapter) {
-        Objects.requireNonNull(keyAdapter);
+    public AdaptingReadWriteMapAttributeBuilder<J, U, K, V> adaptOnSet(Function<K, J> idAdapter, Function<V, U> valueAdapter) {
+        Objects.requireNonNull(idAdapter);
         Objects.requireNonNull(valueAdapter);
-        return new AdaptingReadWriteMapAttributeBuilder<>(this.keyAdapter, this.valueAdapter, keyAdapter, valueAdapter);
+        return new AdaptingReadWriteMapAttributeBuilder<>(this.idAdapter, this.valueAdapter, idAdapter, valueAdapter);
     }
 }

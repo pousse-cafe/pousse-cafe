@@ -4,21 +4,21 @@ import java.util.UUID;
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.Factory;
 
-public class MessageFactory extends Factory<MessageKey, Message, Message.Attributes> {
+public class MessageFactory extends Factory<MessageId, Message, Message.Attributes> {
 
     /**
      * @process Messaging
      */
     @MessageListener
     public Message buildMessage(OrderRejected event) {
-        Message message = buildMessage(event.description().value().customerKey());
+        Message message = buildMessage(event.description().value().customerId());
         message.attributes().contentType().value(ContentType.ORDER_REJECTED);
         return message;
     }
 
-    private Message buildMessage(CustomerKey customerKey) {
-        Message message = newAggregateWithKey(new MessageKey(UUID.randomUUID().toString()));
-        message.attributes().customerKey().value(customerKey);
+    private Message buildMessage(CustomerId customerId) {
+        Message message = newAggregateWithId(new MessageId(UUID.randomUUID().toString()));
+        message.attributes().customerId().value(customerId);
         return message;
     }
 
@@ -27,7 +27,7 @@ public class MessageFactory extends Factory<MessageKey, Message, Message.Attribu
      */
     @MessageListener
     public Message buildMessage(OrderCreated event) {
-        Message message = buildMessage(event.orderKey().value().getCustomerKey());
+        Message message = buildMessage(event.orderId().value().getCustomerId());
         message.attributes().contentType().value(ContentType.ORDER_READY_FOR_SETTLEMENT);
         return message;
     }
@@ -37,7 +37,7 @@ public class MessageFactory extends Factory<MessageKey, Message, Message.Attribu
      */
     @MessageListener
     public Message buildMessage(OrderSettled event) {
-        Message message = buildMessage(event.orderKey().value().getCustomerKey());
+        Message message = buildMessage(event.orderId().value().getCustomerId());
         message.attributes().contentType().value(ContentType.ORDER_SETTLED);
         return message;
     }
@@ -47,7 +47,7 @@ public class MessageFactory extends Factory<MessageKey, Message, Message.Attribu
      */
     @MessageListener
     public Message buildMessage(OrderReadyForShipping event) {
-        Message message = buildMessage(event.orderKey().value().getCustomerKey());
+        Message message = buildMessage(event.orderId().value().getCustomerId());
         message.attributes().contentType().value(ContentType.ORDER_READY_FOR_SHIPMENT);
         return message;
     }

@@ -9,15 +9,15 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<DomainProcessDocKey> key() {
-        return new Attribute<DomainProcessDocKey>() {
+    public Attribute<DomainProcessDocId> identifier() {
+        return new Attribute<DomainProcessDocId>() {
             @Override
-            public DomainProcessDocKey value() {
-                return new DomainProcessDocKey(className);
+            public DomainProcessDocId value() {
+                return new DomainProcessDocId(className);
             }
 
             @Override
-            public void value(DomainProcessDocKey value) {
+            public void value(DomainProcessDocId value) {
                 className = value.getValue();
             }
         };

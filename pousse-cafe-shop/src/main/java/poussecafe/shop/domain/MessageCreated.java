@@ -5,5 +5,5 @@ import poussecafe.domain.DomainEvent;
 
 public interface MessageCreated extends DomainEvent {
 
-    Attribute<MessageKey> messageKey();
+    Attribute<MessageId> messageId();
 }

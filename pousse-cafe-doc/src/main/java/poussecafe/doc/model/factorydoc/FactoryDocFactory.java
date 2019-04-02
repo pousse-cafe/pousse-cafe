@@ -4,22 +4,22 @@ import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class FactoryDocFactory extends Factory<FactoryDocKey, FactoryDoc, FactoryDoc.Attributes> {
+public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, FactoryDoc.Attributes> {
 
-    public FactoryDoc newFactoryDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
+    public FactoryDoc newFactoryDoc(BoundedContextDocId boundedContextDocId, ClassDoc classDoc) {
         if(!isFactoryDoc(classDoc)) {
             throw new DomainException("Class " + classDoc.name() + " is not a service");
         }
 
         String name = classDoc.simpleTypeName();
-        FactoryDocKey key = FactoryDocKey.ofClassName(classDoc.qualifiedName());
-        FactoryDoc factoryDoc = newAggregateWithKey(key);
+        FactoryDocId id = FactoryDocId.ofClassName(classDoc.qualifiedName());
+        FactoryDoc factoryDoc = newAggregateWithId(id);
         factoryDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextDocKey)
+                .boundedContextDocId(boundedContextDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());
 

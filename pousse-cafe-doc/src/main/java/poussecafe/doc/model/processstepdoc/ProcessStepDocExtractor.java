@@ -12,7 +12,7 @@ import poussecafe.doc.Logger;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.domain.DomainEvent;
@@ -24,15 +24,15 @@ import static java.util.stream.Collectors.toList;
 
 public class ProcessStepDocExtractor implements Service {
 
-    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocKey boundedContextDocKey, ClassDoc classDoc) {
+    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocId boundedContextDocId, ClassDoc classDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         for(MethodDoc methodDoc : classDoc.methods()) {
             if(isProcessStep(methodDoc)) {
                 List<String> customStepSignatures = AnnotationsResolver.step(methodDoc);
                 if(!customStepSignatures.isEmpty()) {
-                    stepDocs.addAll(extractCustomSteps(boundedContextDocKey, methodDoc));
+                    stepDocs.addAll(extractCustomSteps(boundedContextDocId, methodDoc));
                 } else {
-                    stepDocs.add(extractDeclaredStep(boundedContextDocKey, methodDoc));
+                    stepDocs.add(extractDeclaredStep(boundedContextDocId, methodDoc));
                 }
             }
         }
@@ -58,21 +58,21 @@ public class ProcessStepDocExtractor implements Service {
         return AnnotationsResolver.event(methodDoc);
     }
 
-    private List<ProcessStepDoc> extractCustomSteps(BoundedContextDocKey boundedContextDocKey,
+    private List<ProcessStepDoc> extractCustomSteps(BoundedContextDocId boundedContextDocId,
             MethodDoc methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
             Logger.info("Extracting custom step " + signature);
-            ProcessStepDocKey messageListenerDocKey = new ProcessStepDocKey(signature.toString());
+            ProcessStepDocId messageListenerDocId = new ProcessStepDocId(signature.toString());
             BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
-                    .boundedContextDocKey(boundedContextDocKey)
+                    .boundedContextDocId(boundedContextDocId)
                     .componentDoc(new ComponentDoc.Builder()
                             .name(signature.toString())
                             .description(methodDoc.commentText())
                             .build())
                     .build();
-            ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocKey,
+            ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
                     boundedContextComponentDoc);
             processStepDoc.attributes().processName().value(processName(methodDoc));
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
@@ -125,7 +125,7 @@ public class ProcessStepDocExtractor implements Service {
         }
     }
 
-    private ProcessStepDoc extractDeclaredStep(BoundedContextDocKey boundedContextDocKey,
+    private ProcessStepDoc extractDeclaredStep(BoundedContextDocId boundedContextDocId,
             MethodDoc methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.qualifiedName());
         Optional<String> consumedMessage = consumedMessage(methodDoc);
@@ -136,12 +136,12 @@ public class ProcessStepDocExtractor implements Service {
                         .build())
                 .consumedMessageName(consumedMessage)
                 .build();
-        ProcessStepDocKey key = new ProcessStepDocKey(stepMethodSignature);
+        ProcessStepDocId id = new ProcessStepDocId(stepMethodSignature);
         BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextDocKey)
-                .componentDoc(componentDocFactory.buildDoc(key.getValue(), methodDoc))
+                .boundedContextDocId(boundedContextDocId)
+                .componentDoc(componentDocFactory.buildDoc(id.getValue(), methodDoc))
                 .build();
-        ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(key,
+        ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
                 boundedContextComponentDoc);
         processStepDoc.attributes().processName().value(processName(methodDoc));
         processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);

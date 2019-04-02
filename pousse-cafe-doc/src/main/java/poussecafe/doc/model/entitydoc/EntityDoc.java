@@ -11,20 +11,20 @@ import poussecafe.domain.EntityAttributes;
   factory = EntityDocFactory.class,
   repository = EntityDocRepository.class
 )
-public class EntityDoc extends AggregateRoot<EntityDocKey, EntityDoc.Attributes> {
+public class EntityDoc extends AggregateRoot<EntityDocId, EntityDoc.Attributes> {
 
-    void keyClassName(String keyClassName) {
-        attributes().keyClassName().value(keyClassName);
+    void idClassName(String idClassName) {
+        attributes().idClassName().value(idClassName);
     }
 
     public String id() {
         return StringNormalizer.normalizeString(attributes().boundedContextComponentDoc().value().componentDoc().name());
     }
 
-    public static interface Attributes extends EntityAttributes<EntityDocKey> {
+    public static interface Attributes extends EntityAttributes<EntityDocId> {
 
         Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 
-        Attribute<String> keyClassName();
+        Attribute<String> idClassName();
     }
 }

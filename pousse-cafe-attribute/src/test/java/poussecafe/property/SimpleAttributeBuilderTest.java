@@ -3,7 +3,7 @@ package poussecafe.property;
 import org.junit.Test;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,29 +45,29 @@ public class SimpleAttributeBuilderTest {
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
-        thenValueWithConvertionIs(new StringKey(newValue));
+        thenValueWithConvertionIs(new StringId(newValue));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.single(StringKey.class)
+        propertyWithConversion = AttributeBuilder.single(StringId.class)
                 .from(String.class)
-                .adapt(StringKey::new)
+                .adapt(StringId::new)
                 .get(() -> value)
-                .adapt(StringKey::getValue)
+                .adapt(StringId::getValue)
                 .set(newValue -> value = newValue)
                 .build();
     }
 
-    private Attribute<StringKey> propertyWithConversion;
+    private Attribute<StringId> propertyWithConversion;
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(new StringKey(newValue));
+        propertyWithConversion.value(new StringId(newValue));
         valueWithConversion = propertyWithConversion.value();
     }
 
-    private StringKey valueWithConversion;
+    private StringId valueWithConversion;
 
-    private void thenValueWithConvertionIs(StringKey value) {
+    private void thenValueWithConvertionIs(StringId value) {
         assertThat(valueWithConversion, is(value));
     }
 }

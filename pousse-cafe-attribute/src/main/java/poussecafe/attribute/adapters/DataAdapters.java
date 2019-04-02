@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import poussecafe.attribute.AutoAdaptingDataAdapter;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -75,15 +75,15 @@ public class DataAdapters {
         };
     }
 
-    public static <T extends StringKey> DataAdapter<String, T> stringKey(Class<T> stringKeyClass) {
-        Objects.requireNonNull(stringKeyClass);
+    public static <T extends StringId> DataAdapter<String, T> stringId(Class<T> stringIdClass) {
+        Objects.requireNonNull(stringIdClass);
         return new DataAdapter<String, T>() {
             @Override
             public T adaptGet(String storedValue) {
                 try {
-                    return stringKeyClass.getConstructor(String.class).newInstance(storedValue);
+                    return stringIdClass.getConstructor(String.class).newInstance(storedValue);
                 } catch (Exception e) {
-                    throw new PousseCafeException("Unable to adapt string key", e);
+                    throw new PousseCafeException("Unable to adapt string id", e);
                 }
             }
 

@@ -1,11 +1,11 @@
 package poussecafe.doc.model.servicedoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.EntityDataAccess;
 
-public interface ServiceDocDataAccess<D extends ServiceDoc.Attributes> extends EntityDataAccess<ServiceDocKey, D> {
+public interface ServiceDocDataAccess<D extends ServiceDoc.Attributes> extends EntityDataAccess<ServiceDocId, D> {
 
-    List<D> findByBoundedContextKey(BoundedContextDocKey key);
+    List<D> findByBoundedContextId(BoundedContextDocId id);
 
 }

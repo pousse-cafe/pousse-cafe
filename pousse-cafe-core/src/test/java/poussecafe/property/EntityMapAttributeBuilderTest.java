@@ -9,7 +9,7 @@ import poussecafe.domain.Entity;
 import poussecafe.domain.SimpleEntityData;
 import poussecafe.entity.SimpleEntity;
 import poussecafe.util.ReflectionUtils;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 
 public class EntityMapAttributeBuilderTest {
 
-    private EntityMapAttribute<StringKey, SimpleEntity> propertyWithConversion;
+    private EntityMapAttribute<StringId, SimpleEntity> propertyWithConversion;
 
     @SuppressWarnings("rawtypes")
     private Entity<?, ?> primitive() {
@@ -29,9 +29,9 @@ public class EntityMapAttributeBuilderTest {
         };
     }
 
-    private Map<StringKey, SimpleEntity> valueWithConversion;
+    private Map<StringId, SimpleEntity> valueWithConversion;
 
-    private void thenValueWithConvertionIs(Map<StringKey, SimpleEntity> value) {
+    private void thenValueWithConvertionIs(Map<StringId, SimpleEntity> value) {
         assertThat(valueWithConversion, is(value));
     }
 
@@ -43,10 +43,10 @@ public class EntityMapAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = EntityAttributeBuilder.entityMap(StringKey.class, SimpleEntity.class)
+        propertyWithConversion = EntityAttributeBuilder.entityMap(StringId.class, SimpleEntity.class)
                 .from(String.class, SimpleEntityData.class)
-                .adaptOnGet(StringKey::new)
-                .adaptOnSet(StringKey::getValue)
+                .adaptOnGet(StringId::new)
+                .adaptOnSet(StringId::getValue)
                 .withMap(value)
                 .build();
     }
@@ -55,11 +55,11 @@ public class EntityMapAttributeBuilderTest {
 
     private Map<String, SimpleEntityData> initValue() {
         SimpleEntityData data = new SimpleEntityData();
-        String keyString = "key";
-        data.key().value(new StringKey(keyString));
+        String idString = "id";
+        data.identifier().value(new StringId(idString));
 
         Map<String, SimpleEntityData> value = new HashMap<>();
-        value.put(keyString, data);
+        value.put(idString, data);
         return value;
     }
 
@@ -67,7 +67,7 @@ public class EntityMapAttributeBuilderTest {
         propertyWithConversion.inContextOf(primitive()).value(newValue
                 .entrySet()
                 .stream()
-                .collect(toMap(entry -> new StringKey(entry.getKey()), entry -> entity(entry.getValue()))));
+                .collect(toMap(entry -> new StringId(entry.getKey()), entry -> entity(entry.getValue()))));
         valueWithConversion = propertyWithConversion.inContextOf(primitive()).value();
     }
 
@@ -75,11 +75,11 @@ public class EntityMapAttributeBuilderTest {
 
     private Map<String, SimpleEntityData> initNewValue() {
         SimpleEntityData data = new SimpleEntityData();
-        String keyString = "key2";
-        data.key().value(new StringKey(keyString));
+        String idString = "id2";
+        data.identifier().value(new StringId(idString));
 
         Map<String, SimpleEntityData> value = new HashMap<>();
-        value.put(keyString, data);
+        value.put(idString, data);
         return value;
     }
 

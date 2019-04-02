@@ -9,15 +9,15 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class ServiceDocData implements ServiceDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<ServiceDocKey> key() {
-        return new Attribute<ServiceDocKey>() {
+    public Attribute<ServiceDocId> identifier() {
+        return new Attribute<ServiceDocId>() {
             @Override
-            public ServiceDocKey value() {
-                return ServiceDocKey.ofClassName(className);
+            public ServiceDocId value() {
+                return ServiceDocId.ofClassName(className);
             }
 
             @Override
-            public void value(ServiceDocKey value) {
+            public void value(ServiceDocId value) {
                 className = value.getValue();
             }
         };

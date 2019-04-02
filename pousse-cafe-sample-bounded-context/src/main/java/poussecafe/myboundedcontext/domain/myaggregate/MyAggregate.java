@@ -16,7 +16,7 @@ import poussecafe.myboundedcontext.domain.MyDomainEvent;
     factory = MyAggregateFactory.class,
     repository = MyAggregateRepository.class
 )
-public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Attributes> {
+public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attributes> {
 
     /*
      * Below action updates aggregate's state and triggers the emission of a Domain Event in case of success
@@ -31,14 +31,14 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Attri
 
         // Emit a domain event telling the attribute has been updated in the context of doSomething.
         MyDomainEvent event = newDomainEvent(MyDomainEvent.class);
-        event.key().valueOf(attributes().key());
+        event.identifier().valueOf(attributes().identifier());
         emitDomainEvent(event);
     }
 
     /*
      * Below method is a listener to AnotherDomainEvent event. This does not require the definition of an explicit
      * DomainProcess. However, a runner service has to be provided. It is responsible for
-     * - the extraction of aggregate keys out of the event.
+     * - the extraction of aggregate ids out of the event.
      * - providing a context to the execution of the listener (none in this case).
      */
     @MessageListener(runner = DoSomethingElseRunner.class)
@@ -50,7 +50,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateKey, MyAggregate.Attri
      * This interface defines the data model in the form of a set of attributes without exposing implementation details
      * (JPA Entity, Mongo document, etc).
      */
-    public interface Attributes extends EntityAttributes<MyAggregateKey> {
+    public interface Attributes extends EntityAttributes<MyAggregateId> {
 
         /*
          * An Attribute instance allows to read or update the value.

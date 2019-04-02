@@ -9,14 +9,14 @@ import poussecafe.discovery.MessageListener;
   factory = SimpleAggregateFactory.class,
   repository = SimpleAggregateRepository.class
 )
-public class SimpleAggregate extends AggregateRoot<SimpleAggregateKey, SimpleAggregate.Attributes> {
+public class SimpleAggregate extends AggregateRoot<SimpleAggregateId, SimpleAggregate.Attributes> {
 
     @MessageListener(runner = SimpleAggregateTouchRunner.class)
     public void touch(TestDomainEvent3 event) {
         attributes().data().value("touched");
     }
 
-    public static interface Attributes extends EntityAttributes<SimpleAggregateKey> {
+    public static interface Attributes extends EntityAttributes<SimpleAggregateId> {
 
         Attribute<String> data();
     }

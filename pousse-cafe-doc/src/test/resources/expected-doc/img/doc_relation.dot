@@ -1,9 +1,9 @@
 graph {
 splines=spline;
 overlap=false;
-"Relation" -- "RelationKey" [style=solid];
+"Relation" -- "RelationId" [style=solid];
 "ComponentType" -- "Relation" [style=solid];
 "Relation"[shape=box,style=bold];
 "ComponentType"[shape=ellipse];
-"RelationKey"[shape=ellipse];
+"RelationId"[shape=ellipse];
 }

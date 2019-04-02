@@ -6,10 +6,10 @@ import poussecafe.shop.command.AddUnits;
 
 import static poussecafe.collection.Collections.asSet;
 
-public class AddUnitsRunner extends DefaultAggregateMessageListenerRunner<AddUnits, ProductKey, Product> {
+public class AddUnitsRunner extends DefaultAggregateMessageListenerRunner<AddUnits, ProductId, Product> {
 
     @Override
-    public Set<ProductKey> targetAggregatesKeys(AddUnits message) {
-        return asSet(message.productKey().value());
+    public Set<ProductId> targetAggregatesIds(AddUnits message) {
+        return asSet(message.productId().value());
     }
 }

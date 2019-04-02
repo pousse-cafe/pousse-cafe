@@ -1,7 +1,7 @@
 package poussecafe.doc.model;
 
 import java.io.Serializable;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 
 @SuppressWarnings("serial")
 public class BoundedContextComponentDocData implements Serializable {
@@ -9,7 +9,7 @@ public class BoundedContextComponentDocData implements Serializable {
     public static BoundedContextComponentDocData adapt(BoundedContextComponentDoc boundedContextComponentDoc) {
         BoundedContextComponentDocData data = new BoundedContextComponentDocData();
         data.componentDoc = ComponentDocData.of(boundedContextComponentDoc.componentDoc());
-        data.boundedContextId = boundedContextComponentDoc.boundedContextDocKey().getValue();
+        data.boundedContextId = boundedContextComponentDoc.boundedContextDocId().getValue();
         return data;
     }
 
@@ -20,7 +20,7 @@ public class BoundedContextComponentDocData implements Serializable {
     public BoundedContextComponentDoc adapt() {
         return new BoundedContextComponentDoc.Builder()
                 .componentDoc(componentDoc.toModel())
-                .boundedContextDocKey(BoundedContextDocKey.ofPackageName(boundedContextId))
+                .boundedContextDocId(BoundedContextDocId.ofPackageName(boundedContextId))
                 .build();
     }
 }

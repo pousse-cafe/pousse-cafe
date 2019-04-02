@@ -6,21 +6,21 @@ import poussecafe.attribute.AttributeBuilder;
 public class SimpleAggregateData implements SimpleAggregate.Attributes {
 
     @Override
-    public Attribute<SimpleAggregateKey> key() {
-        return new Attribute<SimpleAggregateKey>() {
+    public Attribute<SimpleAggregateId> identifier() {
+        return new Attribute<SimpleAggregateId>() {
             @Override
-            public SimpleAggregateKey value() {
-                return new SimpleAggregateKey(key);
+            public SimpleAggregateId value() {
+                return new SimpleAggregateId(id);
             }
 
             @Override
-            public void value(SimpleAggregateKey value) {
-                key = value.getId();
+            public void value(SimpleAggregateId value) {
+                id = value.getValue();
             }
         };
     }
 
-    private String key;
+    private String id;
 
     @Override
     public Attribute<String> data() {

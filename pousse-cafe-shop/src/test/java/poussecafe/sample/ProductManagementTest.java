@@ -4,7 +4,7 @@ import org.junit.Test;
 import poussecafe.shop.command.AddUnits;
 import poussecafe.shop.command.CreateProduct;
 import poussecafe.shop.domain.Product;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -12,17 +12,17 @@ import static org.junit.Assert.assertThat;
 
 public class ProductManagementTest extends ShopTest {
 
-    private ProductKey productKey;
+    private ProductId productId;
 
     @Test
     public void productCanBeCreated() {
-        givenProductKey();
+        givenProductId();
         whenSubmittingProductCreationCommand();
         thenProductCreated();
     }
 
-    private void givenProductKey() {
-        productKey = new ProductKey("product-id");
+    private void givenProductId() {
+        productId = new ProductId("product-id");
     }
 
     private void whenSubmittingProductCreationCommand() {
@@ -31,12 +31,12 @@ public class ProductManagementTest extends ShopTest {
 
     protected void createProduct() {
         CreateProduct command = newCommand(CreateProduct.class);
-        command.productKey().value(productKey);
+        command.productId().value(productId);
         submitCommand(command);
     }
 
     private void thenProductCreated() {
-        assertThat(find(Product.class, productKey), notNullValue());
+        assertThat(find(Product.class, productId), notNullValue());
     }
 
     @Test
@@ -47,13 +47,13 @@ public class ProductManagementTest extends ShopTest {
     }
 
     private void givenProductWithZeroUnits() {
-        givenProductKey();
+        givenProductId();
         createProduct();
     }
 
     private void whenSubmittingAddUnitsCommand() {
         addUnits = newCommand(AddUnits.class);
-        addUnits.productKey().value(productKey);
+        addUnits.productId().value(productId);
         addUnits.units().value(1);
         submitCommand(addUnits);
     }
@@ -61,7 +61,7 @@ public class ProductManagementTest extends ShopTest {
     private AddUnits addUnits;
 
     private void thenProductHasAddedUnits() {
-        Product product = find(Product.class, productKey);
+        Product product = find(Product.class, productId);
         assertThat(product.attributes().availableUnits().value(), is(addUnits.units().value()));
         assertThat(product.attributes().totalUnits().value(), is(addUnits.units().value()));
     }

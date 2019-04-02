@@ -7,13 +7,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import static poussecafe.util.ReferenceEquals.referenceEquals;
 
-public class JournalEntryKey {
+public class JournalEntryId {
 
     private String consumptionId;
 
     private String listenerId;
 
-    public JournalEntryKey(String consumptionId, String listenerId) {
+    public JournalEntryId(String consumptionId, String listenerId) {
         setConsumptionId(consumptionId);
         setListenerId(listenerId);
     }

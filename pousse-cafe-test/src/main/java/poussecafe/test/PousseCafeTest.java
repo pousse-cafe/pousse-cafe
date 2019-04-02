@@ -33,8 +33,8 @@ public abstract class PousseCafeTest {
     }
 
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
-            K key) {
-        return wrapper.find(entityClass, key);
+            K id) {
+        return wrapper.find(entityClass, id);
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {

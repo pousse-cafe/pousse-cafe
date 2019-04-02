@@ -1,7 +1,7 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.process.EntityDocCreation;
 
@@ -22,9 +22,9 @@ public class EntityDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc) {
-        entityDocCreation.addEntityDoc(boundedContextDocKey, componentClassDoc);
+        entityDocCreation.addEntityDoc(boundedContextDocId, componentClassDoc);
     }
 
     private EntityDocCreation entityDocCreation;

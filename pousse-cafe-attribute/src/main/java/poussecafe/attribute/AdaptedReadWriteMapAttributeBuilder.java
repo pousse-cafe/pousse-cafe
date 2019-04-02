@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <V> Attribute value type
  */
 public class AdaptedReadWriteMapAttributeBuilder<J, U, K, V> {

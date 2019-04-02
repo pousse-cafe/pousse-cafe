@@ -18,13 +18,13 @@ public abstract class Factory<K, A extends AggregateRoot<K, D>, D extends Entity
         return entityClass;
     }
 
-    protected A newAggregateWithKey(K key) {
-        Objects.requireNonNull(key);
+    protected A newAggregateWithId(K id) {
+        Objects.requireNonNull(id);
         A entity = entityFactory.newEntity(new NewEntityInstanceSpecification.Builder<A>()
                 .entityClass(entityClass)
                 .instantiateData(true)
                 .build());
-        entity.attributes().key().value(key);
+        entity.attributes().identifier().value(id);
         return entity;
     }
 

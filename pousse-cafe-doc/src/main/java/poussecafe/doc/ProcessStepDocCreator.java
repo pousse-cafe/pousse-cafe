@@ -2,7 +2,7 @@ package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.doc.process.ProcessStepDocCreation;
@@ -28,9 +28,9 @@ public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc) {
-        processStepDocCreation.createOrUpdateProcessStepDoc(boundedContextDocKey, componentClassDoc);
+        processStepDocCreation.createOrUpdateProcessStepDoc(boundedContextDocId, componentClassDoc);
     }
 
     private ProcessStepDocCreation processStepDocCreation;

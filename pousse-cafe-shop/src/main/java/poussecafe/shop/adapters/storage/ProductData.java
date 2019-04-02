@@ -4,14 +4,14 @@ import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.shop.domain.Product;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 
 @SuppressWarnings("serial")
 public class ProductData implements Product.Attributes, Serializable {
 
     @Override
-    public Attribute<ProductKey> key() {
-        return AttributeBuilder.stringKey(ProductKey.class)
+    public Attribute<ProductId> identifier() {
+        return AttributeBuilder.stringId(ProductId.class)
                 .get(() -> productId)
                 .set(value -> productId = value)
                 .build();

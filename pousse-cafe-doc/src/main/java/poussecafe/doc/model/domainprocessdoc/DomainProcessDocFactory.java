@@ -12,23 +12,23 @@ import poussecafe.doc.ProcessDescription;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 import poussecafe.process.DomainProcess;
 
-public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, DomainProcessDoc, DomainProcessDoc.Attributes> {
+public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
-    public DomainProcessDoc newDomainProcessDoc(BoundedContextDocKey boundedContextDocKey, ClassDoc doc) {
+    public DomainProcessDoc newDomainProcessDoc(BoundedContextDocId boundedContextDocId, ClassDoc doc) {
         if(!isDomainProcessDoc(doc)) {
             throw new DomainException("Class " + doc.name() + " is not a domain process");
         }
 
         String name = name(doc);
-        DomainProcessDocKey key = new DomainProcessDocKey(doc.qualifiedName());
-        DomainProcessDoc domainProcessDoc = newAggregateWithKey(key);
+        DomainProcessDocId id = new DomainProcessDocId(doc.qualifiedName());
+        DomainProcessDoc domainProcessDoc = newAggregateWithId(id);
         domainProcessDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextDocKey)
+                .boundedContextDocId(boundedContextDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());
 
@@ -45,7 +45,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
 
     private ComponentDocFactory componentDocFactory;
 
-    public List<DomainProcessDoc> createDomainProcesses(BoundedContextDocKey boundedContextDocKey, MethodDoc methodDoc) {
+    public List<DomainProcessDoc> createDomainProcesses(BoundedContextDocId boundedContextDocId, MethodDoc methodDoc) {
         if(!isDomainProcessDoc(methodDoc)) {
             throw new DomainException("Method " + methodDoc.name() + " does not define any domain process");
         }
@@ -55,14 +55,14 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         List<DomainProcessDoc> processes = new ArrayList<>();
         for(ProcessDescription description : descriptions) {
             detectedDomainProcesses.add(description.name());
-            DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, description);
+            DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocId, description);
             processes.add(doc);
         }
         List<String> names = AnnotationsResolver.process(methodDoc);
         for(String name : names) {
             if(!detectedDomainProcesses.contains(name)) {
                 detectedDomainProcesses.add(name);
-                DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocKey, new ProcessDescription.Builder()
+                DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocId, new ProcessDescription.Builder()
                         .name(name)
                         .description("")
                         .build());
@@ -72,12 +72,12 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocKey, Domain
         return processes;
     }
 
-    private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocKey boundedContextDocKey,
+    private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocId boundedContextDocId,
             ProcessDescription description) {
-        DomainProcessDocKey key = new DomainProcessDocKey(boundedContextDocKey.getValue() + "." + description.name());
-        DomainProcessDoc doc = newAggregateWithKey(key);
+        DomainProcessDocId id = new DomainProcessDocId(boundedContextDocId.getValue() + "." + description.name());
+        DomainProcessDoc doc = newAggregateWithId(id);
         doc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocKey(boundedContextDocKey)
+                .boundedContextDocId(boundedContextDocId)
                 .componentDoc(new ComponentDoc.Builder()
                         .name(description.name())
                         .description(description.description())

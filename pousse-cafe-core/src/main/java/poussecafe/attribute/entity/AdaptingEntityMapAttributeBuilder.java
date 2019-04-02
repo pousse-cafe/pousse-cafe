@@ -6,9 +6,9 @@ import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <E> Attribute value type
  */
 public class AdaptingEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
@@ -19,8 +19,8 @@ public class AdaptingEntityMapAttributeBuilder<J, U extends EntityAttributes<K>,
 
     private Class<E> entityClass;
 
-    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptOnGet(Function<J, K> keyAdapter) {
-        Objects.requireNonNull(keyAdapter);
-        return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, keyAdapter);
+    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptOnGet(Function<J, K> idAdapter) {
+        Objects.requireNonNull(idAdapter);
+        return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, idAdapter);
     }
 }

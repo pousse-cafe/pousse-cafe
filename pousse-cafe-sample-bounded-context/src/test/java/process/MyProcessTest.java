@@ -2,7 +2,7 @@ package process;
 
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 import poussecafe.myboundedcontext.process.MyProcess;
 import poussecafe.myboundedcontext.process.MyProcess.DoSomethingParameters;
 
@@ -25,8 +25,8 @@ public class MyProcessTest extends MyBoundedContextTest {
     }
 
     private void givenAvailableAggregate() {
-        parameters.key = new MyAggregateKey("key");
-        myProcess.createMyAggregate(parameters.key);
+        parameters.id = new MyAggregateId("id");
+        myProcess.createMyAggregate(parameters.id);
     }
 
     private MyProcess.DoSomethingParameters parameters = new DoSomethingParameters();
@@ -39,7 +39,7 @@ public class MyProcessTest extends MyBoundedContextTest {
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = find(MyAggregate.class, parameters.key);
+        MyAggregate aggregate = find(MyAggregate.class, parameters.id);
         assertThat(aggregate.attributes().x().value(), equalTo(parameters.x));
     }
 }

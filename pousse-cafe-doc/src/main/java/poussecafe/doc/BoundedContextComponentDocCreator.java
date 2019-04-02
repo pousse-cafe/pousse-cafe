@@ -4,7 +4,7 @@ import com.sun.javadoc.ClassDoc;
 import java.util.Objects;
 import java.util.function.Consumer;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 
 public abstract class BoundedContextComponentDocCreator implements Consumer<ClassDoc> {
@@ -23,7 +23,7 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Clas
                     .findByPackageNamePrefixing(classDoc.qualifiedName());
             if (boundedContextDoc != null) {
                 Logger.debug("Adding " + componentName() + " with class " + classDoc.qualifiedTypeName());
-                addDoc(boundedContextDoc.attributes().key().value(), classDoc);
+                addDoc(boundedContextDoc.attributes().identifier().value(), classDoc);
             } else {
                 Logger.warn("Could not add component with missing bounded context: " + classDoc.qualifiedName());
             }
@@ -36,7 +36,7 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Clas
 
     private BoundedContextDocRepository boundedContextDocRepository;
 
-    protected abstract void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected abstract void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc);
 
     protected RootDocWrapper rootDocWrapper() {

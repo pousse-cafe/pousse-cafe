@@ -12,9 +12,9 @@ import poussecafe.domain.EntityAttributes;
     factory = ProcessStepDocFactory.class,
     repository = ProcessStepDocRepository.class
 )
-public class ProcessStepDoc extends AggregateRoot<ProcessStepDocKey, ProcessStepDoc.Attributes> {
+public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepDoc.Attributes> {
 
-    public static interface Attributes extends EntityAttributes<ProcessStepDocKey> {
+    public static interface Attributes extends EntityAttributes<ProcessStepDocId> {
 
         Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
 

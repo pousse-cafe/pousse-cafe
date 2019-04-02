@@ -5,15 +5,15 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.shop.command.CreateProduct;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 
 @MessageImplementation(message = CreateProduct.class)
 @SuppressWarnings("serial")
 public class CreateProductData implements Serializable, CreateProduct {
 
     @Override
-    public Attribute<ProductKey> productKey() {
-        return AttributeBuilder.stringKey(ProductKey.class)
+    public Attribute<ProductId> productId() {
+        return AttributeBuilder.stringId(ProductId.class)
                 .get(() -> productId)
                 .set(value -> productId = value)
                 .build();

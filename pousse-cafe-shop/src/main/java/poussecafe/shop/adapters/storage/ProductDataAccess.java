@@ -2,7 +2,7 @@ package poussecafe.shop.adapters.storage;
 
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.shop.domain.Product;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -11,6 +11,6 @@ import poussecafe.storage.internal.InternalStorage;
     dataImplementation = ProductData.class,
     storageName = InternalStorage.NAME
 )
-public class ProductDataAccess extends InternalDataAccess<ProductKey, Product.Attributes> {
+public class ProductDataAccess extends InternalDataAccess<ProductId, Product.Attributes> {
 
 }

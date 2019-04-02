@@ -12,11 +12,11 @@ import static java.util.stream.Collectors.toList;
     dataImplementation = RelationData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalRelationDataAccess extends InternalDataAccess<RelationKey, RelationData> implements RelationDataAccess<RelationData> {
+public class InternalRelationDataAccess extends InternalDataAccess<RelationId, RelationData> implements RelationDataAccess<RelationData> {
 
     @Override
     public List<RelationData> findWithFromClass(String className) {
-        return findAll().stream().filter(data -> data.key().value().fromClass().equals(className)).collect(toList());
+        return findAll().stream().filter(data -> data.identifier().value().fromClass().equals(className)).collect(toList());
     }
 
 }

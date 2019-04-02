@@ -6,7 +6,7 @@ import org.mockito.MockitoAnnotations;
 import poussecafe.environment.EntityFactory;
 import poussecafe.journal.domain.JournalEntry;
 import poussecafe.journal.domain.JournalEntryFactory;
-import poussecafe.journal.domain.JournalEntryKey;
+import poussecafe.journal.domain.JournalEntryId;
 import poussecafe.journal.domain.JournalEntryRepository;
 import poussecafe.journal.process.StoreConsumptionResult;
 import poussecafe.messaging.Message;
@@ -47,7 +47,7 @@ public abstract class MessagingJournalTest {
 
     protected String exception;
 
-    protected JournalEntryKey key;
+    protected JournalEntryId id;
 
     protected void givenConfiguredMessagingJournal() {
         MockitoAnnotations.initMocks(this);
@@ -75,11 +75,11 @@ public abstract class MessagingJournalTest {
     protected void givenReceivedMessage() {
         listenerId = "listenerId";
         message = new TestMessage();
-        givenKey();
+        givenId();
     }
 
-    protected void givenKey() {
-        key = new JournalEntryKey("consumptionId", listenerId);
+    protected void givenId() {
+        id = new JournalEntryId("consumptionId", listenerId);
     }
 
     protected void givenIgnoredMessage() {
@@ -93,7 +93,7 @@ public abstract class MessagingJournalTest {
 
     protected void whenLoggingSuccessfulConsumption() {
         SuccessfulConsumption event = new SuccessfulConsumptionData();
-        event.consumptionId().value(key.getConsumptionId());
+        event.consumptionId().value(id.getConsumptionId());
         event.listenerId().value(listenerId);
         event.rawMessage().value(rawMessage());
         journal.storeSuccessfulConsumption(event);
@@ -105,7 +105,7 @@ public abstract class MessagingJournalTest {
 
     protected void whenLoggingFailedConsumption() {
         FailedConsumption event = new FailedConsumptionData();
-        event.consumptionId().value(key.getConsumptionId());
+        event.consumptionId().value(id.getConsumptionId());
         event.listenerId().value(listenerId);
         event.rawMessage().value(rawMessage());
         event.error().value("error");

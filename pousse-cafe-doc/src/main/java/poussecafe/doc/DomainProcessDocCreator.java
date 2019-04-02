@@ -3,7 +3,7 @@ package poussecafe.doc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.doc.process.DomainProcessDocCreation;
@@ -29,14 +29,14 @@ public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc) {
         if(DomainProcessDocFactory.isDomainProcessDoc(componentClassDoc)) {
-            domainProcessDocCreation.addDomainProcessDoc(boundedContextDocKey, componentClassDoc);
+            domainProcessDocCreation.addDomainProcessDoc(boundedContextDocId, componentClassDoc);
         } else {
             for(MethodDoc doc : componentClassDoc.methods()) {
                 if(DomainProcessDocFactory.isDomainProcessDoc(doc)) {
-                    domainProcessDocCreation.addDomainProcessDocs(boundedContextDocKey, doc);
+                    domainProcessDocCreation.addDomainProcessDocs(boundedContextDocId, doc);
                 }
             }
         }

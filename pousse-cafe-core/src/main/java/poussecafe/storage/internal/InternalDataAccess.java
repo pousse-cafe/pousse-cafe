@@ -39,8 +39,8 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
     }
 
     @Override
-    public synchronized D findData(K key) {
-        byte[] serializedBytes = storage.get(key);
+    public synchronized D findData(K id) {
+        byte[] serializedBytes = storage.get(id);
         if (serializedBytes == null) {
             return null;
         } else {
@@ -59,15 +59,15 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
 
     @Override
     public synchronized void addData(D data) {
-        K key = data.key().value();
-        if (storage.containsKey(key)) {
-            throw new InternalStorageException("Duplicate key " + key);
+        K id = data.identifier().value();
+        if (storage.containsKey(id)) {
+            throw new InternalStorageException("Duplicate id " + id);
         }
         List<AdditionPlan> additionPlans = prepareAddition(data);
         if(locker.isPresent()) {
             locker.get().initializeVersion(data);
         }
-        storage.put(key, serialize(data));
+        storage.put(id, serialize(data));
         index(data);
         commitPlans(additionPlans);
     }
@@ -81,11 +81,11 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
     }
 
     private void index(D data) {
-        K key = data.key().value();
+        K id = data.identifier().value();
         List<Object> indexedData = extractIndexedData(data);
         indexedData.forEach(indexed -> {
             if(indexed != null) {
-                index.put(indexed, key);
+                index.put(indexed, id);
             }
         });
     }
@@ -112,11 +112,11 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
 
     @Override
     public synchronized void updateData(D newData) {
-        K key = newData.key().value();
-        if (!storage.containsKey(key)) {
-            throw new InternalStorageException("No entry with key " + key);
+        K id = newData.identifier().value();
+        if (!storage.containsKey(id)) {
+            throw new InternalStorageException("No entry with id " + id);
         }
-        D oldData = findData(key);
+        D oldData = findData(id);
 
         List<UpdatePlan> updatePlans = prepareUpdate(Optional.ofNullable(oldData), newData);
         unindex(oldData);
@@ -124,7 +124,7 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
             long actualVersion = locker.get().getVersion(oldData).orElseThrow(InternalStorageException::new);
             locker.get().ensureAndIncrement(actualVersion, newData);
         }
-        storage.put(key, serialize(newData));
+        storage.put(id, serialize(newData));
         index(newData);
         commitPlans(updatePlans);
     }
@@ -139,18 +139,18 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
     }
 
     @Override
-    public synchronized void deleteData(K key) {
-        D data = findData(key);
+    public synchronized void deleteData(K id) {
+        D data = findData(id);
         if(data != null) {
-            storage.remove(key);
+            storage.remove(id);
             unindex(data);
         }
     }
 
     private synchronized void unindex(D data) {
-        K key = data.key().value();
+        K id = data.identifier().value();
         List<Object> indexedData = extractIndexedData(data);
-        indexedData.forEach(indexed -> index.remove(indexed, key));
+        indexedData.forEach(indexed -> index.remove(indexed, id));
     }
 
     protected synchronized List<D> findBy(Object indexed) {

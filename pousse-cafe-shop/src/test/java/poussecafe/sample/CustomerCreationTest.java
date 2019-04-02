@@ -3,33 +3,33 @@ package poussecafe.sample;
 import org.junit.Test;
 import poussecafe.shop.command.CreateCustomer;
 import poussecafe.shop.domain.Customer;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class CustomerCreationTest extends ShopTest {
 
-    private CustomerKey customerKey;
+    private CustomerId customerId;
 
     @Test
     public void customerCreation() {
-        givenCustomerKey();
+        givenCustomerId();
         whenCreatingCustomer();
         thenCustomerIsCreated();
     }
 
-    private void givenCustomerKey() {
-        customerKey = new CustomerKey("customer-id");
+    private void givenCustomerId() {
+        customerId = new CustomerId("customer-id");
     }
 
     private void whenCreatingCustomer() {
         CreateCustomer command = newCommand(CreateCustomer.class);
-        command.customerKey().value(customerKey);
+        command.customerId().value(customerId);
         submitCommand(command);
     }
 
     private void thenCustomerIsCreated() {
-        assertThat(find(Customer.class, customerKey), notNullValue());
+        assertThat(find(Customer.class, customerId), notNullValue());
     }
 }

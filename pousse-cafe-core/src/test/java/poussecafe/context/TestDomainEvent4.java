@@ -3,16 +3,16 @@ package poussecafe.context;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.SimpleAggregateKey;
+import poussecafe.domain.SimpleAggregateId;
 
 public class TestDomainEvent4 implements DomainEvent {
 
-    public Attribute<SimpleAggregateKey> key() {
-        return AttributeBuilder.stringKey(SimpleAggregateKey.class)
-                .get(() -> key)
-                .set(value -> key = value)
+    public Attribute<SimpleAggregateId> identifier() {
+        return AttributeBuilder.stringId(SimpleAggregateId.class)
+                .get(() -> id)
+                .set(value -> id = value)
                 .build();
     }
 
-    private String key;
+    private String id;
 }

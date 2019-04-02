@@ -1,8 +1,8 @@
 package poussecafe.shop.domain.mongo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import poussecafe.shop.adapters.storage.OrderKeyData;
+import poussecafe.shop.adapters.storage.OrderIdData;
 
-public interface OrderMongoRepository extends MongoRepository<OrderData, OrderKeyData> {
+public interface OrderMongoRepository extends MongoRepository<OrderData, OrderIdData> {
 
 }

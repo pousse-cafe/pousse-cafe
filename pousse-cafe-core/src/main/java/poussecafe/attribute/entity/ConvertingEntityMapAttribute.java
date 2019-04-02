@@ -1,12 +1,11 @@
 package poussecafe.attribute.entity;
 
 import java.util.Map;
+import java.util.Objects;
 import poussecafe.attribute.ConvertingMapAttribute;
 import poussecafe.attribute.MapAttribute;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
-
-import java.util.Objects;
 
 public abstract class ConvertingEntityMapAttribute<L, F extends EntityAttributes<K>, K, E extends Entity<K, ?>> implements
         EntityMapAttribute<K, E> {

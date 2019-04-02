@@ -1,7 +1,7 @@
 package poussecafe.doc;
 
 import com.sun.javadoc.ClassDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.process.ServiceDocCreation;
 
@@ -22,9 +22,9 @@ public class ServiceDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocKey boundedContextDocKey,
+    protected void addDoc(BoundedContextDocId boundedContextDocId,
             ClassDoc componentClassDoc) {
-        serviceDocCreation.addServiceDoc(boundedContextDocKey, componentClassDoc);
+        serviceDocCreation.addServiceDoc(boundedContextDocId, componentClassDoc);
     }
 
     private ServiceDocCreation serviceDocCreation;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import poussecafe.runtime.Runtime;
 import poussecafe.shop.command.CreateProduct;
 import poussecafe.shop.domain.Product;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 import poussecafe.shop.domain.ProductRepository;
 
 @RestController
@@ -25,24 +25,24 @@ public class RestResource {
 
     @PostMapping(path = "/product")
     public void createProduct(@RequestBody CreateProductView input) {
-        logger.info("Creating product with key {}", input.key);
-        ProductKey productKey = new ProductKey(input.key);
+        logger.info("Creating product with id {}", input.id);
+        ProductId productId = new ProductId(input.id);
 
         CreateProduct command = runtime.newCommand(CreateProduct.class);
-        command.productKey().value(productKey);
+        command.productId().value(productId);
         runtime.submitCommand(command);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @GetMapping(path = "/product/{key}")
-    public ProductView getProduct(@PathVariable("key") String key) {
-        logger.info("Fetching product with key {}", key);
-        ProductKey productKey = new ProductKey(key);
-        Product product = productRepository.get(productKey);
+    @GetMapping(path = "/product/{id}")
+    public ProductView getProduct(@PathVariable("id") String id) {
+        logger.info("Fetching product with id {}", id);
+        ProductId productId = new ProductId(id);
+        Product product = productRepository.get(productId);
 
         ProductView view = new ProductView();
-        view.key = key;
+        view.id = id;
         view.availableUnits = product.attributes().availableUnits().value();
         view.totalUnits = product.attributes().totalUnits().value();
         return view;

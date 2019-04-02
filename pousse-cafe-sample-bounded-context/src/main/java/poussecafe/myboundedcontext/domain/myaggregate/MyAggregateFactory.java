@@ -8,13 +8,13 @@ import poussecafe.myboundedcontext.domain.ADomainEvent;
  * The Factory is responsible for providing an Aggregate instance.
  * It also exposes any means of building an aggregate in a consistent initial state.
  */
-public class MyAggregateFactory extends Factory<MyAggregateKey, MyAggregate, MyAggregate.Attributes> {
+public class MyAggregateFactory extends Factory<MyAggregateId, MyAggregate, MyAggregate.Attributes> {
 
     /*
      * One way to create a MyAggregate instance is to directly call below method.
      */
-    public MyAggregate createAggregate(MyAggregateKey key) {
-        return newAggregateWithKey(key);
+    public MyAggregate createAggregate(MyAggregateId id) {
+        return newAggregateWithId(id);
     }
 
     /*
@@ -23,6 +23,6 @@ public class MyAggregateFactory extends Factory<MyAggregateKey, MyAggregate, MyA
      */
     @MessageListener
     public MyAggregate createAggregate(ADomainEvent event) {
-        return createAggregate(event.key().value());
+        return createAggregate(event.identifier().value());
     }
 }

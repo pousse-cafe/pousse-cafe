@@ -20,7 +20,7 @@ import poussecafe.doc.model.DomainProcessStepsFactory;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
@@ -28,7 +28,7 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.entitydoc.EntityDoc;
-import poussecafe.doc.model.entitydoc.EntityDocKey;
+import poussecafe.doc.model.entitydoc.EntityDocId;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
@@ -36,7 +36,7 @@ import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
-import poussecafe.doc.model.vodoc.ValueObjectDocKey;
+import poussecafe.doc.model.vodoc.ValueObjectDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 
 import static java.util.stream.Collectors.toList;
@@ -123,21 +123,21 @@ public class HtmlWriter {
         view.put("description", boundedContextDoc.attributes().componentDoc().value().description());
 
         view.put("aggregates", aggregateDocRepository
-                .findByBoundedContextKey(boundedContextDoc.attributes().key().value())
+                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
                 .stream()
                 .sorted(this::compareAggregates)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("services", serviceDocRepository
-                .findByBoundedContextKey(boundedContextDoc.attributes().key().value())
+                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
                 .stream()
                 .sorted(this::compareServices)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("domainProcesses", domainProcessDocRepository
-                .findByBoundedContextKey(boundedContextDoc.attributes().key().value())
+                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
                 .stream()
                 .sorted(this::compareDomainProcesses)
                 .map(this::adapt)
@@ -175,12 +175,12 @@ public class HtmlWriter {
         view.put("name", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
         view.put("description", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
 
-        view.put("entities", findEntities(aggregateDoc.attributes().key().value()).stream()
+        view.put("entities", findEntities(aggregateDoc.attributes().identifier().value()).stream()
                 .sorted(this::compareEntities)
                 .map(this::adapt)
                 .collect(toList()));
 
-        view.put("valueObjects", findValueObjects(aggregateDoc.attributes().key().value()).stream()
+        view.put("valueObjects", findValueObjects(aggregateDoc.attributes().identifier().value()).stream()
                 .sorted(this::compareValueObjects)
                 .map(this::adapt)
                 .collect(toList()));
@@ -188,8 +188,8 @@ public class HtmlWriter {
         return view;
     }
 
-    private List<EntityDoc> findEntities(AggregateDocKey aggregateDocKey) {
-        return findEntities(aggregateDocKey.getValue()).stream()
+    private List<EntityDoc> findEntities(AggregateDocId aggregateDocId) {
+        return findEntities(aggregateDocId.getValue()).stream()
                 .map(entityDocRepository::find)
                 .filter(Objects::nonNull)
                 .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
@@ -200,17 +200,17 @@ public class HtmlWriter {
         return compareTo(entityDoc1.attributes().boundedContextComponentDoc().value(), entityDoc2.attributes().boundedContextComponentDoc().value());
     }
 
-    private Set<EntityDocKey> findEntities(String fromClassName) {
-        Set<EntityDocKey> keys = new HashSet<>();
+    private Set<EntityDocId> findEntities(String fromClassName) {
+        Set<EntityDocId> ids = new HashSet<>();
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.ENTITY) {
-                keys.add(EntityDocKey.ofClassName(relation.toComponent().className()));
+                ids.add(EntityDocId.ofClassName(relation.toComponent().className()));
             }
             if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                keys.addAll(findEntities(relation.toComponent().className()));
+                ids.addAll(findEntities(relation.toComponent().className()));
             }
         }
-        return keys;
+        return ids;
     }
 
     private RelationRepository relationRepository;
@@ -225,8 +225,8 @@ public class HtmlWriter {
         return view;
     }
 
-    private List<ValueObjectDoc> findValueObjects(AggregateDocKey aggregateDocKey) {
-        return findValueObjects(aggregateDocKey.getValue()).stream()
+    private List<ValueObjectDoc> findValueObjects(AggregateDocId aggregateDocId) {
+        return findValueObjects(aggregateDocId.getValue()).stream()
                 .map(valueObjectDocRepository::find)
                 .filter(Objects::nonNull)
                 .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
@@ -237,17 +237,17 @@ public class HtmlWriter {
         return compareTo(valueObjectDoc1.attributes().boundedContextComponentDoc().value(), valueObjectDoc2.attributes().boundedContextComponentDoc().value());
     }
 
-    private Set<ValueObjectDocKey> findValueObjects(String fromClassName) {
-        Set<ValueObjectDocKey> keys = new HashSet<>();
+    private Set<ValueObjectDocId> findValueObjects(String fromClassName) {
+        Set<ValueObjectDocId> ids = new HashSet<>();
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
-                keys.add(ValueObjectDocKey.ofClassName(relation.toComponent().className()));
+                ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className()));
             }
             if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                keys.addAll(findValueObjects(relation.toComponent().className()));
+                ids.addAll(findValueObjects(relation.toComponent().className()));
             }
         }
-        return keys;
+        return ids;
     }
 
     private ValueObjectDocRepository valueObjectDocRepository;

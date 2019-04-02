@@ -1,15 +1,15 @@
 package poussecafe.domain;
 
 import java.util.UUID;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
-public class SimpleAggregateKey extends StringKey {
+public class SimpleAggregateId extends StringId {
 
-    public SimpleAggregateKey() {
+    public SimpleAggregateId() {
         super(UUID.randomUUID().toString());
     }
 
-    public SimpleAggregateKey(String id) {
+    public SimpleAggregateId(String id) {
         super(id);
     }
 

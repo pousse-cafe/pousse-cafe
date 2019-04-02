@@ -44,13 +44,13 @@ public class RuntimeWrapper {
 
     @SuppressWarnings("unchecked")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
-            K key) {
+            K id) {
         waitUntilEndOfMessageProcessing();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
                 .orElseThrow(PousseCafeException::new);
-        return (T) repository.find(key);
+        return (T) repository.find(id);
     }
 
     public void waitUntilEndOfMessageProcessing() {

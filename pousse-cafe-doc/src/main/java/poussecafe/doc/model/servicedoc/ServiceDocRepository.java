@@ -1,13 +1,13 @@
 package poussecafe.doc.model.servicedoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.Repository;
 
-public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocKey, ServiceDoc.Attributes> {
+public class ServiceDocRepository extends Repository<ServiceDoc, ServiceDocId, ServiceDoc.Attributes> {
 
-    public List<ServiceDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return wrap(dataAccess().findByBoundedContextKey(key));
+    public List<ServiceDoc> findByBoundedContextId(BoundedContextDocId id) {
+        return wrap(dataAccess().findByBoundedContextId(id));
     }
 
     @Override

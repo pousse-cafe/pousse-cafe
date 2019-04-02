@@ -9,9 +9,9 @@ import poussecafe.domain.EntityAttributes;
     factory = <name>Factory.class,
     repository = <name>Repository.class
 )
-public class <name> extends AggregateRoot\<<name>Key, <name>.Attributes> {
+public class <name> extends AggregateRoot\<<name>Id, <name>.Attributes> {
 
-    public static interface Attributes extends EntityAttributes\<<name>Key> {
+    public static interface Attributes extends EntityAttributes\<<name>Id> {
 
 <if(demoAttribute)>
         Attribute\<String> name();

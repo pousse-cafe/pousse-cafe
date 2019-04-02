@@ -6,7 +6,7 @@ import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedEdge;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.relation.Component;
@@ -57,7 +57,7 @@ public class BoundedContextGraphFactory {
     private UndirectedGraph graph = new UndirectedGraph();
 
     private void addSimpleAggregates() {
-        for (AggregateDoc aggregateDoc : aggregateDocRepository.findByBoundedContextKey(boundedContextDoc.attributes().key().value())) {
+        for (AggregateDoc aggregateDoc : aggregateDocRepository.findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
             addSimpleAggregate(aggregateDoc);
             addAggregateRelations(aggregateDoc);
         }
@@ -78,9 +78,9 @@ public class BoundedContextGraphFactory {
     private void addAggregateRelations(AggregateDoc aggregateDoc, String fromClassName) {
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.AGGREGATE) {
-                AggregateDoc otherAggregate = aggregateDocRepository.get(AggregateDocKey.ofClassName(relation.toComponent().className()));
+                AggregateDoc otherAggregate = aggregateDocRepository.get(AggregateDocId.ofClassName(relation.toComponent().className()));
                 if(!aggregateDoc.className().equals(otherAggregate.className()) &&
-                        otherAggregate.attributes().boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDoc.attributes().key().value())) {
+                        otherAggregate.attributes().boundedContextComponentDoc().value().boundedContextDocId().equals(boundedContextDoc.attributes().identifier().value())) {
                     UndirectedEdge edge = UndirectedEdge
                             .solidEdge(aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name(),
                                     name(relation.toComponent()));
@@ -97,7 +97,7 @@ public class BoundedContextGraphFactory {
     private String name(Component component) {
         switch(component.type()) {
         case AGGREGATE:
-            return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+            return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
         default:
             throw new IllegalArgumentException("Unsupported component type " + component.type());
         }

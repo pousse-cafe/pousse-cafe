@@ -50,7 +50,7 @@ public class GraphImagesWriter {
     private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
-                .findByBoundedContextKey(boundedContextDoc.attributes().key().value())) {
+                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
             Logger.debug("Drawing aggregate " + aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
@@ -67,7 +67,7 @@ public class GraphImagesWriter {
     private void writeDomainProcessesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
-                .findByBoundedContextKey(boundedContextDoc.attributes().key().value())) {
+                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
             Logger.debug("Drawing domain process " + domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,

@@ -3,7 +3,7 @@ package process;
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.YetAnotherDomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateKey;
+import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -27,7 +27,7 @@ public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyBoundedContex
 
     private void givenYetAnotherDomainEvent() {
         event = newDomainEvent(YetAnotherDomainEvent.class);
-        event.key().value(new MyAggregateKey("aggregate-key"));
+        event.identifier().value(new MyAggregateId("aggregate-id"));
     }
 
     private YetAnotherDomainEvent event;
@@ -37,7 +37,7 @@ public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyBoundedContex
     }
 
     private void thenAggregateRemoved() {
-        MyAggregate aggregate = find(MyAggregate.class, event.key().value());
+        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
         assertThat(aggregate, nullValue());
     }
 }

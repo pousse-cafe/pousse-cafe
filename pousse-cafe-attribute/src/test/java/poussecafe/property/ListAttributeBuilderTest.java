@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.Test;
 import poussecafe.attribute.ListAttribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -44,11 +44,11 @@ public class ListAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private ListAttribute<StringKey> propertyWithConversion;
+    private ListAttribute<StringId> propertyWithConversion;
 
-    private List<StringKey> valueWithConversion;
+    private List<StringId> valueWithConversion;
 
-    private void thenValueWithConvertionIs(List<StringKey> value) {
+    private void thenValueWithConvertionIs(List<StringId> value) {
         assertThat(valueWithConversion, is(value));
     }
 
@@ -60,16 +60,16 @@ public class ListAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.list(StringKey.class)
+        propertyWithConversion = AttributeBuilder.list(StringId.class)
                 .from(String.class)
-                .adaptOnGet(StringKey::new)
-                .adaptOnSet(StringKey::getValue)
+                .adaptOnGet(StringId::new)
+                .adaptOnSet(StringId::getValue)
                 .withList(value)
                 .build();
     }
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.stream().map(StringKey::new).collect(toList()));
+        propertyWithConversion.value(newValue.stream().map(StringId::new).collect(toList()));
         valueWithConversion = propertyWithConversion.value();
     }
 }

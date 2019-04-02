@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
@@ -22,11 +22,11 @@ public class DomainProcessStepsFactory implements Service {
         HashMap<StepName, Step> steps = new HashMap<>();
 
         BoundedContextComponentDoc boundedContextComponentDoc = domainProcessDoc.attributes().boundedContextComponentDoc().value();
-        BoundedContextDocKey boundedContextDocKey = boundedContextComponentDoc.boundedContextDocKey();
+        BoundedContextDocId boundedContextDocId = boundedContextComponentDoc.boundedContextDocId();
         String processName = boundedContextComponentDoc.componentDoc().name();
 
         HashMap<String, List<String>> eventToStep = new HashMap<>();
-        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(boundedContextDocKey, processName);
+        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(boundedContextDocId, processName);
         for(ProcessStepDoc processStepDoc : processStepDocs) {
             Optional<String> consumedEventName;
             Optional<StepMethodSignature> optionalStepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();

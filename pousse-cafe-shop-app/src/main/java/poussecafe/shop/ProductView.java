@@ -2,7 +2,7 @@ package poussecafe.shop;
 
 public class ProductView {
 
-    public String key;
+    public String id;
 
     public int totalUnits;
 

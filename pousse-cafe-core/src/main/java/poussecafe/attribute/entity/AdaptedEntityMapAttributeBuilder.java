@@ -5,23 +5,23 @@ import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
 /**
- * @param <J> Stored key type
+ * @param <J> Stored id type
  * @param <U> Stored value type
- * @param <K> Attribute key type
+ * @param <K> Attribute id type
  * @param <E> Attribute value type
  */
 public class AdaptedEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
 
-    AdaptedEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> keyAdapter) {
+    AdaptedEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> idAdapter) {
         this.entityClass = entityClass;
-        this.keyAdapter = keyAdapter;
+        this.idAdapter = idAdapter;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> keyAdapter;
+    private Function<J, K> idAdapter;
 
     public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> read() {
-        return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, keyAdapter);
+        return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, idAdapter);
     }
 }

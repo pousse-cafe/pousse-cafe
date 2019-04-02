@@ -6,7 +6,7 @@ import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
-public class BoundedContextDocFactory extends Factory<BoundedContextDocKey, BoundedContextDoc, BoundedContextDoc.Attributes> {
+public class BoundedContextDocFactory extends Factory<BoundedContextDocId, BoundedContextDoc, BoundedContextDoc.Attributes> {
 
     public BoundedContextDoc newBoundedContextDoc(PackageDoc packageDoc) {
         if(!isBoundedContextDoc(packageDoc)) {
@@ -14,7 +14,7 @@ public class BoundedContextDocFactory extends Factory<BoundedContextDocKey, Boun
         }
 
         String name = AnnotationsResolver.boundedContext(packageDoc);
-        BoundedContextDoc boundedContextDoc = newAggregateWithKey(BoundedContextDocKey.ofPackageName(packageDoc.name()));
+        BoundedContextDoc boundedContextDoc = newAggregateWithId(BoundedContextDocId.ofPackageName(packageDoc.name()));
         boundedContextDoc.componentDoc(componentDocFactory.buildDoc(name, packageDoc));
         return boundedContextDoc;
     }

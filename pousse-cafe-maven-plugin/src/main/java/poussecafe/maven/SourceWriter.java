@@ -80,7 +80,7 @@ public class SourceWriter {
         try {
             template.write(file, new SkipAllSTErrorListener());
         } catch (Exception e) {
-            throw new PousseCafeException("Unable to write aggregate root key file", e);
+            throw new PousseCafeException("Unable to write aggregate root id file", e);
         }
     }
 

@@ -3,21 +3,21 @@ package poussecafe.domain;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.entity.SimpleEntity;
-import poussecafe.util.StringKey;
+import poussecafe.util.StringId;
 
 public class SimpleEntityData implements SimpleEntity.Attributes {
 
     @Override
-    public Attribute<StringKey> key() {
-        return AttributeBuilder.single(StringKey.class)
+    public Attribute<StringId> identifier() {
+        return AttributeBuilder.single(StringId.class)
                 .from(String.class)
-                .adapt(StringKey::new)
-                .get(() -> key)
-                .adapt(StringKey::getValue)
-                .set(newValue -> key = newValue)
+                .adapt(StringId::new)
+                .get(() -> id)
+                .adapt(StringId::getValue)
+                .set(newValue -> id = newValue)
                 .build();
 
     }
 
-    private String key;
+    private String id;
 }

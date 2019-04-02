@@ -5,15 +5,15 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.shop.command.CreateCustomer;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 
 @MessageImplementation(message = CreateCustomer.class)
 @SuppressWarnings("serial")
 public class CreateCustomerData implements Serializable, CreateCustomer {
 
     @Override
-    public Attribute<CustomerKey> customerKey() {
-        return AttributeBuilder.stringKey(CustomerKey.class)
+    public Attribute<CustomerId> customerId() {
+        return AttributeBuilder.stringId(CustomerId.class)
                 .get(() -> customerId)
                 .set(value -> customerId = value)
                 .build();

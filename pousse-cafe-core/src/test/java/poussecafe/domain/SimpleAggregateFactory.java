@@ -7,22 +7,22 @@ import poussecafe.discovery.MessageListener;
 
 import static java.util.Arrays.asList;
 
-public class SimpleAggregateFactory extends Factory<SimpleAggregateKey, SimpleAggregate, SimpleAggregate.Attributes> {
+public class SimpleAggregateFactory extends Factory<SimpleAggregateId, SimpleAggregate, SimpleAggregate.Attributes> {
 
     @MessageListener
     public SimpleAggregate newSimpleAggregate(TestDomainEvent event) {
-        return newSimpleAggregate(new SimpleAggregateKey("id1"));
+        return newSimpleAggregate(new SimpleAggregateId("id1"));
     }
 
-    private SimpleAggregate newSimpleAggregate(SimpleAggregateKey key) {
-        SimpleAggregate aggregate = newAggregateWithKey(key);
+    private SimpleAggregate newSimpleAggregate(SimpleAggregateId id) {
+        SimpleAggregate aggregate = newAggregateWithId(id);
         aggregate.attributes().data().value("untouched");
         return aggregate;
     }
 
     @MessageListener
     public List<SimpleAggregate> newSimpleAggregate(TestDomainEvent2 event) {
-        return asList(newSimpleAggregate(new SimpleAggregateKey("id1")),
-                newSimpleAggregate(new SimpleAggregateKey("id2")));
+        return asList(newSimpleAggregate(new SimpleAggregateId("id1")),
+                newSimpleAggregate(new SimpleAggregateId("id2")));
     }
 }

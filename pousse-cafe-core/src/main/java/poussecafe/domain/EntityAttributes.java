@@ -2,7 +2,7 @@ package poussecafe.domain;
 
 import poussecafe.attribute.Attribute;
 
-public interface EntityAttributes<K> {
+public interface EntityAttributes<I> {
 
-    Attribute<K> key();
+    Attribute<I> identifier();
 }

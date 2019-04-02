@@ -4,21 +4,21 @@ import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.shop.domain.Order;
-import poussecafe.shop.domain.OrderKey;
+import poussecafe.shop.domain.OrderId;
 
 @SuppressWarnings("serial")
 public class OrderData implements Order.Attributes, Serializable {
 
     @Override
-    public Attribute<OrderKey> key() {
-        return AttributeBuilder.single(OrderKey.class)
-                .fromAutoAdapting(OrderKeyData.class)
-                .get(() -> key)
-                .set(value -> key = value)
+    public Attribute<OrderId> identifier() {
+        return AttributeBuilder.single(OrderId.class)
+                .fromAutoAdapting(OrderIdData.class)
+                .get(() -> id)
+                .set(value -> id = value)
                 .build();
     }
 
-    private OrderKeyData key;
+    private OrderIdData id;
 
     @Override
     public Attribute<Integer> units() {

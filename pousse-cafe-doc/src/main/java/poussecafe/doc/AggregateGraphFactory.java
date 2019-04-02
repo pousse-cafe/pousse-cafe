@@ -8,15 +8,15 @@ import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedEdge;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocKey;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.entitydoc.EntityDocKey;
+import poussecafe.doc.model.entitydoc.EntityDocId;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.relation.Component;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
-import poussecafe.doc.model.vodoc.ValueObjectDocKey;
+import poussecafe.doc.model.vodoc.ValueObjectDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.exception.NotFoundException;
 
@@ -118,8 +118,8 @@ public class AggregateGraphFactory {
             return;
         }
 
-        AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocKey.ofClassName(toComponent.className()));
-        if(!toAggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey().equals(aggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocKey())) {
+        AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocId.ofClassName(toComponent.className()));
+        if(!toAggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocId().equals(aggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocId())) {
             return;
         }
 
@@ -142,11 +142,11 @@ public class AggregateGraphFactory {
         try {
             switch(component.type()) {
             case AGGREGATE:
-                return aggregateDocRepository.get(AggregateDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
             case ENTITY:
-                return entityDocRepository.get(EntityDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                return entityDocRepository.get(EntityDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
             case VALUE_OBJECT:
-                    return valueObjectDocRepository.get(ValueObjectDocKey.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                    return valueObjectDocRepository.get(ValueObjectDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
             default:
                 throw new IllegalArgumentException("Unsupported component type " + component.type());
             }

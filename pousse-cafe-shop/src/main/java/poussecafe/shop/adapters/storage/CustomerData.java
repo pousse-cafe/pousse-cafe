@@ -3,26 +3,26 @@ package poussecafe.shop.adapters.storage;
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.shop.domain.Customer;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 
 @SuppressWarnings("serial")
 public class CustomerData implements Customer.Attributes, Serializable {
 
     @Override
-    public Attribute<CustomerKey> key() {
-        return new Attribute<CustomerKey>() {
+    public Attribute<CustomerId> identifier() {
+        return new Attribute<CustomerId>() {
             @Override
-            public CustomerKey value() {
-                return new CustomerKey(key);
+            public CustomerId value() {
+                return new CustomerId(id);
             }
 
             @Override
-            public void value(CustomerKey value) {
-                key = value.getValue();
+            public void value(CustomerId value) {
+                id = value.getValue();
             }
 
         };
     }
 
-    private String key;
+    private String id;
 }

@@ -9,15 +9,15 @@ import poussecafe.doc.model.BoundedContextComponentDocData;
 public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<AggregateDocKey> key() {
-        return new Attribute<AggregateDocKey>() {
+    public Attribute<AggregateDocId> identifier() {
+        return new Attribute<AggregateDocId>() {
             @Override
-            public AggregateDocKey value() {
-                return AggregateDocKey.ofClassName(className);
+            public AggregateDocId value() {
+                return AggregateDocId.ofClassName(className);
             }
 
             @Override
-            public void value(AggregateDocKey value) {
+            public void value(AggregateDocId value) {
                 className = value.getValue();
             }
         };
@@ -43,19 +43,19 @@ public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
     private BoundedContextComponentDocData componentDoc;
 
     @Override
-    public Attribute<String> keyClassName() {
+    public Attribute<String> idClassName() {
         return new Attribute<String>() {
             @Override
             public String value() {
-                return keyClassName;
+                return idClassName;
             }
 
             @Override
             public void value(String value) {
-                keyClassName = value;
+                idClassName = value;
             }
         };
     }
 
-    private String keyClassName;
+    private String idClassName;
 }

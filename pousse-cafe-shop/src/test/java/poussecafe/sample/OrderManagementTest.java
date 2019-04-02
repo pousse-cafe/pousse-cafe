@@ -2,11 +2,11 @@ package poussecafe.sample;
 
 import org.junit.Test;
 import poussecafe.shop.command.PlaceOrder;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 import poussecafe.shop.domain.Order;
 import poussecafe.shop.domain.OrderDescription;
-import poussecafe.shop.domain.OrderKey;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.OrderId;
+import poussecafe.shop.domain.ProductId;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -14,9 +14,9 @@ import static org.junit.Assert.assertThat;
 
 public class OrderManagementTest extends ShopTest {
 
-    private CustomerKey customerKey;
+    private CustomerId customerId;
 
-    private ProductKey productKey;
+    private ProductId productId;
 
     private OrderDescription description;
 
@@ -29,11 +29,11 @@ public class OrderManagementTest extends ShopTest {
     }
 
     private void givenCustomer() {
-        customerKey = new CustomerKey("customer-id");
+        customerId = new CustomerId("customer-id");
     }
 
     private void givenProductWithUnits(boolean withUnits) {
-        productKey = new ProductKey("product-1");
+        productId = new ProductId("product-1");
         if (withUnits) {
             loadDataFile("/data/placingOrderProductWithUnits.json");
         } else {
@@ -43,9 +43,9 @@ public class OrderManagementTest extends ShopTest {
 
     private void whenPlacingOrder() {
         PlaceOrder command = newCommand(PlaceOrder.class);
-        command.productKey().value(productKey);
+        command.productId().value(productId);
         description = new OrderDescription.Builder()
-                .customerKey(customerKey)
+                .customerId(customerId)
                 .reference("ref")
                 .units(1)
                 .build();
@@ -54,11 +54,11 @@ public class OrderManagementTest extends ShopTest {
     }
 
     private void thenOrderCreated() {
-        assertThat(find(Order.class, orderKey()), notNullValue());
+        assertThat(find(Order.class, orderId()), notNullValue());
     }
 
-    private OrderKey orderKey() {
-        return new OrderKey(productKey, description.customerKey(), description.reference());
+    private OrderId orderId() {
+        return new OrderId(productId, description.customerId(), description.reference());
     }
 
     @Test
@@ -70,6 +70,6 @@ public class OrderManagementTest extends ShopTest {
     }
 
     private void thenNoOrderCreated() {
-        assertThat(find(Order.class, orderKey()), nullValue());
+        assertThat(find(Order.class, orderId()), nullValue());
     }
 }

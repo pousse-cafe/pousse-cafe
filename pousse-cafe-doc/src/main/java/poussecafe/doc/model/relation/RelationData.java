@@ -7,15 +7,15 @@ import poussecafe.attribute.Attribute;
 public class RelationData implements Relation.Attributes, Serializable {
 
     @Override
-    public Attribute<RelationKey> key() {
-        return new Attribute<RelationKey>() {
+    public Attribute<RelationId> identifier() {
+        return new Attribute<RelationId>() {
             @Override
-            public RelationKey value() {
-                return new RelationKey(fromClass, toClass);
+            public RelationId value() {
+                return new RelationId(fromClass, toClass);
             }
 
             @Override
-            public void value(RelationKey value) {
+            public void value(RelationId value) {
                 fromClass = value.fromClass();
                 toClass = value.toClass();
             }

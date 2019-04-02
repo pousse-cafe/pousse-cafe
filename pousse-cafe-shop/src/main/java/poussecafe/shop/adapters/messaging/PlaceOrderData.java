@@ -6,15 +6,15 @@ import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.shop.command.PlaceOrder;
 import poussecafe.shop.domain.OrderDescription;
-import poussecafe.shop.domain.ProductKey;
+import poussecafe.shop.domain.ProductId;
 
 @MessageImplementation(message = PlaceOrder.class)
 @SuppressWarnings("serial")
 public class PlaceOrderData implements Serializable, PlaceOrder {
 
     @Override
-    public Attribute<ProductKey> productKey() {
-        return AttributeBuilder.stringKey(ProductKey.class)
+    public Attribute<ProductId> productId() {
+        return AttributeBuilder.stringId(ProductId.class)
                 .get(() -> productId)
                 .set(value -> productId = value)
                 .build();

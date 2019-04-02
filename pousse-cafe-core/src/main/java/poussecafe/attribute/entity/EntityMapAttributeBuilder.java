@@ -11,7 +11,7 @@ public class EntityMapAttributeBuilder<K, E extends Entity<K, ?>> {
 
     private Class<E> entityClass;
 
-    public <J, U extends EntityAttributes<K>> AdaptingEntityMapAttributeBuilder<J, U, K, E> from(Class<J> storedKeyType, Class<U> storedValueType) {
+    public <J, U extends EntityAttributes<K>> AdaptingEntityMapAttributeBuilder<J, U, K, E> from(Class<J> storedIdType, Class<U> storedValueType) {
         return new AdaptingEntityMapAttributeBuilder<>(entityClass);
     }
 }

@@ -3,7 +3,7 @@ package <modelPackage>;
 <if(demoAttribute)>import java.util.List;<endif>
 import poussecafe.domain.Repository;
 
-public class <name>Repository extends Repository\<<name>, <name>Key, <name>.Attributes> {
+public class <name>Repository extends Repository\<<name>, <name>Id, <name>.Attributes> {
 
 <if(demoAttribute)>
     public List\<<name>> findByName(String name) {

@@ -11,13 +11,13 @@ import poussecafe.domain.EntityAttributes;
   factory = FactoryDocFactory.class,
   repository = FactoryDocRepository.class
 )
-public class FactoryDoc extends AggregateRoot<FactoryDocKey, FactoryDoc.Attributes> {
+public class FactoryDoc extends AggregateRoot<FactoryDocId, FactoryDoc.Attributes> {
 
     public String id() {
         return StringNormalizer.normalizeString(attributes().boundedContextComponentDoc().value().componentDoc().name());
     }
 
-    public static interface Attributes extends EntityAttributes<FactoryDocKey> {
+    public static interface Attributes extends EntityAttributes<FactoryDocId> {
 
         Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
     }

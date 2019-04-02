@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.DataImplementation;
 import poussecafe.shop.domain.Customer;
-import poussecafe.shop.domain.CustomerKey;
+import poussecafe.shop.domain.CustomerId;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 @DataImplementation(
@@ -14,22 +14,22 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 public class CustomerData implements Customer.Attributes {
 
     @Override
-    public Attribute<CustomerKey> key() {
-        return new Attribute<CustomerKey>() {
+    public Attribute<CustomerId> identifier() {
+        return new Attribute<CustomerId>() {
 
             @Override
-            public CustomerKey value() {
-                return new CustomerKey(key);
+            public CustomerId value() {
+                return new CustomerId(id);
             }
 
             @Override
-            public void value(CustomerKey value) {
-                key = value.getValue();
+            public void value(CustomerId value) {
+                id = value.getValue();
             }
 
         };
     }
 
     @Id
-    private String key;
+    private String id;
 }

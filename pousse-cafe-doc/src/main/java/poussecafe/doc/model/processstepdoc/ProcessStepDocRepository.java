@@ -1,15 +1,15 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc.Attributes;
 import poussecafe.domain.Repository;
 
-public class ProcessStepDocRepository extends Repository<ProcessStepDoc, ProcessStepDocKey, ProcessStepDoc.Attributes> {
+public class ProcessStepDocRepository extends Repository<ProcessStepDoc, ProcessStepDocId, ProcessStepDoc.Attributes> {
 
-    public List<ProcessStepDoc> findByDomainProcess(BoundedContextDocKey boundedContextDocKey,
+    public List<ProcessStepDoc> findByDomainProcess(BoundedContextDocId boundedContextDocId,
             String processName) {
-        return wrap(dataAccess().findByDomainProcess(boundedContextDocKey, processName));
+        return wrap(dataAccess().findByDomainProcess(boundedContextDocId, processName));
     }
 
     @Override

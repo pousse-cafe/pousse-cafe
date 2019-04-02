@@ -11,11 +11,11 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class KeyTest<K> {
+public abstract class IdTest<K> {
 
-    protected K referenceKey;
+    protected K referenceId;
 
-    protected List<Object> otherKeys;
+    protected List<Object> otherIds;
 
     private List<Boolean> equalities;
 
@@ -28,21 +28,21 @@ public abstract class KeyTest<K> {
     private List<String> otherStringValues;
 
     @Test
-    public void sameKeyInstanceIsEqual() {
-        givenSameKeyInstance();
+    public void sameIdInstanceIsEqual() {
+        givenSameIdInstance();
         whenTestingEquality();
         thenEqualityIs(true);
     }
 
-    private void givenSameKeyInstance() {
-        referenceKey = referenceKey();
-        otherKeys = asList(referenceKey);
+    private void givenSameIdInstance() {
+        referenceId = referenceId();
+        otherIds = asList(referenceId);
     }
 
-    protected abstract K referenceKey();
+    protected abstract K referenceId();
 
     private void whenTestingEquality() {
-        equalities = otherKeys.stream().map(key2 -> referenceKey.equals(key2)).collect(toList());
+        equalities = otherIds.stream().map(id2 -> referenceId.equals(id2)).collect(toList());
     }
 
     private void thenEqualityIs(boolean expectedEquality) {
@@ -52,27 +52,27 @@ public abstract class KeyTest<K> {
     }
 
     @Test
-    public void sameKeyIsEqual() {
-        givenSameKeys();
+    public void sameIdIsEqual() {
+        givenSameIds();
         whenTestingEquality();
         thenEqualityIs(true);
     }
 
-    private void givenSameKeys() {
-        referenceKey = referenceKey();
-        otherKeys = asList(referenceKey());
+    private void givenSameIds() {
+        referenceId = referenceId();
+        otherIds = asList(referenceId());
     }
 
     @Test
-    public void sameKeyHasSameHashCode() {
-        givenSameKeys();
+    public void sameIdHasSameHashCode() {
+        givenSameIds();
         whenComputingHashCode();
         thenHashCodesAreEqual();
     }
 
     private void whenComputingHashCode() {
-        referenceHashCode = referenceKey.hashCode();
-        otherHashCodes = otherKeys.stream().map(key2 -> key2.hashCode()).collect(toList());
+        referenceHashCode = referenceId.hashCode();
+        otherHashCodes = otherIds.stream().map(id2 -> id2.hashCode()).collect(toList());
     }
 
     private void thenHashCodesAreEqual() {
@@ -82,22 +82,22 @@ public abstract class KeyTest<K> {
     }
 
     @Test
-    public void differentKeysAreNotEqual() {
-        givenDifferentKeys();
+    public void differentIdsAreNotEqual() {
+        givenDifferentIds();
         whenTestingEquality();
         thenEqualityIs(false);
     }
 
-    private void givenDifferentKeys() {
-        referenceKey = referenceKey();
-        otherKeys = otherKeys();
+    private void givenDifferentIds() {
+        referenceId = referenceId();
+        otherIds = otherIds();
     }
 
-    protected abstract List<Object> otherKeys();
+    protected abstract List<Object> otherIds();
 
     @Test
-    public void differentKeysHaveDifferentHashCodes() {
-        givenDifferentKeys();
+    public void differentIdsHaveDifferentHashCodes() {
+        givenDifferentIds();
         whenComputingHashCode();
         thenHashCodesAreDifferent();
     }
@@ -110,14 +110,14 @@ public abstract class KeyTest<K> {
 
     @Test
     public void toStringWorks() {
-        givenDifferentKeys();
+        givenDifferentIds();
         whenComputingStringValue();
         thenStringValueIsAsExpected();
     }
 
     private void whenComputingStringValue() {
-        referenceStringValue = referenceKey.toString();
-        otherStringValues = otherKeys.stream().map(key2 -> key2.toString()).collect(toList());
+        referenceStringValue = referenceId.toString();
+        otherStringValues = otherIds.stream().map(id2 -> id2.toString()).collect(toList());
     }
 
     protected void thenStringValueIsAsExpected() {
@@ -129,15 +129,15 @@ public abstract class KeyTest<K> {
     }
 
     @Test
-    public void keyIsNotEqualToNull() {
-        givenOnlyOneKey();
+    public void idIsNotEqualToNull() {
+        givenOnlyOneId();
         whenTestingEquality();
         thenEqualityIs(false);
     }
 
-    protected void givenOnlyOneKey() {
-        referenceKey = referenceKey();
-        otherKeys = asList((K) null);
+    protected void givenOnlyOneId() {
+        referenceId = referenceId();
+        otherIds = asList((K) null);
     }
 
     @Test
@@ -148,11 +148,11 @@ public abstract class KeyTest<K> {
     }
 
     private void givenDifferentTypes() {
-        referenceKey = referenceKey();
-        otherKeys = asList(differentTypeInstance());
+        referenceId = referenceId();
+        otherIds = asList(differentTypeInstance());
     }
 
     protected Object differentTypeInstance() {
-        return Collections.emptyList(); // It is rather unlikely to have a list used as key
+        return Collections.emptyList(); // It is rather unlikely to have a list used as id
     }
 }

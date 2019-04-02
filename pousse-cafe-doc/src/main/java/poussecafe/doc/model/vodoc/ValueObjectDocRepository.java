@@ -3,7 +3,7 @@ package poussecafe.doc.model.vodoc;
 import java.util.List;
 import poussecafe.domain.Repository;
 
-public class ValueObjectDocRepository extends Repository<ValueObjectDoc, ValueObjectDocKey, ValueObjectDoc.Attributes> {
+public class ValueObjectDocRepository extends Repository<ValueObjectDoc, ValueObjectDocId, ValueObjectDoc.Attributes> {
 
     public List<ValueObjectDoc> findAll() {
         return wrap(dataAccess().findAll());

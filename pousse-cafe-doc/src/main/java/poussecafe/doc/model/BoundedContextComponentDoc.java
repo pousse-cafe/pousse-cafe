@@ -1,6 +1,6 @@
 package poussecafe.doc.model;
 
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.ValueObject;
 
 public class BoundedContextComponentDoc implements ValueObject {
@@ -14,8 +14,8 @@ public class BoundedContextComponentDoc implements ValueObject {
             return this;
         }
 
-        public Builder boundedContextDocKey(BoundedContextDocKey boundedContextDocKey) {
-            doc.boundedContextDocKey = boundedContextDocKey;
+        public Builder boundedContextDocId(BoundedContextDocId boundedContextDocId) {
+            doc.boundedContextDocId = boundedContextDocId;
             return this;
         }
 
@@ -34,9 +34,9 @@ public class BoundedContextComponentDoc implements ValueObject {
         return componentDoc;
     }
 
-    private BoundedContextDocKey boundedContextDocKey;
+    private BoundedContextDocId boundedContextDocId;
 
-    public BoundedContextDocKey boundedContextDocKey() {
-        return boundedContextDocKey;
+    public BoundedContextDocId boundedContextDocId() {
+        return boundedContextDocId;
     }
 }

@@ -3,7 +3,7 @@ package poussecafe.journal.domain;
 import java.util.List;
 import poussecafe.domain.Repository;
 
-public class JournalEntryRepository extends Repository<JournalEntry, JournalEntryKey, JournalEntry.Attributes> {
+public class JournalEntryRepository extends Repository<JournalEntry, JournalEntryId, JournalEntry.Attributes> {
 
     public List<JournalEntry> findByConsumptionId(String messageId) {
         return wrap(dataAccess().findByMessageId(messageId));

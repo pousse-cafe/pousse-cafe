@@ -11,11 +11,11 @@ import poussecafe.runtime.OptimisticLockingException;
 public abstract class MongoDataAccess<K, D extends EntityAttributes<K>, M extends Serializable> implements EntityDataAccess<K, D> {
 
     @Override
-    public D findData(K key) {
-        return mongoRepository().findById(convertKey(key)).orElse(null);
+    public D findData(K id) {
+        return mongoRepository().findById(convertId(id)).orElse(null);
     }
 
-    protected abstract M convertKey(K key);
+    protected abstract M convertId(K id);
 
     protected abstract MongoRepository<D, M> mongoRepository();
 
@@ -42,9 +42,9 @@ public abstract class MongoDataAccess<K, D extends EntityAttributes<K>, M extend
     }
 
     @Override
-    public void deleteData(K key) {
+    public void deleteData(K id) {
         try {
-            mongoRepository().deleteById(convertKey(key));
+            mongoRepository().deleteById(convertId(id));
         } catch (OptimisticLockingFailureException e) {
             throw translateOptimisticLockingFailure(e);
         }

@@ -9,7 +9,7 @@ import poussecafe.domain.EntityAttributes;
   factory = RelationFactory.class,
   repository = RelationRepository.class
 )
-public class Relation extends AggregateRoot<RelationKey, Relation.Attributes> {
+public class Relation extends AggregateRoot<RelationId, Relation.Attributes> {
 
     void fromType(ComponentType fromType) {
         attributes().fromType().value(fromType);
@@ -20,14 +20,14 @@ public class Relation extends AggregateRoot<RelationKey, Relation.Attributes> {
     }
 
     public Component fromComponent() {
-        return new Component(attributes().fromType().value(), attributes().key().value().fromClass());
+        return new Component(attributes().fromType().value(), attributes().identifier().value().fromClass());
     }
 
     public Component toComponent() {
-        return new Component(attributes().toType().value(), attributes().key().value().toClass());
+        return new Component(attributes().toType().value(), attributes().identifier().value().toClass());
     }
 
-    public static interface Attributes extends EntityAttributes<RelationKey> {
+    public static interface Attributes extends EntityAttributes<RelationId> {
 
         Attribute<ComponentType> fromType();
 

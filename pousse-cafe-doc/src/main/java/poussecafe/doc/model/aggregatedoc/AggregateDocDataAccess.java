@@ -1,16 +1,16 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.EntityDataAccess;
 
-public interface AggregateDocDataAccess<D extends AggregateDoc.Attributes> extends EntityDataAccess<AggregateDocKey, D> {
+public interface AggregateDocDataAccess<D extends AggregateDoc.Attributes> extends EntityDataAccess<AggregateDocId, D> {
 
-    List<D> findByBoundedContextKey(BoundedContextDocKey key);
+    List<D> findByBoundedContextId(BoundedContextDocId id);
 
-    List<D> findByKeyClassName(String qualifiedName);
+    List<D> findByIdClassName(String qualifiedName);
 
-    D findByBoundedContextKeyAndName(BoundedContextDocKey boundedContextDocKey,
+    D findByBoundedContextIdAndName(BoundedContextDocId boundedContextDocId,
             String aggregateName);
 
 }

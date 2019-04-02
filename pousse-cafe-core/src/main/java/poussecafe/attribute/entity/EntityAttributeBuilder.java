@@ -10,8 +10,8 @@ public class EntityAttributeBuilder {
 
     }
 
-    public static <K, E extends Entity<K, ?>> EntityMapAttributeBuilder<K, E> entityMap(Class<K> entityKeyClass, Class<E> entityClass) {
-        Objects.requireNonNull(entityKeyClass);
+    public static <K, E extends Entity<K, ?>> EntityMapAttributeBuilder<K, E> entityMap(Class<K> entityIdClass, Class<E> entityClass) {
+        Objects.requireNonNull(entityIdClass);
         Objects.requireNonNull(entityClass);
         return new EntityMapAttributeBuilder<>(entityClass);
     }

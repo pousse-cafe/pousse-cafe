@@ -1,10 +1,10 @@
 package poussecafe.doc.model.domainprocessdoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.domain.Repository;
 
-public class DomainProcessDocRepository extends Repository<DomainProcessDoc, DomainProcessDocKey, DomainProcessDoc.Attributes> {
+public class DomainProcessDocRepository extends Repository<DomainProcessDoc, DomainProcessDocId, DomainProcessDoc.Attributes> {
 
     public List<DomainProcessDoc> findAll() {
         return wrap(dataAccess().findAll());
@@ -15,7 +15,7 @@ public class DomainProcessDocRepository extends Repository<DomainProcessDoc, Dom
         return (DomainProcessDocDataAccess<DomainProcessDoc.Attributes>) super.dataAccess();
     }
 
-    public List<DomainProcessDoc> findByBoundedContextKey(BoundedContextDocKey key) {
-        return wrap(dataAccess().findByBoundedContextKey(key));
+    public List<DomainProcessDoc> findByBoundedContextId(BoundedContextDocId id) {
+        return wrap(dataAccess().findByBoundedContextId(id));
     }
 }

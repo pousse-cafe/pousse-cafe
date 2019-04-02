@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface AggregateMessageListenerRunner<M, K, A> {
 
-    Set<K> targetAggregatesKeys(M message);
+    Set<K> targetAggregatesIds(M message);
 
     Object context(M message, A aggregate);
 }

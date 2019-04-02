@@ -5,21 +5,21 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.journal.domain.ConsumptionStatus;
 import poussecafe.journal.domain.JournalEntry;
-import poussecafe.journal.domain.JournalEntryKey;
+import poussecafe.journal.domain.JournalEntryId;
 
 public class MongoJournalEntryData implements JournalEntry.Attributes {
 
     @Override
-    public Attribute<JournalEntryKey> key() {
-        return AttributeBuilder.single(JournalEntryKey.class)
-                .fromAutoAdapting(SerializableJournalEntryKey.class)
-                .get(() -> key)
-                .set(value -> key = value)
+    public Attribute<JournalEntryId> identifier() {
+        return AttributeBuilder.single(JournalEntryId.class)
+                .fromAutoAdapting(SerializableJournalEntryId.class)
+                .get(() -> id)
+                .set(value -> id = value)
                 .build();
     }
 
     @Id
-    private SerializableJournalEntryKey key;
+    private SerializableJournalEntryId id;
 
     @Override
     public Attribute<String> rawMessage() {

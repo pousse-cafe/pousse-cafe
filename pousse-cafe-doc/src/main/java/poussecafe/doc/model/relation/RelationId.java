@@ -3,9 +3,9 @@ package poussecafe.doc.model.relation;
 import java.util.Objects;
 import poussecafe.domain.ValueObject;
 
-public class RelationKey implements ValueObject {
+public class RelationId implements ValueObject {
 
-    public RelationKey(String fromClass, String toClass) {
+    public RelationId(String fromClass, String toClass) {
         Objects.requireNonNull(fromClass);
         this.fromClass = fromClass;
 

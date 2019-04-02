@@ -2,7 +2,7 @@ package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocKey;
+import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -13,14 +13,14 @@ import static java.util.stream.Collectors.toList;
     dataImplementation = ProcessStepDocData.class,
     storageName = InternalStorage.NAME
 )
-public class InternalProcessStepDocDataAccess extends InternalDataAccess<ProcessStepDocKey, ProcessStepDocData> implements ProcessStepDataAccess<ProcessStepDocData> {
+public class InternalProcessStepDocDataAccess extends InternalDataAccess<ProcessStepDocId, ProcessStepDocData> implements ProcessStepDataAccess<ProcessStepDocData> {
 
     @Override
-    public List<ProcessStepDocData> findByDomainProcess(BoundedContextDocKey boundedContextDocKey,
+    public List<ProcessStepDocData> findByDomainProcess(BoundedContextDocId boundedContextDocId,
             String processName) {
         return findAll().stream()
                 .filter(data -> data.processName().value().isPresent())
-                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocKey().equals(boundedContextDocKey))
+                .filter(data -> data.boundedContextComponentDoc().value().boundedContextDocId().equals(boundedContextDocId))
                 .filter(data -> data.processName().value().get().equals(processName))
                 .collect(toList());
     }
