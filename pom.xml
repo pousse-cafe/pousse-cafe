@@ -179,5 +179,7 @@
     <module>pousse-cafe-attribute</module>
     <module>pousse-cafe-base</module>
     <module>pousse-cafe-injector</module>
+    <module>pousse-cafe-pulsar</module>
+    <module>pousse-cafe-spring-pulsar</module>
   </modules>
 </project>

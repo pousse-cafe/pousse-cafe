@@ -8,7 +8,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 
 @Configuration
-public class SpringKakfaConfig {
+public class SpringKafkaConfig {
 
     @Bean
     public KafkaMessageListenerContainer<String, String> listenerContainer(
