@@ -4,7 +4,7 @@
 
   <groupId>org.pousse-cafe-framework</groupId>
   <artifactId>pousse-cafe</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.6.0</version>
 
   <name>Pousse-Café - Parent</name>
   <description>Pousse-Café is a framework assisting in writing DDD-based applications</description>
