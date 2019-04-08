@@ -1,5 +1,7 @@
 package poussecafe.messaging;
 
+import poussecafe.runtime.OriginalAndMarshaledMessage;
+
 public abstract class MessageSender {
 
     protected MessageSender(MessageAdapter messageAdapter) {
@@ -8,10 +10,13 @@ public abstract class MessageSender {
 
     public void sendMessage(Message message) {
         Object marshalledMessage = messageAdapter.adaptMessage(message);
-        sendMarshalledMessage(marshalledMessage);
+        sendMarshalledMessage(new OriginalAndMarshaledMessage.Builder()
+                .marshaled(marshalledMessage)
+                .original(message)
+                .build());
     }
 
     private MessageAdapter messageAdapter;
 
-    protected abstract void sendMarshalledMessage(Object marshalledMessage);
+    protected abstract void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage);
 }

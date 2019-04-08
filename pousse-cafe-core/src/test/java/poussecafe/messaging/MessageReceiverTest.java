@@ -2,7 +2,7 @@ package poussecafe.messaging;
 
 import org.junit.Test;
 import poussecafe.runtime.MessageConsumer;
-import poussecafe.runtime.RawAndAdaptedMessage;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,9 +42,9 @@ public abstract class MessageReceiverTest {
     protected abstract Object serializedMessage(Message message);
 
     private void thenListenerConsumes() {
-        verify(messageConsumer).consumeMessage(new RawAndAdaptedMessage.Builder()
-                .raw(serializedMessage)
-                .adapted(message)
+        verify(messageConsumer).consumeMessage(new OriginalAndMarshaledMessage.Builder()
+                .marshaled(serializedMessage)
+                .original(message)
                 .build());
     }
 }

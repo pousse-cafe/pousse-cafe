@@ -2,6 +2,7 @@ package poussecafe.test;
 
 import poussecafe.messaging.MessageSender;
 import poussecafe.messaging.TransparentMessageAdapter;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class DummyMessageSender extends MessageSender {
 
@@ -10,7 +11,7 @@ public class DummyMessageSender extends MessageSender {
     }
 
     @Override
-    protected void sendMarshalledMessage(Object marshalledMessage) {
+    protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
         // Do nothing
     }
 }

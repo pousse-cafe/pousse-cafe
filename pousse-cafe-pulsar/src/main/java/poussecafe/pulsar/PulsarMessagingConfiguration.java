@@ -30,6 +30,11 @@ public class PulsarMessagingConfiguration {
             return this;
         }
 
+        public Builder publicationTopicChooser(PublicationTopicChooser publicationTopicChooser) {
+            configuration.publicationTopicChooser = publicationTopicChooser;
+            return this;
+        }
+
         public PulsarMessagingConfiguration build() {
             Objects.requireNonNull(configuration.brokerUrl);
             Objects.requireNonNull(configuration.subscriptionTopics);
@@ -38,6 +43,7 @@ public class PulsarMessagingConfiguration {
             }
             Objects.requireNonNull(configuration.subscriptionName);
             Objects.requireNonNull(configuration.defaultPublicationTopic);
+            Objects.requireNonNull(configuration.publicationTopicChooser);
             return configuration;
         }
     }
@@ -68,5 +74,11 @@ public class PulsarMessagingConfiguration {
 
     public String defaultPublicationTopic() {
         return defaultPublicationTopic;
+    }
+
+    private PublicationTopicChooser publicationTopicChooser = new DefaultPublicationTopicChooser();
+
+    public PublicationTopicChooser publicationTopicChooser() {
+        return publicationTopicChooser;
     }
 }

@@ -1,9 +1,11 @@
 package poussecafe.spring.pulsar;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import poussecafe.pulsar.PublicationTopicChooser;
 import poussecafe.pulsar.PulsarMessaging;
 import poussecafe.pulsar.PulsarMessagingConfiguration;
 
@@ -18,14 +20,17 @@ public class SpringPulsarConfig {
             @Value("${poussecafe.spring.pulsar.broker:pulsar://localhost:6650}") String brokerUrl,
             @Value("${poussecafe.spring.pulsar.subscriptionTopics:pousse-cafe}") String subscriptionTopics,
             @Value("${poussecafe.spring.pulsar.subscriptionName:pousse-cafe}") String subscriptionName,
-            @Value("${poussecafe.spring.pulsar.defaultPublicationTopic:pousse-cafe}") String defaultPublicationTopic) {
-        PulsarMessagingConfiguration configuration = new PulsarMessagingConfiguration.Builder()
+            @Value("${poussecafe.spring.pulsar.defaultPublicationTopic:pousse-cafe}") String defaultPublicationTopic,
+            @Autowired(required = false) PublicationTopicChooser publicationTopicChooser) {
+        PulsarMessagingConfiguration.Builder configurationBuilder = new PulsarMessagingConfiguration.Builder()
                 .brokerUrl(brokerUrl)
                 .subscriptionTopics(parseSubscriptionTopics(subscriptionTopics))
                 .subscriptionName(subscriptionName)
-                .defaultPublicationTopic(defaultPublicationTopic)
-                .build();
-        return new PulsarMessaging(configuration);
+                .defaultPublicationTopic(defaultPublicationTopic);
+        if(publicationTopicChooser != null) {
+            configurationBuilder.publicationTopicChooser(publicationTopicChooser);
+        }
+        return new PulsarMessaging(configurationBuilder.build());
     }
 
     private List<String> parseSubscriptionTopics(String subscriptionTopics) {

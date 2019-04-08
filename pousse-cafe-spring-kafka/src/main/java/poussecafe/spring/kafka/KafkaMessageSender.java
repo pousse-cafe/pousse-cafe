@@ -4,6 +4,7 @@ import java.util.Objects;
 import org.springframework.kafka.core.KafkaTemplate;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageSender;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class KafkaMessageSender extends MessageSender {
 
@@ -37,8 +38,8 @@ public class KafkaMessageSender extends MessageSender {
     private String topic;
 
     @Override
-    protected void sendMarshalledMessage(Object marshalledMessage) {
-        template.send(topic, (String) marshalledMessage);
+    protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
+        template.send(topic, (String) marshalledMessage.marshaled());
     }
 
 }

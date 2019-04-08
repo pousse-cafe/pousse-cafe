@@ -52,21 +52,21 @@ public class MessageConsumer {
 
     private boolean consumptionFailure;
 
-    public synchronized void consumeMessage(RawAndAdaptedMessage message) {
+    public synchronized void consumeMessage(OriginalAndMarshaledMessage message) {
         if(consumptionInterrupted()) {
             throw new FailFastException();
         }
 
-        logger.debug("Handling received message {}", message.adapted());
+        logger.debug("Handling received message {}", message.original());
         String consumptionId = UUID.randomUUID().toString();
-        List<MessageListener> listeners = environment.messageListenersOf(message.adapted().getClass()).stream()
+        List<MessageListener> listeners = environment.messageListenersOf(message.original().getClass()).stream()
                 .sorted()
                 .collect(toList());
         List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);
         }
-        logger.debug("Message {} handled (consumption ID {})", message.adapted(), consumptionId);
+        logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
     private boolean consumptionInterrupted() {
@@ -75,7 +75,7 @@ public class MessageConsumer {
 
     private Environment environment;
 
-    private List<MessageListener> consumeMessage(RawAndAdaptedMessage message,
+    private List<MessageListener> consumeMessage(OriginalAndMarshaledMessage message,
             String consumptionId,
             List<MessageListener> listeners) {
         List<MessageListener> toRetry = new ArrayList<>();
@@ -92,7 +92,7 @@ public class MessageConsumer {
         return toRetry;
     }
 
-    private void retryConsumption(RawAndAdaptedMessage message,
+    private void retryConsumption(OriginalAndMarshaledMessage message,
             String consumptionId,
             List<MessageListener> toRetryInitially) {
         int retry = 1;
@@ -109,11 +109,11 @@ public class MessageConsumer {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     private void consumeMessage(String consumptionId,
-            RawAndAdaptedMessage receivedMessage,
+            OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {}", receivedMessage.adapted(), listener);
+        logger.debug("Consumption of message {} by listener {}", receivedMessage.original(), listener);
         try {
-            listener.consumer().accept(receivedMessage.adapted());
+            listener.consumer().accept(receivedMessage.original());
             notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
         } catch (Exception e) {
             if(failFast) {
@@ -127,15 +127,15 @@ public class MessageConsumer {
     }
 
     private void notifySuccessfulConsumption(String consumptionId,
-            RawAndAdaptedMessage receivedMessage,
+            OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.adapted(), listener);
+        logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.original(), listener);
         if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 SuccessfulConsumption event = environment.messageFactory().newMessage(SuccessfulConsumption.class);
                 event.consumptionId().value(consumptionId);
                 event.listenerId().value(listener.id());
-                event.rawMessage().value(rawMessageOrDefault(receivedMessage));
+                event.rawMessage().value(marshaledMessageOrDefault(receivedMessage));
                 messageSenderLocator.locate(SuccessfulConsumption.class).sendMessage(event);
             } catch (PousseCafeException e) {
                 logger.debug("Unable to notify successful consumption", e);
@@ -143,31 +143,31 @@ public class MessageConsumer {
         }
     }
 
-    private String rawMessageOrDefault(RawAndAdaptedMessage receivedMessage) {
-        if(receivedMessage.raw() instanceof String) {
-            return (String) receivedMessage.raw();
+    private String marshaledMessageOrDefault(OriginalAndMarshaledMessage receivedMessage) {
+        if(receivedMessage.marshaled() instanceof String) {
+            return (String) receivedMessage.marshaled();
         } else {
-            return receivedMessage.adapted().toString();
+            return receivedMessage.original().toString();
         }
     }
 
     private MessageSenderLocator messageSenderLocator;
 
     private void notifyFailedConsumption(String consumptionId,
-            RawAndAdaptedMessage receivedMessage,
+            OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener,
             Exception e) {
-        logger.error("Consumption of message {} by listener {} failed", receivedMessage.adapted(), listener, e);
+        logger.error("Consumption of message {} by listener {} failed", receivedMessage.original(), listener, e);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 FailedConsumption event = environment.messageFactory().newMessage(FailedConsumption.class);
                 event.consumptionId().value(consumptionId);
                 event.listenerId().value(listener.id());
-                event.rawMessage().value(rawMessageOrDefault(receivedMessage));
+                event.rawMessage().value(marshaledMessageOrDefault(receivedMessage));
                 event.error().value(ExceptionUtils.getStackTrace(e));
                 messageSenderLocator.locate(FailedConsumption.class).sendMessage(event);
             } catch (PousseCafeException e1) {
-                logger.error("Unable to notify failed consumption for message {}", rawMessageOrDefault(receivedMessage), e1);
+                logger.error("Unable to notify failed consumption for message {}", marshaledMessageOrDefault(receivedMessage), e1);
             }
         }
     }

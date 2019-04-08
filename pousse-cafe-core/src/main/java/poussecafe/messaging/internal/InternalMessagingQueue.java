@@ -7,6 +7,7 @@ import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
 import poussecafe.runtime.MessageConsumer;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class InternalMessagingQueue {
 
@@ -97,8 +98,8 @@ public class InternalMessagingQueue {
         }
 
         @Override
-        protected void sendMarshalledMessage(Object marshalledMessage) {
-            queue.add(marshalledMessage);
+        protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
+            queue.add(marshalledMessage.marshaled());
             available.release();
         }
     }

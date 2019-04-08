@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumer;
-import poussecafe.runtime.RawAndAdaptedMessage;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public abstract class MessageReceiver {
 
@@ -26,9 +26,9 @@ public abstract class MessageReceiver {
         Objects.requireNonNull(receivedMessage);
         Message message = messageAdapter.adaptSerializedMessage(receivedMessage);
         try {
-            messageConsumer.consumeMessage(new RawAndAdaptedMessage.Builder()
-                    .raw(receivedMessage)
-                    .adapted(message)
+            messageConsumer.consumeMessage(new OriginalAndMarshaledMessage.Builder()
+                    .marshaled(receivedMessage)
+                    .original(message)
                     .build());
         } catch (FailFastException e) {
             interruptReception();
