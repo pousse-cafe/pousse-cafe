@@ -34,7 +34,7 @@ profile section to configure GPG. For instance:
 
 The archetype package needs to be deployed separately:
 
-    ( cd pousse-cafe-simple-meta-app/ ; ./scripts/archetype_mvn.sh deploy -Ppousse-cafe-release )
+    ( cd pousse-cafe-sample-bounded-context/ ; ./scripts/archetype_mvn.sh deploy -Ppousse-cafe-release )
 
 After that:
 
