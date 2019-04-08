@@ -1,10 +1,14 @@
 package poussecafe.spring.pulsar;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.pulsar.PulsarMessaging;
 import poussecafe.pulsar.PulsarMessagingConfiguration;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 @Configuration
 public class SpringPulsarConfig {
@@ -12,13 +16,21 @@ public class SpringPulsarConfig {
     @Bean
     public PulsarMessaging pulsarMessaging(
             @Value("${poussecafe.spring.pulsar.broker:pulsar://localhost:6650}") String brokerUrl,
-            @Value("${poussecafe.spring.pulsar.topic:pousse-cafe}") String topic,
-            @Value("${poussecafe.spring.pulsar.subscriptionName:pousse-cafe}") String subscriptionName) {
+            @Value("${poussecafe.spring.pulsar.subscriptionTopics:pousse-cafe}") String subscriptionTopics,
+            @Value("${poussecafe.spring.pulsar.subscriptionName:pousse-cafe}") String subscriptionName,
+            @Value("${poussecafe.spring.pulsar.defaultPublicationTopic:pousse-cafe}") String defaultPublicationTopic) {
         PulsarMessagingConfiguration configuration = new PulsarMessagingConfiguration.Builder()
                 .brokerUrl(brokerUrl)
-                .topic(topic)
+                .subscriptionTopics(parseSubscriptionTopics(subscriptionTopics))
                 .subscriptionName(subscriptionName)
+                .defaultPublicationTopic(defaultPublicationTopic)
                 .build();
         return new PulsarMessaging(configuration);
+    }
+
+    private List<String> parseSubscriptionTopics(String subscriptionTopics) {
+        return asList(subscriptionTopics.split(",")).stream()
+                .map(String::trim)
+                .collect(toList());
     }
 }

@@ -7,8 +7,6 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
 import org.apache.pulsar.client.api.SubscriptionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
@@ -53,7 +51,7 @@ public class PulsarMessageReceiver extends MessageReceiver {
                     .serviceUrl(configuration.brokerUrl())
                     .build();
             consumer = client.newConsumer(Schema.STRING)
-                    .topic(configuration.topic())
+                    .topics(configuration.topics())
                     .subscriptionType(SubscriptionType.Shared)
                     .subscriptionName(configuration.subscriptionName())
                     .subscribe();
@@ -87,14 +85,12 @@ public class PulsarMessageReceiver extends MessageReceiver {
         };
     }
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     private void closeIfConnected() {
         if(consumer.isConnected()) {
             try {
                 consumer.close();
             } catch (PulsarClientException e) {
-                e.printStackTrace();
+                logger.warn("Error while closing consumer", e);
             }
         }
     }

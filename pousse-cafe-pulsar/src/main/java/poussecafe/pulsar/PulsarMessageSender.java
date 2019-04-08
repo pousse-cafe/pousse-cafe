@@ -30,7 +30,7 @@ public class PulsarMessageSender extends MessageSender {
                     .serviceUrl(configuration.brokerUrl())
                     .build();
             producer = client.newProducer(Schema.STRING)
-                    .topic(configuration.topic())
+                    .topic(configuration.defaultPublicationTopic())
                     .create();
         } catch (PulsarClientException e) {
             throw new PousseCafeException("Unable to connect to Pulsar broker", e);
