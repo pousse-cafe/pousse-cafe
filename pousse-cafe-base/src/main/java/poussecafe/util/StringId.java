@@ -11,7 +11,7 @@ public class StringId {
         id = value;
     }
 
-    public String getValue() {
+    public String stringValue() {
         return id;
     }
 

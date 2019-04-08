@@ -11,7 +11,7 @@ public class StepNameAdapter implements DataAdapter<String, StepName> {
 
     @Override
     public String adaptSet(StepName valueToStore) {
-        return valueToStore.getValue();
+        return valueToStore.stringValue();
     }
 
     public static StepNameAdapter instance() {

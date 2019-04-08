@@ -17,7 +17,7 @@ public class SerializableMessageCreated implements Serializable, MessageCreated 
                 .from(String.class)
                 .adapt(MessageId::new)
                 .get(() -> messageId)
-                .adapt(MessageId::getValue)
+                .adapt(MessageId::stringValue)
                 .set(value -> messageId = value)
                 .build();
     }

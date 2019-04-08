@@ -61,7 +61,7 @@ public class DomainProcessStepsFactory implements Service {
                 if(toExternalStep == null) {
                     toExternalStep = new Step.Builder()
                             .componentDoc(new ComponentDoc.Builder()
-                                    .name(toExternal.getValue())
+                                    .name(toExternal.stringValue())
                                     .description("")
                                     .build())
                             .external(true)
@@ -78,7 +78,7 @@ public class DomainProcessStepsFactory implements Service {
                 if(toDomainProcessStep == null) {
                     toDomainProcessStep = new Step.Builder()
                             .componentDoc(new ComponentDoc.Builder()
-                                    .name(toDomainProcess.getValue())
+                                    .name(toDomainProcess.stringValue())
                                     .description("")
                                     .build())
                             .external(true)
@@ -101,7 +101,7 @@ public class DomainProcessStepsFactory implements Service {
                 if(fromExternalStep == null) {
                     fromExternalStep = new Step.Builder()
                             .componentDoc(new ComponentDoc.Builder()
-                                    .name(fromExternal.getValue())
+                                    .name(fromExternal.stringValue())
                                     .description("")
                                     .build())
                             .external(true)
@@ -122,7 +122,7 @@ public class DomainProcessStepsFactory implements Service {
                 if(fromDomainProcessStep == null) {
                     fromDomainProcessStep = new Step.Builder()
                             .componentDoc(new ComponentDoc.Builder()
-                                    .name(fromDomainProcess.getValue())
+                                    .name(fromDomainProcess.stringValue())
                                     .description("")
                                     .build())
                             .external(true)

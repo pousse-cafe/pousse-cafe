@@ -14,7 +14,7 @@ public class MessageDataAccess extends MongoDataAccess<MessageId, MessageData, S
 
     @Override
     protected String convertId(MessageId id) {
-        return id.getValue();
+        return id.stringValue();
     }
 
     @Override

@@ -139,7 +139,7 @@ public class ProcessStepDocExtractor implements Service {
         ProcessStepDocId id = new ProcessStepDocId(stepMethodSignature);
         BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextDocId)
-                .componentDoc(componentDocFactory.buildDoc(id.getValue(), methodDoc))
+                .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
                 .build();
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
                 boundedContextComponentDoc);

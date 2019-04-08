@@ -189,7 +189,7 @@ public class HtmlWriter {
     }
 
     private List<EntityDoc> findEntities(AggregateDocId aggregateDocId) {
-        return findEntities(aggregateDocId.getValue()).stream()
+        return findEntities(aggregateDocId.stringValue()).stream()
                 .map(entityDocRepository::find)
                 .filter(Objects::nonNull)
                 .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
@@ -226,7 +226,7 @@ public class HtmlWriter {
     }
 
     private List<ValueObjectDoc> findValueObjects(AggregateDocId aggregateDocId) {
-        return findValueObjects(aggregateDocId.getValue()).stream()
+        return findValueObjects(aggregateDocId.stringValue()).stream()
                 .map(valueObjectDocRepository::find)
                 .filter(Objects::nonNull)
                 .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())

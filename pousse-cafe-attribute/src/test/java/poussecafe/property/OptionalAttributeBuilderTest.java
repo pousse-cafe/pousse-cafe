@@ -62,7 +62,7 @@ public class OptionalAttributeBuilderTest {
                 .from(String.class)
                 .adapt(StringId::new)
                 .get(() -> value)
-                .adapt(StringId::getValue)
+                .adapt(StringId::stringValue)
                 .set(newValue -> value = newValue)
                 .build();
     }

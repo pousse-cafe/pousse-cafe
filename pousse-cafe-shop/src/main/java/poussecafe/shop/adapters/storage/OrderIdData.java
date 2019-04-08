@@ -10,8 +10,8 @@ public class OrderIdData implements Serializable {
 
     public static OrderIdData adapt(OrderId id) {
         OrderIdData data = new OrderIdData();
-        data.productId = id.getProductId().getValue();
-        data.customerId = id.getCustomerId().getValue();
+        data.productId = id.getProductId().stringValue();
+        data.customerId = id.getCustomerId().stringValue();
         data.reference = id.getReference();
         return data;
     }

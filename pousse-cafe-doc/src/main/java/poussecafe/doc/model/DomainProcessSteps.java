@@ -48,10 +48,10 @@ public class DomainProcessSteps {
                 graph.put(step.componentDoc().name(), new ArrayList<>());
             }
             for(ToStep to : step.tos()) {
-                List<String> froms = graph.get(to.name().getValue());
+                List<String> froms = graph.get(to.name().stringValue());
                 if(froms == null) {
                     froms = new ArrayList<>();
-                    graph.put(to.name().getValue(), froms);
+                    graph.put(to.name().stringValue(), froms);
                 }
                 froms.add(step.componentDoc().name());
             }

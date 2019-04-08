@@ -89,7 +89,7 @@ public class DataAdapters {
 
             @Override
             public String adaptSet(T valueToStore) {
-                return valueToStore.toString();
+                return valueToStore.stringValue();
             }
         };
     }

@@ -9,7 +9,7 @@ public class BoundedContextComponentDocData implements Serializable {
     public static BoundedContextComponentDocData adapt(BoundedContextComponentDoc boundedContextComponentDoc) {
         BoundedContextComponentDocData data = new BoundedContextComponentDocData();
         data.componentDoc = ComponentDocData.of(boundedContextComponentDoc.componentDoc());
-        data.boundedContextId = boundedContextComponentDoc.boundedContextDocId().getValue();
+        data.boundedContextId = boundedContextComponentDoc.boundedContextDocId().stringValue();
         return data;
     }
 

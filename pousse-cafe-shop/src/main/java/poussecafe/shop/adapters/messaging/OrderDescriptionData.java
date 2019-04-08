@@ -9,7 +9,7 @@ public class OrderDescriptionData implements Serializable {
 
     public static OrderDescriptionData adapt(OrderDescription description) {
         OrderDescriptionData data = new OrderDescriptionData();
-        data.customerId = description.customerId().getValue();
+        data.customerId = description.customerId().stringValue();
         data.reference = description.reference();
         data.units = description.units();
         return data;

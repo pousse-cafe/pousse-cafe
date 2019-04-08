@@ -15,7 +15,7 @@ public class SimpleAggregateData implements SimpleAggregate.Attributes {
 
             @Override
             public void value(SimpleAggregateId value) {
-                id = value.getValue();
+                id = value.stringValue();
             }
         };
     }

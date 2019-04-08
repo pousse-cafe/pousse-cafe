@@ -18,7 +18,7 @@ public class FactoryDocData implements FactoryDoc.Attributes, Serializable {
 
             @Override
             public void value(FactoryDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

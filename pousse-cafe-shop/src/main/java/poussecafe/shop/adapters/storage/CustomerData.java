@@ -18,7 +18,7 @@ public class CustomerData implements Customer.Attributes, Serializable {
 
             @Override
             public void value(CustomerId value) {
-                id = value.getValue();
+                id = value.stringValue();
             }
 
         };

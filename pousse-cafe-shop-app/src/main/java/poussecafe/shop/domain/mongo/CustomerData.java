@@ -24,7 +24,7 @@ public class CustomerData implements Customer.Attributes {
 
             @Override
             public void value(CustomerId value) {
-                id = value.getValue();
+                id = value.stringValue();
             }
 
         };

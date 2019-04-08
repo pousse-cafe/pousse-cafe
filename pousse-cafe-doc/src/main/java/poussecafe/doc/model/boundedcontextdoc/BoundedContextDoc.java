@@ -18,7 +18,7 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocId, Bounde
     }
 
     public String packageName() {
-        return attributes().identifier().value().getValue();
+        return attributes().identifier().value().stringValue();
     }
 
     public String id() {

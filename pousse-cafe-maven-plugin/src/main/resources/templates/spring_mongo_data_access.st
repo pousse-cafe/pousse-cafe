@@ -26,7 +26,7 @@ public class <name>MongoDataAccess extends MongoDataAccess\<<name>Id, <name>Attr
 
     @Override
     protected String convertId(<name>Id key) {
-        return key.getValue();
+        return key.stringValue();
     }
 
     @Override

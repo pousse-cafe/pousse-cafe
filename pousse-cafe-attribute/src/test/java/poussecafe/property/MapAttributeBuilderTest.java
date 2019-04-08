@@ -73,7 +73,7 @@ public class MapAttributeBuilderTest {
         propertyWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
                 .from(String.class, String.class)
                 .adaptOnGet(StringId::new, BigDecimal::new)
-                .adaptOnSet(StringId::getValue, BigDecimal::toString)
+                .adaptOnSet(StringId::stringValue, BigDecimal::toString)
                 .withMap(value)
                 .build();
     }

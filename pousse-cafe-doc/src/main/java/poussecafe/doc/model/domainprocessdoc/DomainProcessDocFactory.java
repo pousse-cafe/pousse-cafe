@@ -74,7 +74,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
 
     private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocId boundedContextDocId,
             ProcessDescription description) {
-        DomainProcessDocId id = new DomainProcessDocId(boundedContextDocId.getValue() + "." + description.name());
+        DomainProcessDocId id = new DomainProcessDocId(boundedContextDocId.stringValue() + "." + description.name());
         DomainProcessDoc doc = newAggregateWithId(id);
         doc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextDocId)

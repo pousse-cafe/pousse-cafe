@@ -18,7 +18,7 @@ public class ServiceDocData implements ServiceDoc.Attributes, Serializable {
 
             @Override
             public void value(ServiceDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

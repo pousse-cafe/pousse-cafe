@@ -55,9 +55,9 @@ public class DomainProcessGraphFactory {
                 Step stepTo = steps.getStep(to.name());
                 DirectedEdge edge;
                 if(to.directly()) {
-                    edge = DirectedEdge.solidEdge(step.componentDoc().name(), to.name().getValue());
+                    edge = DirectedEdge.solidEdge(step.componentDoc().name(), to.name().stringValue());
                 } else {
-                    edge = DirectedEdge.dashedEdge(step.componentDoc().name(), to.name().getValue());
+                    edge = DirectedEdge.dashedEdge(step.componentDoc().name(), to.name().stringValue());
                 }
 
                 Optional<String> consumedEvent = stepTo.consumedEvent();

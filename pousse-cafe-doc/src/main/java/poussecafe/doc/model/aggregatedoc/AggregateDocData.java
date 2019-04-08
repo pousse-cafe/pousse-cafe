@@ -18,7 +18,7 @@ public class AggregateDocData implements AggregateDoc.Attributes, Serializable {
 
             @Override
             public void value(AggregateDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

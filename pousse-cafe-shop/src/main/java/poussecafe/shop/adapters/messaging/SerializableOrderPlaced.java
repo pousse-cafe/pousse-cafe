@@ -18,7 +18,7 @@ public class SerializableOrderPlaced implements Serializable, OrderPlaced {
                 .from(String.class)
                 .adapt(ProductId::new)
                 .get(() -> productId)
-                .adapt(ProductId::getValue)
+                .adapt(ProductId::stringValue)
                 .set(value -> productId = value)
                 .build();
     }

@@ -12,7 +12,7 @@ public class CustomerDataAccess extends MongoDataAccess<CustomerId, CustomerData
 
     @Override
     protected String convertId(CustomerId id) {
-        return id.getValue();
+        return id.stringValue();
     }
 
     @Override

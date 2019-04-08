@@ -56,7 +56,7 @@ public class SetAttributeBuilderTest {
         propertyWithConversion = AttributeBuilder.set(StringId.class)
                 .from(String.class)
                 .adaptOnGet(StringId::new)
-                .adaptOnSet(StringId::getValue)
+                .adaptOnSet(StringId::stringValue)
                 .withSet(value)
                 .build();
     }

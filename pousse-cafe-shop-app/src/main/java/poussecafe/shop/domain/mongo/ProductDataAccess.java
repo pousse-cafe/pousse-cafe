@@ -12,7 +12,7 @@ public class ProductDataAccess extends MongoDataAccess<ProductId, ProductData, S
 
     @Override
     protected String convertId(ProductId id) {
-        return id.getValue();
+        return id.stringValue();
     }
 
     @Override

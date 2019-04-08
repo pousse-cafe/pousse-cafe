@@ -10,8 +10,8 @@ public class SerializableOrderId implements Serializable {
 
     public static SerializableOrderId adapt(OrderId orderId) {
         SerializableOrderId data = new SerializableOrderId();
-        data.productId = orderId.getProductId().getValue();
-        data.customerId = orderId.getCustomerId().getValue();
+        data.productId = orderId.getProductId().stringValue();
+        data.customerId = orderId.getCustomerId().stringValue();
         data.reference = orderId.getReference();
         return data;
     }

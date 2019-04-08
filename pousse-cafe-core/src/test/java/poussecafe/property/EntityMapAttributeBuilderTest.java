@@ -46,7 +46,7 @@ public class EntityMapAttributeBuilderTest {
         propertyWithConversion = EntityAttributeBuilder.entityMap(StringId.class, SimpleEntity.class)
                 .from(String.class, SimpleEntityData.class)
                 .adaptOnGet(StringId::new)
-                .adaptOnSet(StringId::getValue)
+                .adaptOnSet(StringId::stringValue)
                 .withMap(value)
                 .build();
     }

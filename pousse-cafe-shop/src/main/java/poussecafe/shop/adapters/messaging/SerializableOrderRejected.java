@@ -18,7 +18,7 @@ public class SerializableOrderRejected implements Serializable, OrderRejected {
                 .from(String.class)
                 .adapt(ProductId::new)
                 .get(() -> productId)
-                .adapt(ProductId::getValue)
+                .adapt(ProductId::stringValue)
                 .set(value -> productId = value)
                 .build();
     }

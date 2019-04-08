@@ -18,7 +18,7 @@ public class ValueObjectDocData implements ValueObjectDoc.Attributes, Serializab
 
             @Override
             public void value(ValueObjectDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

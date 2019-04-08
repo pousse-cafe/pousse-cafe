@@ -18,7 +18,7 @@ public class DomainProcessDocData implements DomainProcessDoc.Attributes, Serial
 
             @Override
             public void value(DomainProcessDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

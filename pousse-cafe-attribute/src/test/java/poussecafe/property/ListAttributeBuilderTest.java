@@ -63,7 +63,7 @@ public class ListAttributeBuilderTest {
         propertyWithConversion = AttributeBuilder.list(StringId.class)
                 .from(String.class)
                 .adaptOnGet(StringId::new)
-                .adaptOnSet(StringId::getValue)
+                .adaptOnSet(StringId::stringValue)
                 .withList(value)
                 .build();
     }

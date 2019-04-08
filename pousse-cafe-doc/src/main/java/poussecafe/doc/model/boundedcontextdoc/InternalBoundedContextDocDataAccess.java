@@ -15,7 +15,7 @@ public class InternalBoundedContextDocDataAccess extends InternalDataAccess<Boun
     public BoundedContextDocData findByPackageNamePrefixing(String packageName) {
         return findAll()
                 .stream()
-                .filter(data -> packageName.startsWith(data.identifier().value().getValue()))
+                .filter(data -> packageName.startsWith(data.identifier().value().stringValue()))
                 .findFirst()
                 .orElse(null);
     }

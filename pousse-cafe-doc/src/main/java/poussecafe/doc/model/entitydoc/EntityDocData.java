@@ -18,7 +18,7 @@ public class EntityDocData implements EntityDoc.Attributes, Serializable {
 
             @Override
             public void value(EntityDocId value) {
-                className = value.getValue();
+                className = value.stringValue();
             }
         };
     }

@@ -18,7 +18,7 @@ public class BoundedContextDocData implements BoundedContextDoc.Attributes, Seri
 
             @Override
             public void value(BoundedContextDocId value) {
-                id = value.getValue();
+                id = value.stringValue();
             }
         };
     }

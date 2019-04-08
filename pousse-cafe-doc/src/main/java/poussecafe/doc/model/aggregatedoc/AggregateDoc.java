@@ -18,7 +18,7 @@ public class AggregateDoc extends AggregateRoot<AggregateDocId, AggregateDoc.Att
     }
 
     public String className() {
-        return attributes().identifier().value().getValue();
+        return attributes().identifier().value().stringValue();
     }
 
     public static interface Attributes extends EntityAttributes<AggregateDocId> {

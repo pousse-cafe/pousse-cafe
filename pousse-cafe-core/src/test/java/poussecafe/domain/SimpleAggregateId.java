@@ -14,6 +14,6 @@ public class SimpleAggregateId extends StringId {
     }
 
     public String getId() {
-        return getValue();
+        return stringValue();
     }
 }

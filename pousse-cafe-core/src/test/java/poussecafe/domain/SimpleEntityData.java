@@ -13,7 +13,7 @@ public class SimpleEntityData implements SimpleEntity.Attributes {
                 .from(String.class)
                 .adapt(StringId::new)
                 .get(() -> id)
-                .adapt(StringId::getValue)
+                .adapt(StringId::stringValue)
                 .set(newValue -> id = newValue)
                 .build();
 

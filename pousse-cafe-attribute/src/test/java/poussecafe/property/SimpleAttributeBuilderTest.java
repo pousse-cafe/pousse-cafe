@@ -53,7 +53,7 @@ public class SimpleAttributeBuilderTest {
                 .from(String.class)
                 .adapt(StringId::new)
                 .get(() -> value)
-                .adapt(StringId::getValue)
+                .adapt(StringId::stringValue)
                 .set(newValue -> value = newValue)
                 .build();
     }
