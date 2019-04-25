@@ -1,69 +1,70 @@
 package poussecafe.doc.model.processstepdoc;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.FieldDoc;
-import com.sun.javadoc.MethodDoc;
-import com.sun.javadoc.Parameter;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
+import poussecafe.doc.model.DocletAccess;
+import poussecafe.domain.Service;
 import poussecafe.messaging.Message;
 
-public class ConsumedMessageExtractor {
+public class ConsumedMessageExtractor implements Service {
 
-    public ConsumedMessageExtractor(MethodDoc methodDoc) {
-        Objects.requireNonNull(methodDoc);
-        this.methodDoc = methodDoc;
-    }
-
-    private MethodDoc methodDoc;
-
-    public Optional<String> consumedMessage() {
-        for(Parameter parameter : methodDoc.parameters()) {
-            Optional<ClassDoc> parameterClassDoc = Optional.ofNullable(parameter.type().asClassDoc());
-            if(parameterClassDoc.isPresent() &&
-                    ClassDocPredicates.documentsSubclassOf(parameterClassDoc.get(), Message.class)) {
-                return Optional.of(parameterClassDoc.get().typeName());
-            } else if(parameterClassDoc.isPresent()) {
-                return consumedMessage(parameterClassDoc.get());
+    public Optional<String> consumedMessage(ExecutableElement methodDoc) {
+        for(VariableElement parameter : methodDoc.getParameters()) {
+            Element parameterElement = docletEnvironment.getTypeUtils().asElement(parameter.asType());
+            if(!(parameterElement instanceof TypeElement)) {
+                return Optional.empty();
+            } else {
+                TypeElement parameterTypeElement = (TypeElement) parameterElement;
+                if(classDocPredicates.documentsSubclassOf(parameterTypeElement, Message.class)) {
+                    return Optional.of(parameterTypeElement.getSimpleName().toString());
+                } else {
+                    return consumedMessage(new ConsumedMessageExtractionState(parameterTypeElement));
+                }
             }
         }
         return Optional.empty();
     }
 
-    private Optional<String> consumedMessage(ClassDoc classDoc) {
-        if(alreadyExplored(classDoc)) {
+    private DocletEnvironment docletEnvironment;
+
+    private ClassDocPredicates classDocPredicates;
+
+    private Optional<String> consumedMessage(ConsumedMessageExtractionState state) {
+        TypeElement nextTypeElement = state.nextTypeElement();
+        if(state.alreadyExplored(nextTypeElement)) {
             return Optional.empty();
         }
-        addExplored(classDoc);
+        state.addExplored(nextTypeElement);
 
-        for(FieldDoc fieldDoc : classDoc.fields()) {
-            Optional<ClassDoc> fieldType = Optional.ofNullable(fieldDoc.type().asClassDoc());
-            if(fieldDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsSubclassOf(fieldType.get(), Message.class)) {
-                return Optional.of(fieldType.get().typeName());
-            } else if(fieldType.isPresent()) {
-                return consumedMessage(fieldType.get());
+        for(VariableElement fieldDoc : docletAccess.fields(nextTypeElement)) {
+            Element fieldElement = docletEnvironment.getTypeUtils().asElement(fieldDoc.asType());
+            if(fieldElement instanceof TypeElement) {
+                return consumedMessageOfElement(state, fieldElement);
             }
         }
-        for(MethodDoc methodDoc : classDoc.methods()) {
-            Optional<ClassDoc> fieldType = Optional.ofNullable(methodDoc.returnType().asClassDoc());
-            if(methodDoc.isPublic() && fieldType.isPresent() && ClassDocPredicates.documentsSubclassOf(fieldType.get(), Message.class)) {
-                return Optional.of(fieldType.get().typeName());
-            } else if(fieldType.isPresent()) {
-                return consumedMessage(fieldType.get());
+        for(ExecutableElement methodDoc : docletAccess.methods(nextTypeElement)) {
+            Element fieldElement = docletEnvironment.getTypeUtils().asElement(methodDoc.getReturnType());
+            if(fieldElement instanceof TypeElement) {
+                return consumedMessageOfElement(state, fieldElement);
             }
         }
         return Optional.empty();
     }
 
-    private boolean alreadyExplored(ClassDoc classDoc) {
-        return alreadyExplored.contains(classDoc.qualifiedTypeName());
+    private Optional<String> consumedMessageOfElement(ConsumedMessageExtractionState state,
+            Element fieldElement) {
+        TypeElement fieldTypeElement = (TypeElement) fieldElement;
+        if(docletAccess.isPublic(fieldTypeElement) && classDocPredicates.documentsSubclassOf(fieldTypeElement, Message.class)) {
+            return Optional.of(fieldTypeElement.getSimpleName().toString());
+        } else {
+            return consumedMessage(state.withNextTypeElement(fieldTypeElement));
+        }
     }
 
-    private void addExplored(ClassDoc classDoc) {
-        alreadyExplored.add(classDoc.qualifiedTypeName());
-    }
-
-    private HashSet<String> alreadyExplored = new HashSet<>();
+    private DocletAccess docletAccess;
 }

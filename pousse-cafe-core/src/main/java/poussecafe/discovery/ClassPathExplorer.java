@@ -1,5 +1,6 @@
 package poussecafe.discovery;
 
+import com.google.common.base.Predicate;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
@@ -32,10 +34,15 @@ class ClassPathExplorer {
 
     ClassPathExplorer(Collection<String> packagePrefix) {
         packagePrefixes = new HashSet<>(packagePrefix);
-        reflections = new Reflections(packagePrefixes.toArray());
+
+        ConfigurationBuilder reflectionsConfigurationBuilder = ConfigurationBuilder.build(packagePrefixes.toArray());
+        reflectionsConfigurationBuilder.filterInputsBy(onlyByteCodeFiles);
+        reflections = new Reflections(reflectionsConfigurationBuilder);
     }
 
     private Set<String> packagePrefixes = new HashSet<>();
+
+    private Predicate<String> onlyByteCodeFiles = input -> input.endsWith(".class") || input.endsWith(".jar");
 
     private Reflections reflections;
 

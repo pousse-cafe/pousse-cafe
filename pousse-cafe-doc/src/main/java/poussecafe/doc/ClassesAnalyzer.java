@@ -1,10 +1,12 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.lang.model.element.TypeElement;
+import poussecafe.doc.model.AnnotationsResolver;
+import poussecafe.doc.model.DocletAccess;
 
 public class ClassesAnalyzer {
 
@@ -12,19 +14,13 @@ public class ClassesAnalyzer {
 
         private ClassesAnalyzer analyzer = new ClassesAnalyzer();
 
-        public Builder rootDocWrapper(RootDocWrapper rootDocWrapper) {
-            analyzer.rootDocWrapper = rootDocWrapper;
-            return this;
-        }
-
-        public Builder classDocConsumer(Consumer<ClassDoc> classDocConsumer) {
+        public Builder classDocConsumer(Consumer<TypeElement> classDocConsumer) {
             Objects.requireNonNull(classDocConsumer);
             analyzer.classDocConsumers.add(classDocConsumer);
             return this;
         }
 
         public ClassesAnalyzer build() {
-            Objects.requireNonNull(analyzer.rootDocWrapper);
             return analyzer;
         }
     }
@@ -33,21 +29,22 @@ public class ClassesAnalyzer {
 
     }
 
-    private RootDocWrapper rootDocWrapper;
-
-    private List<Consumer<ClassDoc>> classDocConsumers = new ArrayList<>();
+    private List<Consumer<TypeElement>> classDocConsumers = new ArrayList<>();
 
     public void analyzeCode() {
-        ClassDoc[] classes = rootDocWrapper.rootDoc().classes();
-        for (ClassDoc classDoc : classes) {
-            if (!AnnotationsResolver.isIgnored(classDoc)) {
+        for (TypeElement classDoc : docletAccess.typeElements()) {
+            if (!annotationsResolver.isIgnored(classDoc)) {
                 processClassDoc(classDoc);
             }
         }
     }
 
-    private void processClassDoc(ClassDoc classDoc) {
-        for(Consumer<ClassDoc> consumer : classDocConsumers) {
+    private DocletAccess docletAccess;
+
+    private AnnotationsResolver annotationsResolver;
+
+    private void processClassDoc(TypeElement classDoc) {
+        for(Consumer<TypeElement> consumer : classDocConsumers) {
             consumer.accept(classDoc);
         }
     }

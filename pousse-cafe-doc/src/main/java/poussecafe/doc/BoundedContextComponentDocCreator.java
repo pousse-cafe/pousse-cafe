@@ -1,45 +1,46 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 
-public abstract class BoundedContextComponentDocCreator implements Consumer<ClassDoc> {
+public abstract class BoundedContextComponentDocCreator implements Consumer<TypeElement> {
 
-    public BoundedContextComponentDocCreator(RootDocWrapper rootDocWrapper) {
+    public BoundedContextComponentDocCreator(DocletEnvironment rootDocWrapper) {
         Objects.requireNonNull(rootDocWrapper);
         this.rootDocWrapper = rootDocWrapper;
     }
 
-    private RootDocWrapper rootDocWrapper;
+    private DocletEnvironment rootDocWrapper;
 
     @Override
-    public void accept(ClassDoc classDoc) {
+    public void accept(TypeElement classDoc) {
         if (isComponentDoc(classDoc)) {
             BoundedContextDoc boundedContextDoc = boundedContextDocRepository
-                    .findByPackageNamePrefixing(classDoc.qualifiedName());
+                    .findByPackageNamePrefixing(classDoc.getQualifiedName().toString());
             if (boundedContextDoc != null) {
-                Logger.debug("Adding " + componentName() + " with class " + classDoc.qualifiedTypeName());
+                Logger.debug("Adding " + componentName() + " with class " + classDoc.getQualifiedName().toString());
                 addDoc(boundedContextDoc.attributes().identifier().value(), classDoc);
             } else {
-                Logger.warn("Could not add component with missing bounded context: " + classDoc.qualifiedName());
+                Logger.warn("Could not add component with missing bounded context: " + classDoc.getQualifiedName().toString());
             }
         }
     }
 
-    protected abstract boolean isComponentDoc(ClassDoc classDoc);
+    protected abstract boolean isComponentDoc(TypeElement classDoc);
 
     protected abstract String componentName();
 
     private BoundedContextDocRepository boundedContextDocRepository;
 
     protected abstract void addDoc(BoundedContextDocId boundedContextDocId,
-            ClassDoc componentClassDoc);
+            TypeElement componentClassDoc);
 
-    protected RootDocWrapper rootDocWrapper() {
+    protected DocletEnvironment rootDocWrapper() {
         return rootDocWrapper;
     }
 }

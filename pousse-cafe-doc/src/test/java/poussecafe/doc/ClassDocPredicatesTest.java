@@ -1,15 +1,41 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Types;
+import jdk.javadoc.doclet.DocletEnvironment;
+import org.junit.Before;
 import org.junit.Test;
 import poussecafe.domain.DomainEvent;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.Command;
+import poussecafe.util.ReflectionUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ClassDocPredicatesTest {
+
+    @Before
+    public void mockEnvironment() {
+        if(docletEnvironment == null) {
+            docletEnvironment = buildEnvironmentMock();
+        }
+        classDocPredicates = new ClassDocPredicates();
+        ReflectionUtils.access(classDocPredicates).set("docletEnvironment", docletEnvironment);
+    }
+
+    private DocletEnvironment docletEnvironment;
+
+    private DocletEnvironment buildEnvironmentMock() {
+        DocletEnvironment environment = mock(DocletEnvironment.class);
+
+        Types elements = mock(Types.class);
+        when(environment.getTypeUtils()).thenReturn(elements);
+
+        return environment;
+    }
 
     @Test
     public void domainEventsAreDetected() {
@@ -18,38 +44,37 @@ public class ClassDocPredicatesTest {
         thenResultIs(true);
     }
 
-    private ClassDoc actualDomainEventClassDoc(String qualifiedName) {
-        return new ClassDocMockBuilder()
+    private TypeElement actualDomainEventClassDoc(String qualifiedName) {
+        return new ClassDocMockBuilder(docletEnvironment)
                 .qualifiedName(qualifiedName)
-                .isInterface(true)
                 .implementsInterface(domainEventDoc())
                 .build();
     }
 
-    private ClassDoc domainEventDoc() {
-        return new ClassDocMockBuilder()
+    private TypeElement domainEventDoc() {
+        return new ClassDocMockBuilder(docletEnvironment)
                 .qualifiedName(DomainEvent.class.getName())
-                .isInterface(true)
                 .implementsInterface(messageDoc())
                 .build();
     }
 
-    private ClassDoc messageDoc() {
-        return new ClassDocMockBuilder()
+    private TypeElement messageDoc() {
+        return new ClassDocMockBuilder(docletEnvironment)
                 .qualifiedName(Message.class.getName())
-                .isInterface(true)
                 .build();
     }
 
-    private void givenClassDoc(ClassDoc classDoc) {
+    private void givenClassDoc(TypeElement classDoc) {
         this.classDoc = classDoc;
     }
 
-    private ClassDoc classDoc;
+    private TypeElement classDoc;
 
     private void whenTestingIfDocumentsSubclassOf(Class<?> parentClassOrInterface) {
-        result = ClassDocPredicates.documentsSubclassOf(classDoc, parentClassOrInterface);
+        result = classDocPredicates.documentsSubclassOf(classDoc, parentClassOrInterface);
     }
+
+    private ClassDocPredicates classDocPredicates;
 
     private boolean result;
 
@@ -64,18 +89,16 @@ public class ClassDocPredicatesTest {
         thenResultIs(true);
     }
 
-    private ClassDoc actualCommandClassDoc(String qualifiedName) {
-        return new ClassDocMockBuilder()
+    private TypeElement actualCommandClassDoc(String qualifiedName) {
+        return new ClassDocMockBuilder(docletEnvironment)
                 .qualifiedName(qualifiedName)
-                .isInterface(true)
                 .implementsInterface(commandDoc())
                 .build();
     }
 
-    private ClassDoc commandDoc() {
-        return new ClassDocMockBuilder()
+    private TypeElement commandDoc() {
+        return new ClassDocMockBuilder(docletEnvironment)
                 .qualifiedName(Command.class.getName())
-                .isInterface(true)
                 .implementsInterface(messageDoc())
                 .build();
     }

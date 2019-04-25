@@ -1,10 +1,14 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.PackageDoc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.util.ElementFilter;
+import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.model.AnnotationsResolver;
 
 public class PackagesAnalyzer {
 
@@ -12,19 +16,13 @@ public class PackagesAnalyzer {
 
         private PackagesAnalyzer analyzer = new PackagesAnalyzer();
 
-        public Builder rootDocWrapper(RootDocWrapper rootDocWrapper) {
-            analyzer.rootDocWrapper = rootDocWrapper;
-            return this;
-        }
-
-        public Builder packageDocConsumer(Consumer<PackageDoc> classDocConsumer) {
-            Objects.requireNonNull(classDocConsumer);
-            analyzer.packageDocConsumers.add(classDocConsumer);
+        public Builder packageDocConsumer(Consumer<PackageElement> packageElementConsumer) {
+            Objects.requireNonNull(packageElementConsumer);
+            analyzer.packageDocConsumers.add(packageElementConsumer);
             return this;
         }
 
         public PackagesAnalyzer build() {
-            Objects.requireNonNull(analyzer.rootDocWrapper);
             return analyzer;
         }
     }
@@ -33,21 +31,23 @@ public class PackagesAnalyzer {
 
     }
 
-    private RootDocWrapper rootDocWrapper;
+    private DocletEnvironment docletEnvironment;
 
-    private List<Consumer<PackageDoc>> packageDocConsumers = new ArrayList<>();
+    private List<Consumer<PackageElement>> packageDocConsumers = new ArrayList<>();
 
     public void analyzeCode() {
-        PackageDoc[] classes = rootDocWrapper.rootDoc().specifiedPackages();
-        for (PackageDoc classDoc : classes) {
-            if (!AnnotationsResolver.isIgnored(classDoc)) {
+        Set<PackageElement> classes = ElementFilter.packagesIn(docletEnvironment.getIncludedElements());
+        for (PackageElement classDoc : classes) {
+            if (!annotationsResolver.isIgnored(classDoc)) {
                 processPackageDoc(classDoc);
             }
         }
     }
 
-    private void processPackageDoc(PackageDoc classDoc) {
-        for(Consumer<PackageDoc> consumer : packageDocConsumers) {
+    private AnnotationsResolver annotationsResolver;
+
+    private void processPackageDoc(PackageElement classDoc) {
+        for(Consumer<PackageElement> consumer : packageDocConsumers) {
             consumer.accept(classDoc);
         }
     }

@@ -1,7 +1,10 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.function.Consumer;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.model.DocletServices;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
@@ -19,41 +22,46 @@ import poussecafe.doc.model.vodoc.ValueObjectDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.doc.process.ComponentLinking;
 
-public class RelationCreator implements Consumer<ClassDoc> {
-
-    public RelationCreator(RootDocWrapper rootDocWrapper) {
-        this.rootDocWrapper = rootDocWrapper;
-    }
-
-    private RootDocWrapper rootDocWrapper;
+public class RelationCreator implements Consumer<TypeElement> {
 
     @Override
-    public void accept(ClassDoc classDoc) {
-        if(AggregateDocFactory.isAggregateDoc(classDoc)) {
+    public void accept(TypeElement classDoc) {
+        if(aggregateDocFactory.isAggregateDoc(classDoc)) {
             tryRelationAggregateId(classDoc);
         }
-        if(EntityDocFactory.isEntityDoc(classDoc)) {
+        if(entityDocFactory.isEntityDoc(classDoc)) {
             tryRelationEntityId(classDoc);
         }
-        if(AggregateDocFactory.isAggregateDoc(classDoc) || EntityDocFactory.isEntityDoc(classDoc)) {
+        if(aggregateDocFactory.isAggregateDoc(classDoc) || entityDocFactory.isEntityDoc(classDoc)) {
             tryAttributes(classDoc);
         }
-        if(ValueObjectDocFactory.isValueObjectDoc(classDoc)) {
+        if(valueObjectDocFactory.isValueObjectDoc(classDoc)) {
             CodeExplorer codeExplorer = new CodeExplorer.Builder()
-                    .basePackage(rootDocWrapper.basePackage())
+                    .basePackage(configuration.basePackage())
                     .rootClassDoc(classDoc)
                     .classRelationBuilder(this::classRelationBuilder)
+                    .docletServices(docletServices)
                     .build();
             codeExplorer.explore();
         }
     }
 
-    private void tryRelationAggregateId(ClassDoc classDoc) {
-        AggregateDoc aggregateDoc = aggregateDocRepository.find(AggregateDocId.ofClassName(classDoc.qualifiedTypeName()));
+    private AggregateDocFactory aggregateDocFactory;
+
+    private EntityDocFactory entityDocFactory;
+
+    private ValueObjectDocFactory valueObjectDocFactory;
+
+    private PousseCafeDocletConfiguration configuration;
+
+    private DocletServices docletServices;
+
+    private void tryRelationAggregateId(TypeElement classDoc) {
+        AggregateDoc aggregateDoc = aggregateDocRepository.find(AggregateDocId.ofClassName(classDoc.getQualifiedName().toString()));
         if(aggregateDoc != null) {
             ValueObjectDoc idDoc = valueObjectDocRepository.find(ValueObjectDocId.ofClassName(aggregateDoc.attributes().idClassName().value()));
             if(idDoc != null) {
-                Logger.debug("Building bi-directional relation between aggregate " + classDoc.qualifiedTypeName() + " and its id " + aggregateDoc.attributes().idClassName().value());
+                Logger.debug("Building bi-directional relation between aggregate " + classDoc.getQualifiedName() + " and its id " + aggregateDoc.attributes().idClassName().value());
                 NewRelationParameters aggregateIdParameters = new NewRelationParameters();
                 aggregateIdParameters.fromComponent = component(classDoc);
                 aggregateIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.attributes().idClassName().value());
@@ -71,12 +79,12 @@ public class RelationCreator implements Consumer<ClassDoc> {
 
     private ValueObjectDocRepository valueObjectDocRepository;
 
-    private void tryRelationEntityId(ClassDoc classDoc) {
-        EntityDoc entityDoc = entityDocRepository.find(EntityDocId.ofClassName(classDoc.qualifiedTypeName()));
+    private void tryRelationEntityId(TypeElement classDoc) {
+        EntityDoc entityDoc = entityDocRepository.find(EntityDocId.ofClassName(classDoc.getQualifiedName().toString()));
         if(entityDoc != null) {
             ValueObjectDoc idDoc = valueObjectDocRepository.find(ValueObjectDocId.ofClassName(entityDoc.attributes().idClassName().value()));
             if(idDoc != null) {
-                Logger.debug("Building relation between entity " + classDoc.qualifiedTypeName() + " and its id " + entityDoc.attributes().idClassName().value());
+                Logger.debug("Building relation between entity " + classDoc.getQualifiedName() + " and its id " + entityDoc.attributes().idClassName().value());
                 NewRelationParameters entityIdParameters = new NewRelationParameters();
                 entityIdParameters.fromComponent = component(classDoc);
                 entityIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.attributes().idClassName().value());
@@ -87,46 +95,50 @@ public class RelationCreator implements Consumer<ClassDoc> {
 
     private EntityDocRepository entityDocRepository;
 
-    private Component component(ClassDoc classDoc) {
-        return new Component(componentType(classDoc), classDoc.qualifiedTypeName());
+    private Component component(TypeElement classDoc) {
+        return new Component(componentType(classDoc), classDoc.getQualifiedName().toString());
     }
 
-    private ComponentType componentType(ClassDoc classDoc) {
-        if(AggregateDocFactory.isAggregateDoc(classDoc)) {
+    private ComponentType componentType(TypeElement classDoc) {
+        if(aggregateDocFactory.isAggregateDoc(classDoc)) {
             return ComponentType.AGGREGATE;
-        } else if(EntityDocFactory.isEntityDoc(classDoc)) {
+        } else if(entityDocFactory.isEntityDoc(classDoc)) {
             return ComponentType.ENTITY;
-        } else if(ValueObjectDocFactory.isValueObjectDoc(classDoc)) {
+        } else if(valueObjectDocFactory.isValueObjectDoc(classDoc)) {
             return ComponentType.VALUE_OBJECT;
         } else {
-            throw new IllegalArgumentException("Unsupported component class " + classDoc.qualifiedName());
+            throw new IllegalArgumentException("Unsupported component class " + classDoc.getQualifiedName().toString());
         }
     }
 
     private ComponentLinking componentLinking;
 
-    private void classRelationBuilder(ClassDoc from, ClassDoc to) {
+    private void classRelationBuilder(TypeElement from, TypeElement to) {
         if(from != to) {
             linkComponents(from, to);
         }
     }
 
-    private void linkComponents(ClassDoc from,
-            ClassDoc to) {
-        Logger.debug("Building relation between " + from.qualifiedName() + " and " + to.qualifiedName());
+    private void linkComponents(TypeElement from,
+            TypeElement to) {
+        Logger.debug("Building relation between " + from.getQualifiedName() + " and " + to.getQualifiedName());
         NewRelationParameters parameters = new NewRelationParameters();
         parameters.fromComponent = component(from);
         parameters.toComponent = component(to);
         componentLinking.linkComponents(parameters);
     }
 
-    private void tryAttributes(ClassDoc classDoc) {
-        ClassDoc attributesClassDoc = classDoc.superclassType().asParameterizedType().typeArguments()[1].asClassDoc();
+    private void tryAttributes(TypeElement classDoc) {
+        DeclaredType superclass = (DeclaredType) classDoc.getSuperclass();
+        TypeElement attributesClassDoc = (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(1));
         CodeExplorer pathFinder = new CodeExplorer.Builder()
                 .rootClassDoc(classDoc)
-                .basePackage(rootDocWrapper.basePackage())
+                .basePackage(configuration.basePackage())
                 .classRelationBuilder(this::classRelationBuilder)
+                .docletServices(docletServices)
                 .build();
         pathFinder.explore(attributesClassDoc);
     }
+
+    private DocletEnvironment docletEnvironment;
 }

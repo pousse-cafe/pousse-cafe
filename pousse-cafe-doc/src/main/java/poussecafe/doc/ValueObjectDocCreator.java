@@ -1,20 +1,23 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 import poussecafe.doc.process.ValueObjectDocCreation;
 
 public class ValueObjectDocCreator extends BoundedContextComponentDocCreator {
 
-    public ValueObjectDocCreator(RootDocWrapper rootDocWrapper) {
+    public ValueObjectDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
     }
 
     @Override
-    protected boolean isComponentDoc(ClassDoc classDoc) {
-        return ValueObjectDocFactory.isValueObjectDoc(classDoc);
+    protected boolean isComponentDoc(TypeElement classDoc) {
+        return valueObjectDocFactory.isValueObjectDoc(classDoc);
     }
+
+    private ValueObjectDocFactory valueObjectDocFactory;
 
     @Override
     protected String componentName() {
@@ -23,7 +26,7 @@ public class ValueObjectDocCreator extends BoundedContextComponentDocCreator {
 
     @Override
     protected void addDoc(BoundedContextDocId boundedContextDocId,
-            ClassDoc componentClassDoc) {
+            TypeElement componentClassDoc) {
         valueObjectDocCreation.addValueObjectDoc(boundedContextDocId, componentClassDoc);
     }
 

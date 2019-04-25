@@ -1,15 +1,28 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.TypeMirror;
+import jdk.javadoc.doclet.DocletEnvironment;
 import org.mockito.Mockito;
 
 import static org.mockito.Mockito.when;
 
 public class ClassDocMockBuilder {
+
+    public ClassDocMockBuilder(DocletEnvironment docletEnvironment) {
+        Objects.requireNonNull(docletEnvironment);
+        this.docletEnvironment = docletEnvironment;
+    }
+
+    private DocletEnvironment docletEnvironment;
 
     public ClassDocMockBuilder qualifiedName(String qualifiedName) {
         this.qualifiedName = qualifiedName;
@@ -18,41 +31,55 @@ public class ClassDocMockBuilder {
 
     private String qualifiedName;
 
-    public ClassDocMockBuilder isInterface(boolean isInterface) {
-        this.isInterface = isInterface;
-        return this;
-    }
-
-    private boolean isInterface;
-
-    public ClassDocMockBuilder superclass(ClassDoc superclass) {
+    public ClassDocMockBuilder superclass(TypeElement superclass) {
         this.superclass = superclass;
         return this;
     }
 
-    private ClassDoc superclass;
+    private TypeElement superclass;
 
-    public ClassDocMockBuilder interfaces(Collection<ClassDoc> interfaces) {
+    public ClassDocMockBuilder interfaces(Collection<TypeElement> interfaces) {
         this.interfaces.addAll(interfaces);
         return this;
     }
 
-    private List<ClassDoc> interfaces = new ArrayList<>();
+    private List<TypeElement> interfaces = new ArrayList<>();
 
-    public ClassDocMockBuilder implementsInterface(ClassDoc interfaceDoc) {
+    public ClassDocMockBuilder implementsInterface(TypeElement interfaceDoc) {
         interfaces.add(interfaceDoc);
         return this;
     }
 
-    public ClassDoc build() {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public TypeElement build() {
         Objects.requireNonNull(qualifiedName);
 
-        ClassDoc mock = Mockito.mock(ClassDoc.class);
-        when(mock.qualifiedName()).thenReturn(qualifiedName);
-        when(mock.isInterface()).thenReturn(isInterface);
-        when(mock.superclass()).thenReturn(superclass);
-        ClassDoc[] interfacesArray = new ClassDoc[interfaces.size()];
-        when(mock.interfaces()).thenReturn(interfaces.toArray(interfacesArray));
+        TypeElement mock = Mockito.mock(TypeElement.class);
+
+        Name qualifiedName = Mockito.mock(Name.class);
+        when(qualifiedName.toString()).thenReturn(this.qualifiedName);
+        when(mock.getQualifiedName()).thenReturn(qualifiedName);
+
+        TypeMirror superclassTypeMirror = mirror(superclass);
+        when(mock.getSuperclass()).thenReturn(superclassTypeMirror);
+
+        List mockInterfaces = new ArrayList<>();
+        for(TypeElement element : interfaces) {
+            mockInterfaces.add(mirror(element));
+        }
+        when(mock.getInterfaces()).thenReturn(mockInterfaces);
         return mock;
+    }
+
+    private TypeMirror mirror(Element element) {
+        if(element == null) {
+            NoType noType = Mockito.mock(NoType.class);
+            when(docletEnvironment.getTypeUtils().asElement(noType)).thenReturn(null);
+            return noType;
+        } else {
+            DeclaredType typeMirror = Mockito.mock(DeclaredType.class);
+            when(docletEnvironment.getTypeUtils().asElement(typeMirror)).thenReturn(element);
+            return typeMirror;
+        }
     }
 }

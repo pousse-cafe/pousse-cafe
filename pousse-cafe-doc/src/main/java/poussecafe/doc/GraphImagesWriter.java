@@ -15,11 +15,11 @@ public class GraphImagesWriter {
 
     private static final String IMAGES_SUB_DIRECTORY = "img";
 
-    public GraphImagesWriter(RootDocWrapper rootDocWrapper) {
-        this.rootDocWrapper = rootDocWrapper;
+    public GraphImagesWriter(PousseCafeDocletConfiguration configuration) {
+        this.configuration = configuration;
     }
 
-    private RootDocWrapper rootDocWrapper;
+    private PousseCafeDocletConfiguration configuration;
 
     public void writeImages() {
         try {
@@ -40,7 +40,7 @@ public class GraphImagesWriter {
     }
 
     private File outputDirectory() {
-        File outputDirectory = new File(rootDocWrapper.outputPath(), IMAGES_SUB_DIRECTORY);
+        File outputDirectory = new File(configuration.outputDirectory(), IMAGES_SUB_DIRECTORY);
         outputDirectory.mkdirs();
         return outputDirectory;
     }

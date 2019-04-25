@@ -1,14 +1,14 @@
 package poussecafe.doc.model.domainprocessdoc;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import poussecafe.doc.AnnotationsResolver;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.ProcessDescription;
+import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
@@ -19,13 +19,13 @@ import poussecafe.process.DomainProcess;
 
 public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
-    public DomainProcessDoc newDomainProcessDoc(BoundedContextDocId boundedContextDocId, ClassDoc doc) {
+    public DomainProcessDoc newDomainProcessDoc(BoundedContextDocId boundedContextDocId, TypeElement doc) {
         if(!isDomainProcessDoc(doc)) {
-            throw new DomainException("Class " + doc.name() + " is not a domain process");
+            throw new DomainException("Class " + doc.getQualifiedName() + " is not a domain process");
         }
 
         String name = name(doc);
-        DomainProcessDocId id = new DomainProcessDocId(doc.qualifiedName());
+        DomainProcessDocId id = new DomainProcessDocId(doc.getQualifiedName().toString());
         DomainProcessDoc domainProcessDoc = newAggregateWithId(id);
         domainProcessDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextDocId)
@@ -35,22 +35,24 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
         return domainProcessDoc;
     }
 
-    public static boolean isDomainProcessDoc(ClassDoc doc) {
-        return ClassDocPredicates.documentsWithSuperclass(doc, DomainProcess.class);
+    public boolean isDomainProcessDoc(TypeElement doc) {
+        return classDocPredicates.documentsWithSuperclass(doc, DomainProcess.class);
     }
 
-    public static String name(ClassDoc doc) {
-        return doc.simpleTypeName();
+    private ClassDocPredicates classDocPredicates;
+
+    public String name(TypeElement doc) {
+        return doc.getSimpleName().toString();
     }
 
     private ComponentDocFactory componentDocFactory;
 
-    public List<DomainProcessDoc> createDomainProcesses(BoundedContextDocId boundedContextDocId, MethodDoc methodDoc) {
+    public List<DomainProcessDoc> createDomainProcesses(BoundedContextDocId boundedContextDocId, ExecutableElement methodDoc) {
         if(!isDomainProcessDoc(methodDoc)) {
-            throw new DomainException("Method " + methodDoc.name() + " does not define any domain process");
+            throw new DomainException("Method " + methodDoc.getSimpleName() + " does not define any domain process");
         }
 
-        List<ProcessDescription> descriptions = AnnotationsResolver.processDescription(methodDoc);
+        List<ProcessDescription> descriptions = annotationsResolver.processDescription(methodDoc);
         Set<String> detectedDomainProcesses = new HashSet<>();
         List<DomainProcessDoc> processes = new ArrayList<>();
         for(ProcessDescription description : descriptions) {
@@ -58,7 +60,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
             DomainProcessDoc doc = buildDomainProcessDoc(boundedContextDocId, description);
             processes.add(doc);
         }
-        List<String> names = AnnotationsResolver.process(methodDoc);
+        List<String> names = annotationsResolver.process(methodDoc);
         for(String name : names) {
             if(!detectedDomainProcesses.contains(name)) {
                 detectedDomainProcesses.add(name);
@@ -71,6 +73,8 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
         }
         return processes;
     }
+
+    private AnnotationsResolver annotationsResolver;
 
     private DomainProcessDoc buildDomainProcessDoc(BoundedContextDocId boundedContextDocId,
             ProcessDescription description) {
@@ -86,7 +90,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
         return doc;
     }
 
-    public static boolean isDomainProcessDoc(MethodDoc doc) {
-        return !(AnnotationsResolver.processDescription(doc).isEmpty() && AnnotationsResolver.process(doc).isEmpty());
+    public boolean isDomainProcessDoc(ExecutableElement doc) {
+        return !(annotationsResolver.processDescription(doc).isEmpty() && annotationsResolver.process(doc).isEmpty());
     }
 }

@@ -1,6 +1,8 @@
 package poussecafe.doc.model.entitydoc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
@@ -11,13 +13,13 @@ import poussecafe.domain.Factory;
 
 public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.Attributes> {
 
-    public EntityDoc newEntityDoc(BoundedContextDocId boundedContextId, ClassDoc entityClassDoc) {
+    public EntityDoc newEntityDoc(BoundedContextDocId boundedContextId, TypeElement entityClassDoc) {
         if(!isEntityDoc(entityClassDoc)) {
-            throw new DomainException("Class " + entityClassDoc.name() + " is not an entity");
+            throw new DomainException("Class " + entityClassDoc.getQualifiedName() + " is not an entity");
         }
 
         String name = name(entityClassDoc);
-        EntityDocId id = EntityDocId.ofClassName(entityClassDoc.qualifiedTypeName());
+        EntityDocId id = EntityDocId.ofClassName(entityClassDoc.getQualifiedName().toString());
         EntityDoc entityDoc = newAggregateWithId(id);
         entityDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextId)
@@ -31,17 +33,23 @@ public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.
 
     private ComponentDocFactory componentDocFactory;
 
-    private String idClassName(ClassDoc entityClassDoc) {
-        return entityClassDoc.superclassType().asParameterizedType().typeArguments()[KEY_TYPE_INDEX].qualifiedTypeName();
+    public String idClassName(TypeElement aggregateClassDoc) {
+        DeclaredType superclass = (DeclaredType) aggregateClassDoc.getSuperclass();
+        TypeElement keyType = (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(KEY_TYPE_INDEX));
+        return keyType.getQualifiedName().toString();
     }
+
+    private DocletEnvironment docletEnvironment;
 
     private static final int KEY_TYPE_INDEX = 0;
 
-    public static boolean isEntityDoc(ClassDoc classDoc) {
-        return ClassDocPredicates.documentsWithSuperclass(classDoc, Entity.class);
+    public boolean isEntityDoc(TypeElement classDoc) {
+        return classDocPredicates.documentsWithSuperclass(classDoc, Entity.class);
     }
 
-    public static String name(ClassDoc classDoc) {
-        return classDoc.simpleTypeName();
+    private ClassDocPredicates classDocPredicates;
+
+    public static String name(TypeElement classDoc) {
+        return classDoc.getSimpleName().toString();
     }
 }

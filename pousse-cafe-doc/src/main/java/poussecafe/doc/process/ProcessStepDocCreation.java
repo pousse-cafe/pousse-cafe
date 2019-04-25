@@ -1,8 +1,8 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.List;
 import java.util.Optional;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
@@ -13,7 +13,7 @@ import poussecafe.process.DomainProcess;
 
 public class ProcessStepDocCreation extends DomainProcess {
 
-    public void createOrUpdateProcessStepDoc(BoundedContextDocId boundedContextId, ClassDoc classDoc) {
+    public void createOrUpdateProcessStepDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
         List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(boundedContextId, classDoc);
         for(ProcessStepDoc doc : docs) {
             createOrUpdate(doc);

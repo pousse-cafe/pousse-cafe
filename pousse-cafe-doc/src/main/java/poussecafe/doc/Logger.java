@@ -1,27 +1,34 @@
 package poussecafe.doc;
 
+import javax.tools.Diagnostic.Kind;
+import jdk.javadoc.doclet.Reporter;
+
 public class Logger {
 
-    public static void setRootDoc(RootDocWrapper rootDoc) {
+    private Logger() {
+
+    }
+
+    public static void setRootDoc(Reporter rootDoc) {
         Logger.rootDoc = rootDoc;
     }
 
-    private static RootDocWrapper rootDoc;
+    private static Reporter rootDoc;
 
     public static void debug(String message) {
-        rootDoc.debug("[DEBUG] " + message);
+        rootDoc.print(Kind.OTHER, message);
     }
 
     public static void warn(String message) {
-        rootDoc.info("[WARNING] " + message);
+        rootDoc.print(Kind.WARNING, message);
     }
 
     public static void error(String message) {
-        rootDoc.info("[ERROR] " + message);
+        rootDoc.print(Kind.ERROR, message);
     }
 
     public static void info(String message) {
-        rootDoc.info("[INFO] " + message);
+        rootDoc.print(Kind.NOTE, message);
     }
 
     public static void info(String message, Object...args) {

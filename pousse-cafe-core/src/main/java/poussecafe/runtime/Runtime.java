@@ -62,6 +62,16 @@ public class Runtime {
 
         private boolean failFast;
 
+        public Builder withInjectableService(Object service) {
+            injectorBuilder.registerInjectableService(service);
+            return this;
+        }
+
+        public Builder withInjectableService(Class<?> serviceClass, Object service) {
+            injectorBuilder.registerInjectableService(serviceClass, service);
+            return this;
+        }
+
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
             builtRuntime.start();

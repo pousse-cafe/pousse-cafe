@@ -1,6 +1,6 @@
 package poussecafe.doc.model.factorydoc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
@@ -10,13 +10,13 @@ import poussecafe.domain.Factory;
 
 public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, FactoryDoc.Attributes> {
 
-    public FactoryDoc newFactoryDoc(BoundedContextDocId boundedContextDocId, ClassDoc classDoc) {
+    public FactoryDoc newFactoryDoc(BoundedContextDocId boundedContextDocId, TypeElement classDoc) {
         if(!isFactoryDoc(classDoc)) {
-            throw new DomainException("Class " + classDoc.name() + " is not a service");
+            throw new DomainException("Class " + classDoc.getQualifiedName() + " is not a service");
         }
 
-        String name = classDoc.simpleTypeName();
-        FactoryDocId id = FactoryDocId.ofClassName(classDoc.qualifiedName());
+        String name = classDoc.getSimpleName().toString();
+        FactoryDocId id = FactoryDocId.ofClassName(classDoc.getQualifiedName().toString());
         FactoryDoc factoryDoc = newAggregateWithId(id);
         factoryDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextDocId)
@@ -28,7 +28,9 @@ public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, Factory
 
     private ComponentDocFactory componentDocFactory;
 
-    public static boolean isFactoryDoc(ClassDoc classDoc) {
-        return ClassDocPredicates.documentsWithSuperclass(classDoc, Factory.class);
+    public boolean isFactoryDoc(TypeElement classDoc) {
+        return classDocPredicates.documentsWithSuperclass(classDoc, Factory.class);
     }
+
+    private ClassDocPredicates classDocPredicates;
 }

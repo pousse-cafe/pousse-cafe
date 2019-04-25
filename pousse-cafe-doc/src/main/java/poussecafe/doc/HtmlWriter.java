@@ -43,30 +43,9 @@ import static java.util.stream.Collectors.toList;
 
 public class HtmlWriter {
 
-    public static class Builder {
-
-        private HtmlWriter writer = new HtmlWriter();
-
-        public Builder rootDocWrapper(RootDocWrapper rootDocWrapper) {
-            writer.rootDocWrapper = rootDocWrapper;
-            return this;
-        }
-
-        public HtmlWriter build() {
-            Objects.requireNonNull(writer.rootDocWrapper);
-            return writer;
-        }
-    }
-
-    private HtmlWriter() {
-
-    }
-
-    private RootDocWrapper rootDocWrapper;
-
     public void writeHtml() {
         try {
-            FileWriter stream = new FileWriter(new File(rootDocWrapper.outputPath(), "index.html"));
+            FileWriter stream = new FileWriter(new File(configuration.outputDirectory(), "index.html"));
             copyCss();
 
             Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
@@ -74,8 +53,8 @@ public class HtmlWriter {
             Template template = freemarkerConfig.getTemplate("index.html");
 
             HashMap<String, Object> domain = new HashMap<>();
-            domain.put("name", rootDocWrapper.domainName());
-            domain.put("version", rootDocWrapper.version());
+            domain.put("name", configuration.domainName());
+            domain.put("version", configuration.version());
 
             List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
             domain.put("boundedContexts",
@@ -86,7 +65,6 @@ public class HtmlWriter {
                                     .collect(toList()));
 
             HashMap<String, Object> model = new HashMap<>();
-            PousseCafeDocletConfiguration configuration = rootDocWrapper.configuration();
             model.put("includeGenerationDate", configuration.includeGenerationDate());
             model.put("domain", domain);
             model.put("generationDate", new Date());
@@ -104,6 +82,8 @@ public class HtmlWriter {
             throw new RuntimeException("Error while writing HTML", e);
         }
     }
+
+    private PousseCafeDocletConfiguration configuration;
 
     private BoundedContextDocRepository boundedContextDocRepository;
 
@@ -298,7 +278,7 @@ public class HtmlWriter {
     private void copyCss()
             throws IOException {
         IOUtils.copy(getClass().getResourceAsStream("/style.css"),
-                        new FileOutputStream(new File(rootDocWrapper.outputPath(), "style.css")));
+                        new FileOutputStream(new File(configuration.outputDirectory(), "style.css")));
     }
 
     private UbiquitousLanguageFactory ubitquitousLanguageFactory;

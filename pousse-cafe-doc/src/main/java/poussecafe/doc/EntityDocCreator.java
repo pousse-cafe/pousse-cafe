@@ -1,20 +1,23 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.process.EntityDocCreation;
 
 public class EntityDocCreator extends BoundedContextComponentDocCreator {
 
-    public EntityDocCreator(RootDocWrapper rootDocWrapper) {
+    public EntityDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
     }
 
     @Override
-    protected boolean isComponentDoc(ClassDoc classDoc) {
-        return EntityDocFactory.isEntityDoc(classDoc);
+    protected boolean isComponentDoc(TypeElement classDoc) {
+        return entityDocFactory.isEntityDoc(classDoc);
     }
+
+    private EntityDocFactory entityDocFactory;
 
     @Override
     protected String componentName() {
@@ -23,7 +26,7 @@ public class EntityDocCreator extends BoundedContextComponentDocCreator {
 
     @Override
     protected void addDoc(BoundedContextDocId boundedContextDocId,
-            ClassDoc componentClassDoc) {
+            TypeElement componentClassDoc) {
         entityDocCreation.addEntityDoc(boundedContextDocId, componentClassDoc);
     }
 

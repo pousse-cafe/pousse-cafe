@@ -62,6 +62,11 @@ public class PousseCafeDocletConfiguration {
             return this;
         }
 
+        public Builder debug(boolean debug) {
+            configuration.debug = debug;
+            return this;
+        }
+
         public PousseCafeDocletConfiguration build() {
             Objects.requireNonNull(configuration.domainName);
             Objects.requireNonNull(configuration.version);
@@ -132,7 +137,7 @@ public class PousseCafeDocletConfiguration {
         return noticeWriter;
     }
 
-    private boolean includeGenerationDate = true;
+    private boolean includeGenerationDate;
 
     public boolean includeGenerationDate() {
         return includeGenerationDate;
@@ -142,5 +147,11 @@ public class PousseCafeDocletConfiguration {
 
     public List<String> classPath() {
         return classPath;
+    }
+
+    private boolean debug;
+
+    public boolean isDebug() {
+        return debug;
     }
 }

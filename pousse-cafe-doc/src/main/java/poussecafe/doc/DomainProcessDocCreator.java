@@ -1,7 +1,9 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
@@ -11,17 +13,25 @@ import poussecafe.domain.Repository;
 
 public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
 
-    public DomainProcessDocCreator(RootDocWrapper rootDocWrapper) {
+    public DomainProcessDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
     }
 
     @Override
-    protected boolean isComponentDoc(ClassDoc classDoc) {
-        return DomainProcessDocFactory.isDomainProcessDoc(classDoc) ||
-                AggregateDocFactory.isAggregateDoc(classDoc) ||
-                FactoryDocFactory.isFactoryDoc(classDoc) ||
-                ClassDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
+    protected boolean isComponentDoc(TypeElement classDoc) {
+        return domainProcessDocFactory.isDomainProcessDoc(classDoc) ||
+                aggregateDocFactory.isAggregateDoc(classDoc) ||
+                factoryDocFactory.isFactoryDoc(classDoc) ||
+                classDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
     }
+
+    private DomainProcessDocFactory domainProcessDocFactory;
+
+    private AggregateDocFactory aggregateDocFactory;
+
+    private FactoryDocFactory factoryDocFactory;
+
+    private ClassDocPredicates classDocPredicates;
 
     @Override
     protected String componentName() {
@@ -30,12 +40,12 @@ public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
 
     @Override
     protected void addDoc(BoundedContextDocId boundedContextDocId,
-            ClassDoc componentClassDoc) {
-        if(DomainProcessDocFactory.isDomainProcessDoc(componentClassDoc)) {
+            TypeElement componentClassDoc) {
+        if(domainProcessDocFactory.isDomainProcessDoc(componentClassDoc)) {
             domainProcessDocCreation.addDomainProcessDoc(boundedContextDocId, componentClassDoc);
         } else {
-            for(MethodDoc doc : componentClassDoc.methods()) {
-                if(DomainProcessDocFactory.isDomainProcessDoc(doc)) {
+            for(ExecutableElement doc : docletAccess.methods(componentClassDoc)) {
+                if(domainProcessDocFactory.isDomainProcessDoc(doc)) {
                     domainProcessDocCreation.addDomainProcessDocs(boundedContextDocId, doc);
                 }
             }
@@ -43,4 +53,6 @@ public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
     }
 
     private DomainProcessDocCreation domainProcessDocCreation;
+
+    private DocletAccess docletAccess;
 }

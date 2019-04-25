@@ -1,6 +1,6 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
@@ -9,7 +9,7 @@ import poussecafe.process.DomainProcess;
 
 public class EntityDocCreation extends DomainProcess {
 
-    public void addEntityDoc(BoundedContextDocId boundedContextId, ClassDoc entityClassDoc) {
+    public void addEntityDoc(BoundedContextDocId boundedContextId, TypeElement entityClassDoc) {
         EntityDoc entityDoc = entityDocFactory.newEntityDoc(boundedContextId, entityClassDoc);
         runInTransaction(EntityDoc.class, () -> entityDocRepository.add(entityDoc));
     }

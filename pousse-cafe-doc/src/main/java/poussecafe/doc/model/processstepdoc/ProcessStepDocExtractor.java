@@ -1,17 +1,22 @@
 package poussecafe.doc.model.processstepdoc;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import poussecafe.doc.AnnotationsResolver;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
+import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
@@ -24,11 +29,11 @@ import static java.util.stream.Collectors.toList;
 
 public class ProcessStepDocExtractor implements Service {
 
-    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocId boundedContextDocId, ClassDoc classDoc) {
+    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocId boundedContextDocId, TypeElement classDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
-        for(MethodDoc methodDoc : classDoc.methods()) {
+        for(ExecutableElement methodDoc : docletAccess.methods(classDoc)) {
             if(isProcessStep(methodDoc)) {
-                List<String> customStepSignatures = AnnotationsResolver.step(methodDoc);
+                List<String> customStepSignatures = annotationsResolver.step(methodDoc);
                 if(!customStepSignatures.isEmpty()) {
                     stepDocs.addAll(extractCustomSteps(boundedContextDocId, methodDoc));
                 } else {
@@ -39,27 +44,31 @@ public class ProcessStepDocExtractor implements Service {
         return stepDocs;
     }
 
-    private boolean isProcessStep(MethodDoc methodDoc) {
-        if(DomainProcessDocFactory.isDomainProcessDoc(methodDoc.containingClass())) {
-            return AnnotationsResolver.isStep(methodDoc);
+    private DocletAccess docletAccess;
+
+    private boolean isProcessStep(ExecutableElement methodDoc) {
+        if(domainProcessDocFactory.isDomainProcessDoc((TypeElement) methodDoc.getEnclosingElement())) {
+            return annotationsResolver.isStep(methodDoc);
         } else {
-            Optional<String> consumedMessage = consumedMessage(methodDoc);
+            Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
             List<String> producedEvents = extractProducedEvents(methodDoc);
-            return AnnotationsResolver.isStep(methodDoc) ||
-                    (methodDoc.isPublic() && (consumedMessage.isPresent() || !producedEvents.isEmpty()));
+            return annotationsResolver.isStep(methodDoc) ||
+                    (docletAccess.isPublic(methodDoc) && (consumedMessage.isPresent() || !producedEvents.isEmpty()));
         }
     }
 
-    private Optional<String> consumedMessage(MethodDoc methodDoc) {
-        return new ConsumedMessageExtractor(methodDoc).consumedMessage();
-    }
+    private DomainProcessDocFactory domainProcessDocFactory;
 
-    private List<String> extractProducedEvents(MethodDoc methodDoc) {
-        return AnnotationsResolver.event(methodDoc);
+    private AnnotationsResolver annotationsResolver;
+
+    private ConsumedMessageExtractor consumedMessageExtractor;
+
+    private List<String> extractProducedEvents(ExecutableElement methodDoc) {
+        return annotationsResolver.event(methodDoc);
     }
 
     private List<ProcessStepDoc> extractCustomSteps(BoundedContextDocId boundedContextDocId,
-            MethodDoc methodDoc) {
+            ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
@@ -69,24 +78,24 @@ public class ProcessStepDocExtractor implements Service {
                     .boundedContextDocId(boundedContextDocId)
                     .componentDoc(new ComponentDoc.Builder()
                             .name(signature.toString())
-                            .description(methodDoc.commentText())
+                            .description(annotationsResolver.renderCommentBody(methodDoc))
                             .build())
                     .build();
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
                     boundedContextComponentDoc);
             processStepDoc.attributes().processName().value(processName(methodDoc));
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
-            processStepDoc.attributes().producedEvents().value(new HashSet<>(AnnotationsResolver.event(methodDoc)));
-            processStepDoc.attributes().fromExternals().value(new HashSet<>(AnnotationsResolver.fromExternal(methodDoc)));
-            processStepDoc.attributes().toExternals().value(new HashSet<>(AnnotationsResolver.toExternal(methodDoc)));
+            processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
+            processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
+            processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
             stepDocs.add(processStepDoc);
         }
         return stepDocs;
     }
 
-    private List<StepMethodSignature> customStepsSignatures(MethodDoc methodDoc) {
-        List<String> customStepSignatures = AnnotationsResolver.step(methodDoc);
-        if(DomainProcessDocFactory.isDomainProcessDoc(methodDoc.containingClass())) {
+    private List<StepMethodSignature> customStepsSignatures(ExecutableElement methodDoc) {
+        List<String> customStepSignatures = annotationsResolver.step(methodDoc);
+        if(domainProcessDocFactory.isDomainProcessDoc((TypeElement) methodDoc.getEnclosingElement())) {
             if(customStepSignatures.size() != 1) {
                 throw new PousseCafeException("Domain processes listeners must be tagged with a single step");
             }
@@ -101,23 +110,37 @@ public class ProcessStepDocExtractor implements Service {
         }
     }
 
-    private Optional<String> consumedEvent(MethodDoc methodDoc) {
-        if(methodDoc.parameters().length > 0 &&
-                methodDoc.parameters()[0].type().asClassDoc() != null &&
-                ClassDocPredicates.documentsWithSuperinterface(methodDoc.parameters()[0].type().asClassDoc(), DomainEvent.class)) {
-            return Optional.of(methodDoc.parameters()[0].type().asClassDoc().name());
+    private Optional<String> consumedEvent(ExecutableElement methodDoc) {
+        List<? extends VariableElement> parameters = methodDoc.getParameters();
+        if(parameters.isEmpty()) {
+            return Optional.empty();
+        }
+
+        TypeMirror firstParameterType = parameters.get(0).asType();
+        Element firstParameterElement = docletEnvironment.getTypeUtils().asElement(firstParameterType);
+        if(firstParameterElement instanceof TypeElement) {
+            TypeElement firstParameterTypeElement = (TypeElement) firstParameterElement;
+            if(classDocPredicates.documentsWithSuperinterface(firstParameterTypeElement, DomainEvent.class)) {
+                return Optional.of(firstParameterTypeElement.getQualifiedName().toString());
+            } else {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
     }
 
+    private DocletEnvironment docletEnvironment;
+
+    private ClassDocPredicates classDocPredicates;
+
     private ProcessStepDocFactory messageListenerDocFactory;
 
-    private Optional<String> processName(MethodDoc methodDoc) {
-        ClassDoc containingClass = methodDoc.containingClass();
-        List<String> processNames = AnnotationsResolver.process(methodDoc);
-        if(DomainProcessDocFactory.isDomainProcessDoc(containingClass)) {
-            return Optional.of(DomainProcessDocFactory.name(containingClass));
+    private Optional<String> processName(ExecutableElement methodDoc) {
+        TypeElement containingClass = (TypeElement) methodDoc.getEnclosingElement();
+        List<String> processNames = annotationsResolver.process(methodDoc);
+        if(domainProcessDocFactory.isDomainProcessDoc(containingClass)) {
+            return Optional.of(domainProcessDocFactory.name(containingClass));
         } else if(!processNames.isEmpty()) {
             return Optional.of(processNames.get(0));
         } else {
@@ -126,13 +149,14 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private ProcessStepDoc extractDeclaredStep(BoundedContextDocId boundedContextDocId,
-            MethodDoc methodDoc) {
-        Logger.info("Extracting declared step from method " + methodDoc.qualifiedName());
-        Optional<String> consumedMessage = consumedMessage(methodDoc);
+            ExecutableElement methodDoc) {
+        Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
+        Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
+        TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
         StepMethodSignature stepMethodSignature = new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .componentName(methodDoc.containingClass().name())
-                        .methodName(methodDoc.name())
+                        .componentName(enclosingType.getSimpleName().toString())
+                        .methodName(methodDoc.getSimpleName().toString())
                         .build())
                 .consumedMessageName(consumedMessage)
                 .build();
@@ -145,9 +169,9 @@ public class ProcessStepDocExtractor implements Service {
                 boundedContextComponentDoc);
         processStepDoc.attributes().processName().value(processName(methodDoc));
         processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
-        processStepDoc.attributes().producedEvents().value(new HashSet<>(AnnotationsResolver.event(methodDoc)));
-        processStepDoc.attributes().fromExternals().value(new HashSet<>(AnnotationsResolver.fromExternal(methodDoc)));
-        processStepDoc.attributes().toExternals().value(new HashSet<>(AnnotationsResolver.toExternal(methodDoc)));
+        processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
+        processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
+        processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
         return processStepDoc;
     }
 

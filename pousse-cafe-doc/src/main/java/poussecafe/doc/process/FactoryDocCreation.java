@@ -1,6 +1,6 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.factorydoc.FactoryDoc;
@@ -10,7 +10,7 @@ import poussecafe.process.DomainProcess;
 
 public class FactoryDocCreation extends DomainProcess {
 
-    public void addFactoryDoc(BoundedContextDocId boundedContextId, ClassDoc classDoc) {
+    public void addFactoryDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
         FactoryDoc aggregateDoc = aggregateDocFactory.newFactoryDoc(boundedContextId, classDoc);
         runInTransaction(BoundedContextDoc.class, () -> aggregateDocRepository.add(aggregateDoc));
     }

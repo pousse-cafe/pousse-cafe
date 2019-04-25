@@ -1,11 +1,10 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import poussecafe.doc.model.entitydoc.EntityDocFactory;
-import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
+import javax.lang.model.element.TypeElement;
+import poussecafe.doc.model.DocletServices;
 
 public class CodeExplorer {
 
@@ -13,7 +12,7 @@ public class CodeExplorer {
 
         private CodeExplorer codeExplorer = new CodeExplorer();
 
-        public Builder rootClassDoc(ClassDoc classDoc) {
+        public Builder rootClassDoc(TypeElement classDoc) {
             codeExplorer.rootClassDoc = classDoc;
             return this;
         }
@@ -28,10 +27,16 @@ public class CodeExplorer {
             return this;
         }
 
+        public Builder docletServices(DocletServices docletServices) {
+            codeExplorer.docletServices = docletServices;
+            return this;
+        }
+
         public CodeExplorer build() {
             Objects.requireNonNull(codeExplorer.rootClassDoc);
             Objects.requireNonNull(codeExplorer.basePackage);
             Objects.requireNonNull(codeExplorer.classRelationBuilder);
+            Objects.requireNonNull(codeExplorer.docletServices);
             return codeExplorer;
         }
     }
@@ -40,7 +45,7 @@ public class CodeExplorer {
 
     }
 
-    private ClassDoc rootClassDoc;
+    private TypeElement rootClassDoc;
 
     public void explore() {
         pathFinder().start();
@@ -52,20 +57,23 @@ public class CodeExplorer {
                 .basePackage(basePackage)
                 .classMatcher(this::classMatcher)
                 .pathHandler(this::pathHandler)
+                .docletServices(docletServices)
                 .build();
     }
 
-    public void explore(ClassDoc start) {
+    private DocletServices docletServices;
+
+    public void explore(TypeElement start) {
         pathFinder().explore(start);
     }
 
-    private boolean classMatcher(ClassDoc candidateClassDoc) {
-        return EntityDocFactory.isEntityDoc(candidateClassDoc) ||
-                ValueObjectDocFactory.isValueObjectDoc(candidateClassDoc);
+    private boolean classMatcher(TypeElement candidateClassDoc) {
+        return docletServices.entityDocFactory().isEntityDoc(candidateClassDoc) ||
+                docletServices.valueObjectDocFactory().isValueObjectDoc(candidateClassDoc);
     }
 
-    private void pathHandler(ClassDoc componentFrom, ClassDoc componentTo) {
-        String relation = componentFrom.name() + "_" + componentTo.name();
+    private void pathHandler(TypeElement componentFrom, TypeElement componentTo) {
+        String relation = componentFrom.getQualifiedName().toString() + "_" + componentTo.getQualifiedName().toString();
         if(!alreadyMatched.contains(relation)) {
             alreadyMatched.add(relation);
             classRelationBuilder.classRelationBuilder(componentFrom, componentTo);

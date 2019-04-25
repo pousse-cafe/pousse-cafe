@@ -1,31 +1,54 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import java.util.Collection;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.TypeMirror;
+import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.domain.Service;
 
-public class ClassDocPredicates {
+public class ClassDocPredicates implements Service {
 
-    public static boolean documentsWithSuperclass(ClassDoc classDoc, Class<?> expectedSuperclass) {
+    public boolean documentsWithSuperclass(TypeElement typeElement, Class<?> expectedSuperclass) {
         if(expectedSuperclass.isInterface()) {
             throw new IllegalArgumentException("Given expected class is an interface");
         }
-        return classDoc.superclass() != null && documents(classDoc.superclass(), expectedSuperclass);
+        return documents(asElement(typeElement.getSuperclass()), expectedSuperclass);
     }
 
-    public static boolean documents(ClassDoc classDoc,
+    private Element asElement(TypeMirror typeMirror) {
+        return docletEnvironment.getTypeUtils().asElement(typeMirror);
+    }
+
+    private DocletEnvironment docletEnvironment;
+
+    public boolean documents(TypeMirror typeElement,
             Class<?> documentedClass) {
-        return classDoc.qualifiedName().equals(documentedClass.getName());
+        return documents(asElement(typeElement), documentedClass);
     }
 
-    public static boolean documentsWithSuperinterface(ClassDoc classDoc, Class<?> expectedInterface) {
+    public boolean documents(Element element,
+            Class<?> documentedClass) {
+        if(element instanceof TypeElement) {
+            TypeElement typeElement = (TypeElement) element;
+            return typeElement.getQualifiedName().toString().equals(documentedClass.getName());
+        } else {
+            return false;
+        }
+    }
+
+    public boolean documentsWithSuperinterface(TypeElement typeElement, Class<?> expectedInterface) {
         if(!expectedInterface.isInterface()) {
             throw new IllegalArgumentException("Given expected class is not an interface");
         }
-        return documents(classDoc.interfaces(), expectedInterface);
+        return documents(typeElement.getInterfaces(), expectedInterface);
     }
 
-    public static boolean documents(ClassDoc[] classDocs,
+    public boolean documents(Collection<? extends TypeMirror> typeMirrors,
             Class<?> expectedType) {
-        for(ClassDoc classDoc : classDocs) {
+        for(TypeMirror classDoc : typeMirrors) {
             if(documents(classDoc, expectedType)) {
                 return true;
             }
@@ -33,25 +56,26 @@ public class ClassDocPredicates {
         return false;
     }
 
-    public static boolean documentsSubclassOf(ClassDoc classDoc, Class<?> expectedSuperclass) {
+    public boolean documentsSubclassOf(TypeElement typeElement, Class<?> expectedSuperclass) {
         if(expectedSuperclass.isInterface()) {
-            return documentsImplementationOf(classDoc, expectedSuperclass);
+            return documentsImplementationOf(typeElement, expectedSuperclass);
         } else {
-            return documentsExtensionOf(classDoc, expectedSuperclass);
+            return documentsExtensionOf(typeElement, expectedSuperclass);
         }
     }
 
-    private static boolean documentsImplementationOf(ClassDoc classDoc,
+    private boolean documentsImplementationOf(TypeElement typeElement,
             Class<?> expectedSuperclass) {
-        if(documentsWithSuperinterface(classDoc, expectedSuperclass)) {
+        if(documentsWithSuperinterface(typeElement, expectedSuperclass)) {
             return true;
         } else {
-            ClassDoc superClass = classDoc.superclass();
-            if(superClass != null && documentsImplementationOf(superClass, expectedSuperclass)) {
+            TypeMirror superClass = typeElement.getSuperclass();
+            if(!(superClass instanceof NoType) &&
+                    documentsImplementationOf(asElement(superClass), expectedSuperclass)) {
                 return true;
             } else {
-                for(ClassDoc superInterface : classDoc.interfaces()) {
-                    if(documentsImplementationOf(superInterface, expectedSuperclass)) {
+                for(TypeMirror superInterface : typeElement.getInterfaces()) {
+                    if(documentsImplementationOf(asElement(superInterface), expectedSuperclass)) {
                         return true;
                     }
                 }
@@ -60,8 +84,21 @@ public class ClassDocPredicates {
         }
     }
 
-    private static boolean documentsExtensionOf(ClassDoc classDoc,
+    private boolean documentsImplementationOf(Element element,
+            Class<?> expectedSuperclass) {
+        if(element instanceof TypeElement) {
+            return documentsImplementationOf((TypeElement) element, expectedSuperclass);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean documentsExtensionOf(TypeElement typeElement,
             Class<?> expectedSuperclass) {
         throw new UnsupportedOperationException();
+    }
+
+    public boolean isEnum(TypeElement classDoc) {
+        return classDoc.getKind() == ElementKind.ENUM;
     }
 }

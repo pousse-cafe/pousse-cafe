@@ -1,24 +1,26 @@
 package poussecafe.doc.model;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.RootDoc;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import javax.lang.model.element.TypeElement;
 import poussecafe.domain.Service;
 import poussecafe.exception.NotFoundException;
 
 public class ClassDocRepository implements Service {
 
-    public void registerClassDocs(RootDoc rootDoc) {
-        for(ClassDoc classDoc : rootDoc.classes()) {
-            classDocMap.put(classDoc.qualifiedName(), classDoc);
-        }
+    public void registerTypeElements(Set<TypeElement> typeElements) {
+        typeElements.forEach(this::registerClassDoc);
     }
 
-    private Map<String, ClassDoc> classDocMap = new HashMap<>();
+    public void registerClassDoc(TypeElement typeElement) {
+        classDocMap.put(typeElement.getQualifiedName().toString(), typeElement);
+    }
 
-    public ClassDoc getClassDoc(String qualifiedName) {
-        ClassDoc classDoc = classDocMap.get(qualifiedName);
+    private Map<String, TypeElement> classDocMap = new HashMap<>();
+
+    public TypeElement getClassDoc(String qualifiedName) {
+        TypeElement classDoc = classDocMap.get(qualifiedName);
         if(classDoc == null) {
             throw new NotFoundException("No class with name " + qualifiedName);
         }

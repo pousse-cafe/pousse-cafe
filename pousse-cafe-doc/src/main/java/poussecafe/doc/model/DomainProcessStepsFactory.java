@@ -116,7 +116,12 @@ public class DomainProcessStepsFactory implements Service {
                 steps.put(fromExternal, fromExternalStep);
             }
 
-            List<StepName> fromDomainProcesses = fromDomainProcesses(boundedContextDocId, domainProcessName, processStepDoc.attributes().stepMethodSignature().value().map(StepMethodSignature::consumedEventName).map(Optional::get));
+            Optional<StepMethodSignature> stepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
+            Optional<String> consumedEvent = Optional.empty();
+            if(stepMethodSignature.isPresent()) {
+                consumedEvent = stepMethodSignature.get().consumedEventName();
+            }
+            List<StepName> fromDomainProcesses = fromDomainProcesses(boundedContextDocId, domainProcessName, consumedEvent);
             for(StepName fromDomainProcess : fromDomainProcesses) {
                 Step fromDomainProcessStep = steps.get(fromDomainProcess);
                 if(fromDomainProcessStep == null) {

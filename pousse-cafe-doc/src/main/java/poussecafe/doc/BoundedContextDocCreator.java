@@ -1,19 +1,21 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.PackageDoc;
 import java.util.function.Consumer;
+import javax.lang.model.element.PackageElement;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocFactory;
 import poussecafe.doc.process.BoundedContextDocCreation;
 
-public class BoundedContextDocCreator implements Consumer<PackageDoc> {
+public class BoundedContextDocCreator implements Consumer<PackageElement> {
 
     @Override
-    public void accept(PackageDoc classDoc) {
-        if (BoundedContextDocFactory.isBoundedContextDoc(classDoc)) {
-            Logger.debug("Adding bounded context from package " + classDoc.name());
+    public void accept(PackageElement classDoc) {
+        if (boundedContextDocFactory.isBoundedContextDoc(classDoc)) {
+            Logger.debug("Adding bounded context from package " + classDoc.getQualifiedName().toString());
             boundedContextDocCreation.addBoundedContextDoc(classDoc);
         }
     }
+
+    private BoundedContextDocFactory boundedContextDocFactory;
 
     private BoundedContextDocCreation boundedContextDocCreation;
 }

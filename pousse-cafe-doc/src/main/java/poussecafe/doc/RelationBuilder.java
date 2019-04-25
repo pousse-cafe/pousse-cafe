@@ -1,9 +1,9 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 
 @FunctionalInterface
 public interface RelationBuilder {
 
-    void classRelationBuilder(ClassDoc from, ClassDoc to);
+    void classRelationBuilder(TypeElement from, TypeElement to);
 }

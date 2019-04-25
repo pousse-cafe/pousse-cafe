@@ -50,8 +50,13 @@ Pousse-Café Doc Domain Model
           </ol>
           <li><a href="#doc_services">Services</a></li>
           <ol>
+            <li><a href="#doc_annotationsresolver">AnnotationsResolver</a></li>
+            <li><a href="#doc_classdocpredicates">ClassDocPredicates</a></li>
             <li><a href="#doc_classdocrepository">ClassDocRepository</a></li>
             <li><a href="#doc_componentdocfactory">ComponentDocFactory</a></li>
+            <li><a href="#doc_consumedmessageextractor">ConsumedMessageExtractor</a></li>
+            <li><a href="#doc_docletaccess">DocletAccess</a></li>
+            <li><a href="#doc_docletservices">DocletServices</a></li>
             <li><a href="#doc_domainprocessstepsfactory">DomainProcessStepsFactory</a></li>
             <li><a href="#doc_graphfactory">GraphFactory</a></li>
             <li><a href="#doc_processstepdocextractor">ProcessStepDocExtractor</a></li>
@@ -261,7 +266,7 @@ a process, most of them are called when handling a Domain Event.</p>
 </div>
 
 <h4 id="doc_valueobjectdoc">ValueObjectDoc</h4>
-
+<p>ValueObjectDoc describes the documentation of a Value Object in a given Bounded Context.</p>
 
 <h5>Value Objects</h5>
 <ul>
@@ -278,9 +283,19 @@ a process, most of them are called when handling a Domain Event.</p>
 
 
 <h3 id="doc_services">Services</h3>
+<h4 id="doc_annotationsresolver">AnnotationsResolver</h4>
+
+<h4 id="doc_classdocpredicates">ClassDocPredicates</h4>
+
 <h4 id="doc_classdocrepository">ClassDocRepository</h4>
 
 <h4 id="doc_componentdocfactory">ComponentDocFactory</h4>
+
+<h4 id="doc_consumedmessageextractor">ConsumedMessageExtractor</h4>
+
+<h4 id="doc_docletaccess">DocletAccess</h4>
+
+<h4 id="doc_docletservices">DocletServices</h4>
 
 <h4 id="doc_domainprocessstepsfactory">DomainProcessStepsFactory</h4>
 
@@ -381,17 +396,22 @@ a process, most of them are called when handling a Domain Event.</p>
 <li><span class="entryName">AggregateDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">AggregateDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">AggregateDocId (Doc)</span>, Value Object, </li>
+<li><span class="entryName">AnnotationsResolver (Doc)</span>, Service, </li>
 <li><span class="entryName">BoundedContextComponentDoc (Doc)</span>, Value Object, </li>
 <li><span class="entryName">BoundedContextDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">BoundedContextDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">BoundedContextDocId (Doc)</span>, Value Object, </li>
+<li><span class="entryName">ClassDocPredicates (Doc)</span>, Service, </li>
 <li><span class="entryName">ClassDocRepository (Doc)</span>, Service, </li>
 <li><span class="entryName">Component (Doc)</span>, Value Object, </li>
 <li><span class="entryName">ComponentDoc (Doc)</span>, Value Object, </li>
 <li><span class="entryName">ComponentDocFactory (Doc)</span>, Service, </li>
 <li><span class="entryName">ComponentLinking (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">ComponentType (Doc)</span>, Value Object, </li>
+<li><span class="entryName">ConsumedMessageExtractor (Doc)</span>, Service, </li>
 <li><span class="entryName">Doc</span>, Bounded Context, </li>
+<li><span class="entryName">DocletAccess (Doc)</span>, Service, </li>
+<li><span class="entryName">DocletServices (Doc)</span>, Service, </li>
 <li><span class="entryName">DomainProcessDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">DomainProcessDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">DomainProcessDocId (Doc)</span>, Value Object, </li>
@@ -416,7 +436,7 @@ a process, most of them are called when handling a Domain Event.</p>
 <li><span class="entryName">Shape (Doc)</span>, Value Object, </li>
 <li><span class="entryName">Step (Doc)</span>, Value Object, </li>
 <li><span class="entryName">UbiquitousLanguageFactory (Doc)</span>, Service, </li>
-<li><span class="entryName">ValueObjectDoc (Doc)</span>, Aggregate, </li>
+<li><span class="entryName">ValueObjectDoc (Doc)</span>, Aggregate, <p>ValueObjectDoc describes the documentation of a Value Object in a given Bounded Context.</p></li>
 <li><span class="entryName">ValueObjectDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">ValueObjectDocId (Doc)</span>, Value Object, </li>
 </ol>

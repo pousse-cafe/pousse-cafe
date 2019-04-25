@@ -1,6 +1,7 @@
 package poussecafe.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -26,8 +27,9 @@ public class ReflectionUtils {
 
     public static <T> T newInstance(Class<T> aClass) {
         try {
-            return aClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return aClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new PousseCafeException("Unable to instantiate class", e);
         }
     }

@@ -33,9 +33,7 @@ public class MessageListenerRegistry {
     }
 
     private Set<MessageListener> putNewEmptySet(Class<? extends Message> key) {
-        Set<MessageListener> messageListeners = new HashSet<>();
-        listeners.put(key, messageListeners);
-        return messageListeners;
+        return new HashSet<>();
     }
 
     public Set<MessageListener> getListeners(Class<? extends Message> messageImplementationClass) {

@@ -1,6 +1,6 @@
 package poussecafe.doc.model.vodoc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
@@ -11,13 +11,13 @@ import poussecafe.domain.ValueObject;
 
 public class ValueObjectDocFactory extends Factory<ValueObjectDocId, ValueObjectDoc, ValueObjectDoc.Attributes> {
 
-    public ValueObjectDoc newValueObjectDoc(BoundedContextDocId boundedContextDocId, ClassDoc doc) {
+    public ValueObjectDoc newValueObjectDoc(BoundedContextDocId boundedContextDocId, TypeElement doc) {
         if(!isValueObjectDoc(doc)) {
-            throw new DomainException("Class " + doc.name() + " is not an entity");
+            throw new DomainException("Class " + doc.getQualifiedName() + " is not an entity");
         }
 
         String name = name(doc);
-        ValueObjectDocId id = ValueObjectDocId.ofClassName(doc.qualifiedName());
+        ValueObjectDocId id = ValueObjectDocId.ofClassName(doc.getQualifiedName().toString());
         ValueObjectDoc valueObjectDoc = newAggregateWithId(id);
         valueObjectDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
                 .boundedContextDocId(boundedContextDocId)
@@ -28,12 +28,15 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocId, ValueObject
 
     private ComponentDocFactory componentDocFactory;
 
-    public static boolean isValueObjectDoc(ClassDoc classDoc) {
-        return ClassDocPredicates.documentsWithSuperinterface(classDoc, ValueObject.class) || classDoc.isEnum();
+    public boolean isValueObjectDoc(TypeElement classDoc) {
+        return classDocPredicates.documentsWithSuperinterface(classDoc, ValueObject.class) ||
+                classDocPredicates.isEnum(classDoc);
     }
 
-    public static String name(ClassDoc doc) {
-        ClassDoc classDoc = doc;
-        return classDoc.simpleTypeName();
+    private ClassDocPredicates classDocPredicates;
+
+    public String name(TypeElement doc) {
+        TypeElement classDoc = doc;
+        return classDoc.getSimpleName().toString();
     }
 }

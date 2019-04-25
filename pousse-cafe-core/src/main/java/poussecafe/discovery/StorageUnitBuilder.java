@@ -2,16 +2,17 @@ package poussecafe.discovery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.environment.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.storage.Storage;
+import poussecafe.util.ReflectionUtils;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import java.util.Objects;
 
 public class StorageUnitBuilder {
 
@@ -64,25 +65,17 @@ public class StorageUnitBuilder {
         DataAccessImplementation annotation = entityDataAccessClass.getAnnotation(DataAccessImplementation.class);
         return new EntityImplementation.Builder()
                 .withEntityClass(annotation.aggregateRoot())
-                .withDataAccessFactory(() -> newInstance(entityDataAccessClass))
-                .withDataFactory(() -> newInstance(annotation.dataImplementation()))
+                .withDataAccessFactory(() -> ReflectionUtils.newInstance(entityDataAccessClass))
+                .withDataFactory(() -> ReflectionUtils.newInstance(annotation.dataImplementation()))
                 .withStorage(storage)
                 .build();
-    }
-
-    private <T> T newInstance(Class<T> aClass) {
-        try {
-            return aClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new PousseCafeException("Class " + aClass.getName() + " is missing a public constructor with no arguments");
-        }
     }
 
     private EntityImplementation buildNonRootEntityImplementation(Class<EntityAttributes<?>> entityDataClass) {
         DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
         return new EntityImplementation.Builder()
                 .withEntityClass(annotation.entity())
-                .withDataFactory(() -> newInstance(entityDataClass))
+                .withDataFactory(() -> ReflectionUtils.newInstance(entityDataClass))
                 .withStorage(storage)
                 .build();
     }

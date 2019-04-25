@@ -7,6 +7,9 @@ import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
+/**
+ * <p>ValueObjectDoc describes the documentation of a Value Object in a given Bounded Context.</p>
+ */
 @Aggregate(
   factory = ValueObjectDocFactory.class,
   repository = ValueObjectDocRepository.class

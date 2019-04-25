@@ -1,14 +1,20 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.FieldDoc;
-import com.sun.javadoc.MethodDoc;
-import com.sun.javadoc.ParameterizedType;
-import com.sun.javadoc.Type;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.model.DocletAccess;
+import poussecafe.doc.model.DocletServices;
 
 public class PathFinder {
 
@@ -16,7 +22,7 @@ public class PathFinder {
 
         private PathFinder pathFinder = new PathFinder();
 
-        public Builder start(ClassDoc start) {
+        public Builder start(TypeElement start) {
             pathFinder.start = start;
             return this;
         }
@@ -26,7 +32,7 @@ public class PathFinder {
             return this;
         }
 
-        public Builder classMatcher(Predicate<ClassDoc> matcher) {
+        public Builder classMatcher(Predicate<TypeElement> matcher) {
             pathFinder.matcher = matcher;
             return this;
         }
@@ -36,11 +42,17 @@ public class PathFinder {
             return this;
         }
 
+        public Builder docletServices(DocletServices docletServices) {
+            pathFinder.docletServices = docletServices;
+            return this;
+        }
+
         public PathFinder build() {
             Objects.requireNonNull(pathFinder.start);
             Objects.requireNonNull(pathFinder.basePackage);
             Objects.requireNonNull(pathFinder.matcher);
             Objects.requireNonNull(pathFinder.pathHandler);
+            Objects.requireNonNull(pathFinder.docletServices);
             return pathFinder;
         }
     }
@@ -49,78 +61,86 @@ public class PathFinder {
 
     }
 
-    private ClassDoc start;
+    private TypeElement start;
 
-    private Predicate<ClassDoc> matcher;
+    private Predicate<TypeElement> matcher;
 
     public void start() {
         explore(start);
     }
 
-    public void explore(ClassDoc classDoc) {
-        if(!classDoc.containingPackage().name().startsWith(basePackage) || alreadyExplored.contains(classDoc)) {
+    public void explore(TypeElement classDoc) {
+        DocletAccess docletAccess = docletServices.docletAccess();
+        PackageElement packageElement = docletAccess.packageElement(classDoc);
+        if(!packageElement.getQualifiedName().toString().startsWith(basePackage) ||
+                alreadyExplored.contains(classDoc.getQualifiedName().toString())) {
             return;
         }
-        alreadyExplored.add(classDoc);
+        alreadyExplored.add(classDoc.getQualifiedName().toString());
 
-        for(MethodDoc methodDoc : classDoc.methods()) {
-            if(isCrawlableMethod(classDoc, methodDoc)) {
-                Type returnType = methodDoc.returnType();
+        for(ExecutableElement methodDoc : docletAccess.methods(classDoc)) {
+            if(isCrawlableMethod(methodDoc)) {
+                TypeMirror returnType = methodDoc.getReturnType();
                 tryType(returnType);
             }
         }
-        for(FieldDoc fieldDoc : classDoc.fields()) {
-            if(isCrawlableField(classDoc, fieldDoc)) {
-                Type returnType = fieldDoc.type();
+        for(VariableElement fieldDoc : docletAccess.fields(classDoc)) {
+            if(isCrawlableField(fieldDoc)) {
+                TypeMirror returnType = fieldDoc.asType();
                 tryType(returnType);
             }
         }
     }
+
+    DocletServices docletServices;
 
     private String basePackage;
 
-    private Set<ClassDoc> alreadyExplored = new HashSet<>();
+    private Set<String> alreadyExplored = new HashSet<>();
 
-    private boolean isCrawlableMethod(ClassDoc classDoc, MethodDoc methodDoc) {
-        return methodDoc.isPublic() &&
-                methodDoc.overriddenMethod() == null &&
-                !methodDoc.isSynthetic() &&
-                methodDoc.containingClass() == classDoc &&
-                !AnnotationsResolver.isIgnored(methodDoc);
+    private boolean isCrawlableMethod(ExecutableElement methodDoc) {
+        return methodDoc.getModifiers().contains(Modifier.PUBLIC) &&
+                !docletServices.docletAccess().isOverride(methodDoc) &&
+                !docletServices.annotationsResolver().isIgnored(methodDoc);
     }
 
-    private boolean isCrawlableField(ClassDoc classDoc, FieldDoc methodDoc) {
-        return methodDoc.isPublic() &&
-                !methodDoc.isSynthetic() &&
-                methodDoc.containingClass() == classDoc &&
-                !AnnotationsResolver.isIgnored(methodDoc);
+    private boolean isCrawlableField(VariableElement methodDoc) {
+        return methodDoc.getModifiers().contains(Modifier.PUBLIC) &&
+                !docletServices.annotationsResolver().isIgnored(methodDoc);
     }
 
-    private void tryType(Type type) {
+    private void tryType(TypeMirror type) {
         if(!tryParametrizedType(type)) {
             tryClassDoc(type);
         }
     }
 
-    private boolean tryParametrizedType(Type returnType) {
-        ParameterizedType parametrizedType = returnType.asParameterizedType();
-        if(parametrizedType != null) {
-            for(Type typeArgument : parametrizedType.typeArguments()) {
-                tryType(typeArgument);
+    private boolean tryParametrizedType(TypeMirror returnType) {
+        if(returnType instanceof DeclaredType) {
+            DeclaredType declaredType = (DeclaredType) returnType;
+            if(declaredType.getTypeArguments().isEmpty()) {
+                return false;
+            } else {
+                for(TypeMirror typeArgument : declaredType.getTypeArguments()) {
+                    tryType(typeArgument);
+                }
+                return true;
             }
-            return true;
         } else {
             return false;
         }
     }
 
-    private boolean tryClassDoc(Type type) {
-        ClassDoc classDoc = type.asClassDoc();
-        if(classDoc != null && classDoc.qualifiedTypeName().startsWith(basePackage)) {
-            if(matcher.test(classDoc)) {
-                pathHandler.handle(start, classDoc);
+    private boolean tryClassDoc(TypeMirror type) {
+        DocletEnvironment docletEnvironment = docletServices.docletEnvironment();
+        Element element = docletEnvironment.getTypeUtils().asElement(type);
+        if(element instanceof TypeElement) {
+            TypeElement typeElement = (TypeElement) element;
+            if(docletEnvironment.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString().startsWith(basePackage) &&
+                    matcher.test(typeElement)) {
+                pathHandler.handle(start, typeElement);
             } else {
-                explore(classDoc);
+                explore(typeElement);
             }
             return true;
         } else {

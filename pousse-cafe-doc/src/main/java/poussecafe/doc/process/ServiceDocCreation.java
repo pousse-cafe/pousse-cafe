@@ -1,6 +1,6 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
@@ -9,7 +9,7 @@ import poussecafe.process.DomainProcess;
 
 public class ServiceDocCreation extends DomainProcess {
 
-    public void addServiceDoc(BoundedContextDocId boundedContextId, ClassDoc classDoc) {
+    public void addServiceDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
         ServiceDoc serviceDoc = serviceDocFactory.newServiceDoc(boundedContextId, classDoc);
         runInTransaction(ServiceDoc.class, () -> serviceDocRepository.add(serviceDoc));
     }

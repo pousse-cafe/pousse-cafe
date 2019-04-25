@@ -1,11 +1,19 @@
 package poussecafe.doc;
 
-import com.sun.tools.javadoc.Main;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.tools.DocumentationTool;
+import javax.tools.DocumentationTool.DocumentationTask;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 
 import static java.util.stream.Collectors.joining;
+import static poussecafe.collection.Collections.asSet;
 
 public class PousseCafeDocletExecutor {
 
@@ -21,12 +29,15 @@ public class PousseCafeDocletExecutor {
         addStandardOptionsTo(javadocArgs);
         addDocletOptionsTo(javadocArgs);
 
-        Main.execute("javadoc",
-                configuration.errorWriter(),
-                configuration.warningWriter(),
-                configuration.noticeWriter(),
-                PousseCafeDoclet.class.getName(),
-                javadocArgs.toArray(new String[javadocArgs.size()]));
+        DocumentationTool documentationTool = ToolProvider.getSystemDocumentationTool();
+        JavaFileManager fileManager = documentationTool.getStandardFileManager(null, null, null);
+        try {
+            Iterable<JavaFileObject> compilationUnits = fileManager.list(StandardLocation.SOURCE_PATH, configuration.basePackage(), asSet(Kind.SOURCE), true);
+            DocumentationTask task = documentationTool.getTask(configuration.errorWriter(), fileManager, null, PousseCafeDoclet.class, javadocArgs, compilationUnits);
+            task.call();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to generate documentation", e);
+        }
     }
 
     private void addStandardOptionsTo(List<String> javadocArgs) {
@@ -43,6 +54,8 @@ public class PousseCafeDocletExecutor {
         javadocArgs.add("-domain"); javadocArgs.add(configuration.domainName());
         javadocArgs.add("-version"); javadocArgs.add(configuration.version());
         javadocArgs.add("-basePackage"); javadocArgs.add(configuration.basePackage());
-        javadocArgs.add("-includeGeneratedDate"); javadocArgs.add(Boolean.toString(configuration.includeGenerationDate()));
+        if(configuration.includeGenerationDate()) {
+            javadocArgs.add("-includeGeneratedDate");
+        }
     }
 }

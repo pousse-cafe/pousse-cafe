@@ -1,47 +1,103 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.RootDoc;
 import java.io.File;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.Doclet;
+import jdk.javadoc.doclet.DocletEnvironment;
+import jdk.javadoc.doclet.Reporter;
 import poussecafe.doc.model.ClassDocRepository;
+import poussecafe.doc.model.DocletAccess;
+import poussecafe.doc.options.BasePackageOption;
+import poussecafe.doc.options.DomainOption;
+import poussecafe.doc.options.IncludeGeneratedDateOption;
+import poussecafe.doc.options.OutputPathOption;
+import poussecafe.doc.options.SourcePathOption;
+import poussecafe.doc.options.VersionOption;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.runtime.Runtime;
 
-public class PousseCafeDoclet {
+public class PousseCafeDoclet implements Doclet {
 
-    public PousseCafeDoclet(RootDoc rootDoc) {
-        Objects.requireNonNull(rootDoc);
-        rootDocWrapper = new RootDocWrapper(rootDoc);
-        Logger.setRootDoc(rootDocWrapper);
-
-        runtime = new Runtime.Builder()
-                .withBoundedContext(PousseCafeDoc.configure().defineAndImplementDefault().build())
-                .build();
+    public PousseCafeDoclet() {
+        configBuilder = new PousseCafeDocletConfiguration.Builder();
     }
 
-    private RootDocWrapper rootDocWrapper;
+    private PousseCafeDocletConfiguration.Builder configBuilder;
 
     private Runtime runtime;
 
-    public void start() {
-        Logger.info("Starting Pousse-Café doclet...");
-        runtime.start();
-
-        registerClassDocs();
-        analyzeCode();
-        createOutputFolder();
-
-        writeGraphs();
-        writeHtml();
-        writePdf();
+    @Override
+    public void init(Locale locale,
+            Reporter reporter) {
+        Logger.setRootDoc(reporter);
     }
 
+    @Override
+    public String getName() {
+        return "DDD Documentation";
+    }
+
+    @Override
+    public Set<? extends Option> getSupportedOptions() {
+        Set<Option> supportedOptions = new HashSet<>();
+        supportedOptions.add(new BasePackageOption(configBuilder));
+        supportedOptions.add(new DomainOption(configBuilder));
+        supportedOptions.add(new IncludeGeneratedDateOption(configBuilder));
+        supportedOptions.add(new OutputPathOption(configBuilder));
+        supportedOptions.add(new VersionOption(configBuilder));
+        supportedOptions.add(new SourcePathOption(configBuilder));
+        return supportedOptions;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.RELEASE_9;
+    }
+
+    @Override
+    public boolean run(DocletEnvironment environment) {
+        this.environment = environment;
+        configuration = configBuilder.build();
+
+        runtime = new Runtime.Builder()
+                .withBoundedContext(PousseCafeDoc.configure().defineAndImplementDefault().build())
+                .withInjectableService(DocletEnvironment.class, environment)
+                .withInjectableService(configuration)
+                .build();
+
+        Logger.info("Starting Pousse-Café doclet...");
+        try {
+            runtime.start();
+
+            registerClassDocs();
+            analyzeCode();
+            createOutputFolder();
+
+            writeGraphs();
+            writeHtml();
+            writePdf();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private DocletEnvironment environment;
+
+    private PousseCafeDocletConfiguration configuration;
+
     private void registerClassDocs() {
+        Set<TypeElement> typeElements = runtime.environment().service(DocletAccess.class).orElseThrow(NoSuchElementException::new).typeElements();
         runtime.environment()
                 .service(ClassDocRepository.class)
                 .orElseThrow(PousseCafeException::new)
-                .registerClassDocs(rootDocWrapper.rootDoc());
+                .registerTypeElements(typeElements);
     }
 
     private void analyzeCode() {
@@ -56,33 +112,32 @@ public class PousseCafeDoclet {
         runtime.injector().injectDependenciesInto(boundedContextCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
-                .rootDocWrapper(rootDocWrapper)
                 .packageDocConsumer(boundedContextCreator)
                 .build();
+        runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
     }
 
     private void detectBoundedContextComponents() {
-        AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(rootDocWrapper);
+        AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(environment);
         runtime.injector().injectDependenciesInto(aggregateDocCreator);
 
-        ServiceDocCreator serviceDocCreator = new ServiceDocCreator(rootDocWrapper);
+        ServiceDocCreator serviceDocCreator = new ServiceDocCreator(environment);
         runtime.injector().injectDependenciesInto(serviceDocCreator);
 
-        EntityDocCreator entityDocCreator = new EntityDocCreator(rootDocWrapper);
+        EntityDocCreator entityDocCreator = new EntityDocCreator(environment);
         runtime.injector().injectDependenciesInto(entityDocCreator);
 
-        ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(rootDocWrapper);
+        ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(environment);
         runtime.injector().injectDependenciesInto(valueObjectDocCreator);
 
-        FactoryDocCreator factoryDocCreator = new FactoryDocCreator(rootDocWrapper);
+        FactoryDocCreator factoryDocCreator = new FactoryDocCreator(environment);
         runtime.injector().injectDependenciesInto(factoryDocCreator);
 
-        ProcessStepDocCreator messageListenerDocCreator = new ProcessStepDocCreator(rootDocWrapper);
+        ProcessStepDocCreator messageListenerDocCreator = new ProcessStepDocCreator(environment);
         runtime.injector().injectDependenciesInto(messageListenerDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
-                .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(aggregateDocCreator)
                 .classDocConsumer(serviceDocCreator)
                 .classDocConsumer(entityDocCreator)
@@ -90,84 +145,52 @@ public class PousseCafeDoclet {
                 .classDocConsumer(factoryDocCreator)
                 .classDocConsumer(messageListenerDocCreator)
                 .build();
+        runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
     }
 
     private void detectDomainProcesses() {
-        DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(rootDocWrapper);
+        DomainProcessDocCreator domainProcessDocCreator = new DomainProcessDocCreator(environment);
         runtime.injector().injectDependenciesInto(domainProcessDocCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
-                .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(domainProcessDocCreator)
                 .build();
+        runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
     }
 
     private void detectRelations() {
-        RelationCreator relationCreator = new RelationCreator(rootDocWrapper);
+        RelationCreator relationCreator = new RelationCreator();
         runtime.injector().injectDependenciesInto(relationCreator);
 
         ClassesAnalyzer codeAnalyzer = new ClassesAnalyzer.Builder()
-                .rootDocWrapper(rootDocWrapper)
                 .classDocConsumer(relationCreator)
                 .build();
+        runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
     }
 
     private void createOutputFolder() {
-        File outputDirectory = new File(rootDocWrapper.outputPath());
+        File outputDirectory = new File(configuration.outputDirectory());
         outputDirectory.mkdirs();
     }
 
     private void writeGraphs() {
-        GraphImagesWriter graphsWriter = new GraphImagesWriter(rootDocWrapper);
+        GraphImagesWriter graphsWriter = new GraphImagesWriter(configuration);
         runtime.injector().injectDependenciesInto(graphsWriter);
         graphsWriter.writeImages();
     }
 
     private void writeHtml() {
-        HtmlWriter htmlWriter = new HtmlWriter.Builder()
-                .rootDocWrapper(rootDocWrapper)
-                .build();
+        HtmlWriter htmlWriter = new HtmlWriter();
         runtime.injector().injectDependenciesInto(htmlWriter);
         htmlWriter.writeHtml();
     }
 
     private void writePdf() {
-        PdfWriter pdfWriter = new PdfWriter(rootDocWrapper);
+        PdfWriter pdfWriter = new PdfWriter();
         runtime.injector().injectDependenciesInto(pdfWriter);
         pdfWriter.writePdf();
     }
-
-    public static boolean start(RootDoc root) {
-        new PousseCafeDoclet(root).start();
-        return true;
-    }
-
-    public static int optionLength(String option) {
-        if ("-output".equals(option)) {
-            return 2;
-        }
-        if ("-debug".equals(option)) {
-            return 1;
-        }
-        if ("-version".equals(option)) {
-            return 2;
-        }
-        if ("-domain".equals(option)) {
-            return 2;
-        }
-        if ("-basePackage".equals(option)) {
-            return 2;
-        }
-        if ("-includeGeneratedDate".equals(option)) {
-            return 2;
-        }
-        return 0;
-    }
-
-    public static LanguageVersion languageVersion() {
-        return LanguageVersion.JAVA_1_5;
-     }
 }

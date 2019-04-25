@@ -1,9 +1,9 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
 
 @FunctionalInterface
 public interface PathHandler {
 
-    void handle(ClassDoc from, ClassDoc to);
+    void handle(TypeElement from, TypeElement to);
 }

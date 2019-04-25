@@ -37,11 +37,6 @@ public class Injector {
         public Injector build() {
             return injector;
         }
-
-        public Injector buildAndInject() {
-            injector.injectableServices().forEach(injector::injectDependenciesInto);
-            return injector;
-        }
     }
 
     private Injector() {

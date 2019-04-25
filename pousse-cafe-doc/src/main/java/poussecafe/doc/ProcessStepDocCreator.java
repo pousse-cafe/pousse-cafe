@@ -1,6 +1,7 @@
 package poussecafe.doc;
 
-import com.sun.javadoc.ClassDoc;
+import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
@@ -10,17 +11,25 @@ import poussecafe.domain.Repository;
 
 public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
 
-    public ProcessStepDocCreator(RootDocWrapper rootDocWrapper) {
+    public ProcessStepDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
     }
 
     @Override
-    protected boolean isComponentDoc(ClassDoc classDoc) {
-        return AggregateDocFactory.isAggregateDoc(classDoc) ||
-                FactoryDocFactory.isFactoryDoc(classDoc) ||
-                DomainProcessDocFactory.isDomainProcessDoc(classDoc) ||
-                ClassDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
+    protected boolean isComponentDoc(TypeElement classDoc) {
+        return aggregateDocFactory.isAggregateDoc(classDoc) ||
+                factoryDocFactory.isFactoryDoc(classDoc) ||
+                domainProcessDocFactory.isDomainProcessDoc(classDoc) ||
+                classDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
     }
+
+    private AggregateDocFactory aggregateDocFactory;
+
+    private FactoryDocFactory factoryDocFactory;
+
+    private DomainProcessDocFactory domainProcessDocFactory;
+
+    private ClassDocPredicates classDocPredicates;
 
     @Override
     protected String componentName() {
@@ -29,7 +38,7 @@ public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
 
     @Override
     protected void addDoc(BoundedContextDocId boundedContextDocId,
-            ClassDoc componentClassDoc) {
+            TypeElement componentClassDoc) {
         processStepDocCreation.createOrUpdateProcessStepDoc(boundedContextDocId, componentClassDoc);
     }
 

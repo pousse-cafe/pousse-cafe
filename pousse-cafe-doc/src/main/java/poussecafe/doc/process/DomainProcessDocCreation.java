@@ -1,8 +1,8 @@
 package poussecafe.doc.process;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
 import java.util.List;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
@@ -13,7 +13,7 @@ import poussecafe.process.DomainProcess;
 
 public class DomainProcessDocCreation extends DomainProcess {
 
-    public void addDomainProcessDoc(BoundedContextDocId boundedContextId, ClassDoc classDoc) {
+    public void addDomainProcessDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
         DomainProcessDoc entityDoc = domainProcessDocFactory.newDomainProcessDoc(boundedContextId, classDoc);
         runInTransaction(DomainProcessDoc.class, () -> domainProcessDocRepository.add(entityDoc));
     }
@@ -22,7 +22,7 @@ public class DomainProcessDocCreation extends DomainProcess {
 
     private DomainProcessDocRepository domainProcessDocRepository;
 
-    public void addDomainProcessDocs(BoundedContextDocId boundedContextId, MethodDoc classDoc) {
+    public void addDomainProcessDocs(BoundedContextDocId boundedContextId, ExecutableElement classDoc) {
         List<DomainProcessDoc> docs = domainProcessDocFactory.createDomainProcesses(boundedContextId, classDoc);
         for(DomainProcessDoc doc : docs) {
             DomainProcessDocId docId = doc.attributes().identifier().value();

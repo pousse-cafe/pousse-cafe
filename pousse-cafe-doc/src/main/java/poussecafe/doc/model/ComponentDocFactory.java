@@ -1,17 +1,18 @@
 package poussecafe.doc.model;
 
-import com.sun.javadoc.Doc;
-import poussecafe.doc.AnnotationsResolver;
+import javax.lang.model.element.Element;
 import poussecafe.domain.Service;
 
 public class ComponentDocFactory implements Service {
 
-    public ComponentDoc buildDoc(String name, Doc doc) {
+    public ComponentDoc buildDoc(String name, Element doc) {
         return new ComponentDoc.Builder()
                 .name(name)
-                .description(doc.commentText())
-                .shortDescription(AnnotationsResolver.shortDescription(doc))
-                .trivial(AnnotationsResolver.isTrivial(doc))
+                .description(annotationsResolver.renderCommentBody(doc))
+                .shortDescription(annotationsResolver.shortDescription(doc))
+                .trivial(annotationsResolver.isTrivial(doc))
                 .build();
     }
+
+    private AnnotationsResolver annotationsResolver;
 }
