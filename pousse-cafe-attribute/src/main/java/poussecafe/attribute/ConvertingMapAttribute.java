@@ -138,4 +138,9 @@ public abstract class ConvertingMapAttribute<L, U, K, V> implements MapAttribute
     public int size() {
         return map.size();
     }
+
+    @Override
+    public void clear() {
+        map.clear();
+    }
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import poussecafe.attribute.AutoAdaptingDataAdapter;
@@ -20,7 +21,7 @@ public class DataAdapters {
     }
 
     public static DataAdapter<String, LocalDate> stringLocalDate() {
-        return new DataAdapter<String, LocalDate>() {
+        return new DataAdapter<>() {
             @Override
             public LocalDate adaptGet(String storedValue) {
                 return LocalDate.parse(storedValue);
@@ -34,7 +35,7 @@ public class DataAdapters {
     }
 
     public static DataAdapter<String, LocalDateTime> stringLocalDateTime() {
-        return new DataAdapter<String, LocalDateTime>() {
+        return new DataAdapter<>() {
             @Override
             public LocalDateTime adaptGet(String storedValue) {
                 return LocalDateTime.parse(storedValue);
@@ -48,7 +49,7 @@ public class DataAdapters {
     }
 
     public static DataAdapter<String, OffsetDateTime> stringOffsetDateTime() {
-        return new DataAdapter<String, OffsetDateTime>() {
+        return new DataAdapter<>() {
             @Override
             public OffsetDateTime adaptGet(String storedValue) {
                 return OffsetDateTime.parse(storedValue);
@@ -62,7 +63,7 @@ public class DataAdapters {
     }
 
     public static DataAdapter<String, BigDecimal> stringBigDecimal() {
-        return new DataAdapter<String, BigDecimal>() {
+        return new DataAdapter<>() {
             @Override
             public BigDecimal adaptGet(String storedValue) {
                 return new BigDecimal(storedValue);
@@ -77,7 +78,7 @@ public class DataAdapters {
 
     public static <T extends StringId> DataAdapter<String, T> stringId(Class<T> stringIdClass) {
         Objects.requireNonNull(stringIdClass);
-        return new DataAdapter<String, T>() {
+        return new DataAdapter<>() {
             @Override
             public T adaptGet(String storedValue) {
                 try {
@@ -96,7 +97,7 @@ public class DataAdapters {
 
     public static <E extends Enum<E>> DataAdapter<String, E> stringEnum(Class<E> enumClass) {
         Objects.requireNonNull(enumClass);
-        return new DataAdapter<String, E>() {
+        return new DataAdapter<>() {
             @Override
             public E adaptGet(String storedValue) {
                 return Enum.valueOf(enumClass, storedValue);
@@ -114,7 +115,7 @@ public class DataAdapters {
     }
 
     public static <T> DataAdapter<T, T>  identity() {
-        return new DataAdapter<T, T>() {
+        return new DataAdapter<>() {
             @Override
             public T adaptGet(T storedValue) {
                 return storedValue;
@@ -128,7 +129,7 @@ public class DataAdapters {
     }
 
     public static <U, T> DataAdapter<List<U>, List<T>> listWithAdapter(DataAdapter<U, T> adapter) {
-        return new DataAdapter<List<U>, List<T>>() {
+        return new DataAdapter<>() {
             @Override
             public List<T> adaptGet(List<U> storedValue) {
                 return storedValue.stream().map(adapter::adaptGet).collect(toList());
@@ -144,5 +145,20 @@ public class DataAdapters {
     @SuppressWarnings("unchecked")
     public static <T> Class<List<T>> parametrizedListClass(Class<T> elementType) {
         return (Class<List<T>>) emptyList().getClass();
+    }
+
+    public static DataAdapter<String, byte[]> stringByteArray() {
+        return new DataAdapter<>() {
+            @Override
+            public byte[] adaptGet(String storedValue) {
+                return Base64.getDecoder().decode(storedValue);
+            }
+
+            @Override
+            public String adaptSet(byte[] valueToStore) {
+                return Base64.getEncoder().encodeToString(valueToStore);
+            }
+
+        };
     }
 }

@@ -28,4 +28,6 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     Set<Entry<K, V>> entrySet();
 
     int size();
+
+    void clear();
 }

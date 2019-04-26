@@ -80,4 +80,9 @@ public class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
     public int size() {
         return wrappedMap.size();
     }
+
+    @Override
+    public void clear() {
+        wrappedMap.clear();
+    }
 }

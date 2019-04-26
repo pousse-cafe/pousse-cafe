@@ -1,6 +1,7 @@
 package poussecafe.discovery;
 
 import com.google.common.base.Predicate;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,7 @@ import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 class ClassPathExplorer {
 
@@ -47,7 +49,7 @@ class ClassPathExplorer {
     private Reflections reflections;
 
     public List<AggregateDefinition> discoverDefinitions() {
-        Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
+        Set<Class<?>> aggregateRootClasses = getTypesAnnotatedWith(Aggregate.class);
 
         List<AggregateDefinition> definitions = new ArrayList<>();
         for(Class<?> aggregateRootClass : aggregateRootClasses) {
@@ -100,7 +102,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<Class<Message>> getMessageImplementations(Messaging messaging) {
-        Set<Class<?>> implementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
+        Set<Class<?>> implementationClasses = getTypesAnnotatedWith(MessageImplementation.class);
 
         Set<Class<Message>> messageImplementationClasses = new HashSet<>();
         for(Class<?> messageImplementationClass : implementationClasses) {
@@ -114,9 +116,16 @@ class ClassPathExplorer {
         return messageImplementationClasses;
     }
 
+    public Set<Class<?>> getTypesAnnotatedWith(final Class<? extends Annotation> annotation) {
+        return reflections.getTypesAnnotatedWith(annotation)
+                .stream()
+                .filter(this::inGivenPackages)
+                .collect(toSet());
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Set<Class<EntityDataAccess>> getDataAccessImplementations(Storage storage) {
-        Set<Class<?>> dataAccessImplementations = reflections.getTypesAnnotatedWith(DataAccessImplementation.class);
+        Set<Class<?>> dataAccessImplementations = getTypesAnnotatedWith(DataAccessImplementation.class);
         Set<Class<?>> aggregateRoots = new HashSet<>();
 
         Set<Class<EntityDataAccess>> entityDataAccessClasses = new HashSet<>();
@@ -136,7 +145,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<Class<EntityAttributes<?>>> getDataImplementations(Storage storage) {
-        Set<Class<?>> dataImplementations = reflections.getTypesAnnotatedWith(DataImplementation.class);
+        Set<Class<?>> dataImplementations = getTypesAnnotatedWith(DataImplementation.class);
 
         Set<Class<EntityAttributes<?>>> entityDataClasses = new HashSet<>();
         for(Class<?> entityDataClass : dataImplementations) {
@@ -152,7 +161,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<poussecafe.environment.ServiceImplementation> discoverServiceImplementations() {
-        Set<Class<?>> serviceImplementations = reflections.getTypesAnnotatedWith(ServiceImplementation.class);
+        Set<Class<?>> serviceImplementations = getTypesAnnotatedWith(ServiceImplementation.class);
         Set<poussecafe.environment.ServiceImplementation> implementations = new HashSet<>();
         for(Class<?> serviceImplementationClass : serviceImplementations) {
             ServiceImplementation annotation = serviceImplementationClass.getAnnotation(ServiceImplementation.class);

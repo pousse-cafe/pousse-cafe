@@ -81,4 +81,9 @@ public class AttributeBuilder {
     public static <E extends Enum<E>> PrimitiveAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
         return single(DataAdapters.stringEnum(enumClass));
     }
+
+    @SuppressWarnings("unchecked")
+    public static Class<byte[]> byteArrayClass() {
+        return (Class<byte[]>) new byte[] {}.getClass();
+    }
 }
