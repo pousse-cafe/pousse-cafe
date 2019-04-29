@@ -14,4 +14,10 @@ public interface ListAttribute<T> extends Attribute<List<T>>, Iterable<T> {
     Stream<T> stream();
 
     void addAll(Collection<T> values);
+
+    int size();
+
+    T get(int index);
+
+    void clear();
 }

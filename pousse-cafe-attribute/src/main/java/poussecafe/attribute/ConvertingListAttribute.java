@@ -56,4 +56,19 @@ public abstract class ConvertingListAttribute<F, T> implements ListAttribute<T> 
     public void addAll(Collection<T> values) {
         listAttribute.addAll(values.stream().map(this::convertTo).collect(toList()));
     }
+
+    @Override
+    public void clear() {
+        listAttribute.clear();
+    }
+
+    @Override
+    public T get(int index) {
+        return convertFrom(listAttribute.get(index));
+    }
+
+    @Override
+    public int size() {
+        return listAttribute.size();
+    }
 }

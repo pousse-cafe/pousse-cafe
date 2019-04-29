@@ -55,4 +55,19 @@ public class BaseListAttribute<T> implements ListAttribute<T> {
     public void addAll(Collection<T> values) {
         list.addAll(values);
     }
+
+    @Override
+    public int size() {
+        return list.size();
+    }
+
+    @Override
+    public T get(int index) {
+        return list.get(index);
+    }
+
+    @Override
+    public void clear() {
+        list.clear();
+    }
 }
