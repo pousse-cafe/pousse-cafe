@@ -14,7 +14,7 @@ public class JsonDataReader {
 
     public JsonDataReader() {
         objectMapper = new ObjectMapper();
-        objectMapper.enableDefaultTypingAsProperty(DefaultTyping.JAVA_LANG_OBJECT, "@class");
+        objectMapper.enableDefaultTypingAsProperty(DefaultTyping.OBJECT_AND_NON_CONCRETE, "@class");
         objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
         objectMapper.registerModule(new JavaTimeModule());
     }
