@@ -66,4 +66,9 @@ public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
     public void addAll(Collection<T> values) {
         setAttribute.addAll(values.stream().map(this::convertTo).collect(toList()));
     }
+
+    @Override
+    public void clear() {
+        setAttribute.clear();
+    }
 }

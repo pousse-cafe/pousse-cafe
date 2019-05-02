@@ -62,4 +62,9 @@ public class BaseSetAttribute<T> implements SetAttribute<T> {
     public void addAll(Collection<T> value) {
         set.addAll(value);
     }
+
+    @Override
+    public void clear() {
+        set.clear();
+    }
 }
