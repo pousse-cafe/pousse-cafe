@@ -2,7 +2,7 @@ package poussecafe.util;
 
 import java.util.Objects;
 
-public class StringId {
+public class StringId implements Comparable<StringId> {
 
     private String id;
 
@@ -48,5 +48,10 @@ public class StringId {
     @Override
     public String toString() {
         return id;
+    }
+
+    @Override
+    public int compareTo(StringId o) {
+        return id.compareTo(o.id);
     }
 }
