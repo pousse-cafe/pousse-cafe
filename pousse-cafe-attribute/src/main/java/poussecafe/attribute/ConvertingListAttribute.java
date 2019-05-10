@@ -68,6 +68,12 @@ public abstract class ConvertingListAttribute<F, T> implements ListAttribute<T> 
     }
 
     @Override
+    public void set(int index,
+            T item) {
+        listAttribute.set(index, convertTo(item));
+    }
+
+    @Override
     public int size() {
         return listAttribute.size();
     }

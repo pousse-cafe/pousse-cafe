@@ -67,6 +67,12 @@ public class BaseListAttribute<T> implements ListAttribute<T> {
     }
 
     @Override
+    public void set(int index,
+            T item) {
+        list.set(index, item);
+    }
+
+    @Override
     public void clear() {
         list.clear();
     }

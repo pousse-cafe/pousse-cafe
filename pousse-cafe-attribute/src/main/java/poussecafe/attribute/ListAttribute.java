@@ -20,4 +20,6 @@ public interface ListAttribute<T> extends Attribute<List<T>>, Iterable<T> {
     T get(int index);
 
     void clear();
+
+    void set(int index, T item);
 }
