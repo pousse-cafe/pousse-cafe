@@ -71,4 +71,9 @@ public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
     public void clear() {
         setAttribute.clear();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return setAttribute.isEmpty();
+    }
 }

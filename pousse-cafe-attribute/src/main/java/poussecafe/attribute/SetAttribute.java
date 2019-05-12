@@ -19,4 +19,6 @@ public interface SetAttribute<T> extends Attribute<Set<T>>, Iterable<T> {
     void addAll(Collection<T> value);
 
     void clear();
+
+    boolean isEmpty();
 }

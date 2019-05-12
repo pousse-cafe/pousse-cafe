@@ -67,4 +67,9 @@ public class BaseSetAttribute<T> implements SetAttribute<T> {
     public void clear() {
         set.clear();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return set.isEmpty();
+    }
 }
