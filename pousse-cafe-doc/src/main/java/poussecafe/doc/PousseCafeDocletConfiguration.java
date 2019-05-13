@@ -3,6 +3,7 @@ package poussecafe.doc;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -67,6 +68,16 @@ public class PousseCafeDocletConfiguration {
             return this;
         }
 
+        public Builder customDotExecutable(Optional<String> customDotExecutable) {
+            configuration.customDotExecutable = customDotExecutable;
+            return this;
+        }
+
+        public Builder customFdpExecutable(Optional<String> customFdpExecutable) {
+            configuration.customFdpExecutable = customFdpExecutable;
+            return this;
+        }
+
         public PousseCafeDocletConfiguration build() {
             Objects.requireNonNull(configuration.domainName);
             Objects.requireNonNull(configuration.version);
@@ -81,6 +92,8 @@ public class PousseCafeDocletConfiguration {
                 configuration.warningWriter = new PrintWriter(System.err);
                 configuration.noticeWriter = new PrintWriter(System.out);
             }
+            Objects.requireNonNull(configuration.customDotExecutable);
+            Objects.requireNonNull(configuration.customFdpExecutable);
             return configuration;
         }
     }
@@ -153,5 +166,17 @@ public class PousseCafeDocletConfiguration {
 
     public boolean isDebug() {
         return debug;
+    }
+
+    private Optional<String> customDotExecutable = Optional.empty();
+
+    public Optional<String> customDotExecutable() {
+        return customDotExecutable;
+    }
+
+    private Optional<String> customFdpExecutable = Optional.empty();
+
+    public Optional<String> customFdpExecutable() {
+        return customFdpExecutable;
     }
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.junit.Test;
 
 import static java.util.Arrays.asList;
@@ -28,6 +29,8 @@ public class PousseCafeDocletTest {
                 .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc/")
                 .basePackage("poussecafe.doc")
                 .includeGenerationDate(false)
+                .customDotExecutable(Optional.of("dot"))
+                .customFdpExecutable(Optional.of("fdp"))
                 .build();
     }
 

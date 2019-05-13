@@ -57,5 +57,11 @@ public class PousseCafeDocletExecutor {
         if(configuration.includeGenerationDate()) {
             javadocArgs.add("-includeGeneratedDate");
         }
+        if(configuration.customDotExecutable().isPresent()) {
+            javadocArgs.add("-customDotExecutable"); javadocArgs.add(configuration.customDotExecutable().orElseThrow());
+        }
+        if(configuration.customFdpExecutable().isPresent()) {
+            javadocArgs.add("-customFdpExecutable"); javadocArgs.add(configuration.customFdpExecutable().orElseThrow());
+        }
     }
 }

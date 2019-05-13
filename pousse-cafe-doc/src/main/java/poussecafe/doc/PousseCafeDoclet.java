@@ -13,6 +13,8 @@ import jdk.javadoc.doclet.Reporter;
 import poussecafe.doc.model.ClassDocRepository;
 import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.options.BasePackageOption;
+import poussecafe.doc.options.CustomDotExecutableOption;
+import poussecafe.doc.options.CustomFdpExecutableOption;
 import poussecafe.doc.options.DomainOption;
 import poussecafe.doc.options.IncludeGeneratedDateOption;
 import poussecafe.doc.options.OutputPathOption;
@@ -51,6 +53,8 @@ public class PousseCafeDoclet implements Doclet {
         supportedOptions.add(new OutputPathOption(configBuilder));
         supportedOptions.add(new VersionOption(configBuilder));
         supportedOptions.add(new SourcePathOption(configBuilder));
+        supportedOptions.add(new CustomDotExecutableOption(configBuilder));
+        supportedOptions.add(new CustomFdpExecutableOption(configBuilder));
         return supportedOptions;
     }
 

@@ -3,6 +3,7 @@ package poussecafe.maven;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -39,6 +40,8 @@ public class GenerateDocMojo extends AbstractMojo {
                 .outputDirectory(outputDirectory.getAbsolutePath())
                 .basePackage(basePackage)
                 .classPath(classPath)
+                .customDotExecutable(Optional.ofNullable(customDotExecutable))
+                .customFdpExecutable(Optional.ofNullable(customFdpExecutable))
                 .build();
 
         new PousseCafeDocletExecutor(configuration).execute();
@@ -82,6 +85,12 @@ public class GenerateDocMojo extends AbstractMojo {
 
     @Parameter(property = "basePackage", required = true)
     private String basePackage;
+
+    @Parameter(property = "customDotExecutable")
+    private String customDotExecutable;
+
+    @Parameter(property = "customFdpExecutable")
+    private String customFdpExecutable;
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;

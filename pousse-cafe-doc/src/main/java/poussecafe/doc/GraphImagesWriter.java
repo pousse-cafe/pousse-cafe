@@ -17,6 +17,10 @@ public class GraphImagesWriter {
 
     public GraphImagesWriter(PousseCafeDocletConfiguration configuration) {
         this.configuration = configuration;
+        graphImageWriter = new GraphImageWriter.Builder()
+                .customDotExecutable(configuration.customDotExecutable())
+                .customFdpExecutable(configuration.customFdpExecutable())
+                .build();
     }
 
     private PousseCafeDocletConfiguration configuration;
@@ -45,7 +49,7 @@ public class GraphImagesWriter {
         return outputDirectory;
     }
 
-    private GraphImageWriter graphImageWriter = new GraphImageWriter();
+    private GraphImageWriter graphImageWriter;
 
     private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
         File outputDirectory = outputDirectory();
