@@ -1,6 +1,6 @@
 package poussecafe.messaging.internal;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import poussecafe.messaging.MessageAdapter;
@@ -29,13 +29,12 @@ public class InternalMessagingQueue {
             receptionThread = new Thread(() -> {
                 while (true) {
                     try {
-                        available.acquire();
+                        Object takenObject = queue.take();
                         mutex.acquire();
-                        Object polledObject = queue.poll();
-                        if (STOP.equals(polledObject)) {
+                        if (STOP.equals(takenObject)) {
                             return;
                         } else {
-                            onMessage(polledObject);
+                            onMessage(takenObject);
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
@@ -59,7 +58,6 @@ public class InternalMessagingQueue {
         @Override
         protected void actuallyStopReceiving() {
             queue.add(STOP);
-            available.release();
         }
 
         private static final String STOP = "stop";
@@ -79,11 +77,9 @@ public class InternalMessagingQueue {
         }
     }
 
-    private Semaphore available = new Semaphore(0);
-
     private Semaphore mutex = new Semaphore(1);
 
-    private Queue<Object> queue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
     private InternalMessageReceiver messageReceiver;
 
@@ -100,7 +96,6 @@ public class InternalMessagingQueue {
         @Override
         protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
             queue.add(marshalledMessage.marshaled());
-            available.release();
         }
     }
 
