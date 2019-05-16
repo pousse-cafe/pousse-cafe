@@ -36,7 +36,7 @@ public class RuntimeWrapper {
 
     private RuntimeFriend runtimeFriend;
 
-    private JsonDataReader jsonDataReader = new JsonDataReader();
+    private PousseCafeTestObjectMapper objectMapper = new PousseCafeTestObjectMapper();
 
     public Runtime runtime() {
         return runtime;
@@ -102,7 +102,7 @@ public class RuntimeWrapper {
             jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
                 logger.debug("Loading {}", dataJson);
                 EntityAttributes<?> dataImplementation = (EntityAttributes<?>) entityImplementation.getDataFactory().get();
-                jsonDataReader.readJson(dataImplementation, dataJson);
+                objectMapper.readJson(dataImplementation, dataJson);
                 dataAccess.addData(dataImplementation);
             });
         } catch (ClassNotFoundException e) {
@@ -115,5 +115,9 @@ public class RuntimeWrapper {
     public void submitCommand(Command command) {
         runtime.submitCommand(command);
         waitUntilEndOfMessageProcessing();
+    }
+
+    public PousseCafeTestObjectMapper objectMapper() {
+        return objectMapper;
     }
 }

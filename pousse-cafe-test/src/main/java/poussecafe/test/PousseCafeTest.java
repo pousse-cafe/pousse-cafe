@@ -71,4 +71,8 @@ public abstract class PousseCafeTest {
     public void submitCommand(Command command) {
         wrapper.submitCommand(command);
     }
+
+    public PousseCafeTestObjectMapper objectMapper() {
+        return wrapper.objectMapper();
+    }
 }

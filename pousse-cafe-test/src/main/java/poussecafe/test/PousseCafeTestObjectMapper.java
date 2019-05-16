@@ -10,9 +10,9 @@ import java.io.IOException;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.exception.PousseCafeException;
 
-public class JsonDataReader {
+public class PousseCafeTestObjectMapper {
 
-    public JsonDataReader() {
+    public PousseCafeTestObjectMapper() {
         objectMapper = new ObjectMapper();
         objectMapper.enableDefaultTypingAsProperty(DefaultTyping.OBJECT_AND_NON_CONCRETE, "@class");
         objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
@@ -29,4 +29,8 @@ public class JsonDataReader {
     }
 
     private ObjectMapper objectMapper;
+
+    public ObjectMapper objectMapper() {
+        return objectMapper;
+    }
 }
