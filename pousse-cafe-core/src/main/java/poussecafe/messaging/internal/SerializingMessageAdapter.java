@@ -5,9 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
+import poussecafe.messaging.MessageAdapterException;
 
 public class SerializingMessageAdapter implements MessageAdapter {
 
@@ -21,7 +21,7 @@ public class SerializingMessageAdapter implements MessageAdapter {
             stream.close();
             return message;
         } catch (ClassNotFoundException | IOException e) {
-            throw new PousseCafeException("Unable to deserialize message " + serializedMessage, e);
+            throw new MessageAdapterException("Unable to deserialize message " + serializedMessage, e);
         }
     }
 
@@ -34,8 +34,7 @@ public class SerializingMessageAdapter implements MessageAdapter {
             outputStream.close();
             return buffer.toByteArray();
         } catch (IOException e) {
-            throw new PousseCafeException("Unable to serialize message " + message, e);
+            throw new MessageAdapterException("Unable to serialize message " + message, e);
         }
     }
-
 }

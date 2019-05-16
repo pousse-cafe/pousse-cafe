@@ -79,7 +79,8 @@ public class PulsarMessageReceiver extends MessageReceiver {
                     onMessage(message.getValue());
                     consumer.acknowledge(message);
                 } catch (Exception e) {
-                    logger.error("Error while handling message", e);
+                    logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());
+                    logger.debug("Handling error stacktrace", e);
                 }
             }
         };

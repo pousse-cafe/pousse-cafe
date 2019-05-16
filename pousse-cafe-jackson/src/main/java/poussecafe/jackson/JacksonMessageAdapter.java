@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
+import poussecafe.messaging.MessageAdapterException;
 
 public class JacksonMessageAdapter implements MessageAdapter {
 
@@ -18,7 +18,7 @@ public class JacksonMessageAdapter implements MessageAdapter {
         try {
             return objectMapper.readValue((String) serializedMessage, Message.class);
         } catch (Exception e) {
-            throw new PousseCafeException("Unable to adapt serialized message " + serializedMessage, e);
+            throw new MessageAdapterException("Unable to adapt serialized message " + serializedMessage, e);
         }
     }
 
@@ -42,8 +42,7 @@ public class JacksonMessageAdapter implements MessageAdapter {
         try {
             return objectMapper.writeValueAsString(message);
         } catch (JsonProcessingException e) {
-            throw new PousseCafeException("Unable to adapt message " + message, e);
+            throw new MessageAdapterException("Unable to adapt message " + message, e);
         }
     }
-
 }
