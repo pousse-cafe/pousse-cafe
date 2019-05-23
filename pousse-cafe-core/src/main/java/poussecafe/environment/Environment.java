@@ -216,4 +216,8 @@ public class Environment {
                 .collect(toList()));
         return candidates;
     }
+
+    public boolean messageImplemented(Class<? extends Message> messageClass) {
+        return messageImplementations.containsKey(messageClass);
+    }
 }

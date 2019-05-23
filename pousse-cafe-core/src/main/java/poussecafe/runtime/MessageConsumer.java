@@ -62,6 +62,7 @@ public class MessageConsumer {
         List<MessageListener> listeners = environment.messageListenersOf(message.original().getClass()).stream()
                 .sorted()
                 .collect(toList());
+        logger.debug("Found {} listeners", listeners.size());
         List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);

@@ -22,7 +22,11 @@ public class MessageListenerRegistry {
 
     public void registerListener(MessageListener listener) {
         logger.debug("Registering listener {}", listener);
-        Set<MessageListener> registeredListeners = getOrCreateSet(listener.messageClass());
+        Class<? extends Message> messageClass = listener.messageClass();
+        if(!environment.messageImplemented(messageClass)) {
+            throw new IllegalArgumentException("Cannot register listener for unimplemented message: " + messageClass.getName());
+        }
+        Set<MessageListener> registeredListeners = getOrCreateSet(messageClass);
         registeredListeners.add(listener);
     }
 

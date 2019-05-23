@@ -29,6 +29,7 @@ import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.storage.Storage;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -82,6 +83,7 @@ class ClassPathExplorer {
     public List<Class<? extends Message>> discoverMessages() {
         return getSubTypesOf(Message.class)
                 .filter(Class::isInterface)
+                .filter(this::hasNotAbstractMessageAnnotation)
                 .collect(toList());
     }
 
@@ -98,6 +100,12 @@ class ClassPathExplorer {
             }
         }
         return false;
+    }
+
+    private boolean hasNotAbstractMessageAnnotation(Class<? extends Message> messageClass) {
+        return asList(messageClass.getAnnotations()).stream()
+                .map(Annotation::annotationType)
+                .noneMatch(annotationType -> annotationType == AbstractMessage.class);
     }
 
     @SuppressWarnings("unchecked")
