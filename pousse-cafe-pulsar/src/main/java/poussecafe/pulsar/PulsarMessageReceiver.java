@@ -73,14 +73,23 @@ public class PulsarMessageReceiver extends MessageReceiver {
 
     private Runnable receptionRunnable() {
         return () -> {
+            Message<String> message = null;
             while(true) {
                 try {
-                    Message<String> message = consumer.receive();
+                    message = consumer.receive();
                     onMessage(message.getValue());
-                    consumer.acknowledge(message);
                 } catch (Exception e) {
                     logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());
                     logger.debug("Handling error stacktrace", e);
+                } finally {
+                    if(message != null) {
+                        try {
+                            consumer.acknowledge(message);
+                        } catch (PulsarClientException e) {
+                            logger.error("Unable to acknowledge message");
+                        }
+                        message = null;
+                    }
                 }
             }
         };
