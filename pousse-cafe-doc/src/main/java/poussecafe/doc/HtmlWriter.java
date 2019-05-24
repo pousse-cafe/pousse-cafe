@@ -254,7 +254,11 @@ public class HtmlWriter {
         view.put("name", domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
         view.put("description", domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
         DomainProcessSteps domainProcessSteps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc);
-        view.put("steps", domainProcessSteps.orderedSteps().stream().filter(step -> !step.external()).map(this::adapt).collect(toList()));
+        view.put("steps", domainProcessSteps.orderedSteps().stream()
+                .filter(step -> !step.componentDoc().trivial())
+                .filter(step -> !step.external())
+                .map(this::adapt)
+                .collect(toList()));
         return view;
     }
 
