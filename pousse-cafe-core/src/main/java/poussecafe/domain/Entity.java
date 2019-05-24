@@ -1,6 +1,7 @@
 package poussecafe.domain;
 
 import java.util.Objects;
+import poussecafe.attribute.entity.EntityAttribute;
 import poussecafe.environment.EntityFactory;
 import poussecafe.environment.MessageFactory;
 import poussecafe.environment.NewEntityInstanceSpecification;
@@ -101,5 +102,24 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         entity.storage(storage);
         entity.messageCollection(messageCollection);
         return entity;
+    }
+
+    public <K, E extends Entity<K, ?>> Setter<K, E> setNew(EntityAttribute<E> attribute) {
+        return new Setter<>(attribute);
+    }
+
+    public class Setter<K, E extends Entity<K, ?>> {
+
+        public Setter(EntityAttribute<E> attribute) {
+            this.attribute = attribute;
+        }
+
+        private EntityAttribute<E> attribute;
+
+        public E withKey(K key) {
+            E newEntity = attribute.newInContextOf(Entity.this);
+            newEntity.attributes().identifier().value(key);
+            return newEntity;
+        }
     }
 }
