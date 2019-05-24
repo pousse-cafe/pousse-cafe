@@ -1,0 +1,24 @@
+{
+    "properties": [
+        {
+            "name": "poussecafe.spring.pulsar.broker",
+            "type": "java.lang.String",
+            "description": "Connection URL of the Pulsar broker"
+        },
+        {
+            "name": "poussecafe.spring.pulsar.subscriptionTopics",
+            "type": "java.lang.String",
+            "description": "Comma-separated list of topics to subscribe to"
+        },
+        {
+            "name": "poussecafe.spring.pulsar.subscriptionName",
+            "type": "java.lang.String",
+            "description": "Subscription name used by the consumer"
+        },
+        {
+            "name": "poussecafe.spring.pulsar.defaultPublicationTopic",
+            "type": "java.lang.String",
+            "description": "The default topic used to public messages to"
+        }
+    ]
+}
