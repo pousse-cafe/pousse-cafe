@@ -15,9 +15,9 @@ public class SettleOrderData implements Serializable, SettleOrder {
     @Override
     public Attribute<OrderId> orderId() {
         return AttributeBuilder.single(OrderId.class)
-                .fromAutoAdapting(OrderIdData.class)
-                .get(() -> orderId)
-                .set(value -> orderId = value)
+                .usingAutoAdapter(OrderIdData.class)
+                .read(() -> orderId)
+                .write(value -> orderId = value)
                 .build();
     }
 

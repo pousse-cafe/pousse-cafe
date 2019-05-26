@@ -11,8 +11,8 @@ public class ProductData implements Product.Attributes {
     @Override
     public Attribute<ProductId> identifier() {
         return AttributeBuilder.stringId(ProductId.class)
-                .get(() -> productId)
-                .set(value -> productId = value)
+                .read(() -> productId)
+                .write(value -> productId = value)
                 .build();
     }
 
@@ -22,8 +22,8 @@ public class ProductData implements Product.Attributes {
     @Override
     public Attribute<Integer> totalUnits() {
         return AttributeBuilder.single(Integer.class)
-                .get(() -> totalUnits)
-                .set(value -> totalUnits = value)
+                .read(() -> totalUnits)
+                .write(value -> totalUnits = value)
                 .build();
     }
 
@@ -32,8 +32,8 @@ public class ProductData implements Product.Attributes {
     @Override
     public Attribute<Integer> availableUnits() {
         return AttributeBuilder.single(Integer.class)
-                .get(() -> availableUnits)
-                .set(value -> availableUnits = value)
+                .read(() -> availableUnits)
+                .write(value -> availableUnits = value)
                 .build();
     }
 

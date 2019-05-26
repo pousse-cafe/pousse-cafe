@@ -15,8 +15,8 @@ public class PlaceOrderData implements Serializable, PlaceOrder {
     @Override
     public Attribute<ProductId> productId() {
         return AttributeBuilder.stringId(ProductId.class)
-                .get(() -> productId)
-                .set(value -> productId = value)
+                .read(() -> productId)
+                .write(value -> productId = value)
                 .build();
     }
 
@@ -25,9 +25,9 @@ public class PlaceOrderData implements Serializable, PlaceOrder {
     @Override
     public Attribute<OrderDescription> description() {
         return AttributeBuilder.single(OrderDescription.class)
-                .fromAutoAdapting(OrderDescriptionData.class)
-                .get(() -> description)
-                .set(value -> description = value)
+                .usingAutoAdapter(OrderDescriptionData.class)
+                .read(() -> description)
+                .write(value -> description = value)
                 .build();
     }
 

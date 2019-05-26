@@ -61,7 +61,7 @@ public class ListAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithConversion() {
         propertyWithConversion = AttributeBuilder.list(StringId.class)
-                .from(String.class)
+                .itemsStoredAs(String.class)
                 .adaptOnGet(StringId::new)
                 .adaptOnSet(StringId::stringValue)
                 .withList(value)

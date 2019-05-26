@@ -12,7 +12,7 @@ public class ReadOnlyIntegerAttributeBuilder {
 
     private Supplier<Integer> getter;
 
-    public ReadWriteIntegerAttributeBuilder set(Consumer<Integer> setter) {
+    public ReadWriteIntegerAttributeBuilder write(Consumer<Integer> setter) {
         Objects.requireNonNull(setter);
 
         CompositeAttribute<Integer, Integer> compositeAttribute = new CompositeAttribute<>();

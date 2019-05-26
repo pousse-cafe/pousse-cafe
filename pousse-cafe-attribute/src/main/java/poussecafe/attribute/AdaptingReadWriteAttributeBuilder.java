@@ -19,7 +19,7 @@ public class AdaptingReadWriteAttributeBuilder<U, T> {
 
     private Function<T, U> adapter;
 
-    public ReadWriteAttributeBuilder<T> set(Consumer<U> setter) {
+    public ReadWriteAttributeBuilder<T> write(Consumer<U> setter) {
         CompositeAttribute<T, T> compositeAttribute = new CompositeAttribute<>();
         compositeAttribute.getter = getter;
         compositeAttribute.setter = value -> setter.accept(adapter.apply(value));

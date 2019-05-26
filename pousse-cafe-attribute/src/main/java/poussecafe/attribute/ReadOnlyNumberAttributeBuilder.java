@@ -12,7 +12,7 @@ public class ReadOnlyNumberAttributeBuilder<T extends Number> {
 
     private CompositeAttribute<T, ?> compositeAttribute;
 
-    public OperatorLessReadWriteNumberAttributeBuilder<T> set(Consumer<T> setter) {
+    public OperatorLessReadWriteNumberAttributeBuilder<T> write(Consumer<T> setter) {
         CompositeAttribute<T, T> newCompositeAttribute = new CompositeAttribute<>();
         newCompositeAttribute.getter = compositeAttribute.getter;
         newCompositeAttribute.setter = setter;

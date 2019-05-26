@@ -2,6 +2,7 @@ package poussecafe.attribute;
 
 import java.util.List;
 import java.util.Objects;
+import poussecafe.attribute.adapters.DataAdapter;
 
 public class ListAttributeBuilder<T> {
 
@@ -16,14 +17,18 @@ public class ListAttributeBuilder<T> {
         return new ReadWriteListAttributeBuilder<>(list);
     }
 
-    public <U> AdaptingListAttributeBuilder<U, T> from(Class<U> storedElementType) {
+    public <U> AdaptingListAttributeBuilder<U, T> itemsStoredAs(Class<U> storedElementType) {
         return new AdaptingListAttributeBuilder<>();
     }
 
-    public <U> AdaptingListAttributeWithAdapterBuilder<U, T> fromAutoAdapting(Class<U> dataAdapterClass) {
-        Objects.requireNonNull(dataAdapterClass);
+    public <U> AdaptingListAttributeWithAdapterBuilder<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {
+        return usingItemDataAdapter(new AutoAdaptingDataAdapter<>(elementClass, dataAdapterClass));
+    }
+
+    public <U> AdaptingListAttributeWithAdapterBuilder<U, T> usingItemDataAdapter(DataAdapter<U, T> dataAdapter) {
+        Objects.requireNonNull(dataAdapter);
         AdaptingListAttributeWithAdapterBuilder<U, T> builder = new AdaptingListAttributeWithAdapterBuilder<>();
-        builder.adapter = new AutoAdaptingDataAdapter<>(elementClass, dataAdapterClass);
+        builder.adapter = dataAdapter;
         return builder;
     }
 }

@@ -16,7 +16,7 @@ public class AdaptedReadOnlyAttributeBuilder<U, T> {
 
     private Supplier<T> getter;
 
-    public AdaptingReadWriteAttributeBuilder<U, T> adapt(Function<T, U> adapter) {
+    public AdaptingReadWriteAttributeBuilder<U, T> adaptOnWrite(Function<T, U> adapter) {
         Objects.requireNonNull(adapter);
         return new AdaptingReadWriteAttributeBuilder<>(getter, adapter);
     }

@@ -13,9 +13,9 @@ public class JournalEntryData implements JournalEntry.Attributes, Serializable {
     @Override
     public Attribute<JournalEntryId> identifier() {
         return AttributeBuilder.single(JournalEntryId.class)
-                .fromAutoAdapting(SerializableJournalEntryId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .usingAutoAdapter(SerializableJournalEntryId.class)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class JournalEntryData implements JournalEntry.Attributes, Serializable {
     @Override
     public Attribute<String> rawMessage() {
         return AttributeBuilder.single(String.class)
-                .get(() -> rawMessage)
-                .set(value -> rawMessage = value)
+                .read(() -> rawMessage)
+                .write(value -> rawMessage = value)
                 .build();
     }
 
@@ -34,8 +34,8 @@ public class JournalEntryData implements JournalEntry.Attributes, Serializable {
     @Override
     public Attribute<String> error() {
         return AttributeBuilder.single(String.class)
-                .get(() -> error)
-                .set(value -> error = value)
+                .read(() -> error)
+                .write(value -> error = value)
                 .build();
     }
 
@@ -44,8 +44,8 @@ public class JournalEntryData implements JournalEntry.Attributes, Serializable {
     @Override
     public Attribute<ConsumptionStatus> status() {
         return AttributeBuilder.single(ConsumptionStatus.class)
-                .get(() -> status)
-                .set(value -> status = value)
+                .read(() -> status)
+                .write(value -> status = value)
                 .build();
     }
 

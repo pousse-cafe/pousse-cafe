@@ -14,8 +14,8 @@ public class AnotherDomainEventData implements Serializable, AnotherDomainEvent 
     @Override
     public Attribute<MyAggregateId> identifier() {
         return AttributeBuilder.stringId(MyAggregateId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class AnotherDomainEventData implements Serializable, AnotherDomainEvent 
     @Override
     public Attribute<Integer> x() {
         return AttributeBuilder.single(Integer.class)
-                .get(() -> x)
-                .set(value -> x = value)
+                .read(() -> x)
+                .write(value -> x = value)
                 .build();
     }
 

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * @param <U> Stored type
  * @param <T> Attribute type
  */
-public class AdaptingReadWriteNumberAttributeBuilder<U, T> {
+public class AdaptingReadWriteNumberAttributeBuilder<U, T extends Number> {
 
     AdaptingReadWriteNumberAttributeBuilder(Supplier<T> getter, Function<T, U> adapter) {
         this.getter = getter;
@@ -19,10 +19,10 @@ public class AdaptingReadWriteNumberAttributeBuilder<U, T> {
 
     private Function<T, U> adapter;
 
-    public ReadWriteOptionalAttributeBuilder<T> set(Consumer<U> setter) {
+    public OperatorLessReadWriteNumberAttributeBuilder<T> write(Consumer<U> setter) {
         CompositeAttribute<T, T> compositeAttribute = new CompositeAttribute<>();
         compositeAttribute.getter = getter;
         compositeAttribute.setter = value -> setter.accept(adapter.apply(value));
-        return new ReadWriteOptionalAttributeBuilder<>(compositeAttribute);
+        return new OperatorLessReadWriteNumberAttributeBuilder<>(compositeAttribute);
     }
 }

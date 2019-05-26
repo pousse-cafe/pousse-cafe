@@ -14,11 +14,11 @@ public class SerializableMessageCreated implements Serializable, MessageCreated 
     @Override
     public Attribute<MessageId> messageId() {
         return AttributeBuilder.single(MessageId.class)
-                .from(String.class)
-                .adapt(MessageId::new)
-                .get(() -> messageId)
-                .adapt(MessageId::stringValue)
-                .set(value -> messageId = value)
+                .storedAs(String.class)
+                .adaptOnRead(MessageId::new)
+                .read(() -> messageId)
+                .adaptOnWrite(MessageId::stringValue)
+                .write(value -> messageId = value)
                 .build();
     }
 

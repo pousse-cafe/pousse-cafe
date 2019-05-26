@@ -13,24 +13,24 @@ public class OptionalAttributeBuilder<T> {
 
     Class<T> propertyTypeClass;
 
-    public ReadOnlyOptionalAttributeBuilder<T> get(Supplier<T> getter) {
+    public ReadOnlyOptionalAttributeBuilder<T> read(Supplier<T> getter) {
         Objects.requireNonNull(getter);
         return new ReadOnlyOptionalAttributeBuilder<>(getter);
     }
 
-    public <U> AdaptingOptionalAttributeBuilder<U, T> from(Class<U> storedType) {
+    public <U> AdaptingOptionalAttributeBuilder<U, T> storedAs(Class<U> storedType) {
         return new AdaptingOptionalAttributeBuilder<>();
     }
 
-    public <U> AdaptingOptionalAttributeWithAdapterBuilder<U, T> withDataAdapter(DataAdapter<U, T> adapter) {
+    public <U> AdaptingOptionalAttributeWithAdapterBuilder<U, T> usingDataAdapter(DataAdapter<U, T> adapter) {
         Objects.requireNonNull(adapter);
         AdaptingOptionalAttributeWithAdapterBuilder<U, T> builder = new AdaptingOptionalAttributeWithAdapterBuilder<>();
         builder.adapter = adapter;
         return builder;
     }
 
-    public <U> AdaptingOptionalAttributeWithAdapterBuilder<U, T> fromAutoAdapting(Class<U> autoAdapterClass) {
+    public <U> AdaptingOptionalAttributeWithAdapterBuilder<U, T> usingAutoAdapter(Class<U> autoAdapterClass) {
         Objects.requireNonNull(autoAdapterClass);
-        return withDataAdapter(DataAdapters.auto(propertyTypeClass, autoAdapterClass));
+        return usingDataAdapter(DataAdapters.auto(propertyTypeClass, autoAdapterClass));
     }
 }

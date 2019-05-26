@@ -15,8 +15,8 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     @Override
     public Attribute<ProcessStepDocId> identifier() {
         return AttributeBuilder.stringId(ProcessStepDocId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -25,9 +25,9 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     @Override
     public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
         return AttributeBuilder.single(BoundedContextComponentDoc.class)
-                .fromAutoAdapting(BoundedContextComponentDocData.class)
-                .get(() -> boundedContextComponentDoc)
-                .set(value -> boundedContextComponentDoc = value)
+                .usingAutoAdapter(BoundedContextComponentDocData.class)
+                .read(() -> boundedContextComponentDoc)
+                .write(value -> boundedContextComponentDoc = value)
                 .build();
     }
 
@@ -45,8 +45,8 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     @Override
     public OptionalAttribute<String> processName() {
         return AttributeBuilder.optional(String.class)
-                .get(() -> processName)
-                .set(value -> processName = value)
+                .read(() -> processName)
+                .write(value -> processName = value)
                 .build();
     }
 
@@ -55,9 +55,9 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     @Override
     public OptionalAttribute<StepMethodSignature> stepMethodSignature() {
         return AttributeBuilder.optional(StepMethodSignature.class)
-                .fromAutoAdapting(StepMethodSignatureData.class)
-                .get(() -> stepMethodSignature)
-                .set(value -> stepMethodSignature = value)
+                .usingAutoAdapter(StepMethodSignatureData.class)
+                .read(() -> stepMethodSignature)
+                .write(value -> stepMethodSignature = value)
                 .build();
     }
 

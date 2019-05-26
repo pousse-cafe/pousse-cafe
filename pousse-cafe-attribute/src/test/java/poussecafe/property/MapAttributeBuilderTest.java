@@ -71,9 +71,9 @@ public class MapAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithConversion() {
         propertyWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
-                .from(String.class, String.class)
-                .adaptOnGet(StringId::new, BigDecimal::new)
-                .adaptOnSet(StringId::stringValue, BigDecimal::toString)
+                .entriesStoredAs(String.class, String.class)
+                .adaptOnRead(StringId::new, BigDecimal::new)
+                .adaptOnWrite(StringId::stringValue, BigDecimal::toString)
                 .withMap(value)
                 .build();
     }

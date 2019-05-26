@@ -12,9 +12,9 @@ public class OrderData implements Order.Attributes {
     @Override
     public Attribute<OrderId> identifier() {
         return AttributeBuilder.single(OrderId.class)
-                .fromAutoAdapting(OrderIdData.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .usingAutoAdapter(OrderIdData.class)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class OrderData implements Order.Attributes {
     @Override
     public Attribute<Integer> units() {
         return AttributeBuilder.single(Integer.class)
-                .get(() -> units)
-                .set(value -> units = value)
+                .read(() -> units)
+                .write(value -> units = value)
                 .build();
     }
 

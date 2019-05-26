@@ -14,8 +14,8 @@ public class ADomainEventData implements Serializable, ADomainEvent {
     @Override
     public Attribute<MyAggregateId> identifier() {
         return AttributeBuilder.stringId(MyAggregateId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 

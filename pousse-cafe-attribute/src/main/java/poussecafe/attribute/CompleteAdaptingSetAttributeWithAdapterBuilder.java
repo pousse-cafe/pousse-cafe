@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.Set;
+import poussecafe.attribute.adapters.DataAdapter;
 
 public class CompleteAdaptingSetAttributeWithAdapterBuilder<U, T> {
 
@@ -8,12 +9,12 @@ public class CompleteAdaptingSetAttributeWithAdapterBuilder<U, T> {
 
     }
 
-    AutoAdaptingDataAdapter<U, T> adapter;
+    DataAdapter<U, T> adapter;
 
     Set<U> storageSet;
 
     public SetAttribute<T> build() {
-        return new ConvertingSetAttribute<U, T>(storageSet) {
+        return new ConvertingSetAttribute<>(storageSet) {
             @Override
             protected T convertFrom(U from) {
                 return adapter.adaptGet(from);

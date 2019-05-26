@@ -55,31 +55,31 @@ public class AttributeBuilder {
     }
 
     public static <T extends StringId> PrimitiveAttributeBuilder<String, T> stringId(Class<T> stringIdClass) {
-        return single(DataAdapters.stringId(stringIdClass));
+        return singleUsingDataAdapter(DataAdapters.stringId(stringIdClass));
     }
 
-    public static <U, T> PrimitiveAttributeBuilder<U, T> single(DataAdapter<U, T> dataAdapter) {
+    public static <U, T> PrimitiveAttributeBuilder<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
         return new PrimitiveAttributeBuilder<>(dataAdapter);
     }
 
     public static PrimitiveAttributeBuilder<String, OffsetDateTime> offsetDateTime() {
-        return single(DataAdapters.stringOffsetDateTime());
+        return singleUsingDataAdapter(DataAdapters.stringOffsetDateTime());
     }
 
     public static PrimitiveAttributeBuilder<String, LocalDateTime> localDateTime() {
-        return single(DataAdapters.stringLocalDateTime());
+        return singleUsingDataAdapter(DataAdapters.stringLocalDateTime());
     }
 
     public static PrimitiveAttributeBuilder<String, LocalDate> localDate() {
-        return single(DataAdapters.stringLocalDate());
+        return singleUsingDataAdapter(DataAdapters.stringLocalDate());
     }
 
     public static PrimitiveAttributeBuilder<String, BigDecimal> bigDecimal() {
-        return single(DataAdapters.stringBigDecimal());
+        return singleUsingDataAdapter(DataAdapters.stringBigDecimal());
     }
 
     public static <E extends Enum<E>> PrimitiveAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
-        return single(DataAdapters.stringEnum(enumClass));
+        return singleUsingDataAdapter(DataAdapters.stringEnum(enumClass));
     }
 
     @SuppressWarnings("unchecked")

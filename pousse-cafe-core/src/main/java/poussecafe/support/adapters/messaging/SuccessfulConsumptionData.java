@@ -13,8 +13,8 @@ public class SuccessfulConsumptionData implements Serializable, SuccessfulConsum
     @Override
     public Attribute<String> consumptionId() {
         return AttributeBuilder.single(String.class)
-                .get(() -> consumptionId)
-                .set(value -> consumptionId = value)
+                .read(() -> consumptionId)
+                .write(value -> consumptionId = value)
                 .build();
     }
 
@@ -23,8 +23,8 @@ public class SuccessfulConsumptionData implements Serializable, SuccessfulConsum
     @Override
     public Attribute<String> listenerId() {
         return AttributeBuilder.single(String.class)
-                .get(() -> listenerId)
-                .set(value -> listenerId = value)
+                .read(() -> listenerId)
+                .write(value -> listenerId = value)
                 .build();
     }
 
@@ -33,8 +33,8 @@ public class SuccessfulConsumptionData implements Serializable, SuccessfulConsum
     @Override
     public Attribute<String> rawMessage() {
         return AttributeBuilder.single(String.class)
-                .get(() -> rawMessage)
-                .set(value -> rawMessage = value)
+                .read(() -> rawMessage)
+                .write(value -> rawMessage = value)
                 .build();
     }
 

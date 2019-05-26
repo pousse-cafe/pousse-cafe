@@ -15,7 +15,7 @@ public class ReadOnlyPrimitiveAttributeBuilder<U, T> {
 
     Supplier<U> getter;
 
-    public ReadWritePrimitiveAttributeBuilder<U, T> set(Consumer<U> setter) {
+    public ReadWritePrimitiveAttributeBuilder<U, T> write(Consumer<U> setter) {
         Objects.requireNonNull(setter);
         ReadWritePrimitiveAttributeBuilder<U, T> builder = new ReadWritePrimitiveAttributeBuilder<>();
         builder.adapter = adapter;

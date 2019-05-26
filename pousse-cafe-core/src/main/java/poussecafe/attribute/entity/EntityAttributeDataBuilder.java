@@ -16,7 +16,7 @@ public class EntityAttributeDataBuilder<D extends EntityAttributes<?>, E extends
 
     Class<F> dataClass;
 
-    public EntityAttributeDataBuilder<D, E, F> get(Supplier<F> getter) {
+    public EntityAttributeDataBuilder<D, E, F> read(Supplier<F> getter) {
         Objects.requireNonNull(getter);
         this.getter = getter;
         return this;
@@ -24,7 +24,7 @@ public class EntityAttributeDataBuilder<D extends EntityAttributes<?>, E extends
 
     private Supplier<F> getter;
 
-    public EntityAttributeDataBuilder<D, E, F> set(Consumer<F> setter) {
+    public EntityAttributeDataBuilder<D, E, F> write(Consumer<F> setter) {
         Objects.requireNonNull(setter);
         this.setter = setter;
         return this;

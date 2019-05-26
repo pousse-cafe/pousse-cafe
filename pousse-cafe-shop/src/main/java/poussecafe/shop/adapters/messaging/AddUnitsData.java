@@ -14,8 +14,8 @@ public class AddUnitsData implements Serializable, AddUnits {
     @Override
     public Attribute<ProductId> productId() {
         return AttributeBuilder.stringId(ProductId.class)
-                .get(() -> productId)
-                .set(value -> productId = value)
+                .read(() -> productId)
+                .write(value -> productId = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class AddUnitsData implements Serializable, AddUnits {
     @Override
     public Attribute<Integer> units() {
         return AttributeBuilder.single(Integer.class)
-                .get(() -> units)
-                .set(value -> units = value)
+                .read(() -> units)
+                .write(value -> units = value)
                 .build();
     }
 

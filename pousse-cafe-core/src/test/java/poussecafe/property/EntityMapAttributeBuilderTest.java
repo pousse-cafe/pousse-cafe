@@ -44,9 +44,9 @@ public class EntityMapAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithConversion() {
         propertyWithConversion = EntityAttributeBuilder.entityMap(StringId.class, SimpleEntity.class)
-                .from(String.class, SimpleEntityData.class)
-                .adaptOnGet(StringId::new)
-                .adaptOnSet(StringId::stringValue)
+                .entriesStoredAs(String.class, SimpleEntityData.class)
+                .adaptKeyOnRead(StringId::new)
+                .adaptKeyOnWrite(StringId::stringValue)
                 .withMap(value)
                 .build();
     }

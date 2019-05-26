@@ -14,8 +14,8 @@ public class CreateAggregateDocData implements Serializable, CreateAggregateDoc 
     @Override
     public Attribute<BoundedContextDocId> boundedContextId() {
         return AttributeBuilder.stringId(BoundedContextDocId.class)
-                .get(() -> boundedContextDocId)
-                .set(value -> boundedContextDocId = value)
+                .read(() -> boundedContextDocId)
+                .write(value -> boundedContextDocId = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class CreateAggregateDocData implements Serializable, CreateAggregateDoc 
     @Override
     public Attribute<String> className() {
         return AttributeBuilder.single(String.class)
-                .get(() -> className)
-                .set(value -> className = value)
+                .read(() -> className)
+                .write(value -> className = value)
                 .build();
     }
 

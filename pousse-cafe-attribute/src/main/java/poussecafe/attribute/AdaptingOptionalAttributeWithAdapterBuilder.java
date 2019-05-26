@@ -11,7 +11,7 @@ public class AdaptingOptionalAttributeWithAdapterBuilder<U, T> {
 
     DataAdapter<U, T> adapter;
 
-    public ReadOnlyOptionalAttributeWithAdapterBuilder<U, T> get(Supplier<U> getter) {
+    public ReadOnlyOptionalAttributeWithAdapterBuilder<U, T> read(Supplier<U> getter) {
         ReadOnlyOptionalAttributeWithAdapterBuilder<U, T> builder = new ReadOnlyOptionalAttributeWithAdapterBuilder<>();
         builder.adapter = adapter;
         builder.getter = getter;

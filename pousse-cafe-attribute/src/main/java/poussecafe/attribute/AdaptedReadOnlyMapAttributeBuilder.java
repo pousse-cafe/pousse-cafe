@@ -20,7 +20,7 @@ public class AdaptedReadOnlyMapAttributeBuilder<J, U, K, V> {
 
     private Function<U, V> valueAdapter;
 
-    public AdaptingReadWriteMapAttributeBuilder<J, U, K, V> adaptOnSet(Function<K, J> idAdapter, Function<V, U> valueAdapter) {
+    public AdaptingReadWriteMapAttributeBuilder<J, U, K, V> adaptOnWrite(Function<K, J> idAdapter, Function<V, U> valueAdapter) {
         Objects.requireNonNull(idAdapter);
         Objects.requireNonNull(valueAdapter);
         return new AdaptingReadWriteMapAttributeBuilder<>(this.idAdapter, this.valueAdapter, idAdapter, valueAdapter);

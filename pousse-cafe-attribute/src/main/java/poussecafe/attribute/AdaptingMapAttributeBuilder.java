@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public class AdaptingMapAttributeBuilder<J, U, K, V> {
 
-    public AdaptedReadOnlyMapAttributeBuilder<J, U, K, V> adaptOnGet(Function<J, K> idAdapter, Function<U, V> valueAdapter) {
+    public AdaptedReadOnlyMapAttributeBuilder<J, U, K, V> adaptOnRead(Function<J, K> idAdapter, Function<U, V> valueAdapter) {
         Objects.requireNonNull(idAdapter);
         Objects.requireNonNull(valueAdapter);
         return new AdaptedReadOnlyMapAttributeBuilder<>(idAdapter, valueAdapter);

@@ -14,11 +14,11 @@ public class SerializableOrderReadyForShipping implements Serializable, OrderRea
     @Override
     public Attribute<OrderId> orderId() {
         return AttributeBuilder.single(OrderId.class)
-                .from(SerializableOrderId.class)
-                .adapt(SerializableOrderId::adapt)
-                .get(() -> orderId)
-                .adapt(SerializableOrderId::adapt)
-                .set(value -> orderId = value)
+                .storedAs(SerializableOrderId.class)
+                .adaptOnRead(SerializableOrderId::adapt)
+                .read(() -> orderId)
+                .adaptOnWrite(SerializableOrderId::adapt)
+                .write(value -> orderId = value)
                 .build();
     }
 

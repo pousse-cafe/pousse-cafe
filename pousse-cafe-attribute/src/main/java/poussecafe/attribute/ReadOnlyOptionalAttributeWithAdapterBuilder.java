@@ -15,7 +15,7 @@ public class ReadOnlyOptionalAttributeWithAdapterBuilder<U, T> {
 
     Supplier<U> getter;
 
-    public ReadWriteOptionalAttributeWithAdapterBuilder<U, T> set(Consumer<U> setter) {
+    public ReadWriteOptionalAttributeWithAdapterBuilder<U, T> write(Consumer<U> setter) {
         Objects.requireNonNull(setter);
         ReadWriteOptionalAttributeWithAdapterBuilder<U, T> builder = new ReadWriteOptionalAttributeWithAdapterBuilder<>();
         builder.adapter = adapter;

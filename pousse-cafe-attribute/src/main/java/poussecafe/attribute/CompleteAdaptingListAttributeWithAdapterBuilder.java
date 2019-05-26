@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.List;
+import poussecafe.attribute.adapters.DataAdapter;
 
 public class CompleteAdaptingListAttributeWithAdapterBuilder<U, T> {
 
@@ -8,12 +9,12 @@ public class CompleteAdaptingListAttributeWithAdapterBuilder<U, T> {
 
     }
 
-    AutoAdaptingDataAdapter<U, T> adapter;
+    DataAdapter<U, T> adapter;
 
     List<U> storageList;
 
     public ListAttribute<T> build() {
-        return new ConvertingListAttribute<U, T>(storageList) {
+        return new ConvertingListAttribute<>(storageList) {
             @Override
             protected T convertFrom(U from) {
                 return adapter.adaptGet(from);

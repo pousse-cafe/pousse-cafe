@@ -14,8 +14,8 @@ public class CreateProductData implements Serializable, CreateProduct {
     @Override
     public Attribute<ProductId> productId() {
         return AttributeBuilder.stringId(ProductId.class)
-                .get(() -> productId)
-                .set(value -> productId = value)
+                .read(() -> productId)
+                .write(value -> productId = value)
                 .build();
     }
 

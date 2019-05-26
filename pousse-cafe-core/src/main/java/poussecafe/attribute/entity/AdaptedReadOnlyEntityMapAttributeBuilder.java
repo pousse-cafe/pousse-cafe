@@ -39,7 +39,7 @@ public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttribu
         };
     }
 
-    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptOnSet(Function<K, J> idAdapter) {
+    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptKeyOnWrite(Function<K, J> idAdapter) {
         Objects.requireNonNull(idAdapter);
         return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, this.idAdapter, idAdapter);
     }

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * @param <U> Stored type
  * @param <T> Attribute type
  */
-public class AdaptedReadOnlyNumberAttributeBuilder<U, T> {
+public class AdaptedReadOnlyNumberAttributeBuilder<U, T extends Number> {
 
     AdaptedReadOnlyNumberAttributeBuilder(Supplier<T> getter) {
         this.getter = getter;
@@ -16,8 +16,8 @@ public class AdaptedReadOnlyNumberAttributeBuilder<U, T> {
 
     private Supplier<T> getter;
 
-    public AdaptingReadWriteOptionalAttributeBuilder<U, T> adapt(Function<T, U> adapter) {
+    public AdaptingReadWriteNumberAttributeBuilder<U, T> adaptOnRead(Function<T, U> adapter) {
         Objects.requireNonNull(adapter);
-        return new AdaptingReadWriteOptionalAttributeBuilder<>(getter, adapter);
+        return new AdaptingReadWriteNumberAttributeBuilder<>(getter, adapter);
     }
 }

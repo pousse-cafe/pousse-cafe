@@ -54,7 +54,7 @@ public class SetAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithConversion() {
         propertyWithConversion = AttributeBuilder.set(StringId.class)
-                .from(String.class)
+                .itemsStoredAs(String.class)
                 .adaptOnGet(StringId::new)
                 .adaptOnSet(StringId::stringValue)
                 .withSet(value)

@@ -14,8 +14,8 @@ public class CreateCustomerData implements Serializable, CreateCustomer {
     @Override
     public Attribute<CustomerId> customerId() {
         return AttributeBuilder.stringId(CustomerId.class)
-                .get(() -> customerId)
-                .set(value -> customerId = value)
+                .read(() -> customerId)
+                .write(value -> customerId = value)
                 .build();
     }
 

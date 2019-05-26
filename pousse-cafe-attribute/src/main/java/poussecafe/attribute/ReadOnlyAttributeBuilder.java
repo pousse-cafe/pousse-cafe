@@ -12,7 +12,7 @@ public class ReadOnlyAttributeBuilder<T> {
 
     private CompositeAttribute<T, ?> compositeAttribute;
 
-    public ReadWriteAttributeBuilder<T> set(Consumer<T> setter) {
+    public ReadWriteAttributeBuilder<T> write(Consumer<T> setter) {
         CompositeAttribute<T, T> newCompositeAttribute = new CompositeAttribute<>();
         newCompositeAttribute.getter = compositeAttribute.getter;
         newCompositeAttribute.setter = setter;

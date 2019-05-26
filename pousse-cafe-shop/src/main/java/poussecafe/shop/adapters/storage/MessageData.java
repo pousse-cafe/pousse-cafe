@@ -14,8 +14,8 @@ public class MessageData implements Message.Attributes, Serializable {
     @Override
     public Attribute<MessageId> identifier() {
         return AttributeBuilder.stringId(MessageId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -24,8 +24,8 @@ public class MessageData implements Message.Attributes, Serializable {
     @Override
     public Attribute<CustomerId> customerId() {
         return AttributeBuilder.stringId(CustomerId.class)
-                .get(() -> customerId)
-                .set(value -> customerId = value)
+                .read(() -> customerId)
+                .write(value -> customerId = value)
                 .build();
     }
 
@@ -34,8 +34,8 @@ public class MessageData implements Message.Attributes, Serializable {
     @Override
     public Attribute<ContentType> contentType() {
         return AttributeBuilder.single(ContentType.class)
-                .get(() -> contentType)
-                .set(value -> contentType = value)
+                .read(() -> contentType)
+                .write(value -> contentType = value)
                 .build();
     }
 

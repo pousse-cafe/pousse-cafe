@@ -15,7 +15,7 @@ public class AdaptingAttributeWithAdapterBuilder<U, T> {
 
     private AutoAdaptingDataAdapter<U, T> dataAdapter;
 
-    public AdaptedReadOnlyAttributeWithAdapterBuilder<U, T> get(Supplier<U> getter) {
+    public AdaptedReadOnlyAttributeWithAdapterBuilder<U, T> read(Supplier<U> getter) {
         Objects.requireNonNull(getter);
 
         AdaptedReadOnlyAttributeWithAdapterBuilder<U, T> builder = new AdaptedReadOnlyAttributeWithAdapterBuilder<>();

@@ -15,11 +15,11 @@ public class SerializableOrderPlaced implements Serializable, OrderPlaced {
     @Override
     public Attribute<ProductId> productId() {
         return AttributeBuilder.single(ProductId.class)
-                .from(String.class)
-                .adapt(ProductId::new)
-                .get(() -> productId)
-                .adapt(ProductId::stringValue)
-                .set(value -> productId = value)
+                .storedAs(String.class)
+                .adaptOnRead(ProductId::new)
+                .read(() -> productId)
+                .adaptOnWrite(ProductId::stringValue)
+                .write(value -> productId = value)
                 .build();
     }
 
@@ -28,9 +28,9 @@ public class SerializableOrderPlaced implements Serializable, OrderPlaced {
     @Override
     public Attribute<OrderDescription> description() {
         return AttributeBuilder.single(OrderDescription.class)
-                .fromAutoAdapting(OrderDescriptionData.class)
-                .get(() -> description)
-                .set(value -> description = value)
+                .usingAutoAdapter(OrderDescriptionData.class)
+                .read(() -> description)
+                .write(value -> description = value)
                 .build();
     }
 

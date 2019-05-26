@@ -24,8 +24,8 @@ public class OptionalAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithoutConversion() {
         propertyWithoutConversion = AttributeBuilder.optional(String.class)
-                .get(() -> value)
-                .set(newValue -> value = newValue)
+                .read(() -> value)
+                .write(newValue -> value = newValue)
                 .build();
     }
 
@@ -59,11 +59,11 @@ public class OptionalAttributeBuilderTest {
 
     private void givenReadWriteAttributeWithConversion() {
         propertyWithConversion = AttributeBuilder.optional(StringId.class)
-                .from(String.class)
-                .adapt(StringId::new)
-                .get(() -> value)
-                .adapt(StringId::stringValue)
-                .set(newValue -> value = newValue)
+                .storedAs(String.class)
+                .adaptOnRead(StringId::new)
+                .read(() -> value)
+                .adaptOnWrite(StringId::stringValue)
+                .write(newValue -> value = newValue)
                 .build();
     }
 

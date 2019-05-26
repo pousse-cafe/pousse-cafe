@@ -18,7 +18,7 @@ public class AdaptedReadOnlyAttributeWithAdapterBuilder<U, T> {
 
     Supplier<U> getter;
 
-    public AdaptedAttributeWithAdapterBuilder<U, T> set(Consumer<U> setter) {
+    public AdaptedAttributeWithAdapterBuilder<U, T> write(Consumer<U> setter) {
         Objects.requireNonNull(setter);
 
         AdaptedAttributeWithAdapterBuilder<U, T> builder = new AdaptedAttributeWithAdapterBuilder<>();

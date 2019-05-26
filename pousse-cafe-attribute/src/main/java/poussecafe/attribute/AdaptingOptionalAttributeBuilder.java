@@ -13,7 +13,7 @@ public class AdaptingOptionalAttributeBuilder<U, T> {
 
     }
 
-    public AdaptingReadOnlyOptionalAttributeBuilder<U, T> adapt(Function<U, T> adapter) {
+    public AdaptingReadOnlyOptionalAttributeBuilder<U, T> adaptOnRead(Function<U, T> adapter) {
         Objects.requireNonNull(adapter);
         return new AdaptingReadOnlyOptionalAttributeBuilder<>(adapter);
     }

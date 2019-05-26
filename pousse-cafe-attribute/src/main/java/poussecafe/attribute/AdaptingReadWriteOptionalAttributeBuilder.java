@@ -20,7 +20,7 @@ public class AdaptingReadWriteOptionalAttributeBuilder<U, T> {
 
     private Function<T, U> adapter;
 
-    public ReadWriteOptionalAttributeBuilder<T> set(Consumer<U> setter) {
+    public ReadWriteOptionalAttributeBuilder<T> write(Consumer<U> setter) {
         Objects.requireNonNull(setter);
 
         CompositeAttribute<T, T> compositeAttribute = new CompositeAttribute<>();

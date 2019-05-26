@@ -16,7 +16,7 @@ public class AdaptingReadOnlyAttributeBuilder<U, T> {
 
     private Function<U, T> adapter;
 
-    public AdaptedReadOnlyAttributeBuilder<U, T> get(Supplier<U> getter) {
+    public AdaptedReadOnlyAttributeBuilder<U, T> read(Supplier<U> getter) {
         Objects.requireNonNull(getter);
         return new AdaptedReadOnlyAttributeBuilder<>(() -> adapter.apply(getter.get()));
     }

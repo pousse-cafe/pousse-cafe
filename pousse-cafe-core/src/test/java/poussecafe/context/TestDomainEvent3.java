@@ -9,8 +9,8 @@ public class TestDomainEvent3 implements DomainEvent {
 
     public Attribute<SimpleAggregateId> identifier() {
         return AttributeBuilder.stringId(SimpleAggregateId.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 

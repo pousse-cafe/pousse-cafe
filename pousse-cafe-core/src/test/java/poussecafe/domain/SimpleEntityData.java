@@ -10,11 +10,11 @@ public class SimpleEntityData implements SimpleEntity.Attributes {
     @Override
     public Attribute<StringId> identifier() {
         return AttributeBuilder.single(StringId.class)
-                .from(String.class)
-                .adapt(StringId::new)
-                .get(() -> id)
-                .adapt(StringId::stringValue)
-                .set(newValue -> id = newValue)
+                .storedAs(String.class)
+                .adaptOnRead(StringId::new)
+                .read(() -> id)
+                .adaptOnWrite(StringId::stringValue)
+                .write(newValue -> id = newValue)
                 .build();
 
     }

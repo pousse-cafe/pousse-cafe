@@ -12,7 +12,7 @@ public class PrimitiveAttributeBuilder<U, T> {
 
     private DataAdapter<U, T> adapter;
 
-    public ReadOnlyPrimitiveAttributeBuilder<U, T> get(Supplier<U> getter) {
+    public ReadOnlyPrimitiveAttributeBuilder<U, T> read(Supplier<U> getter) {
         Objects.requireNonNull(getter);
         ReadOnlyPrimitiveAttributeBuilder<U, T> builder = new ReadOnlyPrimitiveAttributeBuilder<>();
         builder.adapter = adapter;

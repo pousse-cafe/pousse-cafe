@@ -14,11 +14,11 @@ public class MapAttributeBuilder<K, V> {
         return new ReadWriteMapAttributeBuilder<>(map);
     }
 
-    public <J, U> AdaptingMapAttributeBuilder<J, U, K, V> from(Class<J> storedKeyType, Class<U> storedValueType) {
+    public <J, U> AdaptingMapAttributeBuilder<J, U, K, V> entriesStoredAs(Class<J> storedKeyType, Class<U> storedValueType) {
         return new AdaptingMapAttributeBuilder<>();
     }
 
-    public <J, U> AdaptingMapAttributeWithAdapterBuilder<J, U, K, V> fromAdapting(DataAdapter<J, K> keyAdapter, DataAdapter<U, V> valueAdapter) {
+    public <J, U> AdaptingMapAttributeWithAdapterBuilder<J, U, K, V> usingEntryDataAdapters(DataAdapter<J, K> keyAdapter, DataAdapter<U, V> valueAdapter) {
         Objects.requireNonNull(keyAdapter);
         Objects.requireNonNull(valueAdapter);
         AdaptingMapAttributeWithAdapterBuilder<J, U, K, V> builder = new AdaptingMapAttributeWithAdapterBuilder<>();

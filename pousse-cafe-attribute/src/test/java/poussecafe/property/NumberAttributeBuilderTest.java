@@ -26,7 +26,7 @@ public abstract class NumberAttributeBuilderTest<N extends Number> {
     private void givenReadWriteAttribute() {
         property = builder()
                 .get(() -> value)
-                .set(newValue -> value = newValue)
+                .write(newValue -> value = newValue)
                 .addOperator(addOperator())
                 .build();
     }

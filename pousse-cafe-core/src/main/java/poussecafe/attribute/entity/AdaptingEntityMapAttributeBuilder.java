@@ -19,7 +19,7 @@ public class AdaptingEntityMapAttributeBuilder<J, U extends EntityAttributes<K>,
 
     private Class<E> entityClass;
 
-    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptOnGet(Function<J, K> idAdapter) {
+    public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptKeyOnRead(Function<J, K> idAdapter) {
         Objects.requireNonNull(idAdapter);
         return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, idAdapter);
     }
