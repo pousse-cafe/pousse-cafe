@@ -119,6 +119,7 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         public E withKey(K key) {
             E newEntity = attribute.newInContextOf(Entity.this);
             newEntity.attributes().identifier().value(key);
+            attribute.inContextOf(Entity.this).value(newEntity);
             return newEntity;
         }
     }
