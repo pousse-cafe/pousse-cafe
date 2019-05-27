@@ -16,9 +16,9 @@ public class EntityAttributeBuilder {
         return new EntityMapAttributeBuilder<>(entityClass);
     }
 
-    public static <D extends EntityAttributes<?>, E extends Entity<?, D>, F extends D> EntityAttributeDataBuilder<D, E, F> entity(Class<E> entityClass, Class<F> dataClass) {
+    public static <D extends EntityAttributes<?>, E extends Entity<?, D>, F extends D> SingleEntityAttributeBuilder<D, E, F> entity(Class<E> entityClass, Class<F> dataClass) {
         Objects.requireNonNull(entityClass);
-        EntityAttributeDataBuilder<D, E, F> builder = new EntityAttributeDataBuilder<>();
+        SingleEntityAttributeBuilder<D, E, F> builder = new SingleEntityAttributeBuilder<>();
         builder.entityClass = entityClass;
         builder.dataClass = dataClass;
         return builder;
