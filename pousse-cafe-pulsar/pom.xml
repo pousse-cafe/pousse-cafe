@@ -11,7 +11,7 @@
   <name>Pousse-Café - Pulsar</name>
 
   <properties>
-    <pulsar.version>2.3.0</pulsar.version>
+    <pulsar.version>2.3.1</pulsar.version>
   </properties>
 
   <dependencies>
