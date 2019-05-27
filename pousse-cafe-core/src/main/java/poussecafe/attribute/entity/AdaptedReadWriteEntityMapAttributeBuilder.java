@@ -1,7 +1,7 @@
 package poussecafe.attribute.entity;
 
 import java.util.Map;
-import java.util.function.Function;
+import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
@@ -15,33 +15,29 @@ public class AdaptedReadWriteEntityMapAttributeBuilder<J, U extends EntityAttrib
 
     AdaptedReadWriteEntityMapAttributeBuilder(
             Class<E> entityClass,
-            Function<J, K> readIdAdapter,
-            Function<K, J> writeIdAdapter,
+            DataAdapter<J, K> idAdapter,
             Map<J, U> map) {
         this.entityClass = entityClass;
-        this.readIdAdapter = readIdAdapter;
-        this.writeIdAdapter = writeIdAdapter;
+        this.idAdapter = idAdapter;
         this.map = map;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> readIdAdapter;
-
-    private Function<K, J> writeIdAdapter;
+    private DataAdapter<J, K> idAdapter;
 
     private Map<J, U> map;
 
     public EntityMapAttribute<K, E> build() {
-        return new ConvertingEntityMapAttribute<J, U, K, E>(map, entityClass) {
+        return new ConvertingEntityMapAttribute<>(map, entityClass) {
             @Override
             protected K convertFromKey(J from) {
-                return readIdAdapter.apply(from);
+                return idAdapter.adaptGet(from);
             }
 
             @Override
             protected J convertToKey(K from) {
-                return writeIdAdapter.apply(from);
+                return idAdapter.adaptSet(from);
             }
         };
     }

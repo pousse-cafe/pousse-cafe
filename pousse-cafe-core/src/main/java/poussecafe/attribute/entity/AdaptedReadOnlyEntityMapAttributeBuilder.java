@@ -1,11 +1,11 @@
 package poussecafe.attribute.entity;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
-
-import java.util.Objects;
 
 /**
  * @param <J> Stored id type
@@ -17,15 +17,15 @@ public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttribu
 
     AdaptedReadOnlyEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> idAdapter) {
         this.entityClass = entityClass;
-        this.idAdapter = idAdapter;
+        this.readAdapter = idAdapter;
     }
 
     private Class<E> entityClass;
 
-    private Function<J, K> idAdapter;
+    private Function<J, K> readAdapter;
 
     public EntityMapAttribute<K, E> build(Map<J, U> map) {
-        return new ConvertingEntityMapAttribute<J, U, K, E>(map, entityClass) {
+        return new ConvertingEntityMapAttribute<>(map, entityClass) {
 
             @Override
             protected J convertToKey(K from) {
@@ -34,13 +34,24 @@ public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttribu
 
             @Override
             protected K convertFromKey(J from) {
-                return idAdapter.apply(from);
+                return readAdapter.apply(from);
             }
         };
     }
 
-    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptKeyOnWrite(Function<K, J> idAdapter) {
-        Objects.requireNonNull(idAdapter);
-        return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, this.idAdapter, idAdapter);
+    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> adaptKeyOnWrite(Function<K, J> writeAdapter) {
+        Objects.requireNonNull(writeAdapter);
+        return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, new DataAdapter<>() {
+
+            @Override
+            public K adaptGet(J storedValue) {
+                return readAdapter.apply(storedValue);
+            }
+
+            @Override
+            public J adaptSet(K valueToStore) {
+                return writeAdapter.apply(valueToStore);
+            }
+        });
     }
 }

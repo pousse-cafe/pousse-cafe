@@ -1,7 +1,10 @@
 package poussecafe.attribute.entity;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import poussecafe.attribute.adapters.DataAdapter;
+import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
@@ -22,5 +25,15 @@ public class AdaptingEntityMapAttributeBuilder<J, U extends EntityAttributes<K>,
     public AdaptedReadOnlyEntityMapAttributeBuilder<J, U, K, E> adaptKeyOnRead(Function<J, K> idAdapter) {
         Objects.requireNonNull(idAdapter);
         return new AdaptedReadOnlyEntityMapAttributeBuilder<>(entityClass, idAdapter);
+    }
+
+    public AdaptingReadWriteEntityMapAttributeBuilder<J, U, K, E> usingKeyDataAdapter(DataAdapter<J, K> keyDataAdapter) {
+        Objects.requireNonNull(keyDataAdapter);
+        return new AdaptingReadWriteEntityMapAttributeBuilder<>(entityClass, keyDataAdapter);
+    }
+
+    public AdaptedReadWriteEntityMapAttributeBuilder<K, U, K, E> withMap(Map<K, U> map) {
+        Objects.requireNonNull(map);
+        return new AdaptedReadWriteEntityMapAttributeBuilder<>(entityClass, DataAdapters.identity(), map);
     }
 }
