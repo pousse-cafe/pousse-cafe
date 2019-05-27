@@ -1,6 +1,7 @@
 package poussecafe.environment;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -11,6 +12,21 @@ import poussecafe.messaging.Message;
 import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class MessageListenerDefinition {
+
+    public static void checkMethodIsListener(Method method) {
+        if(method.getParameterCount() != 1) {
+            throw new PousseCafeException("A message listener takes exactly one argument");
+        }
+
+        Class<?> argumentType = method.getParameterTypes()[0];
+        if(!Message.class.isAssignableFrom(argumentType)) {
+            throw new PousseCafeException("A message listener only accepts a sub-class of Message as argument");
+        }
+
+        if(!Modifier.isPublic(method.getModifiers())) {
+            throw new PousseCafeException("A message listener must be a public method");
+        }
+    }
 
     public static class Builder {
 
@@ -32,21 +48,11 @@ public class MessageListenerDefinition {
         }
 
         public MessageListenerDefinition build() {
-            checkMethodIsListener();
+            checkMethodIsListener(definition.method);
             Objects.requireNonNull(definition.method);
             Objects.requireNonNull(definition.customId);
             Objects.requireNonNull(definition.runner);
             return definition;
-        }
-
-        private void checkMethodIsListener() {
-            if(definition.method.getParameterCount() != 1) {
-                throw new PousseCafeException("A message listener takes exactly one argument");
-            }
-            Class<?> argumentType = definition.method.getParameterTypes()[0];
-            if(!Message.class.isAssignableFrom(argumentType)) {
-                throw new PousseCafeException("A message listener only accepts a sub-class of Message as argument");
-            }
         }
     }
 

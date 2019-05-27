@@ -3,6 +3,7 @@ package poussecafe.discovery;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
+import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.environment.MessageListenerPriority;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -34,6 +35,7 @@ public class CustomMessageListenerFactory {
 
     protected Consumer<Message> buildMessageConsumer(Object target,
             Method method) {
+        MessageListenerDefinition.checkMethodIsListener(method);
         return message -> {
             try {
                 method.invoke(target, message);
