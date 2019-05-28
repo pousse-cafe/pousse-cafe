@@ -15,8 +15,8 @@ public class <name>Attributes implements <name>.Attributes<if(storage_internal)>
     @Override
     public Attribute\<<name>Id> identifier() {
         return AttributeBuilder.stringId(<name>Id.class)
-                .get(() -> id)
-                .set(value -> id = value)
+                .read(() -> id)
+                .write(value -> id = value)
                 .build();
     }
 
@@ -31,8 +31,8 @@ public class <name>Attributes implements <name>.Attributes<if(storage_internal)>
     @Override
     public Attribute\<String> name() {
         return AttributeBuilder.single(String.class)
-                .get(() -> name)
-                .set(value -> name = value)
+                .read(() -> name)
+                .write(value -> name = value)
                 .build();
     }
 
