@@ -20,7 +20,7 @@ public class SingleAttributeBuilder<T> {
         return new AdaptingAttributeBuilder<>();
     }
 
-    public <U, T> PrimitiveAttributeBuilder<U, T> usingDataAdapter(DataAdapter<U, T> dataAdapter) {
+    public <U> PrimitiveAttributeBuilder<U, T> usingDataAdapter(DataAdapter<U, T> dataAdapter) {
         return new PrimitiveAttributeBuilder<>(dataAdapter);
     }
 
