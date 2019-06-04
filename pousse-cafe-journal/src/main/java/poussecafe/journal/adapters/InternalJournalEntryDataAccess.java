@@ -23,11 +23,6 @@ public class InternalJournalEntryDataAccess extends InternalDataAccess<JournalEn
     }
 
     @Override
-    public List<JournalEntryData> findByMessageId(String messageId) {
-        return findBy(messageId);
-    }
-
-    @Override
     public List<JournalEntryData> findByStatus(ConsumptionStatus status) {
         return findBy(status);
     }

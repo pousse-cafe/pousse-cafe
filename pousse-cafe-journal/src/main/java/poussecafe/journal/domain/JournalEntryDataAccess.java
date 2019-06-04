@@ -5,7 +5,5 @@ import poussecafe.domain.EntityDataAccess;
 
 public interface JournalEntryDataAccess<D extends JournalEntry.Attributes> extends EntityDataAccess<JournalEntryId, D> {
 
-    List<D> findByMessageId(String messageId);
-
     List<D> findByStatus(ConsumptionStatus status);
 }
