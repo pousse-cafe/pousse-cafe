@@ -11,7 +11,7 @@
   <name>Pousse-Café - Pulsar</name>
 
   <properties>
-    <pulsar.version>2.3.1</pulsar.version>
+    <pulsar.version>2.3.2</pulsar.version>
   </properties>
 
   <dependencies>
@@ -25,6 +25,7 @@
       <groupId>org.apache.pulsar</groupId>
       <artifactId>pulsar-client</artifactId>
       <version>${pulsar.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
