@@ -8,17 +8,17 @@ public class SerializableJournalEntryId implements Serializable {
 
     public static SerializableJournalEntryId adapt(JournalEntryId to) {
         SerializableJournalEntryId data = new SerializableJournalEntryId();
-        data.messageId = to.getConsumptionId();
+        data.consumptionId = to.getConsumptionId();
         data.listenerId = to.getListenerId();
         return data;
     }
 
-    private String messageId;
+    private String consumptionId;
 
     private String listenerId;
 
     public JournalEntryId adapt() {
-        return new JournalEntryId(messageId, listenerId);
+        return new JournalEntryId(consumptionId, listenerId);
     }
 
 }
