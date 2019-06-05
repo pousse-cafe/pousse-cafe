@@ -131,7 +131,7 @@ public class MessageConsumer {
             OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
         logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.original(), listener);
-        if(!SuccessfulConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
+        if(!(receivedMessage.original() instanceof SuccessfulConsumption)) {
             try {
                 SuccessfulConsumption event = environment.messageFactory().newMessage(SuccessfulConsumption.class);
                 event.consumptionId().value(consumptionId);
