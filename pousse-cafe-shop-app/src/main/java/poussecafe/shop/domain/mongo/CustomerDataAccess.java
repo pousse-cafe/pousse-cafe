@@ -12,7 +12,8 @@ import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
         aggregateRoot = Customer.class,
         dataImplementation = CustomerData.class,
         storageName = SpringMongoDbStorage.NAME
-)public class CustomerDataAccess extends MongoDataAccess<CustomerId, CustomerData, String> implements poussecafe.shop.domain.CustomerDataAccess<CustomerData> {
+)
+public class CustomerDataAccess extends MongoDataAccess<CustomerId, CustomerData, String> implements poussecafe.shop.domain.CustomerDataAccess<CustomerData> {
 
     @Autowired
     private CustomerMongoRepository repository;
