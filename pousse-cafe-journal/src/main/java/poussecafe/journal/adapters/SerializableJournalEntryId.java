@@ -6,17 +6,19 @@ import poussecafe.journal.domain.JournalEntryId;
 @SuppressWarnings("serial")
 public class SerializableJournalEntryId implements Serializable {
 
-    public SerializableJournalEntryId(JournalEntryId to) {
-        messageId = to.getConsumptionId();
-        listenerId = to.getListenerId();
+    public static SerializableJournalEntryId adapt(JournalEntryId to) {
+        SerializableJournalEntryId data = new SerializableJournalEntryId();
+        data.consumptionId = to.getConsumptionId();
+        data.listenerId = to.getListenerId();
+        return data;
     }
 
-    private String messageId;
+    private String consumptionId;
 
     private String listenerId;
 
-    public JournalEntryId toJournalEntryId() {
-        return new JournalEntryId(messageId, listenerId);
+    public JournalEntryId adapt() {
+        return new JournalEntryId(consumptionId, listenerId);
     }
 
 }

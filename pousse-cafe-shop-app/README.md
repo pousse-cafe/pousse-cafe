@@ -15,8 +15,8 @@ for the common application properties).
 1. Build and launch the app
 2. Create a product with the following command:
 
-    curl -X POST "http://localhost:8080/product" -d '{"key":"id"}' -H "Content-Type: application/json"
+    curl -X POST "http://localhost:8080/product" -d '{"id":"product-123"}' -H "Content-Type: application/json"
 
 3. Fetch the product:
 
-    curl -X GET "http://localhost:8080/product/id"
+    curl -X GET "http://localhost:8080/product/product-123"

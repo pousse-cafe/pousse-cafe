@@ -5,10 +5,6 @@ import poussecafe.domain.Repository;
 
 public class JournalEntryRepository extends Repository<JournalEntry, JournalEntryId, JournalEntry.Attributes> {
 
-    public List<JournalEntry> findByConsumptionId(String messageId) {
-        return wrap(dataAccess().findByMessageId(messageId));
-    }
-
     @Override
     public JournalEntryDataAccess<JournalEntry.Attributes> dataAccess() {
         return (JournalEntryDataAccess<JournalEntry.Attributes>) super.dataAccess();
