@@ -112,7 +112,7 @@ public abstract class ConvertingMapAttribute<L, U, K, V> implements MapAttribute
 
     @Override
     public boolean containsKey(K key) {
-        return map.containsKey(convertToKey(key));
+        return keySet().contains(key);
     }
 
     @Override
