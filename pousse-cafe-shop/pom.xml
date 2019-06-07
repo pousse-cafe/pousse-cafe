@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.pousse-cafe-framework</groupId>
     <artifactId>pousse-cafe</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
   </parent>
 
   <artifactId>pousse-cafe-shop</artifactId>
