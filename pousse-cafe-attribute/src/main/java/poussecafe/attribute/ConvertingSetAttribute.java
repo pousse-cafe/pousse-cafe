@@ -44,7 +44,7 @@ public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
 
     @Override
     public boolean contains(T item) {
-        return setAttribute.contains(convertTo(item));
+        return value().contains(item);
     }
 
     @Override
