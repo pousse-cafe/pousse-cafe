@@ -6,7 +6,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
+import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
@@ -63,6 +65,8 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
                 MethodInvoker invoker = new MethodInvoker.Builder()
                         .method(method)
                         .target(targetAggregateRoot)
+                        .rethrow(SameOperationException.class)
+                        .rethrow(OptimisticLockingException.class)
                         .build();
                 invoker.invoke(message);
                 repository.update(targetAggregateRoot);

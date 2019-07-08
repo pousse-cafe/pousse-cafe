@@ -5,7 +5,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
@@ -45,6 +47,8 @@ public class RepositoryMessageListenerFactory {
         MethodInvoker invoker = new MethodInvoker.Builder()
                 .method(method)
                 .target(repository)
+                .rethrow(SameOperationException.class)
+                .rethrow(OptimisticLockingException.class)
                 .build();
         return definition.messageListenerBuilder()
                 .priority(MessageListenerPriority.REPOSITORY)

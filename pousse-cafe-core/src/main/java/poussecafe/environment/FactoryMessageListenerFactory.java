@@ -6,7 +6,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import poussecafe.domain.Factory;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.MethodInvoker;
 
@@ -51,6 +53,8 @@ public class FactoryMessageListenerFactory {
         MethodInvoker invoker = new MethodInvoker.Builder()
                 .method(method)
                 .target(factory)
+                .rethrow(SameOperationException.class)
+                .rethrow(OptimisticLockingException.class)
                 .build();
         Class<?> returnType = method.getReturnType();
         if(entityClass.isAssignableFrom(returnType) || returnType.isAssignableFrom(Optional.class)) {

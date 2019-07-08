@@ -52,18 +52,20 @@ public class MessageConsumer {
 
     private boolean consumptionFailure;
 
+    private ConsumptionIdGenerator consumptionIdGenerator = new ConsumptionIdGenerator(UUID.randomUUID().toString());
+
     public synchronized void consumeMessage(OriginalAndMarshaledMessage message) {
         if(consumptionInterrupted()) {
             throw new FailFastException();
         }
 
+        String consumptionId = consumptionIdGenerator.next();
         logger.debug("Handling received message {}", message.original());
-        String consumptionId = UUID.randomUUID().toString();
         List<MessageListener> listeners = environment.messageListenersOf(message.original().getClass()).stream()
                 .sorted()
                 .collect(toList());
-        logger.debug("Found {} listeners", listeners.size());
-        List<MessageListener> toRetryInitially = consumeMessage(message, consumptionId, listeners);
+        logger.debug("  Found {} listeners", listeners.size());
+        List<MessageListener> toRetryInitially = consumeMessageOrRetryListeners(message, consumptionId, listeners);
         if(!toRetryInitially.isEmpty()) {
             retryConsumption(message, consumptionId, toRetryInitially);
         }
@@ -76,18 +78,13 @@ public class MessageConsumer {
 
     private Environment environment;
 
-    private List<MessageListener> consumeMessage(OriginalAndMarshaledMessage message,
+    private List<MessageListener> consumeMessageOrRetryListeners(OriginalAndMarshaledMessage message,
             String consumptionId,
             List<MessageListener> listeners) {
         List<MessageListener> toRetry = new ArrayList<>();
         for (MessageListener listener : listeners) {
-            try {
-                consumeMessage(consumptionId, message, listener);
-            } catch (OptimisticLockingException e) {
-                logger.warn("Optimistic locking failure detected, will retry", e);
+            if(consumeMessageOrRetry(consumptionId, message, listener)) {
                 toRetry.add(listener);
-            } catch (SameOperationException e) {
-                logger.warn("Ignoring probable dubbed message consumption", e);
             }
         }
         return toRetry;
@@ -99,8 +96,8 @@ public class MessageConsumer {
         int retry = 1;
         List<MessageListener> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
-            logger.debug("Try #{} for {} listeners", retry, toRetry.size());
-            toRetry = consumeMessage(message, consumptionId, toRetry);
+            logger.debug("    Try #{} for {} listeners", retry, toRetry.size());
+            toRetry = consumeMessageOrRetryListeners(message, consumptionId, toRetry);
             ++retry;
         }
     }
@@ -109,13 +106,21 @@ public class MessageConsumer {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    private void consumeMessage(String consumptionId,
+    private boolean consumeMessageOrRetry(String consumptionId,
             OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {}", receivedMessage.original(), listener);
+        String messageClassName = receivedMessage.original().getClass().getName();
+        logger.debug("    {} consumes {}", listener, messageClassName);
         try {
             listener.consumer().accept(receivedMessage.original());
             notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
+            return false;
+        } catch (OptimisticLockingException e) {
+            logger.warn("Optimistic locking failure detected, will retry", e);
+            return true;
+        } catch (SameOperationException e) {
+            logger.warn("Ignoring probable dubbed message consumption", e);
+            return false;
         } catch (Exception e) {
             if(failFast) {
                 logger.error("Failing fast on exception from listener {}", listener, e);
@@ -123,6 +128,7 @@ public class MessageConsumer {
                 throw new FailFastException();
             } else {
                 notifyFailedConsumption(consumptionId, receivedMessage, listener, e);
+                return false;
             }
         }
     }
@@ -130,7 +136,8 @@ public class MessageConsumer {
     private void notifySuccessfulConsumption(String consumptionId,
             OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
-        logger.debug("Consumption of message {} by listener {} succeeded", receivedMessage.original(), listener);
+        String messageClassName = receivedMessage.original().getClass().getName();
+        logger.debug("      Success of {} with {}", listener, messageClassName);
         if(!(receivedMessage.original() instanceof SuccessfulConsumption)) {
             try {
                 SuccessfulConsumption event = environment.messageFactory().newMessage(SuccessfulConsumption.class);
@@ -158,7 +165,8 @@ public class MessageConsumer {
             OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener,
             Exception e) {
-        logger.error("Consumption of message {} by listener {} failed", receivedMessage.original(), listener, e);
+        String messageClassName = receivedMessage.original().getClass().getName();
+        logger.error("      Failure of {} with {}", listener, messageClassName);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 FailedConsumption event = environment.messageFactory().newMessage(FailedConsumption.class);
