@@ -2,16 +2,23 @@ package poussecafe.doc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 public class PousseCafeDocletTest {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void docletGeneratesExpectedDoc() {
@@ -32,6 +39,8 @@ public class PousseCafeDocletTest {
                 .customDotExecutable(Optional.of("dot"))
                 .customFdpExecutable(Optional.of("fdp"))
                 .build();
+        assumeTrue(executableInstalled("dot", configuration.customDotExecutable().orElseThrow()));
+        assumeTrue(executableInstalled("fdp", configuration.customFdpExecutable().orElseThrow()));
     }
 
     private PousseCafeDocletConfiguration configuration;
@@ -54,7 +63,21 @@ public class PousseCafeDocletTest {
                     .expectedDirectory(expectedDocDirectory)
                     .build());
         } catch (IOException e) {
-            assertTrue(false);
+            fail();
+        }
+    }
+
+    private boolean executableInstalled(String type, String executable) {
+        try {
+            Process process = new ProcessBuilder(executable, "-V").start();
+            String version = IOUtils.toString(process.getErrorStream(), Charset.defaultCharset());
+            process.waitFor();
+            logger.info("Detected custom {} executable. Version: {}", type, version);
+            return process.exitValue() == 0;
+        } catch (Exception e) {
+            logger.warn(String.format("Failed to check custom %s executable: %s", type, executable), e);
+            logger.info("Consider installing graphviz package to enable this test.");
+            return false;
         }
     }
 }
