@@ -27,7 +27,9 @@ public class MessageListenerRegistry {
             throw new IllegalArgumentException("Cannot register listener for unimplemented message: " + messageClass.getName());
         }
         Set<MessageListener> registeredListeners = getOrCreateSet(messageClass);
-        registeredListeners.add(listener);
+        if(!registeredListeners.add(listener)) {
+            throw new IllegalArgumentException("Listener could not be registered, would hide another one: " + listener);
+        }
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
