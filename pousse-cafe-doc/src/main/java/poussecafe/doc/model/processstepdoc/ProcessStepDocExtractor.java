@@ -8,7 +8,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
@@ -20,6 +22,7 @@ import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
+import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
@@ -172,8 +175,32 @@ public class ProcessStepDocExtractor implements Service {
         processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
         processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
         processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
+
+        if(factoryDocFactory.isFactoryDoc(enclosingType)) {
+            TypeElement aggregateTypeElement = aggregateClassName(enclosingType);
+            List<ExecutableElement> methods = ElementFilter.methodsIn(aggregateTypeElement.getEnclosedElements());
+            Optional<ExecutableElement> onAddMethod = methods.stream()
+                    .filter(element -> element.getSimpleName().toString().equals("onAdd"))
+                    .filter(element -> element.getParameters().isEmpty())
+                    .findFirst();
+            if(onAddMethod.isPresent()) {
+                ExecutableElement presentOnAddMethod = onAddMethod.get();
+                processStepDoc.attributes().producedEvents().addAll(annotationsResolver.event(presentOnAddMethod));
+                processStepDoc.attributes().toExternals().addAll(annotationsResolver.toExternal(presentOnAddMethod));
+            }
+        }
+
         return processStepDoc;
     }
 
     private ComponentDocFactory componentDocFactory;
+
+    private FactoryDocFactory factoryDocFactory;
+
+    public TypeElement aggregateClassName(TypeElement factoryClassDoc) {
+        DeclaredType superclass = (DeclaredType) factoryClassDoc.getSuperclass();
+        return (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(AGGREGATE_TYPE_INDEX));
+    }
+
+    private static final int AGGREGATE_TYPE_INDEX = 1;
 }

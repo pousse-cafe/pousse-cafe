@@ -12,7 +12,7 @@ public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, Factory
 
     public FactoryDoc newFactoryDoc(BoundedContextDocId boundedContextDocId, TypeElement classDoc) {
         if(!isFactoryDoc(classDoc)) {
-            throw new DomainException("Class " + classDoc.getQualifiedName() + " is not a service");
+            throw new DomainException("Class " + classDoc.getQualifiedName() + " is not a factory");
         }
 
         String name = classDoc.getSimpleName().toString();
