@@ -2,6 +2,7 @@ package poussecafe.test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -24,9 +25,9 @@ import poussecafe.runtime.RuntimeFriend;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
-public class RuntimeWrapper {
+public class TestRuntimeWrapper {
 
-    public RuntimeWrapper(Runtime context) {
+    public TestRuntimeWrapper(Runtime context) {
         Objects.requireNonNull(context);
         runtime = context;
         runtimeFriend = new RuntimeFriend(runtime);
@@ -73,9 +74,14 @@ public class RuntimeWrapper {
         waitUntilEndOfMessageProcessing();
     }
 
-    public void loadDataFile(String path) {
+    public void loadDataFile(String resourceName) {
+        URL fileUrl = getClass().getResource(resourceName);
+        if(fileUrl == null) {
+            throw new PousseCafeException("Resource " + resourceName + " does not exist");
+        }
+
         try {
-            String json = new String(Files.readAllBytes(Paths.get(getClass().getResource(path).toURI())),
+            String json = new String(Files.readAllBytes(Paths.get(fileUrl.toURI())),
                     StandardCharsets.UTF_8);
 
             ObjectMapper mapper = new ObjectMapper();

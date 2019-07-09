@@ -12,23 +12,23 @@ import poussecafe.runtime.Runtime;
 
 public abstract class PousseCafeTest {
 
-    private RuntimeWrapper wrapper;
+    private TestRuntimeWrapper wrapper;
 
     @Before
     public void configureContext() {
-        Runtime context = new Runtime.Builder()
+        Runtime runtime = new Runtime.Builder()
             .failFast(true)
             .withBoundedContexts(boundedContexts())
             .build();
-        context.injector().injectDependenciesInto(this);
-        context.registerListenersOf(this);
-        context.start();
-        wrapper = new RuntimeWrapper(context);
+        runtime.injector().injectDependenciesInto(this);
+        runtime.registerListenersOf(this);
+        runtime.start();
+        wrapper = new TestRuntimeWrapper(runtime);
     }
 
     protected abstract List<BoundedContext> boundedContexts();
 
-    protected Runtime context() {
+    protected Runtime testRuntime() {
         return wrapper.runtime();
     }
 
@@ -53,7 +53,7 @@ public abstract class PousseCafeTest {
         wrapper.loadDataFile(path);
     }
 
-    protected RuntimeWrapper wrapper() {
+    protected TestRuntimeWrapper wrapper() {
         return wrapper;
     }
 
