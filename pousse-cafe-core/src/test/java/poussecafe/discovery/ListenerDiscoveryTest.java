@@ -33,21 +33,21 @@ public class ListenerDiscoveryTest {
         assertTrue(listeners.size() == 4);
 
         assertTrue(listeners.contains(new MessageListenerDefinition.Builder()
-                .containerClass(ListenerContainer1.class)
-                .method(ListenerContainer1.class.getMethod("handle", Event1.class))
+                .containerClass(DomainProcess1.class)
+                .method(DomainProcess1.class.getMethod("handle", Event1.class))
                 .build()));
         assertTrue(listeners.contains(new MessageListenerDefinition.Builder()
-                .containerClass(ListenerContainer1.class)
-                .method(ListenerContainer1.class.getMethod("handle", Event2.class))
+                .containerClass(DomainProcess1.class)
+                .method(DomainProcess1.class.getMethod("handle", Event2.class))
                 .build()));
 
         assertTrue(listeners.contains(new MessageListenerDefinition.Builder()
-                .containerClass(ListenerContainer2.class)
-                .method(ListenerContainer2.class.getMethod("handle", Event1.class))
+                .containerClass(DomainProcess2.class)
+                .method(DomainProcess2.class.getMethod("handle", Event1.class))
                 .build()));
         assertTrue(listeners.contains(new MessageListenerDefinition.Builder()
-                .containerClass(ListenerContainer2.class)
-                .method(ListenerContainer2.class.getMethod("handle", Event3.class))
+                .containerClass(DomainProcess2.class)
+                .method(DomainProcess2.class.getMethod("handle", Event3.class))
                 .build()));
     }
 }

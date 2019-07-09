@@ -1,6 +1,6 @@
 package poussecafe.discovery;
 
-public class ListenerContainer2 extends BaseListenerContainer {
+public class DomainProcess2 extends BaseDomainProcess {
 
     @MessageListener
     public void handle(Event3 event) {
