@@ -32,6 +32,11 @@ public class MessageListenerDefinition {
 
         private MessageListenerDefinition definition = new MessageListenerDefinition();
 
+        public Builder containerClass(Class<?> containerClass) {
+            definition.containerClass = containerClass;
+            return this;
+        }
+
         public Builder method(Method method) {
             definition.method = method;
             return this;
@@ -48,8 +53,9 @@ public class MessageListenerDefinition {
         }
 
         public MessageListenerDefinition build() {
-            checkMethodIsListener(definition.method);
+            Objects.requireNonNull(definition.containerClass);
             Objects.requireNonNull(definition.method);
+            checkMethodIsListener(definition.method);
             Objects.requireNonNull(definition.customId);
             Objects.requireNonNull(definition.runner);
             return definition;
@@ -58,6 +64,12 @@ public class MessageListenerDefinition {
 
     private MessageListenerDefinition() {
 
+    }
+
+    private Class<?> containerClass;
+
+    public Class<?> containerClass() {
+        return containerClass;
     }
 
     private Method method;
@@ -92,8 +104,9 @@ public class MessageListenerDefinition {
     private String id() {
         if(!customId.isPresent()) {
             return new DeclaredMessageListenerIdBuilder()
-                    .messageClass(messageClass())
                     .method(method)
+                    .declaringClassName(containerClass.getName())
+                    .messageClass(messageClass())
                     .build();
         } else {
             return customId.get();
@@ -103,6 +116,7 @@ public class MessageListenerDefinition {
     @Override
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(containerClass, other.containerClass)
                 .append(method, other.method)
                 .append(customId, other.customId)
                 .append(runner, other.runner)
@@ -112,9 +126,15 @@ public class MessageListenerDefinition {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(containerClass)
                 .append(method)
                 .append(customId)
                 .append(runner)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 }

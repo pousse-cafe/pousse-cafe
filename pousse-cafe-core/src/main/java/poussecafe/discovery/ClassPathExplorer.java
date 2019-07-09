@@ -3,6 +3,7 @@ package poussecafe.discovery;
 import com.google.common.base.Predicate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -191,18 +192,21 @@ class ClassPathExplorer {
 
         Set<MessageListenerDefinition> definitions = new HashSet<>();
         for(Class<?> containerClass : listenersContainers) {
-            definitions.addAll(discoverListenersOfClass(containerClass));
+            if(!Modifier.isAbstract(containerClass.getModifiers())) {
+                definitions.addAll(discoverListenersOfClass(containerClass));
+            }
         }
         return definitions;
     }
 
     private Collection<MessageListenerDefinition> discoverListenersOfClass(Class<?> containerClass) {
         List<MessageListenerDefinition> definitions = new ArrayList<>();
-        for(Method method : containerClass.getDeclaredMethods()) {
+        for(Method method : containerClass.getMethods()) {
             MessageListener annotation = method.getAnnotation(MessageListener.class);
             if(annotation != null) {
-                logger.debug("Defining listener for method {}", method);
+                logger.debug("Defining listener for method {} of {}", method, containerClass);
                 definitions.add(new MessageListenerDefinition.Builder()
+                        .containerClass(containerClass)
                         .method(method)
                         .customId(customId(annotation.id()))
                         .runner(runner(annotation.runner()))
