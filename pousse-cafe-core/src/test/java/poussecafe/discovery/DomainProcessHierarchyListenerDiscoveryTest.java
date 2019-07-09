@@ -7,7 +7,7 @@ import poussecafe.environment.MessageListenerDefinition;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
 
-public class ListenerDiscoveryTest {
+public class DomainProcessHierarchyListenerDiscoveryTest {
 
     @Test
     public void expectedListenersDiscoveredInDomainProcessHierarchy() throws NoSuchMethodException, SecurityException {

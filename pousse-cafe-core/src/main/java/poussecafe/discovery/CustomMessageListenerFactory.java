@@ -23,6 +23,7 @@ public class CustomMessageListenerFactory {
             listenerId = new DeclaredMessageListenerIdBuilder()
                     .messageClass(messageClass)
                     .method(method)
+                    .declaringClassName(target.getClass().getName())
                     .build();
         }
         return new poussecafe.environment.MessageListener.Builder()
