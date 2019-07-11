@@ -1,8 +1,11 @@
 package poussecafe.doc.model;
 
-import java.util.Optional;
-
 import java.util.Objects;
+import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class UbiquitousLanguageEntry
         implements Comparable<UbiquitousLanguageEntry> {
@@ -56,8 +59,9 @@ public class UbiquitousLanguageEntry
     }
 
     public String qualifiedName() {
-        if(boundedContextName().isPresent()) {
-            return componentDoc().name() + " (" + boundedContextName().get() + ")";
+        Optional<String> optionalBoundedContextName = boundedContextName();
+        if(optionalBoundedContextName.isPresent()) {
+            return componentDoc().name() + " (" + optionalBoundedContextName.get() + ")";
         } else {
             return componentDoc().name();
         }
@@ -70,5 +74,19 @@ public class UbiquitousLanguageEntry
 
     private String comparisonIndex() {
         return qualifiedName() + type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(comparisonIndex(), other.comparisonIndex())
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(comparisonIndex())
+                .build();
     }
 }

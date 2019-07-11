@@ -8,57 +8,46 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import org.apache.commons.io.IOUtils;
+import poussecafe.doc.model.Aggregate;
+import poussecafe.doc.model.BoundedContext;
 import poussecafe.doc.model.BoundedContextComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.model.Domain;
+import poussecafe.doc.model.DomainFactory;
 import poussecafe.doc.model.DomainProcessSteps;
 import poussecafe.doc.model.DomainProcessStepsFactory;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocId;
-import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.entitydoc.EntityDoc;
-import poussecafe.doc.model.entitydoc.EntityDocId;
-import poussecafe.doc.model.entitydoc.EntityDocRepository;
-import poussecafe.doc.model.relation.ComponentType;
-import poussecafe.doc.model.relation.Relation;
-import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
-import poussecafe.doc.model.vodoc.ValueObjectDocId;
-import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 
 import static java.util.stream.Collectors.toList;
 
 public class HtmlWriter {
 
     public void writeHtml() {
-        try {
-            FileWriter stream = new FileWriter(new File(configuration.outputDirectory(), "index.html"));
+        try(FileWriter stream = new FileWriter(new File(configuration.outputDirectory(), "index.html"))) {
             copyCss();
 
             Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
             freemarkerConfig.setClassForTemplateLoading(getClass(), "/");
             Template template = freemarkerConfig.getTemplate("index.html");
 
-            HashMap<String, Object> domain = new HashMap<>();
-            domain.put("name", configuration.domainName());
-            domain.put("version", configuration.version());
+            Domain domain = domainFactory.buildDomain();
+            HashMap<String, Object> domainMap = new HashMap<>();
+            domainMap.put("name", domain.name());
+            domainMap.put("version", domain.version());
 
-            List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
-            domain.put("boundedContexts",
-                            boundedContextDocs
+            domainMap.put("boundedContexts",
+                            domain.boundedContexts()
                                     .stream()
                                     .sorted(this::compareBoundedContexts)
                                     .map(this::adapt)
@@ -66,18 +55,16 @@ public class HtmlWriter {
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("includeGenerationDate", configuration.includeGenerationDate());
-            model.put("domain", domain);
+            model.put("domain", domainMap);
             model.put("generationDate", new Date());
             model.put("ubiquitousLanguage",
                             ubitquitousLanguageFactory
-                                    .buildUbiquitousLanguage()
+                                    .buildUbiquitousLanguage(domain)
                                     .stream()
                                     .filter(doc -> !doc.componentDoc().trivial())
                                     .map(this::adapt)
                                     .collect(toList()));
             template.process(model, stream);
-
-            stream.close();
         } catch (Exception e) {
             throw new RuntimeException("Error while writing HTML", e);
         }
@@ -85,10 +72,12 @@ public class HtmlWriter {
 
     private PousseCafeDocletConfiguration configuration;
 
-    private BoundedContextDocRepository boundedContextDocRepository;
+    private DomainFactory domainFactory;
 
-    private int compareBoundedContexts(BoundedContextDoc boundedContextDoc1, BoundedContextDoc boundedContextDoc2) {
-        return compareTo(boundedContextDoc1.attributes().componentDoc().value(), boundedContextDoc2.attributes().componentDoc().value());
+    private int compareBoundedContexts(BoundedContext boundedContextDoc1, BoundedContext boundedContextDoc2) {
+        ComponentDoc doc1 = boundedContextDoc1.documentation().attributes().componentDoc().value();
+        ComponentDoc doc2 = boundedContextDoc2.documentation().attributes().componentDoc().value();
+        return compareTo(doc1, doc2);
     }
 
     private int compareTo(ComponentDoc componentDoc1,
@@ -96,14 +85,14 @@ public class HtmlWriter {
         return componentDoc1.name().compareTo(componentDoc2.name());
     }
 
-    private HashMap<String, Object> adapt(BoundedContextDoc boundedContextDoc) {
+    private HashMap<String, Object> adapt(BoundedContext boundedContext) {
         HashMap<String, Object> view = new HashMap<>();
+        BoundedContextDoc boundedContextDoc = boundedContext.documentation();
         view.put("id", boundedContextDoc.id());
         view.put("name", boundedContextDoc.attributes().componentDoc().value().name());
         view.put("description", boundedContextDoc.attributes().componentDoc().value().description());
 
-        view.put("aggregates", aggregateDocRepository
-                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
+        view.put("aggregates", boundedContext.aggregates()
                 .stream()
                 .sorted(this::compareAggregates)
                 .map(this::adapt)
@@ -126,15 +115,35 @@ public class HtmlWriter {
         return view;
     }
 
-    private AggregateDocRepository aggregateDocRepository;
-
-    private int compareAggregates(AggregateDoc aggregateDoc1, AggregateDoc aggregateDoc2) {
-        return compareTo(aggregateDoc1.attributes().boundedContextComponentDoc().value(), aggregateDoc2.attributes().boundedContextComponentDoc().value());
+    private int compareAggregates(Aggregate aggregateDoc1, Aggregate aggregateDoc2) {
+        BoundedContextComponentDoc doc1 = aggregateDoc1.documentation().attributes().boundedContextComponentDoc().value();
+        BoundedContextComponentDoc doc2 = aggregateDoc2.documentation().attributes().boundedContextComponentDoc().value();
+        return compareTo(doc1, doc2);
     }
 
     private int compareTo(BoundedContextComponentDoc boundedContextComponentDoc1,
             BoundedContextComponentDoc boundedContextComponentDoc2) {
         return compareTo(boundedContextComponentDoc1.componentDoc(), boundedContextComponentDoc2.componentDoc());
+    }
+
+    private HashMap<String, Object> adapt(Aggregate aggregate) {
+        HashMap<String, Object> view = new HashMap<>();
+        AggregateDoc aggregateDoc = aggregate.documentation();
+        view.put("id", aggregateDoc.id());
+        view.put("name", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+        view.put("description", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
+
+        view.put("entities", aggregate.entities().stream()
+                .sorted(this::compareEntities)
+                .map(this::adapt)
+                .collect(toList()));
+
+        view.put("valueObjects", aggregate.valueObjects().stream()
+                .sorted(this::compareValueObjects)
+                .map(this::adapt)
+                .collect(toList()));
+
+        return view;
     }
 
     private ServiceDocRepository serviceDocRepository;
@@ -149,53 +158,9 @@ public class HtmlWriter {
         return compareTo(boundedContextDoc1.attributes().boundedContextComponentDoc().value(), boundedContextDoc2.attributes().boundedContextComponentDoc().value());
     }
 
-    private HashMap<String, Object> adapt(AggregateDoc aggregateDoc) {
-        HashMap<String, Object> view = new HashMap<>();
-        view.put("id", aggregateDoc.id());
-        view.put("name", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
-        view.put("description", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
-
-        view.put("entities", findEntities(aggregateDoc.attributes().identifier().value()).stream()
-                .sorted(this::compareEntities)
-                .map(this::adapt)
-                .collect(toList()));
-
-        view.put("valueObjects", findValueObjects(aggregateDoc.attributes().identifier().value()).stream()
-                .sorted(this::compareValueObjects)
-                .map(this::adapt)
-                .collect(toList()));
-
-        return view;
-    }
-
-    private List<EntityDoc> findEntities(AggregateDocId aggregateDocId) {
-        return findEntities(aggregateDocId.stringValue()).stream()
-                .map(entityDocRepository::find)
-                .filter(Objects::nonNull)
-                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
-                .collect(toList());
-    }
-
     private int compareEntities(EntityDoc entityDoc1, EntityDoc entityDoc2) {
         return compareTo(entityDoc1.attributes().boundedContextComponentDoc().value(), entityDoc2.attributes().boundedContextComponentDoc().value());
     }
-
-    private Set<EntityDocId> findEntities(String fromClassName) {
-        Set<EntityDocId> ids = new HashSet<>();
-        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
-            if(relation.toComponent().type() == ComponentType.ENTITY) {
-                ids.add(EntityDocId.ofClassName(relation.toComponent().className()));
-            }
-            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                ids.addAll(findEntities(relation.toComponent().className()));
-            }
-        }
-        return ids;
-    }
-
-    private RelationRepository relationRepository;
-
-    private EntityDocRepository entityDocRepository;
 
     private HashMap<String, Object> adapt(EntityDoc entityDoc) {
         HashMap<String, Object> view = new HashMap<>();
@@ -205,32 +170,9 @@ public class HtmlWriter {
         return view;
     }
 
-    private List<ValueObjectDoc> findValueObjects(AggregateDocId aggregateDocId) {
-        return findValueObjects(aggregateDocId.stringValue()).stream()
-                .map(valueObjectDocRepository::find)
-                .filter(Objects::nonNull)
-                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
-                .collect(toList());
-    }
-
     private int compareValueObjects(ValueObjectDoc valueObjectDoc1, ValueObjectDoc valueObjectDoc2) {
         return compareTo(valueObjectDoc1.attributes().boundedContextComponentDoc().value(), valueObjectDoc2.attributes().boundedContextComponentDoc().value());
     }
-
-    private Set<ValueObjectDocId> findValueObjects(String fromClassName) {
-        Set<ValueObjectDocId> ids = new HashSet<>();
-        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
-            if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
-                ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className()));
-            }
-            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                ids.addAll(findValueObjects(relation.toComponent().className()));
-            }
-        }
-        return ids;
-    }
-
-    private ValueObjectDocRepository valueObjectDocRepository;
 
     private HashMap<String, Object> adapt(ValueObjectDoc entityDoc) {
         HashMap<String, Object> view = new HashMap<>();
