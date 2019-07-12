@@ -166,7 +166,7 @@ public class MessageConsumer {
             MessageListener listener,
             Exception e) {
         String messageClassName = receivedMessage.original().getClass().getName();
-        logger.error("      Failure of {} with {}", listener, messageClassName);
+        logger.error("      Failure of {} with {}", listener, messageClassName, e);
         if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
             try {
                 FailedConsumption event = environment.messageFactory().newMessage(FailedConsumption.class);
