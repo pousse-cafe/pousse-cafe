@@ -72,6 +72,13 @@ public class Runtime {
             return this;
         }
 
+        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
+            this.messageConsumptionHandler = messageConsumptionHandler;
+            return this;
+        }
+
+        private MessageConsumptionHandler messageConsumptionHandler = new DefaultConsumptionHandler();
+
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
             builtRuntime.start();
@@ -101,7 +108,7 @@ public class Runtime {
             runtime.messageConsumer = new MessageConsumer.Builder()
                     .failFast(failFast)
                     .environment(runtime.environment)
-                    .messageSenderLocator(runtime.messageSenderLocator)
+                    .messageConsumptionHandler(messageConsumptionHandler)
                     .build();
         }
 
@@ -120,6 +127,7 @@ public class Runtime {
 
         private void injectDependencies() {
             runtime.environment.injectionCandidates().forEach(runtime.injector::injectDependenciesInto);
+            runtime.injector.injectDependenciesInto(messageConsumptionHandler);
         }
     }
 

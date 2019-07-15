@@ -1,72 +1,18 @@
 package poussecafe.journal;
 
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import poussecafe.environment.EntityFactory;
-import poussecafe.journal.domain.JournalEntry;
-import poussecafe.journal.domain.JournalEntryFactory;
+import poussecafe.journal.commands.CreateFailedConsumptionEntry;
+import poussecafe.journal.commands.CreateSuccessfulConsumptionEntry;
 import poussecafe.journal.domain.JournalEntryId;
-import poussecafe.journal.domain.JournalEntryRepository;
-import poussecafe.journal.process.StoreConsumptionResult;
-import poussecafe.messaging.Message;
-import poussecafe.messaging.MessageAdapter;
-import poussecafe.messaging.TransparentMessageAdapter;
-import poussecafe.runtime.TransactionRunnerLocator;
-import poussecafe.storage.TransactionRunner;
-import poussecafe.support.adapters.messaging.FailedConsumptionData;
-import poussecafe.support.adapters.messaging.SuccessfulConsumptionData;
-import poussecafe.support.model.FailedConsumption;
-import poussecafe.support.model.SuccessfulConsumption;
-import poussecafe.util.FieldAccessor;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public abstract class MessagingJournalTest {
-
-    @Mock
-    protected JournalEntryRepository entryRepository;
-
-    @Mock
-    protected JournalEntryFactory entryFactory;
-
-    @Mock
-    protected EntityFactory primitiveFactory;
-
-    @InjectMocks
-    protected StoreConsumptionResult journal;
-
-    protected MessageAdapter messageAdapter;
-
-    protected TransactionRunner transactionRunner;
+public abstract class MessagingJournalTest extends JournalTest {
 
     protected String listenerId;
 
-    protected Message message;
+    protected String message;
 
     protected String exception;
 
     protected JournalEntryId id;
-
-    protected void givenConfiguredMessagingJournal() {
-        MockitoAnnotations.initMocks(this);
-        transactionRunner = transactionRunner();
-        FieldAccessor journalAccessor = new FieldAccessor(journal);
-        journalAccessor.set("transactionRunnerLocator", storageServiceLocator(transactionRunner));
-
-        messageAdapter = new TransparentMessageAdapter();
-    }
-
-    protected TransactionRunner transactionRunner() {
-        return mock(TransactionRunner.class);
-    }
-
-    private TransactionRunnerLocator storageServiceLocator(TransactionRunner transactionRunner) {
-        TransactionRunnerLocator locator = mock(TransactionRunnerLocator.class);
-        when(locator.locateTransactionRunner(JournalEntry.class)).thenReturn(transactionRunner);
-        return locator;
-    }
 
     protected void givenSuccessfullyConsumedMessage() {
         givenReceivedMessage();
@@ -74,7 +20,7 @@ public abstract class MessagingJournalTest {
 
     protected void givenReceivedMessage() {
         listenerId = "listenerId";
-        message = new TestMessage();
+        message = "message";
         givenId();
     }
 
@@ -92,23 +38,17 @@ public abstract class MessagingJournalTest {
     }
 
     protected void whenLoggingSuccessfulConsumption() {
-        SuccessfulConsumption event = new SuccessfulConsumptionData();
-        event.consumptionId().value(id.getConsumptionId());
-        event.listenerId().value(listenerId);
-        event.rawMessage().value(rawMessage());
-        journal.storeSuccessfulConsumption(event);
-    }
-
-    protected String rawMessage() {
-        return "rawMessage";
+        CreateSuccessfulConsumptionEntry command = newCommand(CreateSuccessfulConsumptionEntry.class);
+        command.journalEntryId().value(id);
+        command.message().value(message);
+        submitCommand(command);
     }
 
     protected void whenLoggingFailedConsumption() {
-        FailedConsumption event = new FailedConsumptionData();
-        event.consumptionId().value(id.getConsumptionId());
-        event.listenerId().value(listenerId);
-        event.rawMessage().value(rawMessage());
-        event.error().value("error");
-        journal.storeFailedConsumption(event);
+        CreateFailedConsumptionEntry command = newCommand(CreateFailedConsumptionEntry.class);
+        command.journalEntryId().value(id);
+        command.message().value(message);
+        command.error().value("error");
+        submitCommand(command);
     }
 }

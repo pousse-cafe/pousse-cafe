@@ -4,10 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import poussecafe.journal.Journal;
+import poussecafe.journal.JournalMessageConsumptionHandler;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.runtime.MessagingAndStorage;
 import poussecafe.runtime.Runtime;
-import poussecafe.shop.Shop;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 
 @Configuration
@@ -20,6 +20,7 @@ public class AppConfiguration {
                 SpringMongoDbStorage.instance());
 
         Runtime context = new Runtime.Builder()
+            .messageConsumptionHandler(new JournalMessageConsumptionHandler())
             .withBoundedContext(Journal.configure()
                     .defineThenImplement()
                     .messagingAndStorage(messagingAndStorage)

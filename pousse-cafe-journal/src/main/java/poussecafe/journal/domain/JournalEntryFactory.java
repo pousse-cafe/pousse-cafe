@@ -1,23 +1,26 @@
 package poussecafe.journal.domain;
 
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.Factory;
-import poussecafe.support.model.FailedConsumption;
-import poussecafe.support.model.SuccessfulConsumption;
+import poussecafe.journal.commands.CreateFailedConsumptionEntry;
+import poussecafe.journal.commands.CreateSuccessfulConsumptionEntry;
 
 public class JournalEntryFactory extends Factory<JournalEntryId, JournalEntry, JournalEntry.Attributes> {
 
-    public JournalEntry buildEntry(SuccessfulConsumption event) {
-        JournalEntry entry = newAggregateWithId(new JournalEntryId(event.consumptionId().value(), event.listenerId().value()));
-        entry.attributes().rawMessage().value(event.rawMessage().value());
+    @MessageListener
+    public JournalEntry buildSuccessEntry(CreateSuccessfulConsumptionEntry command) {
+        JournalEntry entry = newAggregateWithId(command.journalEntryId().value());
         entry.attributes().status().value(ConsumptionStatus.SUCCESS);
+        entry.attributes().rawMessage().valueOf(command.message());
         return entry;
     }
 
-    public JournalEntry buildEntry(FailedConsumption event) {
-        JournalEntry entry = newAggregateWithId(new JournalEntryId(event.consumptionId().value(), event.listenerId().value()));
-        entry.attributes().rawMessage().value(event.rawMessage().value());
+    @MessageListener
+    public JournalEntry buildFailureEntry(CreateFailedConsumptionEntry command) {
+        JournalEntry entry = newAggregateWithId(command.journalEntryId().value());
         entry.attributes().status().value(ConsumptionStatus.FAILURE);
-        entry.attributes().error().value(event.error().value());
+        entry.attributes().rawMessage().valueOf(command.message());
+        entry.attributes().error().valueOf(command.error());
         return entry;
     }
 }

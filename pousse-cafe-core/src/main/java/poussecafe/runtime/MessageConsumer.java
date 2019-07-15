@@ -8,11 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.environment.Environment;
 import poussecafe.environment.MessageListener;
-import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
-import poussecafe.support.model.FailedConsumption;
-import poussecafe.support.model.SuccessfulConsumption;
-import poussecafe.util.ExceptionUtils;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,19 +23,19 @@ public class MessageConsumer {
             return this;
         }
 
-        public Builder messageSenderLocator(MessageSenderLocator messageSenderLocator) {
-            messageConsumer.messageSenderLocator = messageSenderLocator;
-            return this;
-        }
-
         public Builder failFast(boolean failFast) {
             messageConsumer.failFast = failFast;
             return this;
         }
 
+        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
+            messageConsumer.messageConsumptionHandler = messageConsumptionHandler;
+            return this;
+        }
+
         public MessageConsumer build() {
             Objects.requireNonNull(messageConsumer.environment);
-            Objects.requireNonNull(messageConsumer.messageSenderLocator);
+            Objects.requireNonNull(messageConsumer.messageConsumptionHandler);
             return messageConsumer;
         }
     }
@@ -53,6 +49,8 @@ public class MessageConsumer {
     private boolean consumptionFailure;
 
     private ConsumptionIdGenerator consumptionIdGenerator = new ConsumptionIdGenerator(UUID.randomUUID().toString());
+
+    private MessageConsumptionHandler messageConsumptionHandler;
 
     public synchronized void consumeMessage(OriginalAndMarshaledMessage message) {
         if(consumptionInterrupted()) {
@@ -113,7 +111,8 @@ public class MessageConsumer {
         logger.debug("    {} consumes {}", listener, messageClassName);
         try {
             listener.consumer().accept(receivedMessage.original());
-            notifySuccessfulConsumption(consumptionId, receivedMessage, listener);
+            logger.debug("      Success of {} with {}", listener, messageClassName);
+            messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
             return false;
         } catch (OptimisticLockingException e) {
             logger.warn("Optimistic locking failure detected, will retry", e);
@@ -127,56 +126,9 @@ public class MessageConsumer {
                 consumptionFailure = true;
                 throw new FailFastException();
             } else {
-                notifyFailedConsumption(consumptionId, receivedMessage, listener, e);
+                logger.error("      Failure of {} with {}", listener, messageClassName, e);
+                messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
                 return false;
-            }
-        }
-    }
-
-    private void notifySuccessfulConsumption(String consumptionId,
-            OriginalAndMarshaledMessage receivedMessage,
-            MessageListener listener) {
-        String messageClassName = receivedMessage.original().getClass().getName();
-        logger.debug("      Success of {} with {}", listener, messageClassName);
-        if(!(receivedMessage.original() instanceof SuccessfulConsumption)) {
-            try {
-                SuccessfulConsumption event = environment.messageFactory().newMessage(SuccessfulConsumption.class);
-                event.consumptionId().value(consumptionId);
-                event.listenerId().value(listener.id());
-                event.rawMessage().value(marshaledMessageOrDefault(receivedMessage));
-                messageSenderLocator.locate(SuccessfulConsumption.class).sendMessage(event);
-            } catch (PousseCafeException e) {
-                logger.debug("Unable to notify successful consumption", e);
-            }
-        }
-    }
-
-    private String marshaledMessageOrDefault(OriginalAndMarshaledMessage receivedMessage) {
-        if(receivedMessage.marshaled() instanceof String) {
-            return (String) receivedMessage.marshaled();
-        } else {
-            return receivedMessage.original().toString();
-        }
-    }
-
-    private MessageSenderLocator messageSenderLocator;
-
-    private void notifyFailedConsumption(String consumptionId,
-            OriginalAndMarshaledMessage receivedMessage,
-            MessageListener listener,
-            Exception e) {
-        String messageClassName = receivedMessage.original().getClass().getName();
-        logger.error("      Failure of {} with {}", listener, messageClassName, e);
-        if(!FailedConsumption.class.isAssignableFrom(receivedMessage.getClass())) {
-            try {
-                FailedConsumption event = environment.messageFactory().newMessage(FailedConsumption.class);
-                event.consumptionId().value(consumptionId);
-                event.listenerId().value(listener.id());
-                event.rawMessage().value(marshaledMessageOrDefault(receivedMessage));
-                event.error().value(ExceptionUtils.getStackTrace(e));
-                messageSenderLocator.locate(FailedConsumption.class).sendMessage(event);
-            } catch (PousseCafeException e1) {
-                logger.error("Unable to notify failed consumption for message {}", marshaledMessageOrDefault(receivedMessage), e1);
             }
         }
     }
