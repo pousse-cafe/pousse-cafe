@@ -1,12 +1,12 @@
 package process;
 
+import java.util.Optional;
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.YetAnotherDomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /*
  * Verifies that repository message listener behaves as expected.
@@ -37,7 +37,7 @@ public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyBoundedContex
     }
 
     private void thenAggregateRemoved() {
-        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
-        assertThat(aggregate, nullValue());
+        Optional<MyAggregate> aggregate = getOptional(MyAggregate.class, event.identifier().value());
+        assertTrue(aggregate.isEmpty());
     }
 }

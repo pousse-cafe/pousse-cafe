@@ -1,6 +1,7 @@
 package poussecafe.doc;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
@@ -20,10 +21,10 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Type
     @Override
     public void accept(TypeElement classDoc) {
         if (isComponentDoc(classDoc)) {
-            BoundedContextDoc boundedContextDoc = boundedContextDocRepository
+            Optional<BoundedContextDoc> boundedContextDoc = boundedContextDocRepository
                     .findByPackageNamePrefixing(classDoc.getQualifiedName().toString());
-            if (boundedContextDoc != null) {
-                BoundedContextDocId boundedContextId = boundedContextDoc.attributes().identifier().value();
+            if (boundedContextDoc.isPresent()) {
+                BoundedContextDocId boundedContextId = boundedContextDoc.get().attributes().identifier().value();
                 Logger.debug("Adding " + componentName() + " with class " + classDoc.getQualifiedName().toString() + " to BC " + boundedContextId);
                 addDoc(boundedContextId, classDoc);
             } else {

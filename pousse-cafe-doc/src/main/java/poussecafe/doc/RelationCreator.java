@@ -1,5 +1,6 @@
 package poussecafe.doc;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -57,14 +58,14 @@ public class RelationCreator implements Consumer<TypeElement> {
     private DocletServices docletServices;
 
     private void tryRelationAggregateId(TypeElement classDoc) {
-        AggregateDoc aggregateDoc = aggregateDocRepository.find(AggregateDocId.ofClassName(classDoc.getQualifiedName().toString()));
-        if(aggregateDoc != null) {
-            ValueObjectDoc idDoc = valueObjectDocRepository.find(ValueObjectDocId.ofClassName(aggregateDoc.attributes().idClassName().value()));
-            if(idDoc != null) {
-                Logger.debug("Building bi-directional relation between aggregate " + classDoc.getQualifiedName() + " and its id " + aggregateDoc.attributes().idClassName().value());
+        Optional<AggregateDoc> aggregateDoc = aggregateDocRepository.getOptional(AggregateDocId.ofClassName(classDoc.getQualifiedName().toString()));
+        if(aggregateDoc.isPresent()) {
+            Optional<ValueObjectDoc> idDoc = valueObjectDocRepository.getOptional(ValueObjectDocId.ofClassName(aggregateDoc.get().attributes().idClassName().value()));
+            if(idDoc.isPresent()) {
+                Logger.debug("Building bi-directional relation between aggregate " + classDoc.getQualifiedName() + " and its id " + aggregateDoc.get().attributes().idClassName().value());
                 NewRelationParameters aggregateIdParameters = new NewRelationParameters();
                 aggregateIdParameters.fromComponent = component(classDoc);
-                aggregateIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.attributes().idClassName().value());
+                aggregateIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.get().attributes().idClassName().value());
                 componentLinking.linkComponents(aggregateIdParameters);
 
                 NewRelationParameters idAggregateParameters = new NewRelationParameters();
@@ -80,14 +81,14 @@ public class RelationCreator implements Consumer<TypeElement> {
     private ValueObjectDocRepository valueObjectDocRepository;
 
     private void tryRelationEntityId(TypeElement classDoc) {
-        EntityDoc entityDoc = entityDocRepository.find(EntityDocId.ofClassName(classDoc.getQualifiedName().toString()));
-        if(entityDoc != null) {
-            ValueObjectDoc idDoc = valueObjectDocRepository.find(ValueObjectDocId.ofClassName(entityDoc.attributes().idClassName().value()));
-            if(idDoc != null) {
-                Logger.debug("Building relation between entity " + classDoc.getQualifiedName() + " and its id " + entityDoc.attributes().idClassName().value());
+        Optional<EntityDoc> entityDoc = entityDocRepository.getOptional(EntityDocId.ofClassName(classDoc.getQualifiedName().toString()));
+        if(entityDoc.isPresent()) {
+            Optional<ValueObjectDoc> idDoc = valueObjectDocRepository.getOptional(ValueObjectDocId.ofClassName(entityDoc.get().attributes().idClassName().value()));
+            if(idDoc.isPresent()) {
+                Logger.debug("Building relation between entity " + classDoc.getQualifiedName() + " and its id " + entityDoc.get().attributes().idClassName().value());
                 NewRelationParameters entityIdParameters = new NewRelationParameters();
                 entityIdParameters.fromComponent = component(classDoc);
-                entityIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.attributes().idClassName().value());
+                entityIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.get().attributes().idClassName().value());
                 componentLinking.linkComponents(entityIdParameters);
             }
         }

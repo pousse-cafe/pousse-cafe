@@ -1,6 +1,7 @@
 package poussecafe.doc.model.boundedcontextdoc;
 
 import java.util.List;
+import java.util.Optional;
 import poussecafe.domain.Repository;
 
 public class BoundedContextDocRepository extends Repository<BoundedContextDoc, BoundedContextDocId, BoundedContextDoc.Attributes> {
@@ -14,7 +15,7 @@ public class BoundedContextDocRepository extends Repository<BoundedContextDoc, B
         return (BoundedContextDocDataAccess<BoundedContextDoc.Attributes>) super.dataAccess();
     }
 
-    public BoundedContextDoc findByPackageNamePrefixing(String name) {
-        return wrap(dataAccess().findByPackageNamePrefixing(name));
+    public Optional<BoundedContextDoc> findByPackageNamePrefixing(String name) {
+        return wrapNullable(dataAccess().findByPackageNamePrefixing(name));
     }
 }

@@ -18,9 +18,4 @@ public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocId, F
     public List<FactoryDoc> findAll() {
         return wrap(dataAccess().findAll());
     }
-
-    public FactoryDoc findByBoundedContextIdAndName(BoundedContextDocId boundedContextDocId,
-            String factoryName) {
-        return wrap(dataAccess().findByBoundedContextIdAndName(boundedContextDocId, factoryName));
-    }
 }

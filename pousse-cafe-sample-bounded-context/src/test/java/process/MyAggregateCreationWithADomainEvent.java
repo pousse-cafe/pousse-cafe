@@ -1,12 +1,12 @@
 package process;
 
+import java.util.Optional;
 import org.junit.Test;
 import poussecafe.myboundedcontext.domain.ADomainEvent;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
 import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /*
  * Verifies that factory message listener behaves as expected.
@@ -32,7 +32,7 @@ public class MyAggregateCreationWithADomainEvent extends MyBoundedContextTest {
     }
 
     private void thenAggregateCreated() {
-        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
-        assertThat(aggregate, notNullValue());
+        Optional<MyAggregate> aggregate = getOptional(MyAggregate.class, event.identifier().value());
+        assertTrue(aggregate.isPresent());
     }
 }

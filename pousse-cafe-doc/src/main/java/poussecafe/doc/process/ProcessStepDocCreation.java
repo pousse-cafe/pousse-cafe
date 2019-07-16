@@ -24,7 +24,7 @@ public class ProcessStepDocCreation extends DomainProcess {
 
     private void createOrUpdate(ProcessStepDoc doc) {
         ProcessStepDocId id = doc.attributes().identifier().value();
-        if(processStepRepository.find(id) == null) {
+        if(processStepRepository.getOptional(id).isEmpty()) {
             runInTransaction(BoundedContextDoc.class, () -> processStepRepository.add(doc));
         } else {
             runInTransaction(BoundedContextDoc.class, () -> {

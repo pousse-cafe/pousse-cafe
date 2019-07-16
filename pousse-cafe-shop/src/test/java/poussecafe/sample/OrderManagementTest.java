@@ -8,9 +8,7 @@ import poussecafe.shop.domain.OrderDescription;
 import poussecafe.shop.domain.OrderId;
 import poussecafe.shop.domain.ProductId;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class OrderManagementTest extends ShopTest {
 
@@ -54,7 +52,7 @@ public class OrderManagementTest extends ShopTest {
     }
 
     private void thenOrderCreated() {
-        assertThat(find(Order.class, orderId()), notNullValue());
+        assertTrue(getOptional(Order.class, orderId()).isPresent());
     }
 
     private OrderId orderId() {
@@ -70,6 +68,6 @@ public class OrderManagementTest extends ShopTest {
     }
 
     private void thenNoOrderCreated() {
-        assertThat(find(Order.class, orderId()), nullValue());
+        assertTrue(getOptional(Order.class, orderId()).isEmpty());
     }
 }

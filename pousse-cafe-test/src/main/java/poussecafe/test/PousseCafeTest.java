@@ -1,6 +1,7 @@
 package poussecafe.test;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import poussecafe.domain.AggregateRoot;
@@ -32,9 +33,18 @@ public abstract class PousseCafeTest {
         return wrapper.runtime();
     }
 
+    /**
+     * @deprecated use getOptional instead
+     */
+    @Deprecated(since = "0.8.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K id) {
         return wrapper.find(entityClass, id);
+    }
+
+    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
+            K id) {
+        return wrapper.getOptional(entityClass, id);
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {

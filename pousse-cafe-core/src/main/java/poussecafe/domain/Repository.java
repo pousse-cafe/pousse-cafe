@@ -2,6 +2,7 @@ package poussecafe.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import poussecafe.environment.EntityFactory;
 import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.exception.NotFoundException;
@@ -23,10 +24,18 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         return entityClass;
     }
 
+    /**
+     * @deprecated use getOptional instead.
+     */
+    @Deprecated(since = "0.8.0")
     public A find(K id) {
+        return getOptional(id).orElse(null);
+    }
+
+    public Optional<A> getOptional(K id) {
         checkId(id);
         D data = dataAccess.findData(id);
-        return wrap(data);
+        return wrapNullable(data);
     }
 
     private EntityDataAccess<K, D> dataAccess;
@@ -35,6 +44,10 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         Objects.requireNonNull(id);
     }
 
+    /**
+     * @deprecated use wrapNullable instead.
+     */
+    @Deprecated(since = "0.8.0")
     protected A wrap(D data) {
         if(data == null) {
             return null;
@@ -46,15 +59,22 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         }
     }
 
+    protected Optional<A> wrapNullable(D data) {
+        if(data == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(componentFactory.newEntity(new NewEntityInstanceSpecification.Builder<A>()
+                    .entityClass(entityClass)
+                    .existingData(data)
+                    .build()));
+        }
+    }
+
     private EntityFactory componentFactory;
 
     public A get(K id) {
-        A entity = find(id);
-        if (entity == null) {
-            throw new NotFoundException("Entity with id " + id + " not found");
-        } else {
-            return entity;
-        }
+        return getOptional(id)
+                .orElseThrow(() -> new NotFoundException("Entity with id " + id + " not found"));
     }
 
     public void add(A entity) {
@@ -104,9 +124,9 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     public void delete(K id) {
         checkId(id);
-        A entity = find(id);
-        if (entity != null) {
-            delete(entity);
+        Optional<A> entity = getOptional(id);
+        if (entity.isPresent()) {
+            delete(entity.get());
         }
     }
 
@@ -123,7 +143,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     protected List<A> wrap(List<D> data) {
-        return data.stream().map(this::wrap).filter(Objects::nonNull).collect(toList());
+        return data.stream().map(this::wrapNullable).filter(Optional::isPresent).map(Optional::get).collect(toList());
     }
 
     @SuppressWarnings("unchecked")

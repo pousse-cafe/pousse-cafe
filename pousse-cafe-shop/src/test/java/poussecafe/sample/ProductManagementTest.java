@@ -7,8 +7,8 @@ import poussecafe.shop.domain.Product;
 import poussecafe.shop.domain.ProductId;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ProductManagementTest extends ShopTest {
 
@@ -36,7 +36,7 @@ public class ProductManagementTest extends ShopTest {
     }
 
     private void thenProductCreated() {
-        assertThat(find(Product.class, productId), notNullValue());
+        assertTrue(getOptional(Product.class, productId).isPresent());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ProductManagementTest extends ShopTest {
     private AddUnits addUnits;
 
     private void thenProductHasAddedUnits() {
-        Product product = find(Product.class, productId);
+        Product product = getOptional(Product.class, productId).orElseThrow();
         assertThat(product.attributes().availableUnits().value(), is(addUnits.units().value()));
         assertThat(product.attributes().totalUnits().value(), is(addUnits.units().value()));
     }

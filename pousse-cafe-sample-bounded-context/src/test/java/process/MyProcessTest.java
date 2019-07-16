@@ -39,7 +39,7 @@ public class MyProcessTest extends MyBoundedContextTest {
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = find(MyAggregate.class, parameters.id);
+        MyAggregate aggregate = getOptional(MyAggregate.class, parameters.id).orElseThrow();
         assertThat(aggregate.attributes().x().value(), equalTo(parameters.x));
     }
 }

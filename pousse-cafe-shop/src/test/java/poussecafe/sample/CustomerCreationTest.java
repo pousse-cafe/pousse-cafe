@@ -5,8 +5,7 @@ import poussecafe.shop.command.CreateCustomer;
 import poussecafe.shop.domain.Customer;
 import poussecafe.shop.domain.CustomerId;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CustomerCreationTest extends ShopTest {
 
@@ -30,6 +29,6 @@ public class CustomerCreationTest extends ShopTest {
     }
 
     private void thenCustomerIsCreated() {
-        assertThat(find(Customer.class, customerId), notNullValue());
+        assertTrue(getOptional(Customer.class, customerId).isPresent());
     }
 }

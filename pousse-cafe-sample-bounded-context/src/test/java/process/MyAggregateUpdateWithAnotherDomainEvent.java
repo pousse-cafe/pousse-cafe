@@ -38,7 +38,7 @@ public class MyAggregateUpdateWithAnotherDomainEvent extends MyBoundedContextTes
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = find(MyAggregate.class, event.identifier().value());
+        MyAggregate aggregate = getOptional(MyAggregate.class, event.identifier().value()).orElseThrow();
         assertThat(aggregate.attributes().x().value(), is(event.x().value()));
     }
 }

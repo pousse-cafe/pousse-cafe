@@ -3,7 +3,7 @@ package poussecafe.doc.model;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import poussecafe.doc.PousseCafeDocletConfiguration;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
@@ -78,8 +78,9 @@ public class DomainFactory implements Service {
 
     private List<EntityDoc> entities(AggregateDoc aggregateDoc) {
         return findEntities(aggregateDoc.className()).stream()
-                .map(entityDocRepository::find)
-                .filter(Objects::nonNull)
+                .map(entityDocRepository::getOptional)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(toList());
     }
 
@@ -102,8 +103,9 @@ public class DomainFactory implements Service {
 
     private List<ValueObjectDoc> valueObjects(AggregateDoc aggregateDoc) {
         return findValueObjects(aggregateDoc.className()).stream()
-                .map(valueObjectDocRepository::find)
-                .filter(Objects::nonNull)
+                .map(valueObjectDocRepository::getOptional)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(toList());
     }
 

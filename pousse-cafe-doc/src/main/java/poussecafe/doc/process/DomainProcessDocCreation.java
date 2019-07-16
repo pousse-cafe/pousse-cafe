@@ -1,6 +1,7 @@
 package poussecafe.doc.process;
 
 import java.util.List;
+import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.BoundedContextComponentDoc;
@@ -27,8 +28,8 @@ public class DomainProcessDocCreation extends DomainProcess {
         for(DomainProcessDoc doc : docs) {
             DomainProcessDocId docId = doc.attributes().identifier().value();
             BoundedContextComponentDoc boundedContextComponentDoc = doc.attributes().boundedContextComponentDoc().value();
-            DomainProcessDoc existingDoc = domainProcessDocRepository.find(docId);
-            if(existingDoc != null) {
+            Optional<DomainProcessDoc> existingDoc = domainProcessDocRepository.getOptional(docId);
+            if(existingDoc.isPresent()) {
                 if(boundedContextComponentDoc.componentDoc().hasDescription()) {
                     runInTransaction(DomainProcessDoc.class, () -> {
                         DomainProcessDoc toUpdate = domainProcessDocRepository.get(docId);

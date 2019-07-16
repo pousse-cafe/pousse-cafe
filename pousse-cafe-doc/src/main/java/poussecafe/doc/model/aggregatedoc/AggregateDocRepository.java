@@ -22,9 +22,4 @@ public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDo
     public List<AggregateDoc> findByIdClassName(String qualifiedName) {
         return wrap(dataAccess().findByIdClassName(qualifiedName));
     }
-
-    public AggregateDoc findByBoundedContextIdAndName(BoundedContextDocId boundedContextDocId,
-            String aggregateName) {
-        return wrap(dataAccess().findByBoundedContextIdAndName(boundedContextDocId, aggregateName));
-    }
 }

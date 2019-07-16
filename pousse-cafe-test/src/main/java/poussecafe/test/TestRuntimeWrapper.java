@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
@@ -43,7 +44,11 @@ public class TestRuntimeWrapper {
         return runtime;
     }
 
+    /**
+     * @deprecated use getOptional instead
+     */
     @SuppressWarnings("unchecked")
+    @Deprecated(since = "0.8.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K id) {
         waitUntilEndOfMessageProcessing();
@@ -52,6 +57,17 @@ public class TestRuntimeWrapper {
                 .repositoryOf(entityClass)
                 .orElseThrow(PousseCafeException::new);
         return (T) repository.find(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
+            K id) {
+        waitUntilEndOfMessageProcessing();
+        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
+                .environment()
+                .repositoryOf(entityClass)
+                .orElseThrow(PousseCafeException::new);
+        return (Optional<T>) repository.getOptional(id);
     }
 
     public void waitUntilEndOfMessageProcessing() {
