@@ -105,7 +105,7 @@ public class Environment {
         return unmodifiableSet(messagings);
     }
 
-    Class<?> messageImplementationClass(Class<?> messageClass) {
+    public Class<? extends Message> messageImplementationClass(Class<?> messageClass) {
         MessageImplementation implementation = messageImplementation(messageClass);
         return implementation.messageImplementationClass();
     }

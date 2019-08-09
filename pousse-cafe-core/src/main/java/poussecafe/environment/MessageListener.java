@@ -106,8 +106,6 @@ public class MessageListener implements Comparable<MessageListener> {
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(id, other.id)
-                .append(messageClass, other.messageClass)
-                .append(priority, other.priority)
                 .build());
     }
 
@@ -115,8 +113,6 @@ public class MessageListener implements Comparable<MessageListener> {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(id)
-                .append(messageClass)
-                .append(priority)
                 .build();
     }
 }
