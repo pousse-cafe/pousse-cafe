@@ -8,23 +8,9 @@ import poussecafe.messaging.Message;
 
 public class ListenersSet {
 
-    public static class Builder {
-
-        private ListenersSet listenersSet = new ListenersSet();
-
-        public Builder messageListenersPool(MessageListenersPool messageListenersPool) {
-            listenersSet.messageListenersPool = messageListenersPool;
-            return this;
-        }
-
-        public ListenersSet build() {
-            Objects.requireNonNull(listenersSet.messageListenersPool);
-            return listenersSet;
-        }
-    }
-
-    private ListenersSet() {
-
+    public ListenersSet(MessageListenersPool messageListenersPool) {
+        Objects.requireNonNull(messageListenersPool);
+        this.messageListenersPool = messageListenersPool;
     }
 
     private MessageListenersPool messageListenersPool;
@@ -41,9 +27,7 @@ public class ListenersSet {
         MessageListenersPool[] pools = messageListenersPool.split(expectedNumberOfPartitions);
         ListenersSetPartition[] partitions = new ListenersSetPartition[expectedNumberOfPartitions];
         for(int i = 0; i < partitions.length; ++i) {
-            ListenersSet listenersSet = new ListenersSet.Builder()
-                    .messageListenersPool(pools[i])
-                    .build();
+            ListenersSet listenersSet = new ListenersSet(pools[i]);
             partitions[i] = new ListenersSetPartition.Builder()
                     .ofSet(this)
                     .partitionListenersSet(listenersSet)

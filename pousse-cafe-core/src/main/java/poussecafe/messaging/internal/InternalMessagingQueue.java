@@ -3,16 +3,19 @@ package poussecafe.messaging.internal;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
+import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class InternalMessagingQueue {
 
-    InternalMessagingQueue(MessageConsumer messageConsumer) {
-        messageReceiver = new InternalMessageReceiver(messageAdapter, messageConsumer);
+    InternalMessagingQueue(MessageBroker messageBroker) {
+        messageReceiver = new InternalMessageReceiver(messageBroker);
         messageSender = new InternalMessageSender(messageAdapter);
     }
 
@@ -20,8 +23,9 @@ public class InternalMessagingQueue {
 
     public class InternalMessageReceiver extends MessageReceiver {
 
-        private InternalMessageReceiver(MessageAdapter messageAdapter, MessageConsumer messageConsumer) {
-            super(messageAdapter, messageConsumer);
+        private InternalMessageReceiver(MessageBroker messageBroker) {
+            super(messageBroker);
+            messagesBeingProcessed = new AtomicReference<>(0);
         }
 
         @Override
@@ -35,7 +39,15 @@ public class InternalMessagingQueue {
                         if (STOP.equals(polledObject)) {
                             return;
                         } else {
-                            onMessage(polledObject);
+                            messagesBeingProcessed.updateAndGet(value -> value + 1);
+                            Message message = messageAdapter.adaptSerializedMessage(polledObject);
+                            onMessage(new ReceivedMessage.Builder()
+                                    .payload(new OriginalAndMarshaledMessage.Builder()
+                                            .marshaled(polledObject)
+                                            .original(message)
+                                            .build())
+                                    .acker(() -> messagesBeingProcessed.updateAndGet(value -> value - 1))
+                                    .build());
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
@@ -55,6 +67,8 @@ public class InternalMessagingQueue {
         private Thread receptionThread;
 
         private boolean interrupted;
+
+        private AtomicReference<Integer> messagesBeingProcessed;
 
         @Override
         protected void actuallyStopReceiving() {
@@ -119,7 +133,7 @@ public class InternalMessagingQueue {
                 mutex.release();
                 return;
             }
-            messagesQueued = !queue.isEmpty();
+            messagesQueued = !queue.isEmpty() || messageReceiver.messagesBeingProcessed.get() > 0;
             mutex.release();
         } while (messagesQueued);
     }

@@ -1,20 +1,20 @@
 package poussecafe.spring.kafka;
 
 import java.util.Objects;
-import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
 
 public class KafkaMessageReceiver extends MessageReceiver {
 
     public static class Builder {
 
-        public Builder messageConsumer(MessageConsumer messageConsumer) {
-            this.messageConsumer = messageConsumer;
+        public Builder messageBroker(MessageBroker messageBroker) {
+            this.messageBroker = messageBroker;
             return this;
         }
 
-        private MessageConsumer messageConsumer;
+        private MessageBroker messageBroker;
 
         public Builder messageSenderAndReceiverFactory(MessageSenderAndReceiverFactory messageSenderAndReceiverFactory) {
             this.messageSenderAndReceiverFactory = messageSenderAndReceiverFactory;
@@ -24,17 +24,17 @@ public class KafkaMessageReceiver extends MessageReceiver {
         private MessageSenderAndReceiverFactory messageSenderAndReceiverFactory;
 
         public KafkaMessageReceiver build() {
-            Objects.requireNonNull(messageConsumer);
+            Objects.requireNonNull(messageBroker);
             Objects.requireNonNull(messageSenderAndReceiverFactory);
 
-            KafkaMessageReceiver receiver = new KafkaMessageReceiver(messageConsumer);
+            KafkaMessageReceiver receiver = new KafkaMessageReceiver(messageBroker);
             receiver.messageSenderAndReceiverFactory = messageSenderAndReceiverFactory;
             return receiver;
         }
     }
 
-    private KafkaMessageReceiver(MessageConsumer messageConsumer) {
-        super(new JacksonMessageAdapter(), messageConsumer);
+    private KafkaMessageReceiver(MessageBroker messageBroker) {
+        super(messageBroker);
     }
 
     private MessageSenderAndReceiverFactory messageSenderAndReceiverFactory;
@@ -50,7 +50,7 @@ public class KafkaMessageReceiver extends MessageReceiver {
         messageSenderAndReceiverFactory.deregisterReceiver(this);
     }
 
-    void consume(String payload) {
-        onMessage(payload);
+    void consume(ReceivedMessage receivedMessage) {
+        onMessage(receivedMessage);
     }
 }

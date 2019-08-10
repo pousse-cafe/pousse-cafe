@@ -40,4 +40,8 @@ public class MessageListenerRegistry {
     public Collection<MessageListener> allListeners() {
         return messageListenersPool.allListeners();
     }
+
+    public MessageListenersPool messageListenersPool() {
+        return messageListenersPool;
+    }
 }

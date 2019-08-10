@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
 
 public class SpringKafkaMessaging extends Messaging {
 
@@ -32,16 +32,16 @@ public class SpringKafkaMessaging extends Messaging {
     }
 
     @Override
-    public MessagingConnection connect(MessageConsumer messageConsumer) {
+    public MessagingConnection connect(MessageBroker messageBroker) {
         synchronized(SpringKafkaMessaging.class) {
             if(messageSenderAndReceiverFactory == null) {
                 throw new PousseCafeException("Cannot connect, messaging not yet configured");
             }
-            logger.info("Connecting Spring Kafka messaging to message consumer {}", messageConsumer);
+            logger.info("Connecting Spring Kafka messaging to message broker {}", messageBroker);
             return new MessagingConnection.Builder()
                     .messaging(this)
                     .messageSender(messageSenderAndReceiverFactory.buildMessageSender())
-                    .messageReceiver(messageSenderAndReceiverFactory.buildMessageReceiver(messageConsumer))
+                    .messageReceiver(messageSenderAndReceiverFactory.buildMessageReceiver(messageBroker))
                     .build();
         }
     }

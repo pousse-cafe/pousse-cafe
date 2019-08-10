@@ -27,9 +27,7 @@ public class ListenersSetTest {
                     .build();
             messageListenersPool.registerListenerForMessageClass(listener, Message.class);
         }
-        listenersSet = new ListenersSet.Builder()
-                .messageListenersPool(messageListenersPool)
-                .build();
+        listenersSet = new ListenersSet(messageListenersPool);
     }
 
     private ListenersSet listenersSet;

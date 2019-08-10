@@ -1,7 +1,5 @@
 package poussecafe.spring.kafka;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 @Component
 public class MessageSenderAndReceiverFactory implements InitializingBean, MessageListener<String, String> {
@@ -46,30 +48,41 @@ public class MessageSenderAndReceiverFactory implements InitializingBean, Messag
         listenerContainer.start();
     }
 
-    public MessageReceiver buildMessageReceiver(MessageConsumer messageConsumer) {
+    public MessageReceiver buildMessageReceiver(MessageBroker messageBroker) {
         return new KafkaMessageReceiver.Builder()
-                .messageConsumer(messageConsumer)
+                .messageBroker(messageBroker)
                 .messageSenderAndReceiverFactory(this)
                 .build();
     }
 
     @Override
-    public void onMessage(ConsumerRecord<String, String> consumerRecord) {
+    public void onMessage(ConsumerRecord<String, String> consumerRecord, Acknowledgment acknowledgment) {
         String payload = consumerRecord.value();
-        for(KafkaMessageReceiver receiver : receivers) {
-            receiver.consume(payload);
-        }
+        kafkaReceiver.consume(new ReceivedMessage.Builder()
+                .payload(new OriginalAndMarshaledMessage.Builder()
+                        .marshaled(payload)
+                        .original(messageAdapter.adaptSerializedMessage(payload))
+                        .build())
+                .acker(acknowledgment::acknowledge)
+                .build());
     }
+
+    @Override
+    public void onMessage(ConsumerRecord<String, String> data) {
+        throw new UnsupportedOperationException("Acknowledgment is required");
+    }
+
+    private JacksonMessageAdapter messageAdapter = new JacksonMessageAdapter();
 
     synchronized void registerReceiver(KafkaMessageReceiver kafkaMessageReceiver) {
-        receivers.add(kafkaMessageReceiver);
+        kafkaReceiver = kafkaMessageReceiver;
     }
 
-    private Set<KafkaMessageReceiver> receivers = new HashSet<>();
+    private KafkaMessageReceiver kafkaReceiver;
 
     synchronized void deregisterReceiver(KafkaMessageReceiver kafkaMessageReceiver) {
-        receivers.remove(kafkaMessageReceiver);
-        if(receivers.isEmpty()) {
+        if(kafkaReceiver == kafkaMessageReceiver) {
+            kafkaReceiver = null;
             listenerContainer.stop();
         }
     }

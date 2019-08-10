@@ -10,18 +10,20 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class PulsarMessageReceiver extends MessageReceiver {
 
     public static class Builder {
 
-        public Builder messageConsumer(MessageConsumer messageConsumer) {
-            this.messageConsumer = messageConsumer;
+        public Builder messageConsumer(MessageBroker messageBroker) {
+            this.messageBroker = messageBroker;
             return this;
         }
 
-        private MessageConsumer messageConsumer;
+        private MessageBroker messageBroker;
 
         public Builder configuration(PulsarMessagingConfiguration configuration) {
             this.configuration = configuration;
@@ -31,15 +33,15 @@ public class PulsarMessageReceiver extends MessageReceiver {
         private PulsarMessagingConfiguration configuration;
 
         public PulsarMessageReceiver build() {
-            Objects.requireNonNull(messageConsumer);
-            PulsarMessageReceiver receiver = new PulsarMessageReceiver(messageConsumer);
+            Objects.requireNonNull(messageBroker);
+            PulsarMessageReceiver receiver = new PulsarMessageReceiver(messageBroker);
             receiver.configuration = configuration;
             return receiver;
         }
     }
 
-    private PulsarMessageReceiver(MessageConsumer messageConsumer) {
-        super(new JacksonMessageAdapter(), messageConsumer);
+    private PulsarMessageReceiver(MessageBroker messageBroker) {
+        super(messageBroker);
     }
 
     private PulsarMessagingConfiguration configuration;
@@ -73,27 +75,36 @@ public class PulsarMessageReceiver extends MessageReceiver {
 
     private Runnable receptionRunnable() {
         return () -> {
-            Message<String> message = null;
             while(true) {
                 try {
-                    message = consumer.receive();
-                    onMessage(message.getValue());
+                    Message<String> message = consumer.receive();
+                    String stringPayload = message.getValue();
+                    onMessage(new ReceivedMessage.Builder()
+                            .payload(new OriginalAndMarshaledMessage.Builder()
+                                    .marshaled(stringPayload)
+                                    .original(messageAdapter.adaptSerializedMessage(stringPayload))
+                                    .build())
+                            .acker(ack(message))
+                            .build());
                 } catch (Exception e) {
                     logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());
                     logger.debug("Handling error stacktrace", e);
-                } finally {
-                    if(message != null) {
-                        try {
-                            consumer.acknowledge(message);
-                        } catch (PulsarClientException e) {
-                            logger.error("Unable to acknowledge message");
-                        }
-                        message = null;
-                    }
                 }
             }
         };
     }
+
+    private Runnable ack(Message<String> message) {
+        return () -> {
+            try {
+                consumer.acknowledge(message);
+            } catch (PulsarClientException e) {
+                throw new PousseCafeException("Unable to ack message", e);
+            }
+        };
+    }
+
+    private JacksonMessageAdapter messageAdapter = new JacksonMessageAdapter();
 
     private void closeIfConnected() {
         if(consumer.isConnected()) {

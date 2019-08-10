@@ -76,8 +76,8 @@ class MessageProcessingThread {
         while(true) {
             try {
                 UnitOfWork unitOfWork = workQueue.take();
-                messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
                 if(unitOfWork != STOP) {
+                    messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
                     unitOfWork.message.signalProcessed(threadId);
                 } else {
                     break;

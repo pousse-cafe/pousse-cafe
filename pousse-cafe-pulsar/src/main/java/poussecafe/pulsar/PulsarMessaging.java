@@ -3,7 +3,7 @@ package poussecafe.pulsar;
 import java.util.Objects;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
 
 public class PulsarMessaging extends Messaging {
 
@@ -22,15 +22,14 @@ public class PulsarMessaging extends Messaging {
     }
 
     @Override
-    public MessagingConnection connect(MessageConsumer messageConsumer) {
+    public MessagingConnection connect(MessageBroker messageBroker) {
         return new MessagingConnection.Builder()
                 .messaging(this)
                 .messageReceiver(new PulsarMessageReceiver.Builder()
-                        .messageConsumer(messageConsumer)
+                        .messageConsumer(messageBroker)
                         .configuration(configuration)
                         .build())
                 .messageSender(new PulsarMessageSender(configuration))
                 .build();
     }
-
 }

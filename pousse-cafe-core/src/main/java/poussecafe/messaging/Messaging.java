@@ -1,6 +1,6 @@
 package poussecafe.messaging;
 
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
 
 public abstract class Messaging {
 
@@ -15,5 +15,5 @@ public abstract class Messaging {
         return false;
     }
 
-    public abstract MessagingConnection connect(MessageConsumer messageConsumer);
+    public abstract MessagingConnection connect(MessageBroker messageBroker);
 }

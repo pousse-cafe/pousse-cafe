@@ -3,33 +3,23 @@ package poussecafe.messaging;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.FailFastException;
-import poussecafe.runtime.MessageConsumer;
-import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public abstract class MessageReceiver {
 
-    protected MessageReceiver(MessageAdapter messageAdapter,
-            MessageConsumer messageConsumer) {
-        Objects.requireNonNull(messageAdapter);
-        this.messageAdapter = messageAdapter;
-
-        Objects.requireNonNull(messageConsumer);
-        this.messageConsumer = messageConsumer;
+    protected MessageReceiver(MessageBroker messageBroker) {
+        Objects.requireNonNull(messageBroker);
+        this.messageBroker = messageBroker;
     }
 
-    private MessageAdapter messageAdapter;
+    private MessageBroker messageBroker;
 
-    private MessageConsumer messageConsumer;
-
-    protected void onMessage(Object receivedMessage) {
+    protected void onMessage(ReceivedMessage receivedMessage) {
         Objects.requireNonNull(receivedMessage);
-        Message message = messageAdapter.adaptSerializedMessage(receivedMessage);
         try {
-            messageConsumer.consumeMessage(new OriginalAndMarshaledMessage.Builder()
-                    .marshaled(receivedMessage)
-                    .original(message)
-                    .build());
+            messageBroker.dispatch(receivedMessage);
         } catch (FailFastException e) {
             interruptReception();
         }

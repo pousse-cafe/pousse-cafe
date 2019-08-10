@@ -1,9 +1,13 @@
 package poussecafe.messaging;
 
 import org.junit.Test;
-import poussecafe.runtime.MessageConsumer;
+import org.mockito.ArgumentCaptor;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -11,7 +15,7 @@ public abstract class MessageReceiverTest {
 
     private Message message;
 
-    private MessageConsumer messageConsumer;
+    private MessageBroker messageBroker;
 
     @Test
     public void receivedMessageIsConsumed() {
@@ -22,8 +26,8 @@ public abstract class MessageReceiverTest {
 
     private void givenMessageConsumer() {
         message = message();
-        messageConsumer = mock(MessageConsumer.class);
-        connection = messaging().connect(messageConsumer);
+        messageBroker = mock(MessageBroker.class);
+        connection = messaging().connect(messageBroker);
     }
 
     protected abstract Message message();
@@ -34,17 +38,25 @@ public abstract class MessageReceiverTest {
 
     private void whenConsumingMessage() {
         serializedMessage = serializedMessage(message);
-        connection.messageReceiver().onMessage(serializedMessage);
+        payload = new OriginalAndMarshaledMessage.Builder()
+                .original(message)
+                .marshaled(serializedMessage)
+                .build();
+        connection.messageReceiver().onMessage(new ReceivedMessage.Builder()
+                .payload(payload)
+                .acker(() -> {})
+                .build());
     }
 
     private Object serializedMessage;
 
     protected abstract Object serializedMessage(Message message);
 
+    private OriginalAndMarshaledMessage payload;
+
     private void thenListenerConsumes() {
-        verify(messageConsumer).consumeMessage(new OriginalAndMarshaledMessage.Builder()
-                .marshaled(serializedMessage)
-                .original(message)
-                .build());
+        ArgumentCaptor<ReceivedMessage> captor = ArgumentCaptor.forClass(ReceivedMessage.class);
+        verify(messageBroker).dispatch(captor.capture());
+        assertThat(captor.getValue().message(), is(payload));
     }
 }

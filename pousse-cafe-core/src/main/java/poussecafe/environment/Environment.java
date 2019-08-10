@@ -17,6 +17,7 @@ import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
+import poussecafe.processing.ListenersSet;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;
@@ -219,5 +220,9 @@ public class Environment {
 
     public boolean messageImplemented(Class<? extends Message> messageClass) {
         return messageImplementations.containsKey(messageClass);
+    }
+
+    public ListenersSet messageListenersSet() {
+        return new ListenersSet(messageListenerRegistry.messageListenersPool());
     }
 }

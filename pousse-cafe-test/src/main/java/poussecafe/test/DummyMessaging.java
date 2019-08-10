@@ -3,7 +3,7 @@ package poussecafe.test;
 import java.util.Objects;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
 
 public class DummyMessaging extends Messaging {
 
@@ -20,10 +20,10 @@ public class DummyMessaging extends Messaging {
     }
 
     @Override
-    public MessagingConnection connect(MessageConsumer messageConsumer) {
+    public MessagingConnection connect(MessageBroker messageBroker) {
         return new MessagingConnection.Builder()
                 .messaging(this)
-                .messageReceiver(new DummyMessageReceiver(messageConsumer))
+                .messageReceiver(new DummyMessageReceiver(messageBroker))
                 .messageSender(new DummyMessageSender())
                 .build();
     }

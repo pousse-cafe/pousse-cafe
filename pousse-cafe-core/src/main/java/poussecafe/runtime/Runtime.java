@@ -13,6 +13,8 @@ import poussecafe.environment.EnvironmentBuilder;
 import poussecafe.injector.Injector;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
+import poussecafe.processing.MessageBroker;
+import poussecafe.processing.MessageProcessingThreadPool;
 import poussecafe.storage.Storage;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -105,11 +107,13 @@ public class Runtime {
         }
 
         private void configureMessageConsumer() {
-            runtime.messageConsumer = new MessageConsumer.Builder()
+            runtime.messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
+                    .numberOfThreads(1)
                     .failFast(failFast)
-                    .environment(runtime.environment)
                     .messageConsumptionHandler(messageConsumptionHandler)
+                    .listenersSet(runtime.environment.messageListenersSet())
                     .build();
+            runtime.messageBroker = new MessageBroker(runtime.messageProcessingThreadPool);
         }
 
         private void configureMessageSenderLocator() {
@@ -155,7 +159,9 @@ public class Runtime {
 
     private TransactionRunnerLocator transactionRunnerLocator = new TransactionRunnerLocator();
 
-    private MessageConsumer messageConsumer;
+    private MessageBroker messageBroker;
+
+    private MessageProcessingThreadPool messageProcessingThreadPool;
 
     private MessageSenderLocator messageSenderLocator;
 
@@ -168,6 +174,7 @@ public class Runtime {
             return;
         }
         started = true;
+        messageProcessingThreadPool.start();
         startMessageHandling();
     }
 
@@ -187,7 +194,7 @@ public class Runtime {
 
     private void connectMessaging() {
         for(Messaging messaging : environment.messagings()) {
-            connections.add(messaging.connect(messageConsumer));
+            connections.add(messaging.connect(messageBroker));
         }
     }
 
@@ -197,6 +204,7 @@ public class Runtime {
         }
         started = false;
         stopMessageHandling();
+        messageProcessingThreadPool.stop();
     }
 
     private void stopMessageHandling() {

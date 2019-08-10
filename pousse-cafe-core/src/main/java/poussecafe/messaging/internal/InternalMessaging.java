@@ -2,7 +2,7 @@ package poussecafe.messaging.internal;
 
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
-import poussecafe.runtime.MessageConsumer;
+import poussecafe.processing.MessageBroker;
 
 public class InternalMessaging extends Messaging {
 
@@ -29,8 +29,8 @@ public class InternalMessaging extends Messaging {
     }
 
     @Override
-    public MessagingConnection connect(MessageConsumer messageConsumer) {
-        InternalMessagingQueue queue = new InternalMessagingQueue(messageConsumer);
+    public MessagingConnection connect(MessageBroker messageBroker) {
+        InternalMessagingQueue queue = new InternalMessagingQueue(messageBroker);
         return new MessagingConnection.Builder()
                 .messaging(this)
                 .messageSender(queue.messageSender())
