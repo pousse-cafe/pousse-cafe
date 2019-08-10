@@ -81,6 +81,13 @@ public class Runtime {
 
         private MessageConsumptionHandler messageConsumptionHandler = new DefaultConsumptionHandler();
 
+        public Builder processingThreads(int processingThreads) {
+            this.processingThreads = processingThreads;
+            return this;
+        }
+
+        private int processingThreads = 1;
+
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
             builtRuntime.start();
@@ -108,7 +115,7 @@ public class Runtime {
 
         private void configureMessageConsumer() {
             runtime.messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
-                    .numberOfThreads(1)
+                    .numberOfThreads(processingThreads)
                     .failFast(failFast)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .listenersSet(runtime.environment.messageListenersSet())
