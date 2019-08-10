@@ -38,7 +38,7 @@
     <license.organizationName>Pousse-Café</license.organizationName>
     <license.inceptionYear>2017</license.inceptionYear>
 
-    <slf4j.version>1.7.26</slf4j.version>
+    <slf4j.version>1.7.28</slf4j.version>
     <junit.version>4.12</junit.version>
     <mockito.version>3.0.0</mockito.version>
     <hamcrest.version>2.1</hamcrest.version>
