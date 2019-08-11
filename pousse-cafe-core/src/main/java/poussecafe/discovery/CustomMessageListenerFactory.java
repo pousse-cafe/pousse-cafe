@@ -1,6 +1,7 @@
 package poussecafe.discovery;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.function.Consumer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.environment.MessageListenerDefinition;
@@ -26,11 +27,16 @@ public class CustomMessageListenerFactory {
                     .declaringClassName(target.getClass().getName())
                     .build();
         }
+        Optional<String> collisionSpace = Optional.empty();
+        if(!annotation.collisionSpace().isBlank()) {
+            collisionSpace = Optional.of(annotation.collisionSpace());
+        }
         return new poussecafe.environment.MessageListener.Builder()
                 .id(listenerId)
                 .messageClass(messageClass)
                 .priority(MessageListenerPriority.CUSTOM)
                 .consumer(buildMessageConsumer(target, method))
+                .collisionSpace(collisionSpace)
                 .build();
     }
 

@@ -38,10 +38,15 @@ public class AggregateRootMessageListenerFactory {
         Class<? extends AggregateMessageListenerRunner> runnerClass = definition.runner()
                 .orElseThrow(() -> new DomainException(definition.method().toString() + " message listeners must have a runner"));
         AggregateMessageListenerRunner runner = ReflectionUtils.newInstance(runnerClass);
+        Optional<String> collisionSpace = definition.collisionSpace();
+        if(collisionSpace.isEmpty()) {
+            collisionSpace = Optional.of(definition.method().getDeclaringClass().getName());
+        }
         return definition.messageListenerBuilder()
                 .priority(MessageListenerPriority.AGGREGATE)
                 .consumer(buildAggregateRootMessageConsumer(definition, runner))
                 .runner(Optional.of(runner))
+                .collisionSpace(collisionSpace)
                 .build();
     }
 

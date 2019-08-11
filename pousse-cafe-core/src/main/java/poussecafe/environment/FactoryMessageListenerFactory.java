@@ -38,9 +38,14 @@ public class FactoryMessageListenerFactory {
 
     public MessageListener buildMessageListener(MessageListenerDefinition definition) {
         Factory target = environment.factory(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
+        Optional<String> collisionSpace = definition.collisionSpace();
+        if(collisionSpace.isEmpty()) {
+            collisionSpace = Optional.of(target.entityClass().getName());
+        }
         return definition.messageListenerBuilder()
                 .priority(MessageListenerPriority.FACTORY)
                 .consumer(buildFactoryListenerConsumer(target, definition))
+                .collisionSpace(collisionSpace)
                 .build();
     }
 

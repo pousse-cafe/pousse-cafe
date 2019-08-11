@@ -43,6 +43,11 @@ public class MessageListener implements Comparable<MessageListener> {
 
         private Integer priority;
 
+        public Builder collisionSpace(Optional<String> collisionSpace) {
+            listener.collisionSpace = collisionSpace;
+            return this;
+        }
+
         public MessageListener build() {
             Objects.requireNonNull(listener.id);
             Objects.requireNonNull(listener.messageClass);
@@ -51,6 +56,8 @@ public class MessageListener implements Comparable<MessageListener> {
 
             Objects.requireNonNull(priority);
             listener.priority = priority;
+
+            Objects.requireNonNull(listener.collisionSpace);
 
             return listener;
         }
@@ -90,6 +97,12 @@ public class MessageListener implements Comparable<MessageListener> {
 
     public int priority() {
         return priority;
+    }
+
+    private Optional<String> collisionSpace = Optional.empty();
+
+    public Optional<String> collisionSpace() {
+        return collisionSpace;
     }
 
     @Override

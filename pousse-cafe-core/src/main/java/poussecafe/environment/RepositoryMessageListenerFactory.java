@@ -2,6 +2,7 @@ package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
@@ -50,9 +51,14 @@ public class RepositoryMessageListenerFactory {
                 .rethrow(SameOperationException.class)
                 .rethrow(OptimisticLockingException.class)
                 .build();
+        Optional<String> collisionSpace = definition.collisionSpace();
+        if(collisionSpace.isEmpty()) {
+            collisionSpace = Optional.of(repository.entityClass().getName());
+        }
         return definition.messageListenerBuilder()
                 .priority(MessageListenerPriority.REPOSITORY)
                 .consumer(buildRepositoryMessageConsumer(entityClass, invoker))
+                .collisionSpace(collisionSpace)
                 .build();
     }
 

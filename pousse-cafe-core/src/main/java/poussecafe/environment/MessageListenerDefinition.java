@@ -52,6 +52,11 @@ public class MessageListenerDefinition {
             return this;
         }
 
+        public Builder collisionSpace(Optional<String> collisionSpace) {
+            definition.collisionSpace = collisionSpace;
+            return this;
+        }
+
         public MessageListenerDefinition build() {
             Objects.requireNonNull(definition.containerClass);
             Objects.requireNonNull(definition.method);
@@ -113,6 +118,12 @@ public class MessageListenerDefinition {
         }
     }
 
+    private Optional<String> collisionSpace = Optional.empty();
+
+    public Optional<String> collisionSpace() {
+        return collisionSpace;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
@@ -120,6 +131,7 @@ public class MessageListenerDefinition {
                 .append(method, other.method)
                 .append(customId, other.customId)
                 .append(runner, other.runner)
+                .append(collisionSpace, other.collisionSpace)
                 .build());
     }
 
@@ -130,6 +142,7 @@ public class MessageListenerDefinition {
                 .append(method)
                 .append(customId)
                 .append(runner)
+                .append(collisionSpace)
                 .build();
     }
 
