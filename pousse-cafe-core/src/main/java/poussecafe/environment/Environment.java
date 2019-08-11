@@ -32,11 +32,11 @@ public class Environment {
                 .environment(this)
                 .messageFactory(messageFactory)
                 .build();
-        messageListenerRegistry = new MessageListenerRegistry();
-        messageListenerRegistry.setEnvironment(this);
+        messageListenerRegistrar = new MessageListenerRegistrar();
+        messageListenerRegistrar.setEnvironment(this);
     }
 
-    MessageListenerRegistry messageListenerRegistry;
+    MessageListenerRegistrar messageListenerRegistrar;
 
     private EntityFactory entityFactory;
 
@@ -180,11 +180,11 @@ public class Environment {
     }
 
     public void registerMessageListener(MessageListener listener) {
-        messageListenerRegistry.registerListener(listener);
+        messageListenerRegistrar.registerListener(listener);
     }
 
     public Set<MessageListener> messageListenersOf(Class<? extends Message> messageClass) {
-        return messageListenerRegistry.getListeners(messageClass);
+        return messageListenerRegistrar.getListeners(messageClass);
     }
 
     public <F extends Factory<?, ?, ?>> Optional<F> factoryOf(Class<?> aggregateRootClass) {
@@ -211,7 +211,7 @@ public class Environment {
         }
         candidates.addAll(serviceInstances.values());
         candidates.addAll(processInstances.values());
-        candidates.addAll(messageListenerRegistry.allListeners().stream()
+        candidates.addAll(messageListenerRegistrar.allListeners().stream()
                 .filter(listener -> listener.runner().isPresent())
                 .map(listener -> listener.runner().get())
                 .collect(toList()));
@@ -223,6 +223,6 @@ public class Environment {
     }
 
     public ListenersSet messageListenersSet() {
-        return new ListenersSet(messageListenerRegistry.messageListenersPool());
+        return new ListenersSet(messageListenerRegistrar.messageListenersPool());
     }
 }

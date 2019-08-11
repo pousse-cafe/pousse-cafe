@@ -281,7 +281,7 @@ public class EnvironmentBuilder {
                 .build();
         for(MessageListenerDefinition definition : definedListeners) {
             MessageListener listener = messageListenerFactory.build(definition);
-            environment.messageListenerRegistry.registerListener(listener);
+            environment.messageListenerRegistrar.registerListener(listener);
         }
     }
 }

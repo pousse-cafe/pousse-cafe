@@ -58,11 +58,9 @@ public class Runtime {
         }
 
         public Builder failFast(boolean failFast) {
-            this.failFast = failFast;
+            runtime.failFast = failFast;
             return this;
         }
-
-        private boolean failFast;
 
         public Builder withInjectableService(Object service) {
             injectorBuilder.registerInjectableService(service);
@@ -75,11 +73,9 @@ public class Runtime {
         }
 
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            this.messageConsumptionHandler = messageConsumptionHandler;
+            runtime.messageConsumptionHandler = messageConsumptionHandler;
             return this;
         }
-
-        private MessageConsumptionHandler messageConsumptionHandler = new DefaultConsumptionHandler();
 
         public Builder processingThreads(int processingThreads) {
             this.processingThreads = processingThreads;
@@ -108,16 +104,16 @@ public class Runtime {
 
         private void configureContext() {
             configureMessageSenderLocator();
-            configureMessageConsumer();
+            configureMessageProcessing();
             configureMessageEmissionPolicies();
             runtime.injector = injectorBuilder.build();
         }
 
-        private void configureMessageConsumer() {
+        private void configureMessageProcessing() {
             runtime.messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
                     .numberOfThreads(processingThreads)
-                    .failFast(failFast)
-                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .failFast(runtime.failFast)
+                    .messageConsumptionHandler(runtime.messageConsumptionHandler)
                     .listenersSet(runtime.environment.messageListenersSet())
                     .build();
             runtime.messageBroker = new MessageBroker(runtime.messageProcessingThreadPool);
@@ -138,7 +134,7 @@ public class Runtime {
 
         private void injectDependencies() {
             runtime.environment.injectionCandidates().forEach(runtime.injector::injectDependenciesInto);
-            runtime.injector.injectDependenciesInto(messageConsumptionHandler);
+            runtime.injector.injectDependenciesInto(runtime.messageConsumptionHandler);
         }
     }
 
@@ -165,6 +161,10 @@ public class Runtime {
     }
 
     private TransactionRunnerLocator transactionRunnerLocator = new TransactionRunnerLocator();
+
+    private boolean failFast;
+
+    private MessageConsumptionHandler messageConsumptionHandler = new DefaultConsumptionHandler();
 
     private MessageBroker messageBroker;
 
@@ -226,6 +226,17 @@ public class Runtime {
                 .build();
         explorer.discoverListeners().stream()
             .forEach(environment::registerMessageListener);
+        if(started) {
+            logger.warn("New listeners registered, creating new processing thread pool. Consider registering all listeners before starting runtime to prevent this.");
+            var newThreadPool = new MessageProcessingThreadPool.Builder()
+                    .numberOfThreads(messageProcessingThreadPool.size())
+                    .failFast(failFast)
+                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .listenersSet(environment.messageListenersSet())
+                    .build();
+            messageBroker.replaceThreadPool(newThreadPool);
+            newThreadPool.start();
+        }
     }
 
     public List<MessagingConnection> messagingConnections() {

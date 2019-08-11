@@ -7,6 +7,10 @@ import java.util.Objects;
 public class MessageBroker {
 
     public MessageBroker(MessageProcessingThreadPool messageProcessingThreadsPool) {
+        setThreadPool(messageProcessingThreadsPool);
+    }
+
+    private void setThreadPool(MessageProcessingThreadPool messageProcessingThreadsPool) {
         Objects.requireNonNull(messageProcessingThreadsPool);
         if(messageProcessingThreadsPool.isEmpty()) {
             throw new IllegalArgumentException("Cannot instantiate broker with an empty pool");
@@ -47,4 +51,9 @@ public class MessageBroker {
     }
 
     private Map<Long, ReceivedMessageProcessingState> inProgressProcessingStates = new HashMap<>();
+
+    public synchronized void replaceThreadPool(MessageProcessingThreadPool newThreadPool) {
+        messageProcessingThreadsPool.stop();
+        messageProcessingThreadsPool = newThreadPool;
+    }
 }

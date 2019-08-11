@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import poussecafe.messaging.Message;
 import poussecafe.util.ReflectionUtils;
 
-public class MessageListenerRegistry {
+public class MessageListenerRegistrar {
 
     public void registerListener(MessageListener listener) {
         logger.debug("Registering listener {}", listener);

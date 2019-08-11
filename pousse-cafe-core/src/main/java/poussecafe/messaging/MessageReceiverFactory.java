@@ -1,8 +1,8 @@
 package poussecafe.messaging;
 
-import poussecafe.environment.MessageListenerRegistry;
+import poussecafe.environment.MessageListenerRegistrar;
 
 public interface MessageReceiverFactory {
 
-    MessageReceiver build(MessageListenerRegistry listenerRegistry);
+    MessageReceiver build(MessageListenerRegistrar listenerRegistry);
 }
