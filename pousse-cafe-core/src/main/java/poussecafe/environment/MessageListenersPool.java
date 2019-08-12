@@ -1,19 +1,18 @@
 package poussecafe.environment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
 import poussecafe.messaging.Message;
 
 import static java.util.Collections.emptySet;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class MessageListenersPool {
 
@@ -40,41 +39,84 @@ public class MessageListenersPool {
     }
 
     public Collection<MessageListener> allListeners() {
-        List<MessageListener> allListeners = new ArrayList<>();
-        listenersByMessageClass.values().stream().distinct().forEach(allListeners::addAll);
-        return allListeners;
+        return Collections.unmodifiableSet(messageClassesByListener.keySet());
     }
 
     public MessageListenersPool[] split(int expectedNumberOfPartitions) {
-        int totalListeners = messageClassesByListener.size();
-        int listenersPerPool = Math.max(totalListeners / expectedNumberOfPartitions, 1);
-        MessageListenersPool[] pools = new MessageListenersPool[expectedNumberOfPartitions];
-        Iterator<Entry<MessageListener, Set<Class<? extends Message>>>> listenersIterator = messageClassesByListener.entrySet().iterator();
-        for(int poolIndex = 0; poolIndex < pools.length; ++poolIndex) {
-            if(!listenersIterator.hasNext()) {
-                break;
-            }
+        if(expectedNumberOfPartitions < 1) {
+            throw new IllegalArgumentException("Number of partitions must be greater than 0");
+        }
 
-            pools[poolIndex] = new MessageListenersPool();
-            for(int listenersInCurrentPool = 0; listenersInCurrentPool < listenersPerPool; ++listenersInCurrentPool) {
-                if(!listenersIterator.hasNext()) {
-                    break;
-                }
+        Map<String, Set<MessageListener>> buckets = buildBuckets();
+        logBuckets(buckets);
 
-                Entry<MessageListener, Set<Class<? extends Message>>> entry = listenersIterator.next();
-                MessageListener listener = entry.getKey();
-                Set<Class<? extends Message>> messages = entry.getValue();
-                for(Class<? extends Message> messageClass : messages) {
-                    pools[poolIndex].registerListenerForMessageClass(listener, messageClass);
-                }
-            }
+        MessageListenersPool[] pools = buildEmptyPools(expectedNumberOfPartitions);
+        for(Entry<String, Set<MessageListener>> bucket : buckets.entrySet()) {
+            MessageListenersPool pool = findLeastLoadedPool(pools);
+            registerBucket(pool, bucket);
         }
         return pools;
     }
 
+    private Logger logger = getLogger(getClass());
+
+    private Map<String, Set<MessageListener>> buildBuckets() {
+        Map<String, Set<MessageListener>> buckets = new HashMap<>();
+        for(MessageListener listener : messageClassesByListener.keySet()) {
+            Set<MessageListener> bucket =
+                    buckets.computeIfAbsent(listener.collisionSpace().orElse("default"), key -> new HashSet<>());
+            bucket.add(listener);
+        }
+        return buckets;
+    }
+
     private Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener = new HashMap<>();
+
+    private void logBuckets(Map<String, Set<MessageListener>> buckets) {
+        logger.info("Detected {} buckets", buckets.size());
+        if(logger.isDebugEnabled()) {
+            for(Entry<String, Set<MessageListener>> bucket : buckets.entrySet()) {
+                logger.debug("- {}: {} listeners", bucket.getKey(), bucket.getValue().size());
+            }
+        }
+    }
+
+    private MessageListenersPool[] buildEmptyPools(int expectedNumberOfPartitions) {
+        MessageListenersPool[] pools = new MessageListenersPool[expectedNumberOfPartitions];
+        for(int i = 0; i < pools.length; ++i) {
+            pools[i] = new MessageListenersPool();
+        }
+        return pools;
+    }
+
+    private MessageListenersPool findLeastLoadedPool(MessageListenersPool[] pools) {
+        MessageListenersPool leastLoadedPool = pools[0];
+        int lowestLoad = leastLoadedPool.messageClassesByListener.size();
+        for(int i = 1; i < pools.length; ++i) {
+            MessageListenersPool candidatePool = pools[i];
+            int candidateLoad = candidatePool.messageClassesByListener.size();
+            if(candidateLoad < lowestLoad) {
+                leastLoadedPool = candidatePool;
+                lowestLoad = candidateLoad;
+            }
+        }
+        return leastLoadedPool;
+    }
+
+    private void registerBucket(MessageListenersPool pool, Entry<String, Set<MessageListener>> bucket) {
+        for(MessageListener listener : bucket.getValue()) {
+            Set<Class<? extends Message>> listenerMessages = messageClassesByListener.get(listener);
+            for(Class<? extends Message> listenerMessage : listenerMessages) {
+                pool.registerListenerForMessageClass(listener, listenerMessage);
+            }
+        }
+    }
 
     public boolean contains(MessageListener listener) {
         return messageClassesByListener.keySet().contains(listener);
+    }
+
+    public int countListeners() {
+        return messageClassesByListener.size();
     }
 }
