@@ -56,6 +56,7 @@ public class MessageProcessorTest {
         when(partitionListenersSet.messageListenersOf(any(Class.class))).thenReturn(listeners);
         when(listenersPartition.partitionListenersSet()).thenReturn(partitionListenersSet);
         return new MessageProcessor.Builder()
+                .id("id")
                 .listenersPartition(listenersPartition)
                 .messageConsumptionHandler(new DefaultConsumptionHandler());
     }

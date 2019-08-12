@@ -3,7 +3,6 @@ package poussecafe.processing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.environment.MessageListener;
@@ -22,6 +21,11 @@ class MessageProcessor {
 
         private MessageProcessor processor = new MessageProcessor();
 
+        public Builder id(String id) {
+            processor.consumptionIdGenerator = new ConsumptionIdGenerator(id);
+            return this;
+        }
+
         public Builder listenersPartition(ListenersSetPartition listenersPartition) {
             processor.listenersPartition = listenersPartition;
             return this;
@@ -38,8 +42,10 @@ class MessageProcessor {
         }
 
         public MessageProcessor build() {
+            Objects.requireNonNull(processor.consumptionIdGenerator);
             Objects.requireNonNull(processor.listenersPartition);
             Objects.requireNonNull(processor.messageConsumptionHandler);
+            processor.logger = LoggerFactory.getLogger(MessageProcessor.class.getName() + "_" + processor.consumptionIdGenerator.prefix());
             return processor;
         }
     }
@@ -66,7 +72,7 @@ class MessageProcessor {
         logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
-    private ConsumptionIdGenerator consumptionIdGenerator = new ConsumptionIdGenerator(UUID.randomUUID().toString());
+    private ConsumptionIdGenerator consumptionIdGenerator;
 
     private ListenersSetPartition listenersPartition;
 
@@ -96,7 +102,7 @@ class MessageProcessor {
 
     private static final int MAX_RETRIES = 10;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger;
 
     private boolean consumeMessageOrRetry(String consumptionId,
             OriginalAndMarshaledMessage receivedMessage,

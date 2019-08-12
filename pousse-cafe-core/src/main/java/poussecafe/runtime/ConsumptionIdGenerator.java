@@ -16,4 +16,8 @@ public class ConsumptionIdGenerator {
         builder.append(sequenceNumber++);
         return builder.toString();
     }
+
+    public String prefix() {
+        return prefix;
+    }
 }

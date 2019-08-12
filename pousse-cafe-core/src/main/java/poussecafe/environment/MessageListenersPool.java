@@ -52,7 +52,9 @@ public class MessageListenersPool {
 
         MessageListenersPool[] pools = buildEmptyPools(expectedNumberOfPartitions);
         for(Entry<String, Set<MessageListener>> bucket : buckets.entrySet()) {
-            MessageListenersPool pool = findLeastLoadedPool(pools);
+            int poolId = findLeastLoadedPool(pools);
+            MessageListenersPool pool = pools[poolId];
+            logger.debug("Assigning bucket {} to pool {}", bucket.getKey(), poolId);
             registerBucket(pool, bucket);
         }
         return pools;
@@ -73,10 +75,10 @@ public class MessageListenersPool {
     private Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener = new HashMap<>();
 
     private void logBuckets(Map<String, Set<MessageListener>> buckets) {
-        logger.info("Detected {} buckets", buckets.size());
+        logger.debug("Detected {} buckets", buckets.size());
         if(logger.isDebugEnabled()) {
             for(Entry<String, Set<MessageListener>> bucket : buckets.entrySet()) {
-                logger.debug("- {}: {} listeners", bucket.getKey(), bucket.getValue().size());
+                logger.debug("    {}: {} listeners", bucket.getKey(), bucket.getValue().size());
             }
         }
     }
@@ -89,14 +91,14 @@ public class MessageListenersPool {
         return pools;
     }
 
-    private MessageListenersPool findLeastLoadedPool(MessageListenersPool[] pools) {
-        MessageListenersPool leastLoadedPool = pools[0];
-        int lowestLoad = leastLoadedPool.messageClassesByListener.size();
+    private int findLeastLoadedPool(MessageListenersPool[] pools) {
+        int leastLoadedPool = 0;
+        int lowestLoad = pools[0].messageClassesByListener.size();
         for(int i = 1; i < pools.length; ++i) {
             MessageListenersPool candidatePool = pools[i];
             int candidateLoad = candidatePool.messageClassesByListener.size();
             if(candidateLoad < lowestLoad) {
-                leastLoadedPool = candidatePool;
+                leastLoadedPool = i;
                 lowestLoad = candidateLoad;
             }
         }

@@ -176,6 +176,7 @@ public class Runtime {
     private boolean started;
 
     private void configureMessageProcessing() {
+        logger.info("Creating message processing pool with {} threads...", processingThreads);
         messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
                 .numberOfThreads(processingThreads)
                 .failFast(failFast)

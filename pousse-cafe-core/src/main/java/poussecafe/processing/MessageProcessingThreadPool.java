@@ -48,6 +48,7 @@ public class MessageProcessingThreadPool {
             for(int i = 0; i < numberOfThreads; ++i) {
                 ListenersSetPartition listenersPartition = partitions[i];
                 MessageProcessor processor = new MessageProcessor.Builder()
+                        .id(Integer.toString(i))
                         .failFast(failFast)
                         .messageConsumptionHandler(messageConsumptionHandler)
                         .listenersPartition(listenersPartition)
