@@ -1,9 +1,9 @@
 package poussecafe.domain;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.context.TestDomainEvent3;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
+import poussecafe.runtime.TestDomainEvent3;
 
 @Aggregate(
   factory = SimpleAggregateFactory.class,

@@ -1,8 +1,8 @@
 package poussecafe.domain;
 
 import java.util.Set;
-import poussecafe.context.TestDomainEvent3;
 import poussecafe.discovery.DefaultAggregateMessageListenerRunner;
+import poussecafe.runtime.TestDomainEvent3;
 
 import static poussecafe.collection.Collections.asSet;
 

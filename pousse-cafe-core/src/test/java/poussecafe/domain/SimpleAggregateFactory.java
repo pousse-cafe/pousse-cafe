@@ -1,9 +1,9 @@
 package poussecafe.domain;
 
 import java.util.List;
-import poussecafe.context.TestDomainEvent;
-import poussecafe.context.TestDomainEvent2;
 import poussecafe.discovery.MessageListener;
+import poussecafe.runtime.TestDomainEvent;
+import poussecafe.runtime.TestDomainEvent2;
 
 import static java.util.Arrays.asList;
 

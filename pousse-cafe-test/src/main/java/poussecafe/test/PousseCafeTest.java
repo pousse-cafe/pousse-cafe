@@ -20,6 +20,7 @@ public abstract class PousseCafeTest {
         Runtime runtime = new Runtime.Builder()
             .failFast(true)
             .withBoundedContexts(boundedContexts())
+            .processingThreads(2)
             .build();
         runtime.injector().injectDependenciesInto(this);
         runtime.registerListenersOf(this);

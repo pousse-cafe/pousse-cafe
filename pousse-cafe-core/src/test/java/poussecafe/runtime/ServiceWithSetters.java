@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 public class ServiceWithSetters implements DependencyAware {
 

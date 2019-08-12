@@ -1,7 +1,7 @@
 package poussecafe.domain;
 
-import poussecafe.context.TestDomainEvent4;
 import poussecafe.discovery.MessageListener;
+import poussecafe.runtime.TestDomainEvent4;
 
 public class SimpleAggregateRepository extends Repository<SimpleAggregate, SimpleAggregateId, SimpleAggregate.Attributes> {
 

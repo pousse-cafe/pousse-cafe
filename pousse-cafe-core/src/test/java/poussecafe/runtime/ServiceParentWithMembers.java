@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 public abstract class ServiceParentWithMembers implements DependencyAware {
 

@@ -78,11 +78,9 @@ public class Runtime {
         }
 
         public Builder processingThreads(int processingThreads) {
-            this.processingThreads = processingThreads;
+            runtime.processingThreads = processingThreads;
             return this;
         }
-
-        private int processingThreads = 1;
 
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
@@ -104,19 +102,8 @@ public class Runtime {
 
         private void configureContext() {
             configureMessageSenderLocator();
-            configureMessageProcessing();
             configureMessageEmissionPolicies();
             runtime.injector = injectorBuilder.build();
-        }
-
-        private void configureMessageProcessing() {
-            runtime.messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
-                    .numberOfThreads(processingThreads)
-                    .failFast(runtime.failFast)
-                    .messageConsumptionHandler(runtime.messageConsumptionHandler)
-                    .listenersSet(runtime.environment.messageListenersSet())
-                    .build();
-            runtime.messageBroker = new MessageBroker(runtime.messageProcessingThreadPool);
         }
 
         private void configureMessageSenderLocator() {
@@ -181,11 +168,24 @@ public class Runtime {
             return;
         }
         started = true;
+        configureMessageProcessing();
         messageProcessingThreadPool.start();
         startMessageHandling();
     }
 
     private boolean started;
+
+    private void configureMessageProcessing() {
+        messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
+                .numberOfThreads(processingThreads)
+                .failFast(failFast)
+                .messageConsumptionHandler(messageConsumptionHandler)
+                .listenersSet(environment.messageListenersSet())
+                .build();
+        messageBroker = new MessageBroker(messageProcessingThreadPool);
+    }
+
+    private int processingThreads = 1;
 
     private List<MessagingConnection> connections = new ArrayList<>();
 
@@ -229,7 +229,7 @@ public class Runtime {
         if(started) {
             logger.warn("New listeners registered, creating new processing thread pool. Consider registering all listeners before starting runtime to prevent this.");
             var newThreadPool = new MessageProcessingThreadPool.Builder()
-                    .numberOfThreads(messageProcessingThreadPool.size())
+                    .numberOfThreads(processingThreads)
                     .failFast(failFast)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .listenersSet(environment.messageListenersSet())
@@ -257,5 +257,9 @@ public class Runtime {
 
     public void emitDomainEvent(DomainEvent event) {
         messageSenderLocator.locate(event.getClass()).sendMessage(event);
+    }
+
+    boolean hasThreadPool() {
+        return messageProcessingThreadPool != null;
     }
 }

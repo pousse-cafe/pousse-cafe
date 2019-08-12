@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +20,6 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessaging;
-import poussecafe.runtime.Runtime;
 import poussecafe.storage.internal.InternalStorage;
 import poussecafe.util.ReflectionUtils;
 
@@ -152,5 +151,27 @@ public class RuntimeTest {
         for(MessagingConnection connection : runtime.messagingConnections()) {
             assertTrue(connection.messageReceiver().isStarted());
         }
+    }
+
+    @Test
+    public void threadPoolNotCreatedBeforeStart() {
+        givenBoundedContext();
+        whenCreatingRuntime();
+        thenHasThreadPool(false);
+    }
+
+    private void thenHasThreadPool(boolean hasThreadPool) {
+        assertTrue(runtime.hasThreadPool() == hasThreadPool);
+    }
+
+    @Test
+    public void threadPoolCreatedOnStart() {
+        givenBoundedContext();
+        whenCreatingAndStartingRuntime();
+        thenHasThreadPool(true);
+    }
+
+    private void whenCreatingAndStartingRuntime() {
+        runtime = new Runtime.Builder().withBoundedContext(boundedContext).buildAndStart();
     }
 }

@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;

@@ -83,9 +83,18 @@ class ClassPathExplorer {
 
     public List<Class<? extends Message>> discoverMessages() {
         return getSubTypesOf(Message.class)
-                .filter(Class::isInterface)
+                .filter(this::isMessageDefinition)
                 .filter(this::hasNotAbstractMessageAnnotation)
                 .collect(toList());
+    }
+
+    private boolean isMessageDefinition(Class<? extends Message> messageClass) {
+        MessageImplementation annotation = messageClass.getAnnotation(MessageImplementation.class);
+        if(annotation == null) {
+            return messageClass.isInterface();
+        } else {
+            return annotation.message() == messageClass;
+        }
     }
 
     private <C> Stream<Class<? extends C>> getSubTypesOf(Class<C> type) {

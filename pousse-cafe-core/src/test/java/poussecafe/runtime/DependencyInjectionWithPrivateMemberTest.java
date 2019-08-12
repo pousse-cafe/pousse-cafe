@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 import org.junit.Test;
 

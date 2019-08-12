@@ -1,8 +1,7 @@
 package poussecafe.messaging.internal;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
@@ -33,13 +32,12 @@ public class InternalMessagingQueue {
             receptionThread = new Thread(() -> {
                 while (true) {
                     try {
-                        available.acquire();
-                        mutex.acquire();
-                        Object polledObject = queue.poll();
+                        Object polledObject = queue.take();
                         if (STOP.equals(polledObject)) {
                             return;
                         } else {
                             messagesBeingProcessed.updateAndGet(value -> value + 1);
+                            queuedMessages.updateAndGet(value -> value - 1);
                             Message message = messageAdapter.adaptSerializedMessage(polledObject);
                             onMessage(new ReceivedMessage.Builder()
                                     .payload(new OriginalAndMarshaledMessage.Builder()
@@ -53,9 +51,6 @@ public class InternalMessagingQueue {
                         Thread.currentThread().interrupt();
                         interrupted = true;
                         return;
-                    } finally {
-                        // Catch-all, thread must continue to run until explicitly stopped
-                        mutex.release();
                     }
                 }
             });
@@ -73,7 +68,6 @@ public class InternalMessagingQueue {
         @Override
         protected void actuallyStopReceiving() {
             queue.add(STOP);
-            available.release();
         }
 
         private static final String STOP = "stop";
@@ -85,7 +79,6 @@ public class InternalMessagingQueue {
         @Override
         protected void actuallyInterruptReception() {
             receptionThread.interrupt();
-            mutex.release();
         }
 
         public boolean isInterrupted() {
@@ -93,11 +86,7 @@ public class InternalMessagingQueue {
         }
     }
 
-    private Semaphore available = new Semaphore(0);
-
-    private Semaphore mutex = new Semaphore(1);
-
-    private Queue<Object> queue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
     private InternalMessageReceiver messageReceiver;
 
@@ -113,28 +102,28 @@ public class InternalMessagingQueue {
 
         @Override
         protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
-            queue.add(marshalledMessage.marshaled());
-            available.release();
+            queuedMessages.updateAndGet(value -> value + 1);
+            try {
+                queue.put(marshalledMessage.marshaled());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException();
+            }
         }
     }
 
     private InternalMessageSender messageSender;
 
+    private AtomicReference<Integer> queuedMessages = new AtomicReference<>(0);
+
     public MessageSender messageSender() {
         return messageSender;
     }
 
-    public void waitUntilEmptyOrInterrupted()
-            throws InterruptedException {
+    public void waitUntilEmptyOrInterrupted() {
         boolean messagesQueued;
         do {
-            mutex.acquire();
-            if(messageReceiver.isInterrupted()) {
-                mutex.release();
-                return;
-            }
-            messagesQueued = !queue.isEmpty() || messageReceiver.messagesBeingProcessed.get() > 0;
-            mutex.release();
+            messagesQueued = queuedMessages.get() > 0 || messageReceiver.messagesBeingProcessed.get() > 0;
         } while (messagesQueued);
     }
 }

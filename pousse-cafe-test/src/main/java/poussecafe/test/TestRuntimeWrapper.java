@@ -71,17 +71,12 @@ public class TestRuntimeWrapper {
     }
 
     public void waitUntilEndOfMessageProcessing() {
-        try {
-            for(MessagingConnection connection : runtime.messagingConnections()) {
-                MessageReceiver receiver = connection.messageReceiver();
-                if(receiver instanceof InternalMessageReceiver) {
-                    InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
-                    internalMessageReceiver.queue().waitUntilEmptyOrInterrupted();
-                }
+        for(MessagingConnection connection : runtime.messagingConnections()) {
+            MessageReceiver receiver = connection.messageReceiver();
+            if(receiver instanceof InternalMessageReceiver) {
+                InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
+                internalMessageReceiver.queue().waitUntilEmptyOrInterrupted();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new PousseCafeException(e);
         }
     }
 

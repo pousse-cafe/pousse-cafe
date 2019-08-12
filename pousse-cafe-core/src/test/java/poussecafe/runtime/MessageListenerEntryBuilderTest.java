@@ -1,4 +1,4 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
 import java.lang.reflect.Method;
 import org.junit.Test;

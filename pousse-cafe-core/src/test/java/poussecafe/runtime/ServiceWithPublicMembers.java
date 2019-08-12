@@ -1,6 +1,8 @@
-package poussecafe.context;
+package poussecafe.runtime;
 
-public class ServiceChildWithMembers extends ServiceParentWithMembers {
+public class ServiceWithPublicMembers implements DependencyAware {
+
+    public Service1 service1;
 
     public Service2 service2;
 
