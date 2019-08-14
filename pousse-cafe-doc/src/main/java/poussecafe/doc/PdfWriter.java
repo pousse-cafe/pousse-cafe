@@ -18,7 +18,7 @@ public class PdfWriter {
             ITextRenderer pdfRenderer = new ITextRenderer();
             pdfRenderer.setDocument(new File(configuration.outputDirectory(), "index.html"));
             pdfRenderer.layout();
-            File pdfFile = new File(configuration.outputDirectory(), "domain.pdf");
+            File pdfFile = new File(configuration.outputDirectory(), configuration.pdfFileName());
             FileOutputStream pdfOutputStream = new FileOutputStream(pdfFile);
             pdfRenderer.createPDF(pdfOutputStream);
             pdfRenderer.finishPDF();

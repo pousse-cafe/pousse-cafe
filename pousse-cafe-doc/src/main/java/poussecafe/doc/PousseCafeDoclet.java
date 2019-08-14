@@ -18,6 +18,7 @@ import poussecafe.doc.options.CustomFdpExecutableOption;
 import poussecafe.doc.options.DomainOption;
 import poussecafe.doc.options.IncludeGeneratedDateOption;
 import poussecafe.doc.options.OutputPathOption;
+import poussecafe.doc.options.PdfFileNameOption;
 import poussecafe.doc.options.SourcePathOption;
 import poussecafe.doc.options.VersionOption;
 import poussecafe.exception.PousseCafeException;
@@ -55,6 +56,7 @@ public class PousseCafeDoclet implements Doclet {
         supportedOptions.add(new SourcePathOption(configBuilder));
         supportedOptions.add(new CustomDotExecutableOption(configBuilder));
         supportedOptions.add(new CustomFdpExecutableOption(configBuilder));
+        supportedOptions.add(new PdfFileNameOption(configBuilder));
         return supportedOptions;
     }
 

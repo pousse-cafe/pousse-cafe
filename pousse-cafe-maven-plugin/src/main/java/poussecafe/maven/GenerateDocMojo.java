@@ -38,6 +38,7 @@ public class GenerateDocMojo extends AbstractMojo {
                 .version(version)
                 .sourcePath(sourcePath)
                 .outputDirectory(outputDirectory.getAbsolutePath())
+                .pdfFileName(pdfFileName)
                 .basePackage(basePackage)
                 .classPath(classPath)
                 .customDotExecutable(Optional.ofNullable(customDotExecutable))
@@ -91,6 +92,9 @@ public class GenerateDocMojo extends AbstractMojo {
 
     @Parameter(property = "customFdpExecutable")
     private String customFdpExecutable;
+
+    @Parameter(defaultValue = "${project.artifactId}-${project.version}.pdf", property = "pdfFileName", required = true)
+    private String pdfFileName;
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;

@@ -34,6 +34,7 @@ public class PousseCafeDocletTest {
                 .version("Test")
                 .sourcePath(asList(System.getProperty("user.dir") + "/src/main/java/"))
                 .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc/")
+                .pdfFileName("domain.pdf")
                 .basePackage("poussecafe.doc")
                 .includeGenerationDate(false)
                 .customDotExecutable(Optional.of("dot"))

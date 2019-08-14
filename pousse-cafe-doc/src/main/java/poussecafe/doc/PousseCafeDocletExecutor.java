@@ -51,6 +51,7 @@ public class PousseCafeDocletExecutor {
 
     private void addDocletOptionsTo(List<String> javadocArgs) {
         javadocArgs.add("-output"); javadocArgs.add(configuration.outputDirectory());
+        javadocArgs.add("-pdfFile"); javadocArgs.add(configuration.pdfFileName());
         javadocArgs.add("-domain"); javadocArgs.add(configuration.domainName());
         javadocArgs.add("-version"); javadocArgs.add(configuration.version());
         javadocArgs.add("-basePackage"); javadocArgs.add(configuration.basePackage());

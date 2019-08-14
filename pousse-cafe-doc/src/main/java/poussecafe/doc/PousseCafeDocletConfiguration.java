@@ -78,6 +78,11 @@ public class PousseCafeDocletConfiguration {
             return this;
         }
 
+        public Builder pdfFileName(String pdfFileName) {
+            configuration.pdfFileName = pdfFileName;
+            return this;
+        }
+
         public PousseCafeDocletConfiguration build() {
             Objects.requireNonNull(configuration.domainName);
             Objects.requireNonNull(configuration.version);
@@ -94,6 +99,7 @@ public class PousseCafeDocletConfiguration {
             }
             Objects.requireNonNull(configuration.customDotExecutable);
             Objects.requireNonNull(configuration.customFdpExecutable);
+            Objects.requireNonNull(configuration.pdfFileName);
             return configuration;
         }
     }
@@ -179,4 +185,10 @@ public class PousseCafeDocletConfiguration {
     public Optional<String> customFdpExecutable() {
         return customFdpExecutable;
     }
+
+    public String pdfFileName() {
+        return pdfFileName;
+    }
+
+    private String pdfFileName;
 }
