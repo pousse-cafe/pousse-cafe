@@ -94,6 +94,7 @@ public class HtmlWriter {
 
         view.put("aggregates", boundedContext.aggregates()
                 .stream()
+                .filter(aggregate -> !aggregate.documentation().attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .sorted(this::compareAggregates)
                 .map(this::adapt)
                 .collect(toList()));
@@ -101,6 +102,7 @@ public class HtmlWriter {
         view.put("services", serviceDocRepository
                 .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
                 .stream()
+                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .sorted(this::compareServices)
                 .map(this::adapt)
                 .collect(toList()));
@@ -108,6 +110,7 @@ public class HtmlWriter {
         view.put("domainProcesses", domainProcessDocRepository
                 .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())
                 .stream()
+                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .sorted(this::compareDomainProcesses)
                 .map(this::adapt)
                 .collect(toList()));
@@ -134,11 +137,13 @@ public class HtmlWriter {
         view.put("description", aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().description());
 
         view.put("entities", aggregate.entities().stream()
+                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .sorted(this::compareEntities)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("valueObjects", aggregate.valueObjects().stream()
+                .filter(doc -> !doc.attributes().boundedContextComponentDoc().value().componentDoc().trivial())
                 .sorted(this::compareValueObjects)
                 .map(this::adapt)
                 .collect(toList()));

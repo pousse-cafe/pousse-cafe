@@ -3,6 +3,9 @@ package poussecafe.doc.model.entitydoc;
 import poussecafe.domain.ValueObject;
 import poussecafe.util.StringId;
 
+/**
+ * @trivial
+ */
 public class EntityDocId extends StringId implements ValueObject {
 
     public static EntityDocId ofClassName(String className) {
