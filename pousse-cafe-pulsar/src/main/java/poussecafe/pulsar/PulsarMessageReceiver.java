@@ -6,7 +6,6 @@ import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
-import org.apache.pulsar.client.api.SubscriptionType;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
@@ -54,7 +53,7 @@ public class PulsarMessageReceiver extends MessageReceiver {
                     .build();
             consumer = client.newConsumer(Schema.STRING)
                     .topics(configuration.topics())
-                    .subscriptionType(SubscriptionType.Shared)
+                    .subscriptionType(configuration.subscriptionType())
                     .subscriptionName(configuration.subscriptionName())
                     .subscribe();
         } catch (PulsarClientException e) {

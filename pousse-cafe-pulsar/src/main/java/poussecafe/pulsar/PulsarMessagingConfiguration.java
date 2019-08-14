@@ -2,6 +2,7 @@ package poussecafe.pulsar;
 
 import java.util.List;
 import java.util.Objects;
+import org.apache.pulsar.client.api.SubscriptionType;
 import poussecafe.exception.PousseCafeException;
 
 public class PulsarMessagingConfiguration {
@@ -35,6 +36,11 @@ public class PulsarMessagingConfiguration {
             return this;
         }
 
+        public Builder subscriptionType(SubscriptionType subscriptionType) {
+            configuration.subscriptionType = subscriptionType;
+            return this;
+        }
+
         public PulsarMessagingConfiguration build() {
             Objects.requireNonNull(configuration.brokerUrl);
             Objects.requireNonNull(configuration.subscriptionTopics);
@@ -44,6 +50,7 @@ public class PulsarMessagingConfiguration {
             Objects.requireNonNull(configuration.subscriptionName);
             Objects.requireNonNull(configuration.defaultPublicationTopic);
             Objects.requireNonNull(configuration.publicationTopicChooser);
+            Objects.requireNonNull(configuration.subscriptionType);
             return configuration;
         }
     }
@@ -81,4 +88,10 @@ public class PulsarMessagingConfiguration {
     public PublicationTopicChooser publicationTopicChooser() {
         return publicationTopicChooser;
     }
+
+    public SubscriptionType subscriptionType() {
+        return subscriptionType;
+    }
+
+    private SubscriptionType subscriptionType = SubscriptionType.Shared;
 }
