@@ -5,17 +5,17 @@ import java.util.List;
 import org.junit.Test;
 import poussecafe.discovery.BoundedContextConfigurer;
 import poussecafe.discovery.MessageListener;
-import poussecafe.environment.BoundedContext;
+import poussecafe.runtime.Runtime.Builder;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class PousseCafeTestTest extends PousseCafeTest {
 
     @Override
-    protected List<BoundedContext> boundedContexts() {
-        return asList(new BoundedContextConfigurer.Builder()
+    protected Builder runtimeBuilder() {
+        return super.runtimeBuilder()
+                .withBoundedContext(new BoundedContextConfigurer.Builder()
                 .packagePrefix("poussecafe.test")
                 .build()
                 .defineAndImplementDefault()
@@ -26,7 +26,7 @@ public class PousseCafeTestTest extends PousseCafeTest {
     public void waitUntilEmptyOrInterruptedReturnsTrueWhenAllMessagesIssued() {
         givenMessages();
         whenEmitted();
-        thenAllConsumedAfterWait();
+        thenAllRecordedAfterWait();
     }
 
     private void givenMessages() {
@@ -50,7 +50,7 @@ public class PousseCafeTestTest extends PousseCafeTest {
 
     private List<SampleMessage> recordedMessages = new ArrayList<>();
 
-    private void thenAllConsumedAfterWait() {
+    private void thenAllRecordedAfterWait() {
         waitUntilAllMessageQueuesEmpty();
         assertThat(recordedMessages.size(), is(messages.size()));
     }

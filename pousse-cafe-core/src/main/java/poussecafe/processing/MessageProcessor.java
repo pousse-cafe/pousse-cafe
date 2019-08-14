@@ -64,10 +64,12 @@ class MessageProcessor {
         List<MessageListener> listeners = listenersPartition.partitionListenersSet().messageListenersOf(message.original().getClass()).stream()
                 .sorted()
                 .collect(toList());
-        logger.debug("  Found {} listeners", listeners.size());
-        List<MessageListener> toRetryInitially = consumeMessageOrRetryListeners(message, consumptionId, listeners);
-        if(!toRetryInitially.isEmpty()) {
-            retryConsumption(message, consumptionId, toRetryInitially);
+        if(!listeners.isEmpty()) {
+            logger.debug("  Found {} listeners", listeners.size());
+            List<MessageListener> toRetryInitially = consumeMessageOrRetryListeners(message, consumptionId, listeners);
+            if(!toRetryInitially.isEmpty()) {
+                retryConsumption(message, consumptionId, toRetryInitially);
+            }
         }
         logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }

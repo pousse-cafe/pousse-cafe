@@ -11,24 +11,35 @@ import poussecafe.environment.BoundedContext;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
+import static java.util.Collections.emptyList;
+
 public abstract class PousseCafeTest {
 
     private TestRuntimeWrapper wrapper;
 
     @Before
     public void configureContext() {
-        Runtime runtime = new Runtime.Builder()
-            .failFast(true)
-            .withBoundedContexts(boundedContexts())
-            .processingThreads(2)
-            .build();
+        Runtime runtime = runtimeBuilder().build();
         runtime.injector().injectDependenciesInto(this);
         runtime.registerListenersOf(this);
         runtime.start();
         wrapper = new TestRuntimeWrapper(runtime);
     }
 
-    protected abstract List<BoundedContext> boundedContexts();
+    protected Runtime.Builder runtimeBuilder() {
+        return new Runtime.Builder()
+                .failFast(true)
+                .withBoundedContexts(boundedContexts()) // for backward compatibility
+                .processingThreads(2);
+    }
+
+    /**
+     * @deprecated use runtimeBuilder() and register bounded contexts directly.
+     */
+    @Deprecated(since = "0.9.0", forRemoval = true)
+    protected List<BoundedContext> boundedContexts() {
+        return emptyList();
+    }
 
     protected Runtime testRuntime() {
         return wrapper.runtime();
@@ -37,7 +48,7 @@ public abstract class PousseCafeTest {
     /**
      * @deprecated use getOptional instead
      */
-    @Deprecated(since = "0.8.0")
+    @Deprecated(since = "0.8.0", forRemoval = true)
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K id) {
         return wrapper.find(entityClass, id);
