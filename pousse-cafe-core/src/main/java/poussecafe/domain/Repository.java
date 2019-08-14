@@ -24,6 +24,12 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         return entityClass;
     }
 
+    public void setMessageCollectionValidator(MessageCollectionValidator messageCollectionValidator) {
+        this.messageCollectionValidator = messageCollectionValidator;
+    }
+
+    private MessageCollectionValidator messageCollectionValidator;
+
     /**
      * @deprecated use getOptional instead.
      */
@@ -86,6 +92,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void addData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
+            messageCollectionValidator.validate(messageCollection);
             D data = entity.attributes();
             dataAccess.addData(data);
         }
@@ -111,6 +118,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     protected void updateData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
+            messageCollectionValidator.validate(messageCollection);
             D data = entity.attributes();
             dataAccess.updateData(data);
         }
@@ -133,6 +141,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public void delete(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
+        messageCollectionValidator.validate(messageCollection);
         dataAccess.deleteData(entity.attributes().identifier().value());
         considerMessageSendingAfterDelete(entity, messageCollection);
     }

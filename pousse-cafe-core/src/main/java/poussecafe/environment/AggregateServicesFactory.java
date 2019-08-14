@@ -3,6 +3,7 @@ package poussecafe.environment;
 import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.domain.Factory;
+import poussecafe.domain.MessageCollectionValidator;
 import poussecafe.domain.Repository;
 import poussecafe.util.ReflectionUtils;
 
@@ -27,8 +28,11 @@ public class AggregateServicesFactory {
         Class<?> entityClass = environment.entityOfFactoryOrRepository(repositoryClass);
         repository.setEntityClass(entityClass);
         repository.setDataAccess(supplyDataAccessImplementation(entityClass));
+        repository.setMessageCollectionValidator(messageCollectionValidator);
         return repository;
     }
+
+    private MessageCollectionValidator messageCollectionValidator = new MessageCollectionValidator();
 
     private Object supplyDataAccessImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.entityDataAccessFactory(entityClass);
