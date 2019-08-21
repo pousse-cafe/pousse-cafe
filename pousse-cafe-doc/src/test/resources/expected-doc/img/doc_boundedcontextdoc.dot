@@ -1,9 +1,0 @@
-graph {
-splines=spline;
-overlap=false;
-"BoundedContextDoc" -- "ComponentDoc" [style=solid];
-"BoundedContextDoc" -- "BoundedContextDocId" [style=solid];
-"ComponentDoc"[shape=ellipse];
-"BoundedContextDocId"[shape=ellipse];
-"BoundedContextDoc"[shape=box,style=bold];
-}
