@@ -1,0 +1,9 @@
+graph {
+splines=spline;
+overlap=false;
+"ModuleDoc" -- "ModuleDocId" [style=solid];
+"ComponentDoc" -- "ModuleDoc" [style=solid];
+"ComponentDoc"[shape=ellipse];
+"ModuleDoc"[shape=box,style=bold];
+"ModuleDocId"[shape=ellipse];
+}
