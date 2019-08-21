@@ -1,18 +1,16 @@
-package poussecafe.myboundedcontext.adapters;
+package poussecafe.mymodule.adapters;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.discovery.MessageImplementation;
+import poussecafe.mymodule.domain.AnotherDomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
+@MessageImplementation(message = AnotherDomainEvent.class)
 @SuppressWarnings("serial")
-public class MyAggregateData implements MyAggregate.Attributes, Serializable {
+public class AnotherDomainEventData implements Serializable, AnotherDomainEvent {
 
-    /*
-     * AttributeBuilder class exposes factory methods for different types of property builders. The property
-     * builders allow to directly expose the value or adapt it before.
-     */
     @Override
     public Attribute<MyAggregateId> identifier() {
         return AttributeBuilder.stringId(MyAggregateId.class)

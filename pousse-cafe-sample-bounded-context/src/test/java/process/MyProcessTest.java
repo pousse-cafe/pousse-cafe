@@ -1,10 +1,10 @@
 package process;
 
 import org.junit.Test;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
-import poussecafe.myboundedcontext.process.MyProcess;
-import poussecafe.myboundedcontext.process.MyProcess.DoSomethingParameters;
+import poussecafe.mymodule.domain.myaggregate.MyAggregate;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.process.MyProcess;
+import poussecafe.mymodule.process.MyProcess.DoSomethingParameters;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 /*
  * Verifies that MyProcess domain process behaves as expected.
  */
-public class MyProcessTest extends MyBoundedContextTest {
+public class MyProcessTest extends MyModuleTest {
 
     /*
      * Test the creation and update of a MyAggregate instance via MyProcess.

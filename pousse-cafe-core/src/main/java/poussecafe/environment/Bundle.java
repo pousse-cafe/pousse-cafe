@@ -6,58 +6,58 @@ import java.util.Objects;
 import java.util.Set;
 import poussecafe.messaging.MessageImplementation;
 
-public class BoundedContext {
+public class Bundle {
 
     public static class Builder {
 
-        private BoundedContext boundedContext = new BoundedContext();
+        private Bundle bundle = new Bundle();
 
-        public Builder definition(BoundedContextDefinition definition) {
-            boundedContext.definition = definition;
+        public Builder definition(BundleDefinition definition) {
+            bundle.definition = definition;
             return this;
         }
 
         public Builder storageImplementations(Collection<EntityImplementation> storageImplementations) {
-            boundedContext.storageImplementations.addAll(storageImplementations);
+            bundle.storageImplementations.addAll(storageImplementations);
             return this;
         }
 
         public Builder withEntityImplementation(EntityImplementation entityImplementation) {
-            boundedContext.storageImplementations.add(entityImplementation);
+            bundle.storageImplementations.add(entityImplementation);
             return this;
         }
 
         public Builder messagingImplementations(Collection<MessageImplementation> messagingImplementations) {
-            boundedContext.messagingImplementations.addAll(messagingImplementations);
+            bundle.messagingImplementations.addAll(messagingImplementations);
             return this;
         }
 
         public Builder withMessageImplentation(MessageImplementation messageImplementation) {
-            boundedContext.messagingImplementations.add(messageImplementation);
+            bundle.messagingImplementations.add(messageImplementation);
             return this;
         }
 
         public Builder serviceImplementations(Collection<ServiceImplementation> serviceImplementations) {
-            boundedContext.serviceImplementations.addAll(serviceImplementations);
+            bundle.serviceImplementations.addAll(serviceImplementations);
             return this;
         }
 
-        public BoundedContext build() {
-            Objects.requireNonNull(boundedContext.definition);
-            Objects.requireNonNull(boundedContext.storageImplementations);
-            Objects.requireNonNull(boundedContext.messagingImplementations);
-            Objects.requireNonNull(boundedContext.serviceImplementations);
-            return boundedContext;
+        public Bundle build() {
+            Objects.requireNonNull(bundle.definition);
+            Objects.requireNonNull(bundle.storageImplementations);
+            Objects.requireNonNull(bundle.messagingImplementations);
+            Objects.requireNonNull(bundle.serviceImplementations);
+            return bundle;
         }
     }
 
-    private BoundedContext() {
+    private Bundle() {
 
     }
 
-    private BoundedContextDefinition definition;
+    private BundleDefinition definition;
 
-    public BoundedContextDefinition definition() {
+    public BundleDefinition definition() {
         return definition;
     }
 

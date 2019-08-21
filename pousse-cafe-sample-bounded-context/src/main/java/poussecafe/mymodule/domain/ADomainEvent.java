@@ -1,8 +1,8 @@
-package poussecafe.myboundedcontext.domain;
+package poussecafe.mymodule.domain;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 public interface ADomainEvent extends DomainEvent {
 

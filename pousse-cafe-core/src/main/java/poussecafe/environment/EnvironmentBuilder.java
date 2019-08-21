@@ -25,23 +25,23 @@ public class EnvironmentBuilder {
 
     private Environment environment = new Environment();
 
-    public EnvironmentBuilder withBoundedContexts(Collection<BoundedContext> boundedContexts) {
-        boundedContexts.forEach(this::withBoundedContext);
+    public EnvironmentBuilder withBundles(Collection<Bundle> bundles) {
+        bundles.forEach(this::withBundle);
         return this;
     }
 
-    public EnvironmentBuilder withBoundedContext(BoundedContext boundedContext) {
-        withBoundedContextDefinition(boundedContext.definition());
-        withBoundedContextImplementations(boundedContext);
+    public EnvironmentBuilder withBundle(Bundle bundle) {
+        withBundleDefinition(bundle.definition());
+        withBundleImplementations(bundle);
         return this;
     }
 
-    private EnvironmentBuilder withBoundedContextDefinition(BoundedContextDefinition boundedContext) {
-        boundedContext.definedAggregates().forEach(this::withAggregateDefinition);
-        boundedContext.definedMessages().forEach(definedMessages::add);
-        boundedContext.definedDomainProcesses().forEach(definedDomainProcesses::add);
-        boundedContext.definedServices().forEach(definedServices::add);
-        boundedContext.definedListeners().forEach(definedListeners::add);
+    private EnvironmentBuilder withBundleDefinition(BundleDefinition bundle) {
+        bundle.definedAggregates().forEach(this::withAggregateDefinition);
+        bundle.definedMessages().forEach(definedMessages::add);
+        bundle.definedDomainProcesses().forEach(definedDomainProcesses::add);
+        bundle.definedServices().forEach(definedServices::add);
+        bundle.definedListeners().forEach(definedListeners::add);
         return this;
     }
 
@@ -75,10 +75,10 @@ public class EnvironmentBuilder {
 
     private Set<MessageListenerDefinition> definedListeners = new HashSet<>();
 
-    private void withBoundedContextImplementations(BoundedContext boundedContext) {
-        boundedContext.entityImplementations().stream().forEach(this::withEntityImplementation);
-        boundedContext.messageImplementations().stream().forEach(this::withMessageImplementation);
-        boundedContext.serviceImplementations().stream().forEach(this::withServiceImplementation);
+    private void withBundleImplementations(Bundle bundle) {
+        bundle.entityImplementations().stream().forEach(this::withEntityImplementation);
+        bundle.messageImplementations().stream().forEach(this::withMessageImplementation);
+        bundle.serviceImplementations().stream().forEach(this::withServiceImplementation);
     }
 
     private void withEntityImplementation(EntityImplementation implementation) {

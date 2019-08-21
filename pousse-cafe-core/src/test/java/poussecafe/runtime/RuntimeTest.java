@@ -11,8 +11,8 @@ import poussecafe.domain.SimpleAggregateRepository;
 import poussecafe.domain.SimpleAggregateTouchRunner;
 import poussecafe.environment.AggregateDefinition;
 import poussecafe.environment.AggregateServices;
-import poussecafe.environment.BoundedContext;
-import poussecafe.environment.BoundedContextDefinition;
+import poussecafe.environment.Bundle;
+import poussecafe.environment.BundleDefinition;
 import poussecafe.environment.EntityImplementation;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerDefinition;
@@ -33,13 +33,13 @@ public class RuntimeTest {
 
     @Test
     public void entityServicesConfiguration() {
-        givenBoundedContext();
+        givenBundle();
         whenCreatingRuntime();
         thenAggregateServicesAreConfigured();
     }
 
-    private void givenBoundedContext() {
-        BoundedContextDefinition boundedContextDefinition = new BoundedContextDefinition.Builder()
+    private void givenBundle() {
+        BundleDefinition bundleDefinition = new BundleDefinition.Builder()
                 .withAggregateDefinition(new AggregateDefinition.Builder()
                         .withAggregateRoot(SimpleAggregate.class)
                         .withFactoryClass(SimpleAggregateFactory.class)
@@ -78,8 +78,8 @@ public class RuntimeTest {
                         .build())
                 .build();
 
-        boundedContext = new BoundedContext.Builder()
-                .definition(boundedContextDefinition)
+        bundle = new Bundle.Builder()
+                .definition(bundleDefinition)
                 .withEntityImplementation(new EntityImplementation.Builder()
                         .withEntityClass(SimpleAggregate.class)
                         .withDataFactory(SimpleAggregateData::new)
@@ -109,10 +109,10 @@ public class RuntimeTest {
                 .build();
     }
 
-    private BoundedContext boundedContext;
+    private Bundle bundle;
 
     private void whenCreatingRuntime() {
-        runtime = new Runtime.Builder().withBoundedContext(boundedContext).build();
+        runtime = new Runtime.Builder().withBundle(bundle).build();
     }
 
     private Runtime runtime;
@@ -128,7 +128,7 @@ public class RuntimeTest {
 
     @Test
     public void messageListenersConfiguration() {
-        givenBoundedContext();
+        givenBundle();
         whenCreatingRuntime();
         thenMessageListenersAreConfigured();
     }
@@ -142,7 +142,7 @@ public class RuntimeTest {
 
     @Test
     public void messageReceiversStarted() {
-        givenBoundedContext();
+        givenBundle();
         whenCreatingRuntime();
         thenMessageReceiversIsStarted();
     }
@@ -155,7 +155,7 @@ public class RuntimeTest {
 
     @Test
     public void threadPoolNotCreatedBeforeStart() {
-        givenBoundedContext();
+        givenBundle();
         whenCreatingRuntime();
         thenHasThreadPool(false);
     }
@@ -166,12 +166,12 @@ public class RuntimeTest {
 
     @Test
     public void threadPoolCreatedOnStart() {
-        givenBoundedContext();
+        givenBundle();
         whenCreatingAndStartingRuntime();
         thenHasThreadPool(true);
     }
 
     private void whenCreatingAndStartingRuntime() {
-        runtime = new Runtime.Builder().withBoundedContext(boundedContext).buildAndStart();
+        runtime = new Runtime.Builder().withBundle(bundle).buildAndStart();
     }
 }

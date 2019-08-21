@@ -2,16 +2,16 @@ package process;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.myboundedcontext.domain.ADomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.ADomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregate;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 import static org.junit.Assert.assertTrue;
 
 /*
  * Verifies that factory message listener behaves as expected.
  */
-public class MyAggregateCreationWithADomainEvent extends MyBoundedContextTest {
+public class MyAggregateCreationWithADomainEvent extends MyModuleTest {
 
     @Test
     public void aDomainEventCreatesAggregate() {

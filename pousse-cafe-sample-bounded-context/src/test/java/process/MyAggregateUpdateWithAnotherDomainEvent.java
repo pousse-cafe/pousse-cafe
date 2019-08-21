@@ -1,9 +1,9 @@
 package process;
 
 import org.junit.Test;
-import poussecafe.myboundedcontext.domain.AnotherDomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.AnotherDomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregate;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 /*
  * Verifies that aggregate message listener behaves as expected.
  */
-public class MyAggregateUpdateWithAnotherDomainEvent extends MyBoundedContextTest {
+public class MyAggregateUpdateWithAnotherDomainEvent extends MyModuleTest {
 
     @Test
     public void anotherDomainEventUpdatesAggregate() {

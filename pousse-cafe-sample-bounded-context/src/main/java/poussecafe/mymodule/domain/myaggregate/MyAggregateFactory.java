@@ -1,8 +1,8 @@
-package poussecafe.myboundedcontext.domain.myaggregate;
+package poussecafe.mymodule.domain.myaggregate;
 
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.Factory;
-import poussecafe.myboundedcontext.domain.ADomainEvent;
+import poussecafe.mymodule.domain.ADomainEvent;
 
 /*
  * The Factory is responsible for providing an Aggregate instance.

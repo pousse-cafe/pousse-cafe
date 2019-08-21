@@ -1,15 +1,15 @@
-package poussecafe.myboundedcontext.adapters;
+package poussecafe.mymodule.adapters;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
-import poussecafe.myboundedcontext.domain.MyDomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.YetAnotherDomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
-@MessageImplementation(message = MyDomainEvent.class)
+@MessageImplementation(message = YetAnotherDomainEvent.class)
 @SuppressWarnings("serial")
-public class MyDomainEventData implements Serializable, MyDomainEvent {
+public class YetAnotherDomainEventData implements Serializable, YetAnotherDomainEvent {
 
     @Override
     public Attribute<MyAggregateId> identifier() {

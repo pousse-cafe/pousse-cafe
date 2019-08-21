@@ -1,6 +1,6 @@
 package poussecafe.journal;
 
-import poussecafe.discovery.BoundedContextConfigurer;
+import poussecafe.discovery.BundleConfigurer;
 
 public class Journal {
 
@@ -8,10 +8,10 @@ public class Journal {
 
     }
 
-    public static BoundedContextConfigurer configure() {
-        return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.journal")
-                .packagePrefix("poussecafe.support")
+    public static BundleConfigurer configure() {
+        return new BundleConfigurer.Builder()
+                .moduleBasePackage("poussecafe.journal")
+                .moduleBasePackage("poussecafe.support")
                 .build();
     }
 }

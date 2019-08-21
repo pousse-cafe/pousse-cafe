@@ -1,12 +1,12 @@
-package poussecafe.myboundedcontext.process;
+package poussecafe.mymodule.process;
 
 import org.slf4j.LoggerFactory;
 import poussecafe.discovery.MessageListener;
-import poussecafe.myboundedcontext.domain.MyDomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateFactory;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateRepository;
+import poussecafe.mymodule.domain.MyDomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregate;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateFactory;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateRepository;
 import poussecafe.process.DomainProcess;
 
 /*

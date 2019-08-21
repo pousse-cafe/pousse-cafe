@@ -71,7 +71,7 @@ public class PousseCafeDoclet implements Doclet {
         configuration = configBuilder.build();
 
         runtime = new Runtime.Builder()
-                .withBoundedContext(PousseCafeDoc.configure().defineAndImplementDefault().build())
+                .withBundle(PousseCafeDoc.configure().defineAndImplementDefault().build())
                 .withInjectableService(DocletEnvironment.class, environment)
                 .withInjectableService(configuration)
                 .build();

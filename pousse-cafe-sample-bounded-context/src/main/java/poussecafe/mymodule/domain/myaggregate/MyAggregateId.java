@@ -1,4 +1,4 @@
-package poussecafe.myboundedcontext.domain.myaggregate;
+package poussecafe.mymodule.domain.myaggregate;
 import poussecafe.util.StringId;
 
 /*

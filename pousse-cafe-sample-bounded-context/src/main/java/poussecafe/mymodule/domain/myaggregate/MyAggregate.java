@@ -1,4 +1,4 @@
-package poussecafe.myboundedcontext.domain.myaggregate;
+package poussecafe.mymodule.domain.myaggregate;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
@@ -6,8 +6,8 @@ import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.myboundedcontext.domain.AnotherDomainEvent;
-import poussecafe.myboundedcontext.domain.MyDomainEvent;
+import poussecafe.mymodule.domain.AnotherDomainEvent;
+import poussecafe.mymodule.domain.MyDomainEvent;
 
 /*
  * A simple aggregate root

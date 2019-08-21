@@ -1,6 +1,6 @@
 package poussecafe.shop;
 
-import poussecafe.discovery.BoundedContextConfigurer;
+import poussecafe.discovery.BundleConfigurer;
 
 public class Shop {
 
@@ -8,9 +8,9 @@ public class Shop {
 
     }
 
-    public static BoundedContextConfigurer configure() {
-        return new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.shop")
+    public static BundleConfigurer configure() {
+        return new BundleConfigurer.Builder()
+                .moduleBasePackage("poussecafe.shop")
                 .build();
     }
 }

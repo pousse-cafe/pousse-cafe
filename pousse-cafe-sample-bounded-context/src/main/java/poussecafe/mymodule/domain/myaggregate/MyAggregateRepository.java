@@ -1,8 +1,8 @@
-package poussecafe.myboundedcontext.domain.myaggregate;
+package poussecafe.mymodule.domain.myaggregate;
 
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.Repository;
-import poussecafe.myboundedcontext.domain.YetAnotherDomainEvent;
+import poussecafe.mymodule.domain.YetAnotherDomainEvent;
 
 /*
  * The Repository is responsible for reading, updating or removing aggregates.

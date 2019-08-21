@@ -3,7 +3,7 @@ package poussecafe.test;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import poussecafe.discovery.BoundedContextConfigurer;
+import poussecafe.discovery.BundleConfigurer;
 import poussecafe.discovery.MessageListener;
 import poussecafe.runtime.Runtime.Builder;
 
@@ -15,8 +15,8 @@ public class PousseCafeTestTest extends PousseCafeTest {
     @Override
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
-                .withBoundedContext(new BoundedContextConfigurer.Builder()
-                .packagePrefix("poussecafe.test")
+                .withBundle(new BundleConfigurer.Builder()
+                .moduleBasePackage("poussecafe.test")
                 .build()
                 .defineAndImplementDefault()
                 .build());

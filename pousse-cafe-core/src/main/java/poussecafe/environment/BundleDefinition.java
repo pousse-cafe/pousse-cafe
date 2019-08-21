@@ -9,11 +9,11 @@ import poussecafe.process.DomainProcess;
 
 import static java.util.Collections.unmodifiableSet;
 
-public class BoundedContextDefinition {
+public class BundleDefinition {
 
     public static class Builder {
 
-        private BoundedContextDefinition definition = new BoundedContextDefinition();
+        private BundleDefinition definition = new BundleDefinition();
 
         public Builder withAggregateDefinitions(Collection<AggregateDefinition> definitions) {
             definition.definitions.addAll(definitions);
@@ -60,12 +60,12 @@ public class BoundedContextDefinition {
             return this;
         }
 
-        public BoundedContextDefinition build() {
+        public BundleDefinition build() {
             return definition;
         }
     }
 
-    private BoundedContextDefinition() {
+    private BundleDefinition() {
 
     }
 

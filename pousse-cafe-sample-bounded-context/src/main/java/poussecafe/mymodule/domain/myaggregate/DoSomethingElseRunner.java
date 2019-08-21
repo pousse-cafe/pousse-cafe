@@ -1,8 +1,8 @@
-package poussecafe.myboundedcontext.domain.myaggregate;
+package poussecafe.mymodule.domain.myaggregate;
 
 import java.util.Set;
 import poussecafe.discovery.DefaultAggregateMessageListenerRunner;
-import poussecafe.myboundedcontext.domain.AnotherDomainEvent;
+import poussecafe.mymodule.domain.AnotherDomainEvent;
 
 import static poussecafe.collection.Collections.asSet;
 

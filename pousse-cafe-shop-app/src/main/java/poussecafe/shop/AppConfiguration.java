@@ -21,11 +21,11 @@ public class AppConfiguration {
 
         Runtime context = new Runtime.Builder()
             .messageConsumptionHandler(new JournalMessageConsumptionHandler())
-            .withBoundedContext(Journal.configure()
+            .withBundle(Journal.configure()
                     .defineThenImplement()
                     .messagingAndStorage(messagingAndStorage)
                     .build())
-            .withBoundedContext(Shop.configure()
+            .withBundle(Shop.configure()
                     .defineThenImplement()
                     .messagingAndStorage(messagingAndStorage)
                     .build())

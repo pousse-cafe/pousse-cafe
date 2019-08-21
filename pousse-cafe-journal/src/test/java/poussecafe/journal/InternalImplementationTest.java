@@ -5,7 +5,7 @@ import org.junit.Test;
 public class InternalImplementationTest extends JournalTest {
 
     @Test
-    public void boundedContextConcrete() {
+    public void runtimeStarts() {
 
     }
 }

@@ -1,7 +1,7 @@
-package poussecafe.myboundedcontext.domain;
+package poussecafe.mymodule.domain;
 import poussecafe.attribute.Attribute;
 import poussecafe.domain.DomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 /*
  * This Domain Event is emitted by a MyAggregate instance.

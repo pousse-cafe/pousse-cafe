@@ -1,16 +1,16 @@
-package poussecafe.doc;
+package poussecafe.mymodule;
 
 import poussecafe.discovery.BundleConfigurer;
 
-public class PousseCafeDoc {
+public class MyModule {
 
-    private PousseCafeDoc() {
+    private MyModule() {
 
     }
 
     public static BundleConfigurer configure() {
         return new BundleConfigurer.Builder()
-                .moduleBasePackage("poussecafe.doc")
+                .moduleBasePackage("poussecafe.mymodule")
                 .build();
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
-import poussecafe.environment.BoundedContext;
+import poussecafe.environment.Bundle;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;
 import poussecafe.injector.Injector;
@@ -40,13 +40,13 @@ public class Runtime {
 
         private Runtime runtime;
 
-        public Builder withBoundedContexts(Collection<BoundedContext> boundedContexts) {
-            boundedContexts.forEach(this::withBoundedContext);
+        public Builder withBundles(Collection<Bundle> bundles) {
+            bundles.forEach(this::withBundle);
             return this;
         }
 
-        public Builder withBoundedContext(BoundedContext boundedContext) {
-            environmentBuilder.withBoundedContext(boundedContext);
+        public Builder withBundle(Bundle bundle) {
+            environmentBuilder.withBundle(bundle);
             return this;
         }
 

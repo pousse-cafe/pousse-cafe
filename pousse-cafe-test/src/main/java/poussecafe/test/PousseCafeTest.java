@@ -7,7 +7,7 @@ import org.junit.Before;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.environment.BoundedContext;
+import poussecafe.environment.Bundle;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
@@ -29,7 +29,7 @@ public abstract class PousseCafeTest {
     protected Runtime.Builder runtimeBuilder() {
         return new Runtime.Builder()
                 .failFast(true)
-                .withBoundedContexts(boundedContexts()) // for backward compatibility
+                .withBundles(bundles()) // for backward compatibility
                 .processingThreads(2);
     }
 
@@ -37,7 +37,7 @@ public abstract class PousseCafeTest {
      * @deprecated use runtimeBuilder() and register bounded contexts directly.
      */
     @Deprecated(since = "0.9.0", forRemoval = true)
-    protected List<BoundedContext> boundedContexts() {
+    protected List<Bundle> bundles() {
         return emptyList();
     }
 

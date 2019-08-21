@@ -2,16 +2,16 @@ package process;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.myboundedcontext.domain.YetAnotherDomainEvent;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregate;
-import poussecafe.myboundedcontext.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.YetAnotherDomainEvent;
+import poussecafe.mymodule.domain.myaggregate.MyAggregate;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 import static org.junit.Assert.assertTrue;
 
 /*
  * Verifies that repository message listener behaves as expected.
  */
-public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyBoundedContextTest {
+public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyModuleTest {
 
     @Test
     public void anotherDomainEventUpdatesAggregate() {
