@@ -4,10 +4,10 @@ import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.commands.CreateAggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.runtime.Runtime;
 
-public class AggregateDocCreator extends BoundedContextComponentDocCreator {
+public class AggregateDocCreator extends ModuleComponentDocCreator {
 
     public AggregateDocCreator(DocletEnvironment environment) {
         super(environment);
@@ -26,10 +26,10 @@ public class AggregateDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocId boundedContextDocId,
+    protected void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc) {
         CreateAggregateDoc command = runtime.newCommand(CreateAggregateDoc.class);
-        command.boundedContextId().value(boundedContextDocId);
+        command.moduleId().value(moduleDocId);
         command.className().value(componentClassDoc.getQualifiedName().toString());
         runtime.submitCommand(command);
     }

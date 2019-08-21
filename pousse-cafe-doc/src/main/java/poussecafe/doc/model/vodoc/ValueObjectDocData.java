@@ -2,8 +2,8 @@ package poussecafe.doc.model.vodoc;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
-import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.BoundedContextComponentDocData;
+import poussecafe.doc.model.ModuleComponentDoc;
+import poussecafe.doc.model.ModuleComponentDocData;
 
 @SuppressWarnings("serial")
 public class ValueObjectDocData implements ValueObjectDoc.Attributes, Serializable {
@@ -26,19 +26,19 @@ public class ValueObjectDocData implements ValueObjectDoc.Attributes, Serializab
     private String className;
 
     @Override
-    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Attribute<BoundedContextComponentDoc>() {
+    public Attribute<ModuleComponentDoc> moduleComponentDoc() {
+        return new Attribute<ModuleComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc value() {
+            public ModuleComponentDoc value() {
                 return componentDoc.adapt();
             }
 
             @Override
-            public void value(BoundedContextComponentDoc value) {
-                componentDoc = BoundedContextComponentDocData.adapt(value);
+            public void value(ModuleComponentDoc value) {
+                componentDoc = ModuleComponentDocData.adapt(value);
             }
         };
     }
 
-    private BoundedContextComponentDocData componentDoc;
+    private ModuleComponentDocData componentDoc;
 }

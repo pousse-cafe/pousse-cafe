@@ -3,53 +3,53 @@ package poussecafe.doc.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.domain.ValueObject;
 
-public class BoundedContext implements ValueObject {
+public class Module implements ValueObject {
 
     public static class Builder {
 
-        private BoundedContext boundedContext = new BoundedContext();
+        private Module module = new Module();
 
-        public Builder documentation(BoundedContextDoc documentation) {
-            boundedContext.documentation = documentation;
+        public Builder documentation(ModuleDoc documentation) {
+            module.documentation = documentation;
             return this;
         }
 
         public Builder aggregates(List<Aggregate> aggregates) {
-            boundedContext.aggregates = new ArrayList<>(aggregates);
+            module.aggregates = new ArrayList<>(aggregates);
             return this;
         }
 
         public Builder services(List<ServiceDoc> services) {
-            boundedContext.services = new ArrayList<>(services);
+            module.services = new ArrayList<>(services);
             return this;
         }
 
         public Builder processes(List<DomainProcessDoc> processes) {
-            boundedContext.processes = new ArrayList<>(processes);
+            module.processes = new ArrayList<>(processes);
             return this;
         }
 
-        public BoundedContext build() {
-            Objects.requireNonNull(boundedContext.documentation);
-            Objects.requireNonNull(boundedContext.aggregates);
-            Objects.requireNonNull(boundedContext.services);
-            Objects.requireNonNull(boundedContext.processes);
-            return boundedContext;
+        public Module build() {
+            Objects.requireNonNull(module.documentation);
+            Objects.requireNonNull(module.aggregates);
+            Objects.requireNonNull(module.services);
+            Objects.requireNonNull(module.processes);
+            return module;
         }
     }
 
-    private BoundedContext() {
+    private Module() {
 
     }
 
-    private BoundedContextDoc documentation;
+    private ModuleDoc documentation;
 
-    public BoundedContextDoc documentation() {
+    public ModuleDoc documentation() {
         return documentation;
     }
 

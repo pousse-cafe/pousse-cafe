@@ -8,13 +8,13 @@ import java.util.Set;
 import poussecafe.doc.PousseCafeDocletConfiguration;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocId;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
@@ -33,34 +33,34 @@ public class DomainFactory implements Service {
         return new Domain.Builder()
                 .name(configuration.domainName())
                 .version(configuration.version())
-                .boundedContexts(boundedContexts())
+                .modules(modules())
                 .build();
     }
 
     private PousseCafeDocletConfiguration configuration;
 
-    private List<BoundedContext> boundedContexts() {
-        List<BoundedContext> boundedContexts = new ArrayList<>();
-        for(BoundedContextDoc boundedContextDoc : boundedContextDocRepository.findAll()) {
-            boundedContexts.add(boundedContext(boundedContextDoc));
+    private List<Module> modules() {
+        List<Module> modules = new ArrayList<>();
+        for(ModuleDoc moduleDoc : moduleDocRepository.findAll()) {
+            modules.add(module(moduleDoc));
         }
-        return boundedContexts;
+        return modules;
     }
 
-    private BoundedContextDocRepository boundedContextDocRepository;
+    private ModuleDocRepository moduleDocRepository;
 
-    private BoundedContext boundedContext(BoundedContextDoc boundedContextDoc) {
-        return new BoundedContext.Builder()
-                .documentation(boundedContextDoc)
-                .aggregates(aggregates(boundedContextDoc))
-                .services(services(boundedContextDoc))
-                .processes(processes(boundedContextDoc))
+    private Module module(ModuleDoc moduleDoc) {
+        return new Module.Builder()
+                .documentation(moduleDoc)
+                .aggregates(aggregates(moduleDoc))
+                .services(services(moduleDoc))
+                .processes(processes(moduleDoc))
                 .build();
     }
 
-    private List<Aggregate> aggregates(BoundedContextDoc boundedContextDoc) {
+    private List<Aggregate> aggregates(ModuleDoc moduleDoc) {
         List<Aggregate> aggregates = new ArrayList<>();
-        for(AggregateDoc aggregateDoc : aggregateDocRepository.findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
+        for(AggregateDoc aggregateDoc : aggregateDocRepository.findByModule(moduleDoc.attributes().identifier().value())) {
             aggregates.add(aggregate(aggregateDoc));
         }
         return aggregates;
@@ -124,14 +124,14 @@ public class DomainFactory implements Service {
 
     private ValueObjectDocRepository valueObjectDocRepository;
 
-    private List<ServiceDoc> services(BoundedContextDoc boundedContextDoc) {
-        return serviceDocRepository.findByBoundedContextId(boundedContextDoc.attributes().identifier().value());
+    private List<ServiceDoc> services(ModuleDoc moduleDoc) {
+        return serviceDocRepository.findByModuleId(moduleDoc.attributes().identifier().value());
     }
 
     private ServiceDocRepository serviceDocRepository;
 
-    private List<DomainProcessDoc> processes(BoundedContextDoc boundedContextDoc) {
-        return domainProcessDocRepository.findByBoundedContextId(boundedContextDoc.attributes().identifier().value());
+    private List<DomainProcessDoc> processes(ModuleDoc moduleDoc) {
+        return domainProcessDocRepository.findByModuleId(moduleDoc.attributes().identifier().value());
     }
 
     private DomainProcessDocRepository domainProcessDocRepository;

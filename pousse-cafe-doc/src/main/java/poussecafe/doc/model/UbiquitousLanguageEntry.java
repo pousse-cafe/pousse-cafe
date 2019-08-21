@@ -14,8 +14,8 @@ public class UbiquitousLanguageEntry
 
         private UbiquitousLanguageEntry entry = new UbiquitousLanguageEntry();
 
-        public Builder boundedContextName(String boundedContextName) {
-            entry.boundedContextName = Optional.of(boundedContextName);
+        public Builder moduleName(String moduleName) {
+            entry.moduleName = Optional.of(moduleName);
             return this;
         }
 
@@ -40,10 +40,10 @@ public class UbiquitousLanguageEntry
 
     }
 
-    private Optional<String> boundedContextName = Optional.empty();
+    private Optional<String> moduleName = Optional.empty();
 
-    public Optional<String> boundedContextName() {
-        return boundedContextName;
+    public Optional<String> moduleName() {
+        return moduleName;
     }
 
     private ComponentDoc componentDoc;
@@ -59,9 +59,9 @@ public class UbiquitousLanguageEntry
     }
 
     public String qualifiedName() {
-        Optional<String> optionalBoundedContextName = boundedContextName();
-        if(optionalBoundedContextName.isPresent()) {
-            return componentDoc().name() + " (" + optionalBoundedContextName.get() + ")";
+        Optional<String> optionalModuleName = moduleName();
+        if(optionalModuleName.isPresent()) {
+            return componentDoc().name() + " (" + optionalModuleName.get() + ")";
         } else {
             return componentDoc().name();
         }

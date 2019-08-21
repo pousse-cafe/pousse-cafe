@@ -8,7 +8,7 @@ import poussecafe.test.PousseCafeTest;
 import static java.util.Arrays.asList;
 
 /*
- * Parent class of all tests related to MyBoundedContext.
+ * Parent class of all tests related to MyModule.
  */
 public abstract class MyModuleTest extends PousseCafeTest {
 

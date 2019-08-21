@@ -116,12 +116,12 @@ public class AnnotationsResolver implements Service {
                 .collect(toList());
     }
 
-    public boolean isBoundedContext(PackageElement packageDoc) {
-        return hasTag(packageDoc, Tags.BOUNDED_CONTEXT);
+    public boolean isModule(PackageElement packageDoc) {
+        return hasTag(packageDoc, Tags.MODULE);
     }
 
-    public String boundedContext(PackageElement packageDoc) {
-        return optionalTag(packageDoc, Tags.BOUNDED_CONTEXT).orElseThrow(PousseCafeException::new);
+    public String module(PackageElement packageDoc) {
+        return optionalTag(packageDoc, Tags.MODULE).orElseThrow(PousseCafeException::new);
     }
 
     public List<String> process(ExecutableElement methodDoc) {

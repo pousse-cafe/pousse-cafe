@@ -5,13 +5,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 
-public abstract class BoundedContextComponentDocCreator implements Consumer<TypeElement> {
+public abstract class ModuleComponentDocCreator implements Consumer<TypeElement> {
 
-    public BoundedContextComponentDocCreator(DocletEnvironment rootDocWrapper) {
+    public ModuleComponentDocCreator(DocletEnvironment rootDocWrapper) {
         Objects.requireNonNull(rootDocWrapper);
         this.rootDocWrapper = rootDocWrapper;
     }
@@ -21,12 +21,12 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Type
     @Override
     public void accept(TypeElement classDoc) {
         if (isComponentDoc(classDoc)) {
-            Optional<BoundedContextDoc> boundedContextDoc = boundedContextDocRepository
+            Optional<ModuleDoc> moduleDoc = moduleDocRepository
                     .findByPackageNamePrefixing(classDoc.getQualifiedName().toString());
-            if (boundedContextDoc.isPresent()) {
-                BoundedContextDocId boundedContextId = boundedContextDoc.get().attributes().identifier().value();
-                Logger.debug("Adding " + componentName() + " with class " + classDoc.getQualifiedName().toString() + " to BC " + boundedContextId);
-                addDoc(boundedContextId, classDoc);
+            if (moduleDoc.isPresent()) {
+                ModuleDocId moduleId = moduleDoc.get().attributes().identifier().value();
+                Logger.debug("Adding " + componentName() + " with class " + classDoc.getQualifiedName().toString() + " to BC " + moduleId);
+                addDoc(moduleId, classDoc);
             } else {
                 Logger.warn("Could not add component with missing bounded context: " + classDoc.getQualifiedName().toString());
             }
@@ -37,9 +37,9 @@ public abstract class BoundedContextComponentDocCreator implements Consumer<Type
 
     protected abstract String componentName();
 
-    private BoundedContextDocRepository boundedContextDocRepository;
+    private ModuleDocRepository moduleDocRepository;
 
-    protected abstract void addDoc(BoundedContextDocId boundedContextDocId,
+    protected abstract void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc);
 
     protected DocletEnvironment rootDocWrapper() {

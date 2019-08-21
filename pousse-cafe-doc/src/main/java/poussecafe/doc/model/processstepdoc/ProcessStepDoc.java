@@ -4,7 +4,7 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.discovery.Aggregate;
-import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
@@ -16,7 +16,7 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
 
     public static interface Attributes extends EntityAttributes<ProcessStepDocId> {
 
-        Attribute<BoundedContextComponentDoc> boundedContextComponentDoc();
+        Attribute<ModuleComponentDoc> moduleComponentDoc();
 
         OptionalAttribute<String> processName();
 

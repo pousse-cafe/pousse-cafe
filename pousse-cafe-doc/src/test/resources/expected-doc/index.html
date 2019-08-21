@@ -39,10 +39,10 @@ Pousse-Café Doc Domain Model
           <li><a href="#doc_aggregates">Aggregates</a></li>
           <ol>
             <li><a href="#doc_aggregatedoc">AggregateDoc</a></li>
-            <li><a href="#doc_boundedcontextdoc">BoundedContextDoc</a></li>
             <li><a href="#doc_domainprocessdoc">DomainProcessDoc</a></li>
             <li><a href="#doc_entitydoc">EntityDoc</a></li>
             <li><a href="#doc_factorydoc">FactoryDoc</a></li>
+            <li><a href="#doc_moduledoc">ModuleDoc</a></li>
             <li><a href="#doc_processstepdoc">ProcessStepDoc</a></li>
             <li><a href="#doc_relation">Relation</a></li>
             <li><a href="#doc_servicedoc">ServiceDoc</a></li>
@@ -66,11 +66,11 @@ Pousse-Café Doc Domain Model
           <li><a href="#doc_processes">Domain Processes</a></li>
           <ol>
             <li><a href="#doc_aggregatedoccreation">AggregateDocCreation</a></li>
-            <li><a href="#doc_boundedcontextdoccreation">BoundedContextDocCreation</a></li>
             <li><a href="#doc_componentlinking">ComponentLinking</a></li>
             <li><a href="#doc_domainprocessdoccreation">DomainProcessDocCreation</a></li>
             <li><a href="#doc_entitydoccreation">EntityDocCreation</a></li>
             <li><a href="#doc_factorydoccreation">FactoryDocCreation</a></li>
+            <li><a href="#doc_moduledoccreation">ModuleDocCreation</a></li>
             <li><a href="#doc_processstepdoccreation">ProcessStepDocCreation</a></li>
             <li><a href="#doc_servicedoccreation">ServiceDocCreation</a></li>
             <li><a href="#doc_valueobjectdoccreation">ValueObjectDocCreation</a></li>
@@ -96,8 +96,8 @@ definitions, please refer to the litterature:</p>
   <li>Service: an object representing an operation that is not naturally part of a value object or an entity;</li>
   <li>Domain Event: an object representing an event and used to communicate information between aggregates potentially
   located in different bounded contexts;</li>
-  <li>Bounded Contexts: they describe boundaries inside of which each component has a unique name and a given definition.
-  Some concepts might appear in different bounded contexts with the same name but with a slightly or completely different
+  <li>Modules: they describe boundaries inside of which each component has a unique name and a given definition.
+  Some concepts might appear in different modules with the same name but with a slightly or completely different
   definition.</li>
 </ul>
 
@@ -110,14 +110,14 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <p>The following conventions are being used:</p>
 <ul>
-  <li>As this document is generated directly from code, the domain is described by a set of bounded contexts.
-  Each bounded context is composed of a set of aggregates, services and domain processes.</li>
-  <li>An undirected graph representing a bounded context is composed of boxes representing the aggregates. Edges represent relations
+  <li>As this document is generated directly from code, the domain is described by a set of modules.
+  Each module is composed of a set of aggregates, services and domain processes.</li>
+  <li>An undirected graph representing a module is composed of boxes representing the aggregates. Edges represent relations
   between aggregates i.e. the fact that one aggregate makes reference to another one.</li>
   <li>Value objects and entities are presented in the context of their aggregate. An undirected graph representing an aggregate
   is composed of boxes (Entities) and ellipses (Value Objects). The aggregate root has thicker borders. Edges
   represent relations between the different components. Dashed edges represent a reference made to another aggregate
-  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in bounded context
+  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in module
   graph.</li>
   <li>Domain processes are represented using directed graphs, each node being a step of the process. Entering a step of
   a domain process generally implies the creation of a new aggregate or the update of an existing one. External steps
@@ -127,9 +127,9 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <p>The rest of the document is split in two parts:</p>
 <ol>
-  <li>the description of the different bounded contexts and their components,</li>
-  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the bounded
-  context (if relevant), the type of component and a short description.</li>
+  <li>the description of the different modules and their components,</li>
+  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the module (if
+  relevant), the type of component and a short description.</li>
 </ol>
 
 <h1 id="domain">Pousse-Café Doc Domain</h1>
@@ -148,8 +148,8 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
 </ul>
 
 
@@ -157,26 +157,13 @@ a process, most of them are called when handling a Domain Event.</p>
   <img src="img/doc_aggregatedoc.png"/>
 </div>
 
-<h4 id="doc_boundedcontextdoc">BoundedContextDoc</h4>
-
-
-<h5>Value Objects</h5>
-<ul>
-  <li><strong>ComponentDoc:</strong> </li>
-</ul>
-
-
-<div class="figure">
-  <img src="img/doc_boundedcontextdoc.png"/>
-</div>
-
 <h4 id="doc_domainprocessdoc">DomainProcessDoc</h4>
 
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
 </ul>
 
 
@@ -189,8 +176,8 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
 </ul>
 
 
@@ -203,8 +190,8 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
 </ul>
 
 
@@ -212,13 +199,26 @@ a process, most of them are called when handling a Domain Event.</p>
   <img src="img/doc_factorydoc.png"/>
 </div>
 
+<h4 id="doc_moduledoc">ModuleDoc</h4>
+
+
+<h5>Value Objects</h5>
+<ul>
+  <li><strong>ComponentDoc:</strong> </li>
+</ul>
+
+
+<div class="figure">
+  <img src="img/doc_moduledoc.png"/>
+</div>
+
 <h4 id="doc_processstepdoc">ProcessStepDoc</h4>
 
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
 </ul>
 
 
@@ -245,8 +245,8 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
   <li><strong>ServiceDocId:</strong> </li>
 </ul>
 
@@ -260,8 +260,8 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <h5>Value Objects</h5>
 <ul>
-  <li><strong>BoundedContextComponentDoc:</strong> </li>
   <li><strong>ComponentDoc:</strong> </li>
+  <li><strong>ModuleComponentDoc:</strong> </li>
   <li><strong>ValueObjectDocId:</strong> </li>
 </ul>
 
@@ -308,15 +308,6 @@ a process, most of them are called when handling a Domain Event.</p>
 <ul>
   <li><strong>AggregateDocFactory.newAggregateDoc(CreateAggregateDoc):</strong> </li>
 </ul>
-<h4 id="doc_boundedcontextdoccreation">BoundedContextDocCreation</h4>
-
-
-<div class="figure">
-  <img src="img/doc_boundedcontextdoccreation.png"/>
-</div>
-
-<ul>
-</ul>
 <h4 id="doc_componentlinking">ComponentLinking</h4>
 
 
@@ -349,6 +340,15 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <div class="figure">
   <img src="img/doc_factorydoccreation.png"/>
+</div>
+
+<ul>
+</ul>
+<h4 id="doc_moduledoccreation">ModuleDocCreation</h4>
+
+
+<div class="figure">
+  <img src="img/doc_moduledoccreation.png"/>
 </div>
 
 <ul>
@@ -387,9 +387,6 @@ a process, most of them are called when handling a Domain Event.</p>
 <li><span class="entryName">AggregateDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">AggregateDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">AnnotationsResolver (Doc)</span>, Service, </li>
-<li><span class="entryName">BoundedContextComponentDoc (Doc)</span>, Value Object, </li>
-<li><span class="entryName">BoundedContextDoc (Doc)</span>, Aggregate, </li>
-<li><span class="entryName">BoundedContextDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">ClassDocPredicates (Doc)</span>, Service, </li>
 <li><span class="entryName">ClassDocRepository (Doc)</span>, Service, </li>
 <li><span class="entryName">ComponentDoc (Doc)</span>, Value Object, </li>
@@ -409,6 +406,9 @@ a process, most of them are called when handling a Domain Event.</p>
 <li><span class="entryName">FactoryDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">FactoryDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">GraphFactory (Doc)</span>, Service, </li>
+<li><span class="entryName">ModuleComponentDoc (Doc)</span>, Value Object, </li>
+<li><span class="entryName">ModuleDoc (Doc)</span>, Aggregate, </li>
+<li><span class="entryName">ModuleDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">ProcessStepDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">ProcessStepDocCreation (Doc)</span>, Domain Process, </li>
 <li><span class="entryName">ProcessStepDocExtractor (Doc)</span>, Service, </li>

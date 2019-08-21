@@ -1,25 +1,25 @@
 package poussecafe.doc.model;
 
 import poussecafe.doc.AggregateGraphFactory;
-import poussecafe.doc.BoundedContextGraphFactory;
+import poussecafe.doc.ModuleGraphFactory;
 import poussecafe.doc.DomainProcessGraphFactory;
 import poussecafe.doc.graph.DirectedGraph;
 import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.relation.RelationRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.domain.Service;
 
 public class GraphFactory implements Service {
 
-    public UndirectedGraph buildBoundedContextGraph(
-            BoundedContextDoc boundedContextDoc) {
-        return new BoundedContextGraphFactory.Builder()
-                .boundedContextDoc(boundedContextDoc)
+    public UndirectedGraph buildModuleGraph(
+            ModuleDoc moduleDoc) {
+        return new ModuleGraphFactory.Builder()
+                .moduleDoc(moduleDoc)
                 .aggregateDocRepository(aggregateDocRepository)
                 .relationRepository(relationRepository)
                 .build()

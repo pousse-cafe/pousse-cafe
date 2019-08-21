@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.process.DomainProcess;
 
 public class DomainProcessDocCreation extends DomainProcess {
 
-    public void addDomainProcessDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
-        DomainProcessDoc entityDoc = domainProcessDocFactory.newDomainProcessDoc(boundedContextId, classDoc);
+    public void addDomainProcessDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
+        DomainProcessDoc entityDoc = domainProcessDocFactory.newDomainProcessDoc(moduleDocId, classDoc);
         runInTransaction(DomainProcessDoc.class, () -> domainProcessDocRepository.add(entityDoc));
     }
 
@@ -23,17 +23,17 @@ public class DomainProcessDocCreation extends DomainProcess {
 
     private DomainProcessDocRepository domainProcessDocRepository;
 
-    public void addDomainProcessDocs(BoundedContextDocId boundedContextId, ExecutableElement classDoc) {
-        List<DomainProcessDoc> docs = domainProcessDocFactory.createDomainProcesses(boundedContextId, classDoc);
+    public void addDomainProcessDocs(ModuleDocId moduleDocId, ExecutableElement classDoc) {
+        List<DomainProcessDoc> docs = domainProcessDocFactory.createDomainProcesses(moduleDocId, classDoc);
         for(DomainProcessDoc doc : docs) {
             DomainProcessDocId docId = doc.attributes().identifier().value();
-            BoundedContextComponentDoc boundedContextComponentDoc = doc.attributes().boundedContextComponentDoc().value();
+            ModuleComponentDoc moduleComponentDoc = doc.attributes().moduleComponentDoc().value();
             Optional<DomainProcessDoc> existingDoc = domainProcessDocRepository.getOptional(docId);
             if(existingDoc.isPresent()) {
-                if(boundedContextComponentDoc.componentDoc().hasDescription()) {
+                if(moduleComponentDoc.componentDoc().hasDescription()) {
                     runInTransaction(DomainProcessDoc.class, () -> {
                         DomainProcessDoc toUpdate = domainProcessDocRepository.get(docId);
-                        toUpdate.attributes().boundedContextComponentDoc().value(boundedContextComponentDoc);
+                        toUpdate.attributes().moduleComponentDoc().value(moduleComponentDoc);
                         domainProcessDocRepository.update(toUpdate);
                     });
                 }

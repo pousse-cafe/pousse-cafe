@@ -3,8 +3,8 @@ package poussecafe.doc.process;
 import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.TypeElement;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocExtractor;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocId;
@@ -13,8 +13,8 @@ import poussecafe.process.DomainProcess;
 
 public class ProcessStepDocCreation extends DomainProcess {
 
-    public void createOrUpdateProcessStepDoc(BoundedContextDocId boundedContextId, TypeElement classDoc) {
-        List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(boundedContextId, classDoc);
+    public void createOrUpdateProcessStepDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
+        List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(moduleDocId, classDoc);
         for(ProcessStepDoc doc : docs) {
             createOrUpdate(doc);
         }
@@ -25,9 +25,9 @@ public class ProcessStepDocCreation extends DomainProcess {
     private void createOrUpdate(ProcessStepDoc doc) {
         ProcessStepDocId id = doc.attributes().identifier().value();
         if(processStepRepository.getOptional(id).isEmpty()) {
-            runInTransaction(BoundedContextDoc.class, () -> processStepRepository.add(doc));
+            runInTransaction(ModuleDoc.class, () -> processStepRepository.add(doc));
         } else {
-            runInTransaction(BoundedContextDoc.class, () -> {
+            runInTransaction(ModuleDoc.class, () -> {
                 ProcessStepDoc processStepDoc = processStepRepository.get(id);
                 Optional<String> processName = processStepDoc.attributes().processName().value();
                 if(!processName.isPresent()) {

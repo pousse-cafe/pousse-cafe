@@ -2,11 +2,11 @@ package poussecafe.doc;
 
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 import poussecafe.doc.process.ValueObjectDocCreation;
 
-public class ValueObjectDocCreator extends BoundedContextComponentDocCreator {
+public class ValueObjectDocCreator extends ModuleComponentDocCreator {
 
     public ValueObjectDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
@@ -25,9 +25,9 @@ public class ValueObjectDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocId boundedContextDocId,
+    protected void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc) {
-        valueObjectDocCreation.addValueObjectDoc(boundedContextDocId, componentClassDoc);
+        valueObjectDocCreation.addValueObjectDoc(moduleDocId, componentClassDoc);
     }
 
     private ValueObjectDocCreation valueObjectDocCreation;

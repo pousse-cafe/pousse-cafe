@@ -1,4 +1,4 @@
-package poussecafe.doc.model.boundedcontextdoc;
+package poussecafe.doc.model.moduledoc;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
@@ -8,10 +8,10 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
-    factory = BoundedContextDocFactory.class,
-    repository = BoundedContextDocRepository.class
+    factory = ModuleDocFactory.class,
+    repository = ModuleDocRepository.class
 )
-public class BoundedContextDoc extends AggregateRoot<BoundedContextDocId, BoundedContextDoc.Attributes> {
+public class ModuleDoc extends AggregateRoot<ModuleDocId, ModuleDoc.Attributes> {
 
     void componentDoc(ComponentDoc componentDoc) {
         attributes().componentDoc().value(componentDoc);
@@ -25,7 +25,7 @@ public class BoundedContextDoc extends AggregateRoot<BoundedContextDocId, Bounde
         return StringNormalizer.normalizeString(attributes().componentDoc().value().name());
     }
 
-    public static interface Attributes extends EntityAttributes<BoundedContextDocId> {
+    public static interface Attributes extends EntityAttributes<ModuleDocId> {
 
         Attribute<ComponentDoc> componentDoc();
     }

@@ -1,10 +1,10 @@
 package poussecafe.doc.model.domainprocessdoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.EntityDataAccess;
 
 public interface DomainProcessDocDataAccess<D extends DomainProcessDoc.Attributes> extends EntityDataAccess<DomainProcessDocId, D> {
 
-    List<D> findByBoundedContextId(BoundedContextDocId id);
+    List<D> findByModuleId(ModuleDocId id);
 }

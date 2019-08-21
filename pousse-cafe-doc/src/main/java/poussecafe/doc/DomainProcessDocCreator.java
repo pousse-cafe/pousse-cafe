@@ -5,13 +5,13 @@ import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.process.DomainProcessDocCreation;
 import poussecafe.domain.Repository;
 
-public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
+public class DomainProcessDocCreator extends ModuleComponentDocCreator {
 
     public DomainProcessDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
@@ -39,14 +39,14 @@ public class DomainProcessDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocId boundedContextDocId,
+    protected void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc) {
         if(domainProcessDocFactory.isDomainProcessDoc(componentClassDoc)) {
-            domainProcessDocCreation.addDomainProcessDoc(boundedContextDocId, componentClassDoc);
+            domainProcessDocCreation.addDomainProcessDoc(moduleDocId, componentClassDoc);
         } else {
             for(ExecutableElement doc : docletAccess.methods(componentClassDoc)) {
                 if(domainProcessDocFactory.isDomainProcessDoc(doc)) {
-                    domainProcessDocCreation.addDomainProcessDocs(boundedContextDocId, doc);
+                    domainProcessDocCreation.addDomainProcessDocs(moduleDocId, doc);
                 }
             }
         }

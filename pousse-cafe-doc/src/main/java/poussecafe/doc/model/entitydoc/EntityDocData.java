@@ -2,8 +2,8 @@ package poussecafe.doc.model.entitydoc;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
-import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.BoundedContextComponentDocData;
+import poussecafe.doc.model.ModuleComponentDoc;
+import poussecafe.doc.model.ModuleComponentDocData;
 
 @SuppressWarnings("serial")
 public class EntityDocData implements EntityDoc.Attributes, Serializable {
@@ -26,21 +26,21 @@ public class EntityDocData implements EntityDoc.Attributes, Serializable {
     private String className;
 
     @Override
-    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return new Attribute<BoundedContextComponentDoc>() {
+    public Attribute<ModuleComponentDoc> moduleComponentDoc() {
+        return new Attribute<ModuleComponentDoc>() {
             @Override
-            public BoundedContextComponentDoc value() {
-                return boundedContextComponentDoc.adapt();
+            public ModuleComponentDoc value() {
+                return moduleComponentDoc.adapt();
             }
 
             @Override
-            public void value(BoundedContextComponentDoc value) {
-                boundedContextComponentDoc = BoundedContextComponentDocData.adapt(value);
+            public void value(ModuleComponentDoc value) {
+                moduleComponentDoc = ModuleComponentDocData.adapt(value);
             }
         };
     }
 
-    private BoundedContextComponentDocData boundedContextComponentDoc;
+    private ModuleComponentDocData moduleComponentDoc;
 
     @Override
     public Attribute<String> idClassName() {

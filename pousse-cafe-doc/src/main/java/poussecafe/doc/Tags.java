@@ -16,7 +16,7 @@ public interface Tags {
 
     String EVENT = "event";
 
-    String BOUNDED_CONTEXT = "bounded_context";
+    String MODULE = "module";
 
     String PROCESS = "process";
 

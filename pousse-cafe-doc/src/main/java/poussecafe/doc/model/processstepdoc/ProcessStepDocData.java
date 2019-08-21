@@ -6,8 +6,8 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
-import poussecafe.doc.model.BoundedContextComponentDoc;
-import poussecafe.doc.model.BoundedContextComponentDocData;
+import poussecafe.doc.model.ModuleComponentDoc;
+import poussecafe.doc.model.ModuleComponentDocData;
 
 @SuppressWarnings("serial")
 public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attributes {
@@ -23,15 +23,15 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     private String id;
 
     @Override
-    public Attribute<BoundedContextComponentDoc> boundedContextComponentDoc() {
-        return AttributeBuilder.single(BoundedContextComponentDoc.class)
-                .usingAutoAdapter(BoundedContextComponentDocData.class)
-                .read(() -> boundedContextComponentDoc)
-                .write(value -> boundedContextComponentDoc = value)
+    public Attribute<ModuleComponentDoc> moduleComponentDoc() {
+        return AttributeBuilder.single(ModuleComponentDoc.class)
+                .usingAutoAdapter(ModuleComponentDocData.class)
+                .read(() -> moduleComponentDoc)
+                .write(value -> moduleComponentDoc = value)
                 .build();
     }
 
-    private BoundedContextComponentDocData boundedContextComponentDoc;
+    private ModuleComponentDocData moduleComponentDoc;
 
     @Override
     public SetAttribute<String> producedEvents() {

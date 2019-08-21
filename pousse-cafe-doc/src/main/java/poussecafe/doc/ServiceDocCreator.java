@@ -2,11 +2,11 @@ package poussecafe.doc;
 
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.process.ServiceDocCreation;
 
-public class ServiceDocCreator extends BoundedContextComponentDocCreator {
+public class ServiceDocCreator extends ModuleComponentDocCreator {
 
     public ServiceDocCreator(DocletEnvironment environment) {
         super(environment);
@@ -25,9 +25,9 @@ public class ServiceDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocId boundedContextDocId,
+    protected void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc) {
-        serviceDocCreation.addServiceDoc(boundedContextDocId, componentClassDoc);
+        serviceDocCreation.addServiceDoc(moduleDocId, componentClassDoc);
     }
 
     private ServiceDocCreation serviceDocCreation;

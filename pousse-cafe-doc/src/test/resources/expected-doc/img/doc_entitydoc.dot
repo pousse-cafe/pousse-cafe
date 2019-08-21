@@ -2,14 +2,14 @@ graph {
 splines=spline;
 overlap=false;
 "EntityDoc" -- "EntityDocId" [style=solid];
-"BoundedContextComponentDoc" -- "ComponentDoc" [style=solid];
-"BoundedContextDoc" -- "BoundedContextDocId" [style=dotted];
-"BoundedContextComponentDoc" -- "EntityDoc" [style=solid];
-"BoundedContextComponentDoc" -- "BoundedContextDocId" [style=solid];
-"BoundedContextComponentDoc"[shape=ellipse];
+"ModuleComponentDoc" -- "ModuleDocId" [style=solid];
+"ComponentDoc" -- "ModuleComponentDoc" [style=solid];
+"ModuleDoc" -- "ModuleDocId" [style=dotted];
+"EntityDoc" -- "ModuleComponentDoc" [style=solid];
+"ModuleComponentDoc"[shape=ellipse];
 "ComponentDoc"[shape=ellipse];
-"BoundedContextDocId"[shape=ellipse];
+"ModuleDoc"[shape=box,style=bold];
+"ModuleDocId"[shape=ellipse];
 "EntityDoc"[shape=box,style=bold];
-"BoundedContextDoc"[shape=box,style=bold];
 "EntityDocId"[shape=ellipse];
 }

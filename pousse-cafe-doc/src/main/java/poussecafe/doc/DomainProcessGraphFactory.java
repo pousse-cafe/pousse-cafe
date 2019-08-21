@@ -40,7 +40,7 @@ public class DomainProcessGraphFactory {
     }
 
     public DirectedGraph buildGraph() {
-        Logger.info("Building graph for process {}", domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+        Logger.info("Building graph for process {}", domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name());
         DirectedGraph graph = new DirectedGraph();
         DomainProcessSteps steps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc);
         for(Step step : steps.orderedSteps()) {

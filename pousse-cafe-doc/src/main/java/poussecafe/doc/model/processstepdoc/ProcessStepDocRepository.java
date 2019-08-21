@@ -1,15 +1,15 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc.Attributes;
 import poussecafe.domain.Repository;
 
 public class ProcessStepDocRepository extends Repository<ProcessStepDoc, ProcessStepDocId, ProcessStepDoc.Attributes> {
 
-    public List<ProcessStepDoc> findByDomainProcess(BoundedContextDocId boundedContextDocId,
+    public List<ProcessStepDoc> findByDomainProcess(ModuleDocId moduleDocId,
             String processName) {
-        return wrap(dataAccess().findByDomainProcess(boundedContextDocId, processName));
+        return wrap(dataAccess().findByDomainProcess(moduleDocId, processName));
     }
 
     @Override
@@ -17,13 +17,13 @@ public class ProcessStepDocRepository extends Repository<ProcessStepDoc, Process
         return (ProcessStepDataAccess<Attributes>) super.dataAccess();
     }
 
-    public List<ProcessStepDoc> findConsuming(BoundedContextDocId boundedContextDocId,
+    public List<ProcessStepDoc> findConsuming(ModuleDocId moduleDocId,
             String eventName) {
-        return wrap(dataAccess().findConsuming(boundedContextDocId, eventName));
+        return wrap(dataAccess().findConsuming(moduleDocId, eventName));
     }
 
-    public List<ProcessStepDoc> findProducing(BoundedContextDocId boundedContextDocId,
+    public List<ProcessStepDoc> findProducing(ModuleDocId moduleDocId,
             String eventName) {
-        return wrap(dataAccess().findProducing(boundedContextDocId, eventName));
+        return wrap(dataAccess().findProducing(moduleDocId, eventName));
     }
 }

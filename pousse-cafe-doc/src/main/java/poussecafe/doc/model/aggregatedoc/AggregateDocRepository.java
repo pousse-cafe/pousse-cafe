@@ -1,13 +1,13 @@
 package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.Repository;
 
 public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocId, AggregateDoc.Attributes> {
 
-    public List<AggregateDoc> findByBoundedContextId(BoundedContextDocId id) {
-        return wrap(dataAccess().findByBoundedContextId(id));
+    public List<AggregateDoc> findByModule(ModuleDocId id) {
+        return wrap(dataAccess().findByModuleId(id));
     }
 
     @Override

@@ -1,13 +1,13 @@
 package poussecafe.doc.model.factorydoc;
 
 import java.util.List;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.Repository;
 
 public class FactoryDocRepository extends Repository<FactoryDoc, FactoryDocId, FactoryDoc.Attributes> {
 
-    public List<FactoryDoc> findByBoundedContextId(BoundedContextDocId id) {
-        return wrap(dataAccess().findByBoundedContextId(id));
+    public List<FactoryDoc> findByModuleId(ModuleDocId id) {
+        return wrap(dataAccess().findByModuleId(id));
     }
 
     @Override

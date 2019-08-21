@@ -4,11 +4,11 @@ import javax.lang.model.element.TypeElement;
 import poussecafe.discovery.MessageListener;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.commands.CreateAggregateDoc;
-import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ClassDocRepository;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
@@ -30,9 +30,9 @@ public class AggregateDocFactory extends Factory<AggregateDocId, AggregateDoc, A
         AggregateDoc aggregateDoc = newAggregateWithId(id);
 
         String name = name(aggregateClassDoc);
-        BoundedContextDocId boundedContextDocId = command.boundedContextId().value();
-        aggregateDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocId(boundedContextDocId)
+        ModuleDocId moduleDocId = command.moduleId().value();
+        aggregateDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
+                .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 

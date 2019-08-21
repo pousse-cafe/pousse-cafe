@@ -6,10 +6,10 @@ import java.util.List;
 import poussecafe.doc.model.GraphFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocRepository;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 
 public class GraphImagesWriter {
 
@@ -28,15 +28,15 @@ public class GraphImagesWriter {
     public void writeImages() {
         try {
             File outputDirectory = outputDirectory();
-            List<BoundedContextDoc> boundedContextDocs = boundedContextDocRepository.findAll();
-            for (BoundedContextDoc boundedContextDoc : boundedContextDocs) {
-                Logger.debug("Drawing BC " + boundedContextDoc.attributes().componentDoc().value().name() + " graph...");
+            List<ModuleDoc> moduleDocs = moduleDocRepository.findAll();
+            for (ModuleDoc moduleDoc : moduleDocs) {
+                Logger.debug("Drawing BC " + moduleDoc.attributes().componentDoc().value().name() + " graph...");
                 graphImageWriter
-                        .writeImage(graphFactory.buildBoundedContextGraph(boundedContextDoc), outputDirectory,
-                                boundedContextDoc.id());
+                        .writeImage(graphFactory.buildModuleGraph(moduleDoc), outputDirectory,
+                                moduleDoc.id());
 
-                writeAggregatesGraphs(boundedContextDoc);
-                writeDomainProcessesGraphs(boundedContextDoc);
+                writeAggregatesGraphs(moduleDoc);
+                writeDomainProcessesGraphs(moduleDoc);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error while writing graphs", e);
@@ -51,31 +51,31 @@ public class GraphImagesWriter {
 
     private GraphImageWriter graphImageWriter;
 
-    private void writeAggregatesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
+    private void writeAggregatesGraphs(ModuleDoc moduleDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (AggregateDoc aggregateDoc : aggregateDocRepository
-                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
-            Logger.debug("Drawing aggregate " + aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name() + " graph...");
+                .findByModule(moduleDoc.attributes().identifier().value())) {
+            Logger.debug("Drawing aggregate " + aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
-                            boundedContextDoc.id() + "_" + aggregateDoc.id());
+                            moduleDoc.id() + "_" + aggregateDoc.id());
         }
     }
 
-    private BoundedContextDocRepository boundedContextDocRepository;
+    private ModuleDocRepository moduleDocRepository;
 
     private AggregateDocRepository aggregateDocRepository;
 
     private GraphFactory graphFactory;
 
-    private void writeDomainProcessesGraphs(BoundedContextDoc boundedContextDoc) throws IOException {
+    private void writeDomainProcessesGraphs(ModuleDoc moduleDoc) throws IOException {
         File outputDirectory = outputDirectory();
         for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
-                .findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
-            Logger.debug("Drawing domain process " + domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name() + " graph...");
+                .findByModuleId(moduleDoc.attributes().identifier().value())) {
+            Logger.debug("Drawing domain process " + domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name() + " graph...");
             graphImageWriter
                     .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
-                            boundedContextDoc.id() + "_" + domainProcessDoc.id());
+                            moduleDoc.id() + "_" + domainProcessDoc.id());
         }
     }
 

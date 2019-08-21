@@ -1,15 +1,15 @@
 graph {
 splines=spline;
 overlap=false;
+"ModuleComponentDoc" -- "ServiceDoc" [style=solid];
 "ServiceDoc" -- "ServiceDocId" [style=solid];
-"BoundedContextComponentDoc" -- "ServiceDoc" [style=solid];
-"BoundedContextComponentDoc" -- "ComponentDoc" [style=solid];
-"BoundedContextDoc" -- "BoundedContextDocId" [style=dotted];
-"BoundedContextComponentDoc" -- "BoundedContextDocId" [style=solid];
+"ModuleComponentDoc" -- "ModuleDocId" [style=solid];
+"ComponentDoc" -- "ModuleComponentDoc" [style=solid];
+"ModuleDoc" -- "ModuleDocId" [style=dotted];
 "ServiceDoc"[shape=box,style=bold];
-"BoundedContextComponentDoc"[shape=ellipse];
+"ModuleComponentDoc"[shape=ellipse];
 "ComponentDoc"[shape=ellipse];
-"BoundedContextDocId"[shape=ellipse];
-"BoundedContextDoc"[shape=box,style=bold];
+"ModuleDoc"[shape=box,style=bold];
+"ModuleDocId"[shape=ellipse];
 "ServiceDocId"[shape=ellipse];
 }

@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.entitydoc.EntityDoc;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.domain.Service;
@@ -17,28 +17,28 @@ public class UbiquitousLanguageFactory implements Service {
 
     public List<UbiquitousLanguageEntry> buildUbiquitousLanguage(Domain domain) {
         Set<UbiquitousLanguageEntry> language = new HashSet<>();
-        for(BoundedContext boundedContext : domain.boundedContexts()) {
-            BoundedContextDoc boundedContextDoc = boundedContext.documentation();
+        for(Module module : domain.modules()) {
+            ModuleDoc moduleDoc = module.documentation();
             language.add(new UbiquitousLanguageEntry.Builder()
-                            .componentDoc(boundedContextDoc.attributes().componentDoc().value())
+                            .componentDoc(moduleDoc.attributes().componentDoc().value())
                             .type("Bounded Context")
                             .build());
 
-            String boundedContextName = boundedContextDoc.attributes().componentDoc().value().name();
-            for (Aggregate aggregate : boundedContext.aggregates()) {
+            String moduleName = moduleDoc.attributes().componentDoc().value().name();
+            for (Aggregate aggregate : module.aggregates()) {
                 AggregateDoc aggregateDoc = aggregate.documentation();
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
-                                .boundedContextName(boundedContextName)
-                                .componentDoc(aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc())
+                                .moduleName(moduleName)
+                                .componentDoc(aggregateDoc.attributes().moduleComponentDoc().value().componentDoc())
                                 .type("Aggregate")
                                 .build());
 
                 for (EntityDoc entityDoc : aggregate.entities()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
-                                    .boundedContextName(boundedContextName)
-                                    .componentDoc(entityDoc.attributes().boundedContextComponentDoc().value().componentDoc())
+                                    .moduleName(moduleName)
+                                    .componentDoc(entityDoc.attributes().moduleComponentDoc().value().componentDoc())
                                     .type("Entity")
                                     .build());
                 }
@@ -46,27 +46,27 @@ public class UbiquitousLanguageFactory implements Service {
                 for (ValueObjectDoc valueObjectDoc : aggregate.valueObjects()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
-                                    .boundedContextName(boundedContextName)
-                                    .componentDoc(valueObjectDoc.attributes().boundedContextComponentDoc().value().componentDoc())
+                                    .moduleName(moduleName)
+                                    .componentDoc(valueObjectDoc.attributes().moduleComponentDoc().value().componentDoc())
                                     .type("Value Object")
                                     .build());
                 }
             }
 
-            for (ServiceDoc serviceDoc : boundedContext.services()) {
+            for (ServiceDoc serviceDoc : module.services()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
-                                .boundedContextName(boundedContextName)
-                                .componentDoc(serviceDoc.attributes().boundedContextComponentDoc().value().componentDoc())
+                                .moduleName(moduleName)
+                                .componentDoc(serviceDoc.attributes().moduleComponentDoc().value().componentDoc())
                                 .type("Service")
                                 .build());
             }
 
-            for (DomainProcessDoc domainProcessDoc : boundedContext.processes()) {
+            for (DomainProcessDoc domainProcessDoc : module.processes()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
-                                .boundedContextName(boundedContextName)
-                                .componentDoc(domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc())
+                                .moduleName(moduleName)
+                                .componentDoc(domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc())
                                 .type("Domain Process")
                                 .build());
             }

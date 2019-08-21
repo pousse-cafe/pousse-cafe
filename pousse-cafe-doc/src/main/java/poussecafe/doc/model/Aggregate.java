@@ -11,28 +11,28 @@ public class Aggregate {
 
     public static class Builder {
 
-        private Aggregate boundedContext = new Aggregate();
+        private Aggregate aggregate = new Aggregate();
 
         public Builder documentation(AggregateDoc documentation) {
-            boundedContext.documentation = documentation;
+            aggregate.documentation = documentation;
             return this;
         }
 
         public Builder entities(List<EntityDoc> entities) {
-            boundedContext.entities = new ArrayList<>(entities);
+            aggregate.entities = new ArrayList<>(entities);
             return this;
         }
 
         public Builder valueObjects(List<ValueObjectDoc> valueObjects) {
-            boundedContext.valueObjects = new ArrayList<>(valueObjects);
+            aggregate.valueObjects = new ArrayList<>(valueObjects);
             return this;
         }
 
         public Aggregate build() {
-            Objects.requireNonNull(boundedContext.documentation);
-            Objects.requireNonNull(boundedContext.entities);
-            Objects.requireNonNull(boundedContext.valueObjects);
-            return boundedContext;
+            Objects.requireNonNull(aggregate.documentation);
+            Objects.requireNonNull(aggregate.entities);
+            Objects.requireNonNull(aggregate.valueObjects);
+            return aggregate;
         }
     }
 

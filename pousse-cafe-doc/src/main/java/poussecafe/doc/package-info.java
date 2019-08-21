@@ -1,4 +1,4 @@
 /**
- * @bounded_context Doc
+ * @module Doc
  */
 package poussecafe.doc;

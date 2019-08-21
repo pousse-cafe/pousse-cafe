@@ -1,4 +1,4 @@
-package poussecafe.doc.model.boundedcontextdoc;
+package poussecafe.doc.model.moduledoc;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
@@ -6,18 +6,18 @@ import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocData;
 
 @SuppressWarnings("serial")
-public class BoundedContextDocData implements BoundedContextDoc.Attributes, Serializable {
+public class ModuleDocData implements ModuleDoc.Attributes, Serializable {
 
     @Override
-    public Attribute<BoundedContextDocId> identifier() {
-        return new Attribute<BoundedContextDocId>() {
+    public Attribute<ModuleDocId> identifier() {
+        return new Attribute<ModuleDocId>() {
             @Override
-            public BoundedContextDocId value() {
-                return BoundedContextDocId.ofPackageName(id);
+            public ModuleDocId value() {
+                return ModuleDocId.ofPackageName(id);
             }
 
             @Override
-            public void value(BoundedContextDocId value) {
+            public void value(ModuleDocId value) {
                 id = value.stringValue();
             }
         };

@@ -80,7 +80,7 @@ public class AggregateGraphFactory {
 
     private String addAggregate() {
         Logger.debug("Aggregate " + aggregateDoc.className());
-        String nodeName = aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name();
+        String nodeName = aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name();
         Node node = Node.box(nodeName);
         node.setStyle(NodeStyle.BOLD);
         graph.getNodesAndEdges().addNode(node);
@@ -119,7 +119,7 @@ public class AggregateGraphFactory {
         }
 
         AggregateDoc toAggregateDoc = aggregateDocRepository.get(AggregateDocId.ofClassName(toComponent.className()));
-        if(!toAggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocId().equals(aggregateDoc.attributes().boundedContextComponentDoc().value().boundedContextDocId())) {
+        if(!toAggregateDoc.attributes().moduleComponentDoc().value().moduleDocId().equals(aggregateDoc.attributes().moduleComponentDoc().value().moduleDocId())) {
             return;
         }
 
@@ -142,11 +142,11 @@ public class AggregateGraphFactory {
         try {
             switch(component.type()) {
             case AGGREGATE:
-                return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().moduleComponentDoc().value().componentDoc().name();
             case ENTITY:
-                return entityDocRepository.get(EntityDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                return entityDocRepository.get(EntityDocId.ofClassName(component.className())).attributes().moduleComponentDoc().value().componentDoc().name();
             case VALUE_OBJECT:
-                    return valueObjectDocRepository.get(ValueObjectDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+                    return valueObjectDocRepository.get(ValueObjectDocId.ofClassName(component.className())).attributes().moduleComponentDoc().value().componentDoc().name();
             default:
                 throw new IllegalArgumentException("Unsupported component type " + component.type());
             }

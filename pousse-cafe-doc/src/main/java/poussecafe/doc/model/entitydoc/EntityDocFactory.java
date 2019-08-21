@@ -4,16 +4,16 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
 import poussecafe.domain.Factory;
 
 public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.Attributes> {
 
-    public EntityDoc newEntityDoc(BoundedContextDocId boundedContextId, TypeElement entityClassDoc) {
+    public EntityDoc newEntityDoc(ModuleDocId moduleDocId, TypeElement entityClassDoc) {
         if(!isEntityDoc(entityClassDoc)) {
             throw new DomainException("Class " + entityClassDoc.getQualifiedName() + " is not an entity");
         }
@@ -21,8 +21,8 @@ public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.
         String name = name(entityClassDoc);
         EntityDocId id = EntityDocId.ofClassName(entityClassDoc.getQualifiedName().toString());
         EntityDoc entityDoc = newAggregateWithId(id);
-        entityDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocId(boundedContextId)
+        entityDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
+                .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))
                 .build());
 

@@ -107,24 +107,24 @@ public class PousseCafeDoclet implements Doclet {
     }
 
     private void analyzeCode() {
-        detectBoundedContexts();
-        detectBoundedContextComponents();
+        detectModules();
+        detectModulesComponents();
         detectDomainProcesses();
         detectRelations();
     }
 
-    private void detectBoundedContexts() {
-        BoundedContextDocCreator boundedContextCreator = new BoundedContextDocCreator();
-        runtime.injector().injectDependenciesInto(boundedContextCreator);
+    private void detectModules() {
+        ModuleDocCreator moduleDocCreator = new ModuleDocCreator();
+        runtime.injector().injectDependenciesInto(moduleDocCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
-                .packageDocConsumer(boundedContextCreator)
+                .packageDocConsumer(moduleDocCreator)
                 .build();
         runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
     }
 
-    private void detectBoundedContextComponents() {
+    private void detectModulesComponents() {
         AggregateDocCreator aggregateDocCreator = new AggregateDocCreator(environment);
         runtime.injector().injectDependenciesInto(aggregateDocCreator);
 

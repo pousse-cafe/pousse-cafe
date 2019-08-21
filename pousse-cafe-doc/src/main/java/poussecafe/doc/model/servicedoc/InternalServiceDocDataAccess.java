@@ -2,7 +2,7 @@ package poussecafe.doc.model.servicedoc;
 
 import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -16,8 +16,8 @@ import static java.util.stream.Collectors.toList;
 public class InternalServiceDocDataAccess extends InternalDataAccess<ServiceDocId, ServiceDocData> implements ServiceDocDataAccess<ServiceDocData> {
 
     @Override
-    public List<ServiceDocData> findByBoundedContextId(BoundedContextDocId id) {
-        return findAll().stream().filter(data -> data.boundedContextComponentDoc().value().boundedContextDocId().equals(id)).collect(toList());
+    public List<ServiceDocData> findByModuleDocId(ModuleDocId id) {
+        return findAll().stream().filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(id)).collect(toList());
     }
 
 }

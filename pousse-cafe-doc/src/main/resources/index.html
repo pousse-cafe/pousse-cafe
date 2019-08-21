@@ -8,8 +8,8 @@
 <bookmark name="Table of Contents" href="#toc"></bookmark>
 <bookmark name="Introduction" href="#intro"></bookmark>
 <bookmark name="Domain ${domain.name}" href="#domain">
-    <#list domain.boundedContexts as context>
-    <bookmark name="${context.name}" href="#${context.id}"></bookmark>
+    <#list domain.modules as module>
+    <bookmark name="${module.name}" href="#${module.id}"></bookmark>
     </#list>
 </bookmark>
 <bookmark name="Ubiquitous Language" href="#ubiquitous_language"></bookmark>
@@ -37,30 +37,30 @@ ${domain.name} Domain Model
     <li><a href="#intro">Introduction</a></li>
     <li><a href="#domain">${domain.name} Domain</a></li>
     <ol>
-        <#list domain.boundedContexts as context>
-        <li><a href="#${context.id}">${context.name}</a></li>
+        <#list domain.modules as module>
+        <li><a href="#${module.id}">${module.name}</a></li>
         <ol>
-          <#if context.aggregates?size gt 0>
-          <li><a href="#${context.id}_aggregates">Aggregates</a></li>
+          <#if module.aggregates?size gt 0>
+          <li><a href="#${module.id}_aggregates">Aggregates</a></li>
           <ol>
-            <#list context.aggregates as aggregate>
-            <li><a href="#${context.id}_${aggregate.id}">${aggregate.name}</a></li>
+            <#list module.aggregates as aggregate>
+            <li><a href="#${module.id}_${aggregate.id}">${aggregate.name}</a></li>
             </#list>
           </ol>
           </#if>
-          <#if context.services?size gt 0>
-          <li><a href="#${context.id}_services">Services</a></li>
+          <#if module.services?size gt 0>
+          <li><a href="#${module.id}_services">Services</a></li>
           <ol>
-            <#list context.services as service>
-            <li><a href="#${context.id}_${service.id}">${service.name}</a></li>
+            <#list module.services as service>
+            <li><a href="#${module.id}_${service.id}">${service.name}</a></li>
             </#list>
           </ol>
           </#if>
-          <#if context.domainProcesses?size gt 0>
-          <li><a href="#${context.id}_processes">Domain Processes</a></li>
+          <#if module.domainProcesses?size gt 0>
+          <li><a href="#${module.id}_processes">Domain Processes</a></li>
           <ol>
-            <#list context.domainProcesses as process>
-            <li><a href="#${context.id}_${process.id}">${process.name}</a></li>
+            <#list module.domainProcesses as process>
+            <li><a href="#${module.id}_${process.id}">${process.name}</a></li>
             </#list>
           </ol>
           </#if>
@@ -86,8 +86,8 @@ definitions, please refer to the litterature:</p>
   <li>Service: an object representing an operation that is not naturally part of a value object or an entity;</li>
   <li>Domain Event: an object representing an event and used to communicate information between aggregates potentially
   located in different bounded contexts;</li>
-  <li>Bounded Contexts: they describe boundaries inside of which each component has a unique name and a given definition.
-  Some concepts might appear in different bounded contexts with the same name but with a slightly or completely different
+  <li>Modules: they describe boundaries inside of which each component has a unique name and a given definition.
+  Some concepts might appear in different modules with the same name but with a slightly or completely different
   definition.</li>
 </ul>
 
@@ -100,14 +100,14 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <p>The following conventions are being used:</p>
 <ul>
-  <li>As this document is generated directly from code, the domain is described by a set of bounded contexts.
-  Each bounded context is composed of a set of aggregates, services and domain processes.</li>
-  <li>An undirected graph representing a bounded context is composed of boxes representing the aggregates. Edges represent relations
+  <li>As this document is generated directly from code, the domain is described by a set of modules.
+  Each module is composed of a set of aggregates, services and domain processes.</li>
+  <li>An undirected graph representing a module is composed of boxes representing the aggregates. Edges represent relations
   between aggregates i.e. the fact that one aggregate makes reference to another one.</li>
   <li>Value objects and entities are presented in the context of their aggregate. An undirected graph representing an aggregate
   is composed of boxes (Entities) and ellipses (Value Objects). The aggregate root has thicker borders. Edges
   represent relations between the different components. Dashed edges represent a reference made to another aggregate
-  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in bounded context
+  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in module
   graph.</li>
   <li>Domain processes are represented using directed graphs, each node being a step of the process. Entering a step of
   a domain process generally implies the creation of a new aggregate or the update of an existing one. External steps
@@ -117,28 +117,28 @@ a process, most of them are called when handling a Domain Event.</p>
 
 <p>The rest of the document is split in two parts:</p>
 <ol>
-  <li>the description of the different bounded contexts and their components,</li>
-  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the bounded
-  context (if relevant), the type of component and a short description.</li>
+  <li>the description of the different modules and their components,</li>
+  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the module (if
+  relevant), the type of component and a short description.</li>
 </ol>
 
 <h1 id="domain">${domain.name} Domain</h1>
 
-<#list domain.boundedContexts as context>
-<h2 id="${context.id}">${context.name}</h2>
-<#if context.description??>
-${context.description}
+<#list domain.modules as module>
+<h2 id="${module.id}">${module.name}</h2>
+<#if module.description??>
+${module.description}
 </#if>
 
 <div class="figure">
-  <img src="img/${context.id}.png"/>
+  <img src="img/${module.id}.png"/>
 </div>
 
-<#if context.aggregates?size gt 0>
-<h3 id="${context.id}_aggregates">Aggregates</h3>
+<#if module.aggregates?size gt 0>
+<h3 id="${module.id}_aggregates">Aggregates</h3>
 
-<#list context.aggregates as aggregate>
-<h4 id="${context.id}_${aggregate.id}">${aggregate.name}</h4>
+<#list module.aggregates as aggregate>
+<h4 id="${module.id}_${aggregate.id}">${aggregate.name}</h4>
 ${aggregate.description}
 
 <#if aggregate.valueObjects?size gt 0>
@@ -160,28 +160,28 @@ ${aggregate.description}
 </#if>
 
 <div class="figure">
-  <img src="img/${context.id}_${aggregate.id}.png"/>
+  <img src="img/${module.id}_${aggregate.id}.png"/>
 </div>
 
 </#list>
 </#if>
 
-<#if context.services?size gt 0>
-<h3 id="${context.id}_services">Services</h3>
-<#list context.services as service>
-<h4 id="${context.id}_${service.id}">${service.name}</h4>
+<#if module.services?size gt 0>
+<h3 id="${module.id}_services">Services</h3>
+<#list module.services as service>
+<h4 id="${module.id}_${service.id}">${service.name}</h4>
 ${service.description}
 </#list>
 </#if>
 
-<#if context.domainProcesses?size gt 0>
-<h3 id="${context.id}_processes">Domain Processes</h3>
-<#list context.domainProcesses as process>
-<h4 id="${context.id}_${process.id}">${process.name}</h4>
+<#if module.domainProcesses?size gt 0>
+<h3 id="${module.id}_processes">Domain Processes</h3>
+<#list module.domainProcesses as process>
+<h4 id="${module.id}_${process.id}">${process.name}</h4>
 ${process.description}
 
 <div class="figure">
-  <img src="img/${context.id}_${process.id}.png"/>
+  <img src="img/${module.id}_${process.id}.png"/>
 </div>
 
 <ul>

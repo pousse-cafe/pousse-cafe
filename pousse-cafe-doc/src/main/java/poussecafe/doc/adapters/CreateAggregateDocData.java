@@ -5,21 +5,21 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.doc.commands.CreateAggregateDoc;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 
 @MessageImplementation(message = CreateAggregateDoc.class)
 @SuppressWarnings("serial")
 public class CreateAggregateDocData implements Serializable, CreateAggregateDoc {
 
     @Override
-    public Attribute<BoundedContextDocId> boundedContextId() {
-        return AttributeBuilder.stringId(BoundedContextDocId.class)
-                .read(() -> boundedContextDocId)
-                .write(value -> boundedContextDocId = value)
+    public Attribute<ModuleDocId> moduleId() {
+        return AttributeBuilder.stringId(ModuleDocId.class)
+                .read(() -> moduleDocId)
+                .write(value -> moduleDocId = value)
                 .build();
     }
 
-    private String boundedContextDocId;
+    private String moduleDocId;
 
     @Override
     public Attribute<String> className() {

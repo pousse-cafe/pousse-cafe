@@ -21,15 +21,15 @@ public class Domain implements ValueObject {
             return this;
         }
 
-        public Builder boundedContexts(List<BoundedContext> boundedContexts) {
-            domain.boundedContexts = new ArrayList<>(boundedContexts);
+        public Builder modules(List<Module> modules) {
+            domain.modules = new ArrayList<>(modules);
             return this;
         }
 
         public Domain build() {
             Objects.requireNonNull(domain.name);
             Objects.requireNonNull(domain.version);
-            Objects.requireNonNull(domain.boundedContexts);
+            Objects.requireNonNull(domain.modules);
             return domain;
         }
     }
@@ -50,9 +50,9 @@ public class Domain implements ValueObject {
         return version;
     }
 
-    private List<BoundedContext> boundedContexts;
+    private List<Module> modules;
 
-    public List<BoundedContext> boundedContexts() {
-        return boundedContexts;
+    public List<Module> modules() {
+        return modules;
     }
 }

@@ -1,19 +1,19 @@
 graph {
 splines=spline;
 overlap=false;
-"BoundedContextDoc" -- "ProcessStepDoc" [style=solid];
-"BoundedContextDoc" -- "ValueObjectDoc" [style=solid];
-"AggregateDoc" -- "BoundedContextDoc" [style=solid];
-"BoundedContextDoc" -- "FactoryDoc" [style=solid];
-"BoundedContextDoc" -- "DomainProcessDoc" [style=solid];
-"BoundedContextDoc" -- "ServiceDoc" [style=solid];
-"BoundedContextDoc" -- "EntityDoc" [style=solid];
+"ModuleDoc" -- "ValueObjectDoc" [style=solid];
+"ModuleDoc" -- "ProcessStepDoc" [style=solid];
+"ModuleDoc" -- "ServiceDoc" [style=solid];
+"AggregateDoc" -- "ModuleDoc" [style=solid];
+"DomainProcessDoc" -- "ModuleDoc" [style=solid];
+"EntityDoc" -- "ModuleDoc" [style=solid];
+"FactoryDoc" -- "ModuleDoc" [style=solid];
 "ServiceDoc"[shape=box,style=bold];
+"ModuleDoc"[shape=box,style=bold];
 "Relation"[shape=box,style=bold];
 "ProcessStepDoc"[shape=box,style=bold];
 "EntityDoc"[shape=box,style=bold];
 "ValueObjectDoc"[shape=box,style=bold];
-"BoundedContextDoc"[shape=box,style=bold];
 "FactoryDoc"[shape=box,style=bold];
 "AggregateDoc"[shape=box,style=bold];
 "DomainProcessDoc"[shape=box,style=bold];

@@ -8,20 +8,20 @@ import poussecafe.doc.graph.UndirectedGraph;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDoc;
+import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.relation.Component;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
 
-public class BoundedContextGraphFactory {
+public class ModuleGraphFactory {
 
     public static class Builder {
 
-        private BoundedContextGraphFactory factory = new BoundedContextGraphFactory();
+        private ModuleGraphFactory factory = new ModuleGraphFactory();
 
-        public Builder boundedContextDoc(BoundedContextDoc boundedContextDoc) {
-            factory.boundedContextDoc = boundedContextDoc;
+        public Builder moduleDoc(ModuleDoc moduleDoc) {
+            factory.moduleDoc = moduleDoc;
             return this;
         }
 
@@ -35,15 +35,15 @@ public class BoundedContextGraphFactory {
             return this;
         }
 
-        public BoundedContextGraphFactory build() {
-            Objects.requireNonNull(factory.boundedContextDoc);
+        public ModuleGraphFactory build() {
+            Objects.requireNonNull(factory.moduleDoc);
             Objects.requireNonNull(factory.relationRepository);
             Objects.requireNonNull(factory.aggregateDocRepository);
             return factory;
         }
     }
 
-    private BoundedContextGraphFactory() {
+    private ModuleGraphFactory() {
 
     }
 
@@ -52,12 +52,12 @@ public class BoundedContextGraphFactory {
         return graph;
     }
 
-    private BoundedContextDoc boundedContextDoc;
+    private ModuleDoc moduleDoc;
 
     private UndirectedGraph graph = new UndirectedGraph();
 
     private void addSimpleAggregates() {
-        for (AggregateDoc aggregateDoc : aggregateDocRepository.findByBoundedContextId(boundedContextDoc.attributes().identifier().value())) {
+        for (AggregateDoc aggregateDoc : aggregateDocRepository.findByModule(moduleDoc.attributes().identifier().value())) {
             addSimpleAggregate(aggregateDoc);
             addAggregateRelations(aggregateDoc);
         }
@@ -66,7 +66,7 @@ public class BoundedContextGraphFactory {
     private AggregateDocRepository aggregateDocRepository;
 
     private void addSimpleAggregate(AggregateDoc aggregateDoc) {
-        Node node = Node.box(aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+        Node node = Node.box(aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name());
         node.setStyle(NodeStyle.BOLD);
         graph.getNodesAndEdges().addNode(node);
     }
@@ -80,9 +80,9 @@ public class BoundedContextGraphFactory {
             if(relation.toComponent().type() == ComponentType.AGGREGATE) {
                 AggregateDoc otherAggregate = aggregateDocRepository.get(AggregateDocId.ofClassName(relation.toComponent().className()));
                 if(!aggregateDoc.className().equals(otherAggregate.className()) &&
-                        otherAggregate.attributes().boundedContextComponentDoc().value().boundedContextDocId().equals(boundedContextDoc.attributes().identifier().value())) {
+                        otherAggregate.attributes().moduleComponentDoc().value().moduleDocId().equals(moduleDoc.attributes().identifier().value())) {
                     UndirectedEdge edge = UndirectedEdge
-                            .solidEdge(aggregateDoc.attributes().boundedContextComponentDoc().value().componentDoc().name(),
+                            .solidEdge(aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name(),
                                     name(relation.toComponent()));
                     graph.getNodesAndEdges().addEdge(edge);
                 }
@@ -97,7 +97,7 @@ public class BoundedContextGraphFactory {
     private String name(Component component) {
         switch(component.type()) {
         case AGGREGATE:
-            return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().boundedContextComponentDoc().value().componentDoc().name();
+            return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().moduleComponentDoc().value().componentDoc().name();
         default:
             throw new IllegalArgumentException("Unsupported component type " + component.type());
         }

@@ -2,15 +2,15 @@ package poussecafe.doc.model.factorydoc;
 
 import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
 
 public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, FactoryDoc.Attributes> {
 
-    public FactoryDoc newFactoryDoc(BoundedContextDocId boundedContextDocId, TypeElement classDoc) {
+    public FactoryDoc newFactoryDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
         if(!isFactoryDoc(classDoc)) {
             throw new DomainException("Class " + classDoc.getQualifiedName() + " is not a factory");
         }
@@ -18,8 +18,8 @@ public class FactoryDocFactory extends Factory<FactoryDocId, FactoryDoc, Factory
         String name = classDoc.getSimpleName().toString();
         FactoryDocId id = FactoryDocId.ofClassName(classDoc.getQualifiedName().toString());
         FactoryDoc factoryDoc = newAggregateWithId(id);
-        factoryDoc.attributes().boundedContextComponentDoc().value(new BoundedContextComponentDoc.Builder()
-                .boundedContextDocId(boundedContextDocId)
+        factoryDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
+                .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(name, classDoc))
                 .build());
 

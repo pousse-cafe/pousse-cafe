@@ -15,14 +15,14 @@ import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
 import poussecafe.doc.model.AnnotationsResolver;
-import poussecafe.doc.model.BoundedContextComponentDoc;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.DocletAccess;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
@@ -32,15 +32,15 @@ import static java.util.stream.Collectors.toList;
 
 public class ProcessStepDocExtractor implements Service {
 
-    public List<ProcessStepDoc> extractProcessStepDocs(BoundedContextDocId boundedContextDocId, TypeElement classDoc) {
+    public List<ProcessStepDoc> extractProcessStepDocs(ModuleDocId moduleDocId, TypeElement classDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         for(ExecutableElement methodDoc : docletAccess.methods(classDoc)) {
             if(isProcessStep(methodDoc)) {
                 List<String> customStepSignatures = annotationsResolver.step(methodDoc);
                 if(!customStepSignatures.isEmpty()) {
-                    stepDocs.addAll(extractCustomSteps(boundedContextDocId, methodDoc));
+                    stepDocs.addAll(extractCustomSteps(moduleDocId, methodDoc));
                 } else {
-                    stepDocs.add(extractDeclaredStep(boundedContextDocId, methodDoc));
+                    stepDocs.add(extractDeclaredStep(moduleDocId, methodDoc));
                 }
             }
         }
@@ -70,22 +70,22 @@ public class ProcessStepDocExtractor implements Service {
         return annotationsResolver.event(methodDoc);
     }
 
-    private List<ProcessStepDoc> extractCustomSteps(BoundedContextDocId boundedContextDocId,
+    private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
             Logger.info("Extracting custom step " + signature);
             ProcessStepDocId messageListenerDocId = new ProcessStepDocId(signature.toString());
-            BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
-                    .boundedContextDocId(boundedContextDocId)
+            ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
+                    .moduleDocId(moduleDocId)
                     .componentDoc(new ComponentDoc.Builder()
                             .name(signature.toString())
                             .description(annotationsResolver.renderCommentBody(methodDoc))
                             .build())
                     .build();
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
-                    boundedContextComponentDoc);
+                    moduleComponentDoc);
             processStepDoc.attributes().processName().value(processName(methodDoc));
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
             processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
@@ -151,7 +151,7 @@ public class ProcessStepDocExtractor implements Service {
         }
     }
 
-    private ProcessStepDoc extractDeclaredStep(BoundedContextDocId boundedContextDocId,
+    private ProcessStepDoc extractDeclaredStep(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
@@ -164,12 +164,12 @@ public class ProcessStepDocExtractor implements Service {
                 .consumedMessageName(consumedMessage)
                 .build();
         ProcessStepDocId id = new ProcessStepDocId(stepMethodSignature);
-        BoundedContextComponentDoc boundedContextComponentDoc = new BoundedContextComponentDoc.Builder()
-                .boundedContextDocId(boundedContextDocId)
+        ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
+                .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
                 .build();
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
-                boundedContextComponentDoc);
+                moduleComponentDoc);
         processStepDoc.attributes().processName().value(processName(methodDoc));
         processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
         processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));

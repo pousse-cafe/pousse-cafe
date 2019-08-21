@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
@@ -23,12 +23,12 @@ public class DomainProcessStepsFactory implements Service {
     public DomainProcessSteps buildDomainProcessSteps(DomainProcessDoc domainProcessDoc) {
         HashMap<StepName, Step> steps = new HashMap<>();
 
-        BoundedContextComponentDoc boundedContextComponentDoc = domainProcessDoc.attributes().boundedContextComponentDoc().value();
-        BoundedContextDocId boundedContextDocId = boundedContextComponentDoc.boundedContextDocId();
-        String processName = boundedContextComponentDoc.componentDoc().name();
+        ModuleComponentDoc moduleComponentDoc = domainProcessDoc.attributes().moduleComponentDoc().value();
+        ModuleDocId moduleDocId = moduleComponentDoc.moduleDocId();
+        String processName = moduleComponentDoc.componentDoc().name();
 
         HashMap<String, List<String>> eventToStep = new HashMap<>();
-        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(boundedContextDocId, processName);
+        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(moduleDocId, processName);
         for(ProcessStepDoc processStepDoc : processStepDocs) {
             Optional<String> consumedEventName;
             Optional<StepMethodSignature> optionalStepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
@@ -45,7 +45,7 @@ public class DomainProcessStepsFactory implements Service {
                     signatures = new ArrayList<>();
                     eventToStep.put(presentConsumedEventName, signatures);
                 }
-                signatures.add(processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+                signatures.add(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
             }
         }
 
@@ -54,7 +54,7 @@ public class DomainProcessStepsFactory implements Service {
             List<StepName> tos = locateTos(processStepDoc, eventToStep);
             toSteps.addAll(toDirectSteps(tos));
 
-            StepName currentStepName = new StepName(processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc().name());
+            StepName currentStepName = new StepName(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
             List<StepName> toExternals = processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList());
             for(StepName toExternal : toExternals) {
                 Step toExternalStep = steps.get(toExternal);
@@ -71,8 +71,8 @@ public class DomainProcessStepsFactory implements Service {
             }
             toSteps.addAll(toDirectSteps(toExternals));
 
-            String domainProcessName = domainProcessDoc.attributes().boundedContextComponentDoc().value().componentDoc().name();
-            List<StepName> toDomainProcesses = otherDomainProcesses(boundedContextDocId, domainProcessName, processStepDoc.attributes().producedEvents().value());
+            String domainProcessName = domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name();
+            List<StepName> toDomainProcesses = otherDomainProcesses(moduleDocId, domainProcessName, processStepDoc.attributes().producedEvents().value());
             for(StepName toDomainProcess : toDomainProcesses) {
                 Step toDomainProcessStep = steps.get(toDomainProcess);
                 if(toDomainProcessStep == null) {
@@ -88,7 +88,7 @@ public class DomainProcessStepsFactory implements Service {
             }
             toSteps.addAll(toDirectSteps(toDomainProcesses));
 
-            ComponentDoc processStepComponentDoc = processStepDoc.attributes().boundedContextComponentDoc().value().componentDoc();
+            ComponentDoc processStepComponentDoc = processStepDoc.attributes().moduleComponentDoc().value().componentDoc();
             steps.put(currentStepName, new Step.Builder()
                     .componentDoc(processStepComponentDoc)
                     .tos(toSteps)
@@ -121,7 +121,7 @@ public class DomainProcessStepsFactory implements Service {
             if(stepMethodSignature.isPresent()) {
                 consumedEvent = stepMethodSignature.get().consumedEventName();
             }
-            List<StepName> fromDomainProcesses = fromDomainProcesses(boundedContextDocId, domainProcessName, consumedEvent);
+            List<StepName> fromDomainProcesses = fromDomainProcesses(moduleDocId, domainProcessName, consumedEvent);
             for(StepName fromDomainProcess : fromDomainProcesses) {
                 Step fromDomainProcessStep = steps.get(fromDomainProcess);
                 if(fromDomainProcessStep == null) {
@@ -175,12 +175,12 @@ public class DomainProcessStepsFactory implements Service {
                 .build();
     }
 
-    private List<StepName> otherDomainProcesses(BoundedContextDocId boundedContextDocId,
+    private List<StepName> otherDomainProcesses(ModuleDocId moduleDocId,
             String domainProcessName,
             Set<String> producedEvents) {
         Set<String> otherDomainProcesses = new HashSet<>();
         for(String producedEvent : producedEvents) {
-            for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(boundedContextDocId, producedEvent)) {
+            for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(moduleDocId, producedEvent)) {
                 Optional<String> processName = stepDoc.attributes().processName().value();
                 if(processName.isPresent() && !domainProcessName.equals(processName.get())) {
                     otherDomainProcesses.add(processName.get());
@@ -192,12 +192,12 @@ public class DomainProcessStepsFactory implements Service {
                 .collect(toList());
     }
 
-    private List<StepName> fromDomainProcesses(BoundedContextDocId boundedContextDocId,
+    private List<StepName> fromDomainProcesses(ModuleDocId moduleDocId,
             String domainProcessName,
             Optional<String> consumedEvent) {
         Set<String> otherDomainProcesses = new HashSet<>();
         if(consumedEvent.isPresent()) {
-            List<ProcessStepDoc> stepsproducingEvent = messageListenerDocRepository.findProducing(boundedContextDocId, consumedEvent.get());
+            List<ProcessStepDoc> stepsproducingEvent = messageListenerDocRepository.findProducing(moduleDocId, consumedEvent.get());
             for(ProcessStepDoc stepDoc : stepsproducingEvent) {
                 Optional<String> processName = stepDoc.attributes().processName().value();
                 if(processName.isPresent() && !domainProcessName.equals(processName.get())) {

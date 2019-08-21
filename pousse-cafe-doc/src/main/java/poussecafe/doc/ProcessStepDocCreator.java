@@ -3,13 +3,13 @@ package poussecafe.doc;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
-import poussecafe.doc.model.boundedcontextdoc.BoundedContextDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.factorydoc.FactoryDocFactory;
+import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.process.ProcessStepDocCreation;
 import poussecafe.domain.Repository;
 
-public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
+public class ProcessStepDocCreator extends ModuleComponentDocCreator {
 
     public ProcessStepDocCreator(DocletEnvironment rootDocWrapper) {
         super(rootDocWrapper);
@@ -37,9 +37,9 @@ public class ProcessStepDocCreator extends BoundedContextComponentDocCreator {
     }
 
     @Override
-    protected void addDoc(BoundedContextDocId boundedContextDocId,
+    protected void addDoc(ModuleDocId moduleDocId,
             TypeElement componentClassDoc) {
-        processStepDocCreation.createOrUpdateProcessStepDoc(boundedContextDocId, componentClassDoc);
+        processStepDocCreation.createOrUpdateProcessStepDoc(moduleDocId, componentClassDoc);
     }
 
     private ProcessStepDocCreation processStepDocCreation;
