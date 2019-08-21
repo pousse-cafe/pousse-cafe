@@ -70,4 +70,10 @@ public class Module implements ValueObject {
     public List<DomainProcessDoc> processes() {
         return processes;
     }
+
+    public boolean isEmpty() {
+        return aggregates.isEmpty()
+                && services.isEmpty()
+                && processes.isEmpty();
+    }
 }

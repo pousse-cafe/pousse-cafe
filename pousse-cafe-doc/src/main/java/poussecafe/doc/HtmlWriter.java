@@ -10,13 +10,13 @@ import java.util.Date;
 import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import poussecafe.doc.model.Aggregate;
-import poussecafe.doc.model.Module;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.DomainFactory;
 import poussecafe.doc.model.DomainProcessSteps;
 import poussecafe.doc.model.DomainProcessStepsFactory;
+import poussecafe.doc.model.Module;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
@@ -49,6 +49,7 @@ public class HtmlWriter {
             domainMap.put("modules",
                             domain.modules()
                                     .stream()
+                                    .filter(module -> !module.isEmpty())
                                     .sorted(this::compareModules)
                                     .map(this::adapt)
                                     .collect(toList()));
