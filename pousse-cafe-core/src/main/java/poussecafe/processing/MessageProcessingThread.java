@@ -1,9 +1,11 @@
 package poussecafe.processing;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.runtime.FailFastException;
 
 class MessageProcessingThread {
 
@@ -77,8 +79,7 @@ class MessageProcessingThread {
             try {
                 UnitOfWork unitOfWork = workQueue.take();
                 if(unitOfWork != STOP) {
-                    messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
-                    unitOfWork.message.signalProcessed(threadId);
+                    processAndSignal(unitOfWork);
                 } else {
                     break;
                 }
@@ -89,14 +90,32 @@ class MessageProcessingThread {
         }
     }
 
+    private void processAndSignal(UnitOfWork unitOfWork) {
+        try {
+            messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
+            unitOfWork.message.signalProcessed(threadId);
+        } catch (FailFastException e) {
+            unitOfWork.message.failFast();
+            stop();
+        }
+    }
+
     private MessageProcessor messageProcessor;
 
     private int threadId = -1;
 
-    public void stopAndWait() {
+    public void stopAndWait(Duration timeOut) {
         stop();
+        join(timeOut);
+    }
+
+    public void join() {
+        join(Duration.ofMillis(0));
+    }
+
+    public void join(Duration timeOut) {
         try {
-            underlyingThread.join();
+            underlyingThread.join(timeOut.toMillis());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new PousseCafeException("Thread was interrupted while waiting for underlying thread to stop");

@@ -52,11 +52,16 @@ class MessageToProcess {
         callback.signalProcessed(threadId, this);
     }
 
-    @FunctionalInterface
     public static interface Callback {
 
         void signalProcessed(int threadId, MessageToProcess processedMessage);
+
+        void failFast();
     }
 
     private Callback callback;
+
+    public void failFast() {
+        callback.failFast();
+    }
 }

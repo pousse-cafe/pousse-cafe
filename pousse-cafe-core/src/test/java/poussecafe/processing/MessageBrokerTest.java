@@ -3,6 +3,7 @@ package poussecafe.processing;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
+import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -85,5 +86,18 @@ public class MessageBrokerTest {
 
     private void thenReceivedMessageAcked() {
         verify(receivedMessage).ack();
+    }
+
+    @Test(expected = FailFastException.class)
+    public void failFastThrowsOnSubsequentDispath() {
+        givenThreadPool();
+        givenBroker();
+        givenReceivedMessage();
+        givenFailFastOccured();
+        whenSubmittingReceivedMessage();
+    }
+
+    private void givenFailFastOccured() {
+        broker.failFast();
     }
 }
