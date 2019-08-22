@@ -19,9 +19,15 @@ public class ReceivedMessage {
             return this;
         }
 
+        public Builder interrupter(Runnable interrupter) {
+            receivedMessage.interrupter = interrupter;
+            return this;
+        }
+
         public ReceivedMessage build() {
             Objects.requireNonNull(receivedMessage.payload);
             Objects.requireNonNull(receivedMessage.acker);
+            Objects.requireNonNull(receivedMessage.interrupter);
             return receivedMessage;
         }
     }
@@ -40,5 +46,11 @@ public class ReceivedMessage {
 
     public void ack() {
         acker.run();
+    }
+
+    private Runnable interrupter;
+
+    public void interrupt() {
+        interrupter.run();
     }
 }

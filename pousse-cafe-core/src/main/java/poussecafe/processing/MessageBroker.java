@@ -52,31 +52,42 @@ public class MessageBroker {
         messageProcessingThreadsPool = newThreadPool;
     }
 
+    private synchronized void signalProcessed(int threadId, MessageToProcess processedMessage) { // NOSONAR - synchronized
+        var processingProgress = inProgressProcessingStates.get(processedMessage.receivedMessageId());
+        if(processingProgress == null) {
+            throw new IllegalArgumentException("No processing state available");
+        } else {
+            processingProgress.ackThreadProcessed(threadId);
+            if(processingProgress.isCompleted()) {
+                processingProgress.receivedMessage().ack();
+                inProgressProcessingStates.remove(processedMessage.receivedMessageId());
+            }
+        }
+    }
+
     private Map<Long, ReceivedMessageProcessingState> inProgressProcessingStates = new HashMap<>();
+
+    private synchronized void failFast(MessageToProcess processedMessage) { // NOSONAR - synchronized
+        failFast = true;
+        var processingProgress = inProgressProcessingStates.get(processedMessage.receivedMessageId());
+        if(processingProgress == null) {
+            throw new IllegalArgumentException("No processing state available");
+        } else {
+            messageProcessingThreadsPool.stop();
+            processingProgress.receivedMessage().interrupt();
+        }
+    }
 
     private class MessageBrokerCallback implements Callback {
 
         @Override
-        public synchronized void signalProcessed(int threadId, MessageToProcess processedMessage) {
-            var processingProgress = inProgressProcessingStates.get(processedMessage.receivedMessageId());
-            if(processingProgress == null) {
-                throw new IllegalArgumentException("No processing state available");
-            } else {
-                processingProgress.ackThreadProcessed(threadId);
-                if(processingProgress.isCompleted()) {
-                    processingProgress.receivedMessage().ack();
-                    inProgressProcessingStates.remove(processedMessage.receivedMessageId());
-                }
-            }
+        public void signalProcessed(int threadId, MessageToProcess processedMessage) {
+            MessageBroker.this.signalProcessed(threadId, processedMessage);
         }
 
         @Override
-        public synchronized void failFast() {
-            failFast = true;
+        public void failFast(MessageToProcess processedMessage) {
+            MessageBroker.this.failFast(processedMessage);
         }
-    }
-
-    void failFast() {
-        callback.failFast();
     }
 }

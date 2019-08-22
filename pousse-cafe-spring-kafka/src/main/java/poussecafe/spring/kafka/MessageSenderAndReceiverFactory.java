@@ -64,6 +64,7 @@ public class MessageSenderAndReceiverFactory implements InitializingBean, Messag
                         .original(messageAdapter.adaptSerializedMessage(payload))
                         .build())
                 .acker(acknowledgment::acknowledge)
+                .interrupter(kafkaReceiver::stopReceiving)
                 .build());
     }
 

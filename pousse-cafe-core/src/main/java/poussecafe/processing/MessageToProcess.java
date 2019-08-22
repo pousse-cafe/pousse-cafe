@@ -56,12 +56,12 @@ class MessageToProcess {
 
         void signalProcessed(int threadId, MessageToProcess processedMessage);
 
-        void failFast();
+        void failFast(MessageToProcess processedMessage);
     }
 
     private Callback callback;
 
     public void failFast() {
-        callback.failFast();
+        callback.failFast(this);
     }
 }

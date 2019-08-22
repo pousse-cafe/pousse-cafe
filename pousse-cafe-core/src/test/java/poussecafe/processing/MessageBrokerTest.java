@@ -90,14 +90,27 @@ public class MessageBrokerTest {
 
     @Test(expected = FailFastException.class)
     public void failFastThrowsOnSubsequentDispath() {
-        givenThreadPool();
+        givenAutoFailingThreadPool();
         givenBroker();
         givenReceivedMessage();
-        givenFailFastOccured();
+        givenFirstMessageCausesFailure();
         whenSubmittingReceivedMessage();
     }
 
-    private void givenFailFastOccured() {
-        broker.failFast();
+    private void givenAutoFailingThreadPool() {
+        givenThreadPool();
+        doAnswer(autoFail()).when(threadPool).submit(any(MessageToProcess.class));
+    }
+
+    private Answer<Void> autoFail() {
+        return invocation -> {
+            MessageToProcess messageToProcess = invocation.getArgument(0);
+            messageToProcess.failFast();
+            return null;
+        };
+    }
+
+    private void givenFirstMessageCausesFailure() {
+        whenSubmittingReceivedMessage();
     }
 }

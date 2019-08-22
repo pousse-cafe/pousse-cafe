@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.runtime.FailFastException;
 
@@ -68,6 +70,7 @@ class MessageProcessingThread {
             throw new IllegalStateException("Processing thread was already started");
         }
         underlyingThread = new Thread(this::processor);
+        underlyingThread.setName("Processing Thread " + threadId);
         underlyingThread.setDaemon(true);
         underlyingThread.start();
     }
@@ -75,6 +78,7 @@ class MessageProcessingThread {
     private Thread underlyingThread;
 
     private void processor() {
+        logger.info("Processing thread {} starts...", threadId);
         while(true) {
             try {
                 UnitOfWork unitOfWork = workQueue.take();
@@ -88,7 +92,10 @@ class MessageProcessingThread {
                 throw new PousseCafeException("Unable to process message, current thread was interrupted");
             }
         }
+        logger.info("Processing thread {} stops.", threadId);
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void processAndSignal(UnitOfWork unitOfWork) {
         try {

@@ -125,7 +125,7 @@ class MessageProcessor {
         } catch (Exception e) {
             if(failFast) {
                 logger.error("Failing fast on exception from listener {}", listener, e);
-                throw new FailFastException();
+                throw new FailFastException("Failing fast on exception from listener {}", e);
             } else {
                 logger.error("      Failure of {} with {}", listener, messageClassName, e);
                 messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);

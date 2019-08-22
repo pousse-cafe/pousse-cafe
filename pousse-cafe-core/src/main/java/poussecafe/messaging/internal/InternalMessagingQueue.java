@@ -33,9 +33,7 @@ public class InternalMessagingQueue {
                 while (true) {
                     try {
                         Object polledObject = queue.take();
-                        if (STOP.equals(polledObject)) {
-                            return;
-                        } else {
+                        if (!STOP.equals(polledObject)) {
                             messagesBeingProcessed.updateAndGet(value -> value + 1);
                             queuedMessages.updateAndGet(value -> value - 1);
                             Message message = messageAdapter.adaptSerializedMessage(polledObject);
@@ -45,17 +43,21 @@ public class InternalMessagingQueue {
                                             .original(message)
                                             .build())
                                     .acker(() -> messagesBeingProcessed.updateAndGet(value -> value - 1))
+                                    .interrupter(this::interruptReception)
                                     .build());
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         interrupted = true;
-                        return;
+                        break;
                     }
                 }
+
+                messagesBeingProcessed.set(0);
+                queuedMessages.set(0);
             });
             receptionThread.setDaemon(true);
-            receptionThread.setName("internal message queue");
+            receptionThread.setName("Internal Messaging Reception Thread");
             receptionThread.start();
         }
 

@@ -89,7 +89,7 @@ public class MessageProcessingThreadTest implements Callback {
     }
 
     @Override
-    public void failFast() {
+    public void failFast(MessageToProcess processedMessage) {
         failFast = true;
     }
 

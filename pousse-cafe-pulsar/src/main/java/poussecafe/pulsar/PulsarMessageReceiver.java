@@ -84,6 +84,7 @@ public class PulsarMessageReceiver extends MessageReceiver {
                                     .original(messageAdapter.adaptSerializedMessage(stringPayload))
                                     .build())
                             .acker(ack(message))
+                            .interrupter(this::stopReceiving)
                             .build());
                 } catch (Exception e) {
                     logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());

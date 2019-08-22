@@ -45,6 +45,7 @@ public abstract class MessageReceiverTest {
         connection.messageReceiver().onMessage(new ReceivedMessage.Builder()
                 .payload(payload)
                 .acker(() -> {})
+                .interrupter(() -> {})
                 .build());
     }
 
