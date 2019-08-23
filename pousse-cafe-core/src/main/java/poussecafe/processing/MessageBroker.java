@@ -3,6 +3,8 @@ package poussecafe.processing;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.processing.MessageToProcess.Callback;
 import poussecafe.runtime.FailFastException;
 
@@ -53,17 +55,21 @@ public class MessageBroker {
     }
 
     private synchronized void signalProcessed(int threadId, MessageToProcess processedMessage) { // NOSONAR - synchronized
-        var processingProgress = inProgressProcessingStates.get(processedMessage.receivedMessageId());
+        long receivedMessageId = processedMessage.receivedMessageId();
+        var processingProgress = inProgressProcessingStates.get(receivedMessageId);
         if(processingProgress == null) {
             throw new IllegalArgumentException("No processing state available");
         } else {
             processingProgress.ackThreadProcessed(threadId);
             if(processingProgress.isCompleted()) {
+                logger.debug("Processing of message {} completed, acking...", receivedMessageId);
                 processingProgress.receivedMessage().ack();
                 inProgressProcessingStates.remove(processedMessage.receivedMessageId());
             }
         }
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<Long, ReceivedMessageProcessingState> inProgressProcessingStates = new HashMap<>();
 

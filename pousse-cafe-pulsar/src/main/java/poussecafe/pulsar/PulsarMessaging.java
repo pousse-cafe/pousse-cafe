@@ -10,9 +10,13 @@ public class PulsarMessaging extends Messaging {
     public PulsarMessaging(PulsarMessagingConfiguration configuration) {
         Objects.requireNonNull(configuration);
         this.configuration = configuration;
+
+        consumerFactory = new ConsumerFactory(configuration);
     }
 
     private PulsarMessagingConfiguration configuration;
+
+    private ConsumerFactory consumerFactory;
 
     public static final String NAME = "pulsar";
 
@@ -26,8 +30,8 @@ public class PulsarMessaging extends Messaging {
         return new MessagingConnection.Builder()
                 .messaging(this)
                 .messageReceiver(new PulsarMessageReceiver.Builder()
-                        .messageConsumer(messageBroker)
-                        .configuration(configuration)
+                        .messageBroker(messageBroker)
+                        .consumerFactory(consumerFactory)
                         .build())
                 .messageSender(new PulsarMessageSender(configuration))
                 .build();

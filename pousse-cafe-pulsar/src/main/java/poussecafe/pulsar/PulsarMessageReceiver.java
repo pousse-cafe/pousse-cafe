@@ -3,9 +3,7 @@ package poussecafe.pulsar;
 import java.util.Objects;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
-import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
-import org.apache.pulsar.client.api.Schema;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.jackson.JacksonMessageAdapter;
 import poussecafe.messaging.MessageReceiver;
@@ -17,24 +15,24 @@ public class PulsarMessageReceiver extends MessageReceiver {
 
     public static class Builder {
 
-        public Builder messageConsumer(MessageBroker messageBroker) {
+        public Builder messageBroker(MessageBroker messageBroker) {
             this.messageBroker = messageBroker;
             return this;
         }
 
         private MessageBroker messageBroker;
 
-        public Builder configuration(PulsarMessagingConfiguration configuration) {
-            this.configuration = configuration;
+        public Builder consumerFactory(ConsumerFactory consumerFactory) {
+            this.consumerFactory = consumerFactory;
             return this;
         }
 
-        private PulsarMessagingConfiguration configuration;
+        private ConsumerFactory consumerFactory;
 
         public PulsarMessageReceiver build() {
             Objects.requireNonNull(messageBroker);
             PulsarMessageReceiver receiver = new PulsarMessageReceiver(messageBroker);
-            receiver.configuration = configuration;
+            receiver.consumerFactory = consumerFactory;
             return receiver;
         }
     }
@@ -43,22 +41,11 @@ public class PulsarMessageReceiver extends MessageReceiver {
         super(messageBroker);
     }
 
-    private PulsarMessagingConfiguration configuration;
+    private ConsumerFactory consumerFactory;
 
     @Override
     protected void actuallyStartReceiving() {
-        try {
-            PulsarClient client = PulsarClient.builder()
-                    .serviceUrl(configuration.brokerUrl())
-                    .build();
-            consumer = client.newConsumer(Schema.STRING)
-                    .topics(configuration.topics())
-                    .subscriptionType(configuration.subscriptionType())
-                    .subscriptionName(configuration.subscriptionName())
-                    .subscribe();
-        } catch (PulsarClientException e) {
-            throw new PousseCafeException("Unable to connect to Pulsar broker", e);
-        }
+        consumer = consumerFactory.buildConsumer();
         startReceptionThread();
     }
 
@@ -84,9 +71,12 @@ public class PulsarMessageReceiver extends MessageReceiver {
                                     .marshaled(stringPayload)
                                     .original(messageAdapter.adaptSerializedMessage(stringPayload))
                                     .build())
-                            .acker(ack(message))
+                            .acker(ackRunnable(message))
                             .interrupter(this::stopReceiving)
                             .build());
+                } catch (PulsarClientException e) {
+                    logger.error("Error while consuming message, closing...", e);
+                    break;
                 } catch (Exception e) {
                     logger.error("Error while handling message ({}), continuing consumption and acking anyway...", e.getMessage());
                     logger.debug("Handling error stacktrace", e);
@@ -98,14 +88,16 @@ public class PulsarMessageReceiver extends MessageReceiver {
         };
     }
 
-    private Runnable ack(Message<String> message) {
-        return () -> {
-            try {
-                consumer.acknowledge(message);
-            } catch (PulsarClientException e) {
-                throw new PousseCafeException("Unable to ack message", e);
-            }
-        };
+    private Runnable ackRunnable(Message<String> message) {
+        return () -> ack(message);
+    }
+
+    private void ack(Message<String> message) {
+        try {
+            consumer.acknowledge(message);
+        } catch (PulsarClientException e) {
+            throw new PousseCafeException("Unable to ack message", e);
+        }
     }
 
     private JacksonMessageAdapter messageAdapter = new JacksonMessageAdapter();
@@ -124,5 +116,14 @@ public class PulsarMessageReceiver extends MessageReceiver {
     protected void actuallyStopReceiving() {
         closeIfConnected();
         receptionThread.interrupt();
+    }
+
+    public void join() {
+        try {
+            receptionThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PousseCafeException("Cloud not join reception thread", e);
+        }
     }
 }

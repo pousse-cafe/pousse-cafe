@@ -27,10 +27,12 @@ public class MessageBrokerTest {
 
     private void givenThreadPool() {
         threadPool = mock(MessageProcessingThreadPool.class);
-        when(threadPool.size()).thenReturn(42);
+        when(threadPool.size()).thenReturn(THREAD_POOL_SIZE);
     }
 
     private MessageProcessingThreadPool threadPool;
+
+    private static final int THREAD_POOL_SIZE = 42;
 
     private void givenBroker() {
         broker = new MessageBroker(threadPool);
@@ -76,7 +78,7 @@ public class MessageBrokerTest {
 
     private Answer<Void> autoAck() {
         return invocation -> {
-            for(int index = 0; index < 42; ++index) {
+            for(int index = 0; index < THREAD_POOL_SIZE; ++index) {
                 MessageToProcess messageToProcess = invocation.getArgument(0);
                 messageToProcess.signalProcessed(index);
             }
