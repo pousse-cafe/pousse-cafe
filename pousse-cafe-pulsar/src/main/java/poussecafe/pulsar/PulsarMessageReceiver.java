@@ -88,7 +88,7 @@ public class PulsarMessageReceiver extends MessageReceiver {
                             .interrupter(this::stopReceiving)
                             .build());
                 } catch (Exception e) {
-                    logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());
+                    logger.error("Error while handling message ({}), continuing consumption and acking anyway...", e.getMessage());
                     logger.debug("Handling error stacktrace", e);
                     if(message != null) {
                         ack(message);
