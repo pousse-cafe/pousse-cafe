@@ -78,7 +78,7 @@ class MessageProcessingThread {
     private Thread underlyingThread;
 
     private void processor() {
-        logger.info("Processing thread {} starts...", threadId);
+        logger.info("Starting processing thread {}...", threadId);
         while(true) {
             try {
                 UnitOfWork unitOfWork = workQueue.take();

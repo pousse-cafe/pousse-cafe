@@ -75,8 +75,9 @@ public class PulsarMessageReceiver extends MessageReceiver {
     private Runnable receptionRunnable() {
         return () -> {
             while(true) {
+                Message<String> message = null;
                 try {
-                    Message<String> message = consumer.receive();
+                    message = consumer.receive();
                     String stringPayload = message.getValue();
                     onMessage(new ReceivedMessage.Builder()
                             .payload(new OriginalAndMarshaledMessage.Builder()
@@ -89,6 +90,9 @@ public class PulsarMessageReceiver extends MessageReceiver {
                 } catch (Exception e) {
                     logger.error("Error while handling message ({}), continuing consumption anyway...", e.getMessage());
                     logger.debug("Handling error stacktrace", e);
+                    if(message != null) {
+                        ack(message);
+                    }
                 }
             }
         };

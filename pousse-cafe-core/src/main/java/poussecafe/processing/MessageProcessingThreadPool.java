@@ -40,6 +40,9 @@ public class MessageProcessingThreadPool {
 
         public MessageProcessingThreadPool build() {
             createThreads();
+            if(numberOfThreads <= 0) {
+                throw new IllegalStateException("Cannot create empty pool");
+            }
             return pool;
         }
 
