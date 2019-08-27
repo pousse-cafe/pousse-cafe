@@ -30,22 +30,24 @@ public class GenerateDocMojo extends AbstractMojo {
             throws MojoExecutionException,
             MojoFailureException {
 
-        List<String> sourcePath = getSourcePath();
-        List<String> classPath = getClassPath();
+        if(!Boolean.parseBoolean(skipDoc)) {
+            List<String> sourcePath = getSourcePath();
+            List<String> classPath = getClassPath();
 
-        PousseCafeDocletConfiguration configuration = new PousseCafeDocletConfiguration.Builder()
-                .domainName(domainName)
-                .version(version)
-                .sourcePath(sourcePath)
-                .outputDirectory(outputDirectory.getAbsolutePath())
-                .pdfFileName(pdfFileName)
-                .basePackage(basePackage)
-                .classPath(classPath)
-                .customDotExecutable(Optional.ofNullable(customDotExecutable))
-                .customFdpExecutable(Optional.ofNullable(customFdpExecutable))
-                .build();
+            PousseCafeDocletConfiguration configuration = new PousseCafeDocletConfiguration.Builder()
+                    .domainName(domainName)
+                    .version(version)
+                    .sourcePath(sourcePath)
+                    .outputDirectory(outputDirectory.getAbsolutePath())
+                    .pdfFileName(pdfFileName)
+                    .basePackage(basePackage)
+                    .classPath(classPath)
+                    .customDotExecutable(Optional.ofNullable(customDotExecutable))
+                    .customFdpExecutable(Optional.ofNullable(customFdpExecutable))
+                    .build();
 
-        new PousseCafeDocletExecutor(configuration).execute();
+            new PousseCafeDocletExecutor(configuration).execute();
+        }
     }
 
     private List<String> getSourcePath() {
@@ -98,4 +100,7 @@ public class GenerateDocMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
+
+    @Parameter(property = "skipDoc", required = true, defaultValue = "false")
+    private String skipDoc;
 }
