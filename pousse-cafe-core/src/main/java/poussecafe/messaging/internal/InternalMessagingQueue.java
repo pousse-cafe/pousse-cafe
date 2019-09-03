@@ -2,7 +2,6 @@ package poussecafe.messaging.internal;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
@@ -24,7 +23,6 @@ public class InternalMessagingQueue {
 
         private InternalMessageReceiver(MessageBroker messageBroker) {
             super(messageBroker);
-            messagesBeingProcessed = new AtomicReference<>(0);
         }
 
         @Override
@@ -34,27 +32,24 @@ public class InternalMessagingQueue {
                     try {
                         Object polledObject = queue.take();
                         if (!STOP.equals(polledObject)) {
-                            messagesBeingProcessed.updateAndGet(value -> value + 1);
-                            queuedMessages.updateAndGet(value -> value - 1);
+                            state.addMessageBeingProcessing();
+                            state.removeQueuedMessage();
                             Message message = messageAdapter.adaptSerializedMessage(polledObject);
                             onMessage(new ReceivedMessage.Builder()
                                     .payload(new OriginalAndMarshaledMessage.Builder()
                                             .marshaled(polledObject)
                                             .original(message)
                                             .build())
-                                    .acker(() -> messagesBeingProcessed.updateAndGet(value -> value - 1))
+                                    .acker(() -> state.removeMessageBeingProcessing())
                                     .interrupter(this::interruptReception)
                                     .build());
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
-                        interrupted = true;
+                        state.interrupt();
                         break;
                     }
                 }
-
-                messagesBeingProcessed.set(0);
-                queuedMessages.set(0);
             });
             receptionThread.setDaemon(true);
             receptionThread.setName("Internal Messaging Reception Thread");
@@ -62,10 +57,6 @@ public class InternalMessagingQueue {
         }
 
         private Thread receptionThread;
-
-        private boolean interrupted;
-
-        private AtomicReference<Integer> messagesBeingProcessed;
 
         @Override
         protected void actuallyStopReceiving() {
@@ -84,9 +75,11 @@ public class InternalMessagingQueue {
         }
 
         public boolean isInterrupted() {
-            return interrupted;
+            return state.interrupted();
         }
     }
+
+    private QueueState state = new QueueState();
 
     private BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
@@ -104,7 +97,7 @@ public class InternalMessagingQueue {
 
         @Override
         protected void sendMarshalledMessage(OriginalAndMarshaledMessage marshalledMessage) {
-            queuedMessages.updateAndGet(value -> value + 1);
+            state.addQueuedMessage();
             try {
                 queue.put(marshalledMessage.marshaled());
             } catch (InterruptedException e) {
@@ -116,16 +109,18 @@ public class InternalMessagingQueue {
 
     private InternalMessageSender messageSender;
 
-    private AtomicReference<Integer> queuedMessages = new AtomicReference<>(0);
-
     public MessageSender messageSender() {
         return messageSender;
     }
 
     public void waitUntilEmptyOrInterrupted() {
-        boolean messagesQueued;
-        do {
-            messagesQueued = queuedMessages.get() > 0 || messageReceiver.messagesBeingProcessed.get() > 0;
-        } while (messagesQueued);
+        while(!state.emptyOrInterrupted()) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
     }
 }
