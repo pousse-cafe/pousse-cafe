@@ -1,4 +1,4 @@
-package poussecafe.domain.chain;
+package poussecafe.messaging.internal;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
@@ -7,17 +7,7 @@ import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.adapters.DataAdapters;
 
 @SuppressWarnings("serial")
-public class ChainElementData implements Serializable, ChainElement.Attributes {
-
-    @Override
-    public Attribute<ChainElementId> identifier() {
-        return AttributeBuilder.stringId(ChainElementId.class)
-                .read(() -> id)
-                .write(value -> id = value)
-                .build();
-    }
-
-    private String id;
+public abstract class BaseChainElementAttributes<I> implements Serializable, ChainElementAttributes<I> {
 
     @Override
     public Attribute<Boolean> touched() {
@@ -30,9 +20,9 @@ public class ChainElementData implements Serializable, ChainElement.Attributes {
     private Boolean touched;
 
     @Override
-    public OptionalAttribute<ChainElementId> next() {
-        return AttributeBuilder.optional(ChainElementId.class)
-                .usingDataAdapter(DataAdapters.stringId(ChainElementId.class))
+    public OptionalAttribute<NextChainElementId> next() {
+        return AttributeBuilder.optional(NextChainElementId.class)
+                .usingDataAdapter(DataAdapters.stringId(NextChainElementId.class))
                 .read(() -> next)
                 .write(value -> next = value)
                 .build();

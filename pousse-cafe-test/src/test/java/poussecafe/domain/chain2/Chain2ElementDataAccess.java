@@ -1,14 +1,14 @@
-package poussecafe.domain.chain;
+package poussecafe.domain.chain2;
 
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
 @DataAccessImplementation(
-    aggregateRoot = ChainElement.class,
-    dataImplementation = ChainElementData.class,
+    aggregateRoot = Chain2Element.class,
+    dataImplementation = Chain2ElementData.class,
     storageName = InternalStorage.NAME
 )
-public class ChainElementDataAccess extends InternalDataAccess<ChainElementId, ChainElement.Attributes> {
+public class Chain2ElementDataAccess extends InternalDataAccess<Chain2ElementId, Chain2Element.Attributes> {
 
 }

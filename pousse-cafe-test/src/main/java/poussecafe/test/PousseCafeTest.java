@@ -71,6 +71,10 @@ public abstract class PousseCafeTest {
         wrapper.emitDomainEvent(event);
     }
 
+    public void emitDomainEvents(List<? extends DomainEvent> event) {
+        wrapper.emitDomainEvents(event);
+    }
+
     public void loadDataFile(String path) {
         wrapper.loadDataFile(path);
     }

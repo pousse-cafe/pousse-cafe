@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -82,6 +83,13 @@ public class TestRuntimeWrapper {
 
     public void emitDomainEvent(DomainEvent event) {
         runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
+        waitUntilEndOfMessageProcessing();
+    }
+
+    public void emitDomainEvents(List<? extends DomainEvent> events) {
+        for(DomainEvent event : events) {
+            runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
+        }
         waitUntilEndOfMessageProcessing();
     }
 
