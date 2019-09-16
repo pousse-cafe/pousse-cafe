@@ -47,7 +47,7 @@ public class FieldDependencyInjector extends DependencyInjector {
             if(field.get(service) == null) {
                 field.set(service, dependency);
             } else {
-                logger.debug("Ignoring field " + field.getName() + " (already set)");
+                logger.debug("Ignoring field {} (already set)", field.getName());
             }
             closeAgainIfPrivate();
         } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -64,7 +64,7 @@ public class FieldDependencyInjector extends DependencyInjector {
     }
 
     private void setAccessibleFlagIfPrivate(boolean accessible) {
-        if(Modifier.isPrivate(field.getModifiers())) {
+        if(!Modifier.isPublic(field.getModifiers())) {
             field.setAccessible(accessible);
         }
     }
