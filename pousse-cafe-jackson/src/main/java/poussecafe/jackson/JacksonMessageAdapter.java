@@ -1,40 +1,31 @@
 package poussecafe.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Objects;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageAdapterException;
 
 public class JacksonMessageAdapter implements MessageAdapter {
 
+    public JacksonMessageAdapter() {
+        objectMapper = JacksonObjectMapperFactory.staticBuildMapper();
+    }
+
+    private ObjectMapper objectMapper;
+
     @Override
     public Message adaptSerializedMessage(Object serializedMessage) {
         try {
             return objectMapper.readValue((String) serializedMessage, Message.class);
-        } catch (Exception e) {
-            throw new MessageAdapterException("Unable to adapt serialized message " + serializedMessage, e);
+        } catch (NoClassDefFoundError | Exception e) {
+            throw buildSerializationException(serializedMessage, e);
         }
     }
 
-    private ObjectMapper objectMapper = initObjectMapper();
-
-    protected ObjectMapper initObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.setConfig(mapper.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS));
-        mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
-        mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-        return mapper;
+    private MessageAdapterException buildSerializationException(Object serializedMessage, Throwable e) {
+        return new MessageAdapterException("Unable to adapt serialized message " + serializedMessage, e);
     }
 
     @Override
@@ -44,5 +35,10 @@ public class JacksonMessageAdapter implements MessageAdapter {
         } catch (JsonProcessingException e) {
             throw new MessageAdapterException("Unable to adapt message " + message, e);
         }
+    }
+
+    JacksonMessageAdapter(ObjectMapper objectMapper) {
+        Objects.requireNonNull(objectMapper);
+        this.objectMapper = objectMapper;
     }
 }

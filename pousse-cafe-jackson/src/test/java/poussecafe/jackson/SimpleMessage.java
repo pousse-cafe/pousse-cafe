@@ -22,6 +22,12 @@ public class SimpleMessage implements Message {
 
     private String payload;
 
+    private Object polymorphicPayload;
+
+    public Object polymorphicPayload() {
+        return polymorphicPayload;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
