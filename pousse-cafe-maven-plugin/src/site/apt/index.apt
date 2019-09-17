@@ -1,0 +1,35 @@
+    ------
+    Introduction
+    ------
+    Gérard Dethier
+    ------
+    2019-09-17
+    ------
+
+Pousse-Café Maven Plugin
+
+    The plugin enables
+
+    * the generation of human-readable documentation automatically built from the code,
+
+    * The generation of source code accelerating the work of a developer adding a new Aggregate to the model.
+
+* Goals Overview
+
+    * {{{./generate-doc-mojo.html}pousse-cafe:generate-doc}} produces a human-readable documentation of the model
+
+    * {{{./add-aggregate-mojo.html}pousse-cafe:add-aggregate}} generates source code for a new Aggregate
+
+* Usage
+
+    General instructions on how to use the Pousse-Café Maven Plugin can be found on the {{{./usage.html}usage page}}.
+
+    In case you still have questions regarding the plugin's usage, please have a look at the {{{./faq.html}FAQ}}.
+
+    If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our
+    {{{https://github.com/pousse-cafe/pousse-cafe/issues}issue management system}}. When creating a new issue,
+    please provide a comprehensive description of your
+    concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason,
+    entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated.
+    Of course, patches are welcome, too. Contributors can check out the project from our
+    {{{https://github.com/pousse-cafe/pousse-cafe}source repository}}. 

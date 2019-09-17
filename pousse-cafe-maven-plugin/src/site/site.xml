@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Pousse-Café Maven Plugin">
+    <bannerLeft>
+        <name>Pousse-Café</name>
+        <src>images/logo.png</src>
+        <href>https://www.pousse-cafe-framework.org/</href>
+        <title>Pousse-Café</title>
+    </bannerLeft>
+
+    <publishDate position="right" />
+    <version position="right" />
+
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.8</version>
+    </skin>
+
+    <custom>
+        <fluidoSkin>
+            <twitter>
+                <user>PousseCafeFW</user>
+            </twitter>
+        </fluidoSkin>
+    </custom>
+
+    <body>
+        <breadcrumbs>
+            <item name="Pousse-Café" href="https://www.pousse-cafe-framework.org/" />
+        </breadcrumbs>
+
+        <menu name="Overview">
+            <item name="Introduction" href="index.html" />
+            <item name="Goals" href="plugin-info.html" />
+            <item name="Usage" href="usage.html" />
+            <item name="FAQ" href="faq.html" />
+        </menu>
+    </body>
+</project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs id="FAQ" title="Frequently Asked Questions">
+  <part id="General">
+
+    <faq id="question">
+      <question>Why is the documentation generated with the plugin empty?</question>
+      <answer>
+        <p>
+          The main reason for empty documentation is the fact that Modules were not detected by Pousse-Café.
+          Without a containing Module, no Aggregate nor service nor process will be shown.
+        </p>
+
+        <p>
+          A module is described in the <code>package-info.java</code> file must in the Module's base package.
+          The package javadoc must contain the <code>@module</code> tag which defines the name of the Module.
+        </p>
+
+        <p>When your Module is defined in another Maven project, do not forget to put a source dependency on
+        that project as Pousse-Café uses static source code analysis to generate the documentation.</p>
+      </answer>
+    </faq>
+
+  </part>
+</faqs>
