@@ -20,6 +20,7 @@
         <fluidoSkin>
             <twitter>
                 <user>PousseCafeFW</user>
+                <showUser>true</showUser>
             </twitter>
         </fluidoSkin>
     </custom>
