@@ -11,8 +11,10 @@
         </p>
 
         <p>
-          A module is described in the <code>package-info.java</code> file must in the Module's base package.
+          A module is described by the <code>package-info.java</code> in the Module's base package.
           The package javadoc must contain the <code>@module</code> tag which defines the name of the Module.
+          Also, all components (including the module's <code>package-info.java</code> file) must be in the base package
+          configured for <a href="./generate-doc-mojo.html">generate-doc</a> goal.
         </p>
 
         <p>When your Module is defined in another Maven project, do not forget to put a source dependency on
