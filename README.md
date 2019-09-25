@@ -1,19 +1,19 @@
 ![Travis build status](https://travis-ci.org/pousse-cafe/pousse-cafe.svg?branch=master)
 ![Maven status](https://maven-badges.herokuapp.com/maven-central/org.pousse-cafe-framework/pousse-cafe/badge.svg)
 
-# Introduction
+# Pousse-Café
 
 Pousse-Café is a framework that eases the writing of applications following Domain-Driven Design (DDD) methodology.
-It relies on meta-applications described by Domain logic only. Those meta-applications can be integrated in real
-applications when augmented with adapters connecting them to the "real" world.
 
-This project is the parent project of all Pousse-Café modules. Pousse-Café is essentially composed of the following
-modules:
+It works as follows:
+- A Pousse-Café model (i.e. a set of Aggregates and Services) is executed by a Runtime
+- Commands are submitted to the Runtime
+- Commands are handled by Aggregates using Message Listeners
+- Aggregates emit Domain Events
+- The set of Message Listeners executed following the submission of a Command defines a Domain Process
+- Aggregates may be grouped in Modules
+- Domain Events may cross Modules borders
 
-- Core: Pousse-Café's core components
-- Test: Tools helping in writing powerful and Domain-centric unit tests
-- Simple App: A template project used to generate related Maven archetype
-- Sample Meta App: A sample meta-application implementation show-casing Pousse-Café's features
-- Spring Bridge: A bridge allowing to directly inject Pousse-Café components into Spring beans
-- Spring Mongo: Helpers and core components implementation relying on Spring Data Mongo DB
-- Sample App: A sample Spring Boot app show-casing the integration of the Sample Meta App in an actual application
+![how it works](https://www.pousse-cafe-framework.org/img/big_picture.svg)
+
+Go to the [web site](https://www.pousse-cafe-framework.org/) for further information.
