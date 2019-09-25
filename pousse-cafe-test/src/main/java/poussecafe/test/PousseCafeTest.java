@@ -8,6 +8,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.environment.Bundle;
+import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
@@ -100,5 +101,13 @@ public abstract class PousseCafeTest {
 
     public PousseCafeTestObjectMapper objectMapper() {
         return wrapper.objectMapper();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected <E> E newEntity(Class<E> entityClass) {
+        return (E) testRuntime().environment().entityFactory().newEntity(new NewEntityInstanceSpecification.Builder()
+                    .entityClass(entityClass)
+                    .instantiateData(true)
+                    .build());
     }
 }
