@@ -2,7 +2,6 @@ language: java
 addons:
   apt:
     packages:
-    - xmlstarlet
     - graphviz
 jdk:
 - oraclejdk11
