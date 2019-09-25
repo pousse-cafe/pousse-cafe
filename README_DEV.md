@@ -10,11 +10,7 @@
 
 ## Snapshot release
 
-Deployment is automatically handled by Travis (see .travis.yml for details) except for the archetype.
-
-The archetype package needs to be deployed separately:
-
-    ( cd pousse-cafe-sample-bounded-context/ ; ./scripts/archetype_mvn.sh deploy )
+Deployment is automatically handled by Travis (see .travis.yml for details).
 
 ## Other releases
 
@@ -31,10 +27,6 @@ profile section to configure GPG. For instance:
         <gpg.keyname>deployer_email_address</gpg.keyname>
       </properties>
     </profile>
-
-The archetype package needs to be deployed separately:
-
-    ( cd pousse-cafe-sample-bounded-context/ ; ./scripts/archetype_mvn.sh deploy -Ppousse-cafe-release )
 
 After that:
 

@@ -1,9 +1,0 @@
-{
-    "poussecafe.shop.domain.Product": [
-        {
-            "productId": "product-1",
-            "totalUnits": 10,
-            "availableUnits": 0
-        }
-    ]
-}

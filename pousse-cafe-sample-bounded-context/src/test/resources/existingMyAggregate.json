@@ -1,8 +1,0 @@
-{
-  "poussecafe.myboundedcontext.domain.myaggregate.MyAggregate": [
-    {
-      "id": "aggregate-id",
-      "x": 0
-    }
-  ]
-}
