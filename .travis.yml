@@ -3,6 +3,7 @@ addons:
   apt:
     packages:
     - graphviz
+    - xmlstarlet
 jdk:
 - oraclejdk11
 after_success:
