@@ -139,8 +139,12 @@ public class TestRuntimeWrapper {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public void submitCommand(Command command) {
-        runtime.submitCommand(command);
-        waitUntilEndOfMessageProcessing();
+        try {
+            runtime.submitCommand(command).get();
+            waitUntilEndOfMessageProcessing();
+        } catch (Exception e) {
+            throw new PousseCafeException("Error while submitting command", e);
+        }
     }
 
     public PousseCafeTestObjectMapper objectMapper() {

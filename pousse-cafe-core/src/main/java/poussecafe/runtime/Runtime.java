@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
@@ -16,6 +17,7 @@ import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.processing.MessageBroker;
 import poussecafe.processing.MessageProcessingThreadPool;
+import poussecafe.processing.ReceivedMessage;
 import poussecafe.storage.Storage;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -259,7 +261,20 @@ public class Runtime {
         return environment.messageFactory().newMessage(commandClass);
     }
 
-    public void submitCommand(Command command) {
+    public CompletableFuture<Void> submitCommand(Command command) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        messageBroker.dispatch(new ReceivedMessage.Builder()
+                .payload(new OriginalAndMarshaledMessage.Builder()
+                        .marshaled(command)
+                        .original(command)
+                        .build())
+                .acker(() -> future.complete(null))
+                .interrupter(() -> future.complete(null))
+                .build());
+        return future;
+    }
+
+    public void sendCommand(Command command) {
         messageSenderLocator.locate(command.getClass()).sendMessage(command);
     }
 

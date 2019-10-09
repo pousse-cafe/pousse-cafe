@@ -39,7 +39,7 @@ public class PousseCafeTestTest extends PousseCafeTest {
 
     private void whenEmitted() {
         for(SampleMessage message : messages) {
-            submitCommand(message);
+            emitDomainEvent(message);
         }
     }
 
