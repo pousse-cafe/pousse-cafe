@@ -11,6 +11,7 @@ import poussecafe.environment.Bundle;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;
 import poussecafe.injector.Injector;
+import poussecafe.messaging.MessageReceiverConfiguration;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.processing.MessageBroker;
@@ -59,6 +60,11 @@ public class Runtime {
 
         public Builder failFast(boolean failFast) {
             runtime.failFast = failFast;
+            return this;
+        }
+
+        public Builder failOnDeserializationError(boolean failOnDeserializationError) {
+            runtime.failOnDeserializationError = failOnDeserializationError;
             return this;
         }
 
@@ -202,9 +208,14 @@ public class Runtime {
 
     private void connectMessaging() {
         for(Messaging messaging : environment.messagings()) {
-            connections.add(messaging.connect(messageBroker));
+            connections.add(messaging.connect(new MessageReceiverConfiguration.Builder()
+                    .messageBroker(messageBroker)
+                    .failOnDeserializationError(failOnDeserializationError)
+                    .build()));
         }
     }
+
+    private boolean failOnDeserializationError;
 
     public synchronized void stop() {
         if(!started) {

@@ -73,6 +73,7 @@ public class TestRuntimeWrapper {
 
     public void waitUntilEndOfMessageProcessing() {
         for(MessagingConnection connection : runtime.messagingConnections()) {
+            @SuppressWarnings("rawtypes")
             MessageReceiver receiver = connection.messageReceiver();
             if(receiver instanceof InternalMessageReceiver) {
                 InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;

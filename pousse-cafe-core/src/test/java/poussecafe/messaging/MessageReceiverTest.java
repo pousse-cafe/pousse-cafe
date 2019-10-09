@@ -27,7 +27,9 @@ public abstract class MessageReceiverTest {
     private void givenMessageConsumer() {
         message = message();
         messageBroker = mock(MessageBroker.class);
-        connection = messaging().connect(messageBroker);
+        connection = messaging().connect(new MessageReceiverConfiguration.Builder()
+                .messageBroker(messageBroker)
+                .build());
     }
 
     protected abstract Message message();

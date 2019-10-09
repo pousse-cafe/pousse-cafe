@@ -3,7 +3,6 @@ package poussecafe.messaging;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.processing.MessageBroker;
 import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -14,16 +13,28 @@ import poussecafe.runtime.OriginalAndMarshaledMessage;
  */
 public abstract class MessageReceiver<E> {
 
-    protected MessageReceiver(MessageBroker messageBroker) {
-        Objects.requireNonNull(messageBroker);
-        this.messageBroker = messageBroker;
+    protected MessageReceiver(MessageReceiverConfiguration configuration) {
+        Objects.requireNonNull(configuration);
+        this.configuration = configuration;
     }
 
-    private MessageBroker messageBroker;
+    private MessageReceiverConfiguration configuration;
 
     protected void onMessage(E envelope) {
         Object stringPayload = extractPayload(envelope);
-        Message deserializedMessage = deserialize(stringPayload);
+
+        Message deserializedMessage;
+        try {
+            deserializedMessage = deserialize(stringPayload);
+        } catch (Exception e) {
+            if(configuration.failOnDeserializationError()) {
+                throw e;
+            } else {
+                logger.debug("Could not deserialize payload", e);
+                return;
+            }
+        }
+
         onMessage(new ReceivedMessage.Builder()
                 .payload(new OriginalAndMarshaledMessage.Builder()
                         .marshaled(stringPayload)
@@ -38,10 +49,12 @@ public abstract class MessageReceiver<E> {
 
     protected abstract Message deserialize(Object payload);
 
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
     private void onMessage(ReceivedMessage receivedMessage) {
         Objects.requireNonNull(receivedMessage);
         try {
-            messageBroker.dispatch(receivedMessage);
+            configuration.messageBroker().dispatch(receivedMessage);
         } catch (FailFastException e) {
             interruptReception();
         }
@@ -60,8 +73,6 @@ public abstract class MessageReceiver<E> {
     protected void actuallyInterruptReception() {
         throw new UnsupportedOperationException();
     }
-
-    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     public synchronized void startReceiving() {
         if (started) {

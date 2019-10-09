@@ -1,7 +1,5 @@
 package poussecafe.messaging;
 
-import poussecafe.processing.MessageBroker;
-
 public abstract class Messaging {
 
     public abstract String name();
@@ -15,5 +13,5 @@ public abstract class Messaging {
         return false;
     }
 
-    public abstract MessagingConnection connect(MessageBroker messageBroker);
+    public abstract MessagingConnection connect(MessageReceiverConfiguration configuration);
 }

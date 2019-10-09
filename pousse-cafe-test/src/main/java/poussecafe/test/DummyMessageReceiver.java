@@ -2,12 +2,12 @@ package poussecafe.test;
 
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageReceiver;
-import poussecafe.processing.MessageBroker;
+import poussecafe.messaging.MessageReceiverConfiguration;
 
 public class DummyMessageReceiver extends MessageReceiver<Object> {
 
-    protected DummyMessageReceiver(MessageBroker messageBroker) {
-        super(messageBroker);
+    protected DummyMessageReceiver(MessageReceiverConfiguration configuration) {
+        super(configuration);
     }
 
     @Override

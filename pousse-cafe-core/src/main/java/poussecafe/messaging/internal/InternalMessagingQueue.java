@@ -7,15 +7,15 @@ import poussecafe.exception.RuntimeInterruptedException;
 import poussecafe.messaging.EnvelopeSource;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
+import poussecafe.messaging.MessageReceiverConfiguration;
 import poussecafe.messaging.MessageSender;
 import poussecafe.messaging.ReceptionThreadMessageReceiver;
-import poussecafe.processing.MessageBroker;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class InternalMessagingQueue {
 
-    InternalMessagingQueue(MessageBroker messageBroker) {
-        messageReceiver = new InternalMessageReceiver(messageBroker);
+    InternalMessagingQueue(MessageReceiverConfiguration configuration) {
+        messageReceiver = new InternalMessageReceiver(configuration);
         messageSender = new InternalMessageSender(messageAdapter);
     }
 
@@ -23,8 +23,8 @@ public class InternalMessagingQueue {
 
     public class InternalMessageReceiver extends ReceptionThreadMessageReceiver<Object> {
 
-        private InternalMessageReceiver(MessageBroker messageBroker) {
-            super(messageBroker);
+        private InternalMessageReceiver(MessageReceiverConfiguration configuration) {
+            super(configuration);
         }
 
         @Override

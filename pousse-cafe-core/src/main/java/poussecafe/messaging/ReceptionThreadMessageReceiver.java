@@ -3,12 +3,11 @@ package poussecafe.messaging;
 import java.io.IOException;
 import java.util.Objects;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.processing.MessageBroker;
 
 public abstract class ReceptionThreadMessageReceiver<E> extends MessageReceiver<E> {
 
-    protected ReceptionThreadMessageReceiver(MessageBroker messageBroker) {
-        super(messageBroker);
+    protected ReceptionThreadMessageReceiver(MessageReceiverConfiguration configuration) {
+        super(configuration);
 
         this.envelopeSource = envelopeSource();
         Objects.requireNonNull(envelopeSource);
