@@ -18,7 +18,7 @@ public class MessagingConnection {
             return this;
         }
 
-        public Builder messageReceiver(MessageReceiver messageReceiver) {
+        public Builder messageReceiver(MessageReceiver<?> messageReceiver) {
             connection.messageReceiver = messageReceiver;
             return this;
         }
@@ -47,8 +47,10 @@ public class MessagingConnection {
         return messageSender;
     }
 
+    @SuppressWarnings("rawtypes")
     private MessageReceiver messageReceiver;
 
+    @SuppressWarnings("rawtypes")
     public MessageReceiver messageReceiver() {
         return messageReceiver;
     }

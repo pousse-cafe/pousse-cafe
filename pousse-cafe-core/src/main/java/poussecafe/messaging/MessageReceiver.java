@@ -6,8 +6,13 @@ import org.slf4j.LoggerFactory;
 import poussecafe.processing.MessageBroker;
 import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.FailFastException;
+import poussecafe.runtime.OriginalAndMarshaledMessage;
 
-public abstract class MessageReceiver {
+/**
+ * @param <E> The envelope type i.e. the class for messages for a given messaging technology. The payload is
+ * extracted from that message and deserialized into an actual {@link Message}.
+ */
+public abstract class MessageReceiver<E> {
 
     protected MessageReceiver(MessageBroker messageBroker) {
         Objects.requireNonNull(messageBroker);
@@ -16,7 +21,24 @@ public abstract class MessageReceiver {
 
     private MessageBroker messageBroker;
 
-    protected void onMessage(ReceivedMessage receivedMessage) {
+    protected void onMessage(E envelope) {
+        Object stringPayload = extractPayload(envelope);
+        Message deserializedMessage = deserialize(stringPayload);
+        onMessage(new ReceivedMessage.Builder()
+                .payload(new OriginalAndMarshaledMessage.Builder()
+                        .marshaled(stringPayload)
+                        .original(deserializedMessage)
+                        .build())
+                .acker(buildAcker(envelope))
+                .interrupter(this::interruptReception)
+                .build());
+    }
+
+    protected abstract Object extractPayload(E envelope);
+
+    protected abstract Message deserialize(Object payload);
+
+    private void onMessage(ReceivedMessage receivedMessage) {
         Objects.requireNonNull(receivedMessage);
         try {
             messageBroker.dispatch(receivedMessage);
@@ -24,6 +46,8 @@ public abstract class MessageReceiver {
             interruptReception();
         }
     }
+
+    protected abstract Runnable buildAcker(E envelope);
 
     protected synchronized void interruptReception() {
         if(!started) {

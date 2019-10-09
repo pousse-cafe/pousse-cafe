@@ -16,7 +16,12 @@ public class InternalMessageReceiverTest extends MessageReceiverTest {
     }
 
     @Override
-    protected Object serializedMessage(Message message) {
+    protected Object envelope(Message message) {
         return new SerializingMessageAdapter().adaptMessage(message);
+    }
+
+    @Override
+    protected Object serializedMessage(Object envelope) {
+        return envelope;
     }
 }

@@ -36,22 +36,24 @@ public abstract class MessageReceiverTest {
 
     private MessagingConnection connection;
 
+    @SuppressWarnings("unchecked")
     private void whenConsumingMessage() {
-        serializedMessage = serializedMessage(message);
+        envelope = envelope(message);
+        serializedMessage = serializedMessage(envelope);
         payload = new OriginalAndMarshaledMessage.Builder()
                 .original(message)
                 .marshaled(serializedMessage)
                 .build();
-        connection.messageReceiver().onMessage(new ReceivedMessage.Builder()
-                .payload(payload)
-                .acker(() -> {})
-                .interrupter(() -> {})
-                .build());
+        connection.messageReceiver().onMessage(envelope);
     }
+
+    private Object envelope;
+
+    protected abstract Object envelope(Message message);
 
     private Object serializedMessage;
 
-    protected abstract Object serializedMessage(Message message);
+    protected abstract Object serializedMessage(Object envelope);
 
     private OriginalAndMarshaledMessage payload;
 

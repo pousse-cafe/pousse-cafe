@@ -1,13 +1,15 @@
 package poussecafe.messaging.internal;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import poussecafe.messaging.Message;
+import poussecafe.exception.RuntimeInterruptedException;
+import poussecafe.messaging.EnvelopeSource;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageReceiver;
 import poussecafe.messaging.MessageSender;
+import poussecafe.messaging.ReceptionThreadMessageReceiver;
 import poussecafe.processing.MessageBroker;
-import poussecafe.processing.ReceivedMessage;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class InternalMessagingQueue {
@@ -19,59 +21,61 @@ public class InternalMessagingQueue {
 
     private MessageAdapter messageAdapter = new SerializingMessageAdapter();
 
-    public class InternalMessageReceiver extends MessageReceiver {
+    public class InternalMessageReceiver extends ReceptionThreadMessageReceiver<Object> {
 
         private InternalMessageReceiver(MessageBroker messageBroker) {
             super(messageBroker);
         }
 
         @Override
-        protected void actuallyStartReceiving() {
-            receptionThread = new Thread(() -> {
-                while (true) {
+        protected EnvelopeSource<Object> envelopeSource() {
+            return new EnvelopeSource<>() {
+                @Override
+                public Object get() {
                     try {
-                        Object polledObject = queue.take();
-                        if (!STOP.equals(polledObject)) {
-                            state.addMessageBeingProcessing();
-                            state.removeQueuedMessage();
-                            Message message = messageAdapter.adaptSerializedMessage(polledObject);
-                            onMessage(new ReceivedMessage.Builder()
-                                    .payload(new OriginalAndMarshaledMessage.Builder()
-                                            .marshaled(polledObject)
-                                            .original(message)
-                                            .build())
-                                    .acker(() -> state.removeMessageBeingProcessing())
-                                    .interrupter(this::interruptReception)
-                                    .build());
-                        }
+                        return queue.take();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         state.interrupt();
-                        break;
+                        throw new RuntimeInterruptedException(e);
                     }
                 }
-            });
-            receptionThread.setDaemon(true);
-            receptionThread.setName("Internal Messaging Reception Thread");
-            receptionThread.start();
-        }
 
-        private Thread receptionThread;
-
-        @Override
-        protected void actuallyStopReceiving() {
-            queue.add(STOP);
+                @Override
+                public void close() throws IOException {
+                    queue.add(STOP);
+                }
+            };
         }
 
         private static final String STOP = "stop";
 
-        public InternalMessagingQueue queue() {
-            return InternalMessagingQueue.this;
+        @Override
+        protected void onMessage(Object envelope) {
+            if (!STOP.equals(envelope)) {
+                state.addMessageBeingProcessing();
+                state.removeQueuedMessage();
+                super.onMessage(envelope);
+            }
         }
 
         @Override
-        protected void actuallyInterruptReception() {
-            receptionThread.interrupt();
+        protected Object extractPayload(Object envelope) {
+            return envelope;
+        }
+
+        @Override
+        protected poussecafe.messaging.Message deserialize(Object payload) {
+            return messageAdapter.adaptSerializedMessage(payload);
+        }
+
+        @Override
+        protected Runnable buildAcker(Object envelope) {
+            return state::removeMessageBeingProcessing;
+        }
+
+        public InternalMessagingQueue queue() {
+            return InternalMessagingQueue.this;
         }
 
         public boolean isInterrupted() {
@@ -85,7 +89,7 @@ public class InternalMessagingQueue {
 
     private InternalMessageReceiver messageReceiver;
 
-    public MessageReceiver messageReceiver() {
+    public MessageReceiver<Object> messageReceiver() {
         return messageReceiver;
     }
 
