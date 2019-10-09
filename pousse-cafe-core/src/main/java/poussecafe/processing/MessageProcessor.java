@@ -116,21 +116,34 @@ class MessageProcessor {
             logger.debug("      Success of {} with {}", listener, messageClassName);
             messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
             return false;
-        } catch (OptimisticLockingException e) {
-            logger.warn("Optimistic locking failure detected, will retry", e);
-            return true;
         } catch (SameOperationException e) {
-            logger.warn("Ignoring probable dubbed message consumption", e);
+            logger.warn("       Ignoring probable dubbed message consumption", e);
             return false;
+        } catch (OptimisticLockingException e) {
+            return handleOptimisticLockingException(consumptionId, receivedMessage, listener, e);
         } catch (Exception e) {
-            if(failFast) {
-                logger.error("Failing fast on exception from listener {}", listener, e);
-                throw new FailFastException("Failing fast on exception from listener {}", e);
-            } else {
-                logger.error("      Failure of {} with {}", listener, messageClassName, e);
-                messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
-                return false;
-            }
+            return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
+        }
+    }
+
+    private boolean handleOptimisticLockingException(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, OptimisticLockingException e) {
+        if(messageConsumptionHandler.retryOnOptimisticLockingException(receivedMessage)) {
+            logger.warn("       Optimistic locking failure detected, will retry", e);
+            return true;
+        } else {
+            messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
+            return false;
+        }
+    }
+
+    private boolean handleConsumptionError(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, String messageClassName, Exception e) {
+        if(failFast) {
+            logger.error("      Failing fast on exception from listener {}", listener, e);
+            throw new FailFastException("Failing fast on exception from listener {}", e);
+        } else {
+            logger.error("      Failure of {} with {}", listener, messageClassName, e);
+            messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
+            return false;
         }
     }
 }

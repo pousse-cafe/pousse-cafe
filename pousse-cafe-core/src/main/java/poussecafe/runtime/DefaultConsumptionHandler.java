@@ -13,4 +13,10 @@ public class DefaultConsumptionHandler implements MessageConsumptionHandler {
     public void handleFailure(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, Exception e) {
         // By default, do nothing.
     }
+
+    @Override
+    public boolean retryOnOptimisticLockingException(OriginalAndMarshaledMessage original) {
+        // By default, retry
+        return true;
+    }
 }
