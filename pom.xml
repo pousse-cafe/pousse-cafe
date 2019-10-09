@@ -209,5 +209,6 @@
         <module>pousse-cafe-attribute</module>
         <module>pousse-cafe-base</module>
         <module>pousse-cafe-injector</module>
+        <module>pousse-cafe-sample-app</module>
     </modules>
 </project>

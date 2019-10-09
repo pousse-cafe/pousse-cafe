@@ -28,6 +28,10 @@ profile section to configure GPG. For instance:
       </properties>
     </profile>
 
+The archetype must be deployed separately:
+
+    ( cd pousse-cafe-sample-app ; ./scripts/archetype_mvn.sh deploy -Ppousse-cafe-release )
+
 After that:
 
 1. Go to [SonaType Nexus Repository Manager](https://oss.sonatype.org/)
