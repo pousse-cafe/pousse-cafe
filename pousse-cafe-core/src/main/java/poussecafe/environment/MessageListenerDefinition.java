@@ -106,7 +106,7 @@ public class MessageListenerDefinition {
                 .messageClass(messageClass());
     }
 
-    private String id() {
+    public String id() {
         if(!customId.isPresent()) {
             return new DeclaredMessageListenerIdBuilder()
                     .method(method)

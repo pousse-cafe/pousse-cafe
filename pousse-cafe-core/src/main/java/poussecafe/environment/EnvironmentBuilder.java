@@ -192,7 +192,14 @@ public class EnvironmentBuilder {
         for(MessageListenerDefinition definition : definedListeners) {
             Class<? extends Message> messageClass = definition.messageClass();
             if(!definedMessages.contains(messageClass)) {
-                throw new PousseCafeException("Listener consumes undefined Message " + messageClass.getName());
+                StringBuilder errorMessage = new StringBuilder();
+                errorMessage.append("Listener ");
+                errorMessage.append(definition.id());
+                errorMessage.append(" consumes undefined Message ");
+                errorMessage.append(messageClass.getName());
+                errorMessage.append('.');
+                errorMessage.append("This generally happens when you forgot to register the message with Pousse-Café Runtime via a Bundle.");
+                throw new PousseCafeException(errorMessage.toString());
             }
         }
     }
