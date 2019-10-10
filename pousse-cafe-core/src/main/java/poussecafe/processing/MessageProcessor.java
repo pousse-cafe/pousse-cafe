@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.apm.ApmTransaction;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.ConsumptionIdGenerator;
@@ -41,10 +43,16 @@ class MessageProcessor {
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            processor.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public MessageProcessor build() {
             Objects.requireNonNull(processor.consumptionIdGenerator);
             Objects.requireNonNull(processor.listenersPartition);
             Objects.requireNonNull(processor.messageConsumptionHandler);
+            Objects.requireNonNull(processor.applicationPerformanceMonitoring);
             processor.logger = LoggerFactory.getLogger(MessageProcessor.class.getName() + "_" + processor.consumptionIdGenerator.prefix());
             return processor;
         }
@@ -111,20 +119,33 @@ class MessageProcessor {
             MessageListener listener) {
         String messageClassName = receivedMessage.original().getClass().getName();
         logger.debug("    {} consumes {}", listener, messageClassName);
+
+        ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction();
         try {
             listener.consumer().accept(receivedMessage.original());
             logger.debug("      Success of {} with {}", listener, messageClassName);
             messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
             return false;
         } catch (SameOperationException e) {
+            apmTransaction.captureException(e);
             logger.warn("       Ignoring probable dubbed message consumption", e);
             return false;
         } catch (OptimisticLockingException e) {
-            return handleOptimisticLockingException(consumptionId, receivedMessage, listener, e);
+            if(!handleOptimisticLockingException(consumptionId, receivedMessage, listener, e)) {
+                apmTransaction.captureException(e);
+                return false;
+            } else {
+                return true;
+            }
         } catch (Exception e) {
+            apmTransaction.captureException(e);
             return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
+        } finally {
+            apmTransaction.end();
         }
     }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private boolean handleOptimisticLockingException(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, OptimisticLockingException e) {
         if(messageConsumptionHandler.retryOnOptimisticLockingException(receivedMessage)) {

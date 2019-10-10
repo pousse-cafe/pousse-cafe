@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import org.junit.Test;
+import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.DefaultConsumptionHandler;
@@ -58,7 +59,8 @@ public class MessageProcessorTest {
         return new MessageProcessor.Builder()
                 .id("id")
                 .listenersPartition(listenersPartition)
-                .messageConsumptionHandler(new DefaultConsumptionHandler());
+                .messageConsumptionHandler(new DefaultConsumptionHandler())
+                .applicationPerformanceMonitoring(new DefaultApplicationPerformanceMonitoring());
     }
 
     private MessageProcessor messageProcessor;

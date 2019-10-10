@@ -1,6 +1,7 @@
 package poussecafe.processing;
 
 import org.junit.Test;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.runtime.MessageConsumptionHandler;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -15,6 +16,7 @@ public class MessageProcessingThreadPoolTest {
         givenExpectedNumberOfThreads();
         givenListenersSet();
         givenMessageConsumptionHandler();
+        givenApplicationPerformanceMonitoring();
         whenCreatingPool();
         thenCreatedPoolHasExpectedNumberOfThreads();
     }
@@ -42,11 +44,18 @@ public class MessageProcessingThreadPoolTest {
 
     private MessageConsumptionHandler messageConsumptionHandler;
 
+    private void givenApplicationPerformanceMonitoring() {
+        applicationPerformanceMonitoring = mock(ApplicationPerformanceMonitoring.class);
+    }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
     private void whenCreatingPool() {
         pool = new MessageProcessingThreadPool.Builder()
                 .numberOfThreads(expectedNumberOfThreads)
                 .listenersSet(listenersSet)
                 .messageConsumptionHandler(messageConsumptionHandler)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .build();
     }
 

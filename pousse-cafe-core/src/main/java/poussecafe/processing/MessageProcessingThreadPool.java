@@ -2,6 +2,7 @@ package poussecafe.processing;
 
 import java.util.ArrayList;
 import java.util.List;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.runtime.MessageConsumptionHandler;
 
 public class MessageProcessingThreadPool {
@@ -38,6 +39,13 @@ public class MessageProcessingThreadPool {
 
         private MessageConsumptionHandler messageConsumptionHandler;
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
+        private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
         public MessageProcessingThreadPool build() {
             createThreads();
             if(numberOfThreads <= 0) {
@@ -54,6 +62,7 @@ public class MessageProcessingThreadPool {
                         .id(Integer.toString(i))
                         .failFast(failFast)
                         .messageConsumptionHandler(messageConsumptionHandler)
+                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                         .listenersPartition(listenersPartition)
                         .build();
                 MessageProcessingThread thread = new MessageProcessingThread.Builder()

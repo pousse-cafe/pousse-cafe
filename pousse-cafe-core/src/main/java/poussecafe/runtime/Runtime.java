@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
 import poussecafe.environment.Bundle;
@@ -82,6 +84,11 @@ public class Runtime {
 
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             runtime.messageConsumptionHandler = messageConsumptionHandler;
+            return this;
+        }
+
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            runtime.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
             return this;
         }
 
@@ -167,6 +174,8 @@ public class Runtime {
 
     private MessageSenderLocator messageSenderLocator;
 
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring = new DefaultApplicationPerformanceMonitoring();
+
     MessageSenderLocator messageSenderLocator() {
         return messageSenderLocator;
     }
@@ -185,13 +194,18 @@ public class Runtime {
 
     private void configureMessageProcessing() {
         logger.info("Creating message processing pool with {} threads...", processingThreads);
-        messageProcessingThreadPool = new MessageProcessingThreadPool.Builder()
+        messageProcessingThreadPool = newMessageProcessingThreadPool();
+        messageBroker = new MessageBroker(messageProcessingThreadPool);
+    }
+
+    private MessageProcessingThreadPool newMessageProcessingThreadPool() {
+        return new MessageProcessingThreadPool.Builder()
                 .numberOfThreads(processingThreads)
                 .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .listenersSet(environment.messageListenersSet())
                 .build();
-        messageBroker = new MessageBroker(messageProcessingThreadPool);
     }
 
     private int processingThreads = 1;
@@ -242,12 +256,7 @@ public class Runtime {
             .forEach(environment::registerMessageListener);
         if(started) {
             logger.warn("New listeners registered, creating new processing thread pool. Consider registering all listeners before starting runtime to prevent this.");
-            var newThreadPool = new MessageProcessingThreadPool.Builder()
-                    .numberOfThreads(processingThreads)
-                    .failFast(failFast)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .listenersSet(environment.messageListenersSet())
-                    .build();
+            var newThreadPool = newMessageProcessingThreadPool();
             messageBroker.replaceThreadPool(newThreadPool);
             newThreadPool.start();
         }
