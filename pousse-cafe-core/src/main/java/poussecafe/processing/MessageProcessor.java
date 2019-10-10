@@ -120,7 +120,7 @@ class MessageProcessor {
         String messageClassName = receivedMessage.original().getClass().getName();
         logger.debug("    {} consumes {}", listener, messageClassName);
 
-        String transactionName = listener.id();
+        String transactionName = listener.shortId();
         ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
         try {
             listener.consumer().accept(receivedMessage.original());
