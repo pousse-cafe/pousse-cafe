@@ -2,5 +2,5 @@ package poussecafe.apm;
 
 public interface ApplicationPerformanceMonitoring {
 
-    ApmTransaction startTransaction();
+    ApmTransaction startTransaction(String name);
 }
