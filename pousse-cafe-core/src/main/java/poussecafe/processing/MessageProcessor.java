@@ -126,20 +126,25 @@ class MessageProcessor {
             listener.consumer().accept(receivedMessage.original());
             logger.debug("      Success of {} with {}", listener, messageClassName);
             messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
+            apmTransaction.setResult("success");
             return false;
         } catch (SameOperationException e) {
             apmTransaction.captureException(e);
             logger.warn("       Ignoring probable dubbed message consumption", e);
+            apmTransaction.setResult("skip");
             return false;
         } catch (OptimisticLockingException e) {
             if(!handleOptimisticLockingException(consumptionId, receivedMessage, listener, e)) {
                 apmTransaction.captureException(e);
+                apmTransaction.setResult("failure");
                 return false;
             } else {
+                apmTransaction.setResult("skip");
                 return true;
             }
         } catch (Exception e) {
             apmTransaction.captureException(e);
+            apmTransaction.setResult("failure");
             return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
         } finally {
             apmTransaction.end();
