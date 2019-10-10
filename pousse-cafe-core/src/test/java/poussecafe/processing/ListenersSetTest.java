@@ -21,6 +21,7 @@ public class ListenersSetTest {
         for(int i = 0; i < 8; ++i) {
             MessageListener listener = new MessageListener.Builder()
                     .id(Integer.toString(i))
+                    .shortId(Integer.toString(i))
                     .consumer(message -> {})
                     .messageClass(Message.class)
                     .priority(0)

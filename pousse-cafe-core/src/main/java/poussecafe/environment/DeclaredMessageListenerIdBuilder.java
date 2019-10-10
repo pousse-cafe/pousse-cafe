@@ -7,24 +7,24 @@ import poussecafe.messaging.Message;
 public class DeclaredMessageListenerIdBuilder {
 
     public DeclaredMessageListenerIdBuilder messageClass(Class<? extends Message> messageClass) {
-        messageClassName = messageClass.getName();
+        this.messageClass = messageClass;
         return this;
     }
 
-    private String messageClassName;
+    private Class<?> messageClass;
 
     public DeclaredMessageListenerIdBuilder method(Method method) {
-        declaringClassName = method.getDeclaringClass().getName();
+        declaringClass = method.getDeclaringClass();
         methodName = method.getName();
         return this;
     }
 
-    private String declaringClassName;
+    private Class<?> declaringClass;
 
     private String methodName;
 
-    public DeclaredMessageListenerIdBuilder declaringClassName(String declaringClassName) {
-        this.declaringClassName = declaringClassName;
+    public DeclaredMessageListenerIdBuilder declaringClass(Class<?> declaringClass) {
+        this.declaringClass = declaringClass;
         return this;
     }
 
@@ -33,15 +33,19 @@ public class DeclaredMessageListenerIdBuilder {
         return this;
     }
 
-    public DeclaredMessageListenerIdBuilder messageClassName(String messageClassName) {
-        this.messageClassName = messageClassName;
-        return this;
+    public String build() {
+        checkRequirements();
+        return declaringClass.getName() + "::" + methodName + "(" + messageClass.getName() + ")";
     }
 
-    public String build() {
-        Objects.requireNonNull(declaringClassName);
+    private void checkRequirements() {
+        Objects.requireNonNull(declaringClass);
         Objects.requireNonNull(methodName);
-        Objects.requireNonNull(messageClassName);
-        return declaringClassName + "::" + methodName + "(" + messageClassName + ")";
+        Objects.requireNonNull(messageClass);
+    }
+
+    public String buildShortId() {
+        checkRequirements();
+        return declaringClass.getSimpleName() + "::" + methodName + "(" + messageClass.getSimpleName() + ")";
     }
 }

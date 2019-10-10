@@ -20,6 +20,11 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
+        public Builder shortId(String shortId) {
+            listener.shortId = shortId;
+            return this;
+        }
+
         public Builder messageClass(Class<? extends Message> messageClass) {
             listener.messageClass = messageClass;
             return this;
@@ -50,6 +55,7 @@ public class MessageListener implements Comparable<MessageListener> {
 
         public MessageListener build() {
             Objects.requireNonNull(listener.id);
+            Objects.requireNonNull(listener.shortId);
             Objects.requireNonNull(listener.messageClass);
             Objects.requireNonNull(listener.consumer);
             Objects.requireNonNull(listener.runner);
@@ -71,6 +77,12 @@ public class MessageListener implements Comparable<MessageListener> {
 
     public String id() {
         return id;
+    }
+
+    private String shortId;
+
+    public String shortId() {
+        return shortId;
     }
 
     private Class<? extends Message> messageClass;

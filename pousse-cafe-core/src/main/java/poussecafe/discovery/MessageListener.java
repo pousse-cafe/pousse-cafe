@@ -16,4 +16,6 @@ public @interface MessageListener {
     Class<? extends AggregateMessageListenerRunner<?, ?, ?>> runner() default VoidAggregateMessageListenerRunner.class;
 
     String collisionSpace() default "";
+
+    String shortId() default "";
 }

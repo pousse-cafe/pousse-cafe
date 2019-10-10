@@ -103,16 +103,30 @@ public class MessageListenerDefinition {
     public MessageListener.Builder messageListenerBuilder() {
         return new MessageListener.Builder()
                 .id(id())
+                .shortId(shortId())
                 .messageClass(messageClass());
     }
 
     public String id() {
         if(!customId.isPresent()) {
-            return new DeclaredMessageListenerIdBuilder()
-                    .method(method)
-                    .declaringClassName(containerClass.getName())
-                    .messageClass(messageClass())
+            return declaredMessageListenerIdBuilder()
                     .build();
+        } else {
+            return customId.get();
+        }
+    }
+
+    private DeclaredMessageListenerIdBuilder declaredMessageListenerIdBuilder() {
+        return new DeclaredMessageListenerIdBuilder()
+                .method(method)
+                .declaringClass(containerClass)
+                .messageClass(messageClass());
+    }
+
+    public String shortId() {
+        if(!customId.isPresent()) {
+            return declaredMessageListenerIdBuilder()
+                    .buildShortId();
         } else {
             return customId.get();
         }

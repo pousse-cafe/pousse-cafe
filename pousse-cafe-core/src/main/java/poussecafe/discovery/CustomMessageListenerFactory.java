@@ -19,20 +19,33 @@ public class CustomMessageListenerFactory {
         }
         @SuppressWarnings("unchecked")
         Class<? extends Message> messageClass = (Class<? extends Message>) method.getParameters()[0].getType();
+
         String listenerId = annotation.id();
         if(listenerId == null || listenerId.isEmpty()) {
             listenerId = new DeclaredMessageListenerIdBuilder()
                     .messageClass(messageClass)
                     .method(method)
-                    .declaringClassName(target.getClass().getName())
+                    .declaringClass(target.getClass())
                     .build();
         }
+
+        String listenerShortId = annotation.shortId();
+        if(listenerShortId == null || listenerShortId.isEmpty()) {
+            listenerShortId = new DeclaredMessageListenerIdBuilder()
+                    .messageClass(messageClass)
+                    .method(method)
+                    .declaringClass(target.getClass())
+                    .buildShortId();
+        }
+
         Optional<String> collisionSpace = Optional.empty();
         if(!annotation.collisionSpace().isBlank()) {
             collisionSpace = Optional.of(annotation.collisionSpace());
         }
+
         return new poussecafe.environment.MessageListener.Builder()
                 .id(listenerId)
+                .shortId(listenerShortId)
                 .messageClass(messageClass)
                 .priority(MessageListenerPriority.CUSTOM)
                 .consumer(buildMessageConsumer(target, method))

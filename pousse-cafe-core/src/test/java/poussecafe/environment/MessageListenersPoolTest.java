@@ -42,6 +42,7 @@ public class MessageListenersPoolTest {
         for(int i = 0; i < BUCKET_SIZE; ++i) {
             MessageListener listener = new MessageListener.Builder()
                     .id(label + "_" + i)
+                    .shortId(label + "_" + i)
                     .messageClass(Message.class)
                     .priority(0)
                     .collisionSpace(Optional.of(label))
