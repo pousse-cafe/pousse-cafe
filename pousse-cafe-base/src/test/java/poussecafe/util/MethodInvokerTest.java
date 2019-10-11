@@ -66,6 +66,6 @@ public class MethodInvokerTest {
 
     private void thenExceptionIsNotRethrown() {
         assertThat(exception, notNullValue());
-        assertThat(exception.getClass(), equalTo(PousseCafeException.class));
+        assertThat(exception.getClass(), equalTo(MethodInvokerException.class));
     }
 }

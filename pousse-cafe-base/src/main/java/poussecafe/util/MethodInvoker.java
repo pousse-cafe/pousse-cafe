@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import poussecafe.exception.PousseCafeException;
 
 public class MethodInvoker {
 
@@ -55,8 +54,8 @@ public class MethodInvoker {
         }
     }
 
-    private PousseCafeException wrapException(Exception e) {
-        return new PousseCafeException("Unable to invoke method", e);
+    private MethodInvokerException wrapException(Exception e) {
+        return new MethodInvokerException("Unable to invoke method", e);
     }
 
     private Method method;

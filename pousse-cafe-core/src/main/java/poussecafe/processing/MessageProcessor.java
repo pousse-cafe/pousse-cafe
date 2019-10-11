@@ -14,6 +14,7 @@ import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
+import poussecafe.util.MethodInvokerException;
 
 import static java.util.stream.Collectors.toList;
 
@@ -126,25 +127,29 @@ class MessageProcessor {
             listener.consumer().accept(receivedMessage.original());
             logger.debug("      Success of {} with {}", listener, messageClassName);
             messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
-            apmTransaction.setResult("success");
+            apmTransaction.setResult(APM_TRANSACTION_SUCCESS);
             return false;
         } catch (SameOperationException e) {
             apmTransaction.captureException(e);
             logger.warn("       Ignoring probable dubbed message consumption", e);
-            apmTransaction.setResult("skip");
+            apmTransaction.setResult(APM_TRANSACTION_SKIP);
             return false;
         } catch (OptimisticLockingException e) {
             if(!handleOptimisticLockingException(consumptionId, receivedMessage, listener, e)) {
                 apmTransaction.captureException(e);
-                apmTransaction.setResult("failure");
+                apmTransaction.setResult(APM_TRANSACTION_FAILURE);
                 return false;
             } else {
-                apmTransaction.setResult("skip");
+                apmTransaction.setResult(APM_TRANSACTION_SKIP);
                 return true;
             }
+        } catch (MethodInvokerException e) {
+            apmTransaction.captureException(e.getCause());
+            apmTransaction.setResult(APM_TRANSACTION_FAILURE);
+            return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
         } catch (Exception e) {
             apmTransaction.captureException(e);
-            apmTransaction.setResult("failure");
+            apmTransaction.setResult(APM_TRANSACTION_FAILURE);
             return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
         } finally {
             apmTransaction.end();
@@ -152,6 +157,10 @@ class MessageProcessor {
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
+    private static final String APM_TRANSACTION_SUCCESS = "success";
+
+    private static final String APM_TRANSACTION_SKIP = "skip";
 
     private boolean handleOptimisticLockingException(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, OptimisticLockingException e) {
         if(messageConsumptionHandler.retryOnOptimisticLockingException(receivedMessage)) {
@@ -162,6 +171,8 @@ class MessageProcessor {
             return false;
         }
     }
+
+    private static final String APM_TRANSACTION_FAILURE = "failure";
 
     private boolean handleConsumptionError(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, String messageClassName, Exception e) {
         if(failFast) {
