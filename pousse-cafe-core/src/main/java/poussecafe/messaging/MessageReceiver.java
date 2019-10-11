@@ -23,6 +23,7 @@ public abstract class MessageReceiver<E> {
     protected void onMessage(E envelope) {
         Object stringPayload = extractPayload(envelope);
 
+        Runnable acker = buildAcker(envelope);
         Message deserializedMessage;
         try {
             deserializedMessage = deserialize(stringPayload);
@@ -31,6 +32,7 @@ public abstract class MessageReceiver<E> {
                 throw e;
             } else {
                 logger.debug("Could not deserialize payload", e);
+                acker.run();
                 return;
             }
         }
@@ -40,7 +42,7 @@ public abstract class MessageReceiver<E> {
                         .marshaled(stringPayload)
                         .original(deserializedMessage)
                         .build())
-                .acker(buildAcker(envelope))
+                .acker(acker)
                 .interrupter(this::interruptReception)
                 .build());
     }
