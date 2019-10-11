@@ -43,18 +43,18 @@ public class MethodInvoker {
         try {
             return method.invoke(target, args);
         } catch (InvocationTargetException e) {
-            Throwable targetException = e.getTargetException();
+            Throwable targetException = e.getCause();
             if(exceptions.contains(targetException.getClass())) {
                 throw (RuntimeException) targetException;
             } else {
-                throw wrapException(e);
+                throw wrapException(e.getCause());
             }
         } catch (Exception e) {
             throw wrapException(e);
         }
     }
 
-    private MethodInvokerException wrapException(Exception e) {
+    private MethodInvokerException wrapException(Throwable e) {
         return new MethodInvokerException("Unable to invoke method", e);
     }
 
