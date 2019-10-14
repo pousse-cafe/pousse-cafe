@@ -8,20 +8,20 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
 import poussecafe.doc.model.AnnotationsResolver;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.DocletAccess;
+import poussecafe.doc.model.ModuleComponentDoc;
+import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
-import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Service;
@@ -85,7 +85,7 @@ public class ProcessStepDocExtractor implements Service {
                             .build())
                     .build();
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
-                    moduleComponentDoc);
+                    moduleComponentDoc, Optional.empty());
             processStepDoc.attributes().processName().value(processName(methodDoc));
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
             processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
@@ -154,6 +154,7 @@ public class ProcessStepDocExtractor implements Service {
     private ProcessStepDoc extractDeclaredStep(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
+
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
         StepMethodSignature stepMethodSignature = new StepMethodSignature.Builder()
@@ -168,16 +169,18 @@ public class ProcessStepDocExtractor implements Service {
                 .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
                 .build();
+
+        AggregateDocId aggregate = declaringAggregate(methodDoc);
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
-                moduleComponentDoc);
+                moduleComponentDoc, Optional.of(aggregate));
         processStepDoc.attributes().processName().value(processName(methodDoc));
         processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
         processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
         processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
         processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
 
-        if(factoryDocFactory.isFactoryDoc(enclosingType)) {
-            TypeElement aggregateTypeElement = aggregateClassName(enclosingType);
+        if(aggregateDocFactory.isFactoryDoc(enclosingType)) {
+            TypeElement aggregateTypeElement = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
             List<ExecutableElement> methods = ElementFilter.methodsIn(aggregateTypeElement.getEnclosedElements());
             Optional<ExecutableElement> onAddMethod = methods.stream()
                     .filter(element -> element.getSimpleName().toString().equals("onAdd"))
@@ -193,14 +196,20 @@ public class ProcessStepDocExtractor implements Service {
         return processStepDoc;
     }
 
-    private ComponentDocFactory componentDocFactory;
-
-    private FactoryDocFactory factoryDocFactory;
-
-    public TypeElement aggregateClassName(TypeElement factoryClassDoc) {
-        DeclaredType superclass = (DeclaredType) factoryClassDoc.getSuperclass();
-        return (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(AGGREGATE_TYPE_INDEX));
+    private AggregateDocId declaringAggregate(ExecutableElement methodDoc) {
+        TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
+        TypeElement aggregateType;
+        if(aggregateDocFactory.isFactoryDoc(enclosingType)) {
+            aggregateType = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
+        } else if(aggregateDocFactory.isRepositoryDoc(enclosingType)) {
+            aggregateType = aggregateDocFactory.aggregateTypeElementOfRepository(enclosingType);
+        } else {
+            aggregateType = enclosingType;
+        }
+        return AggregateDocId.ofClassName(aggregateType.getSimpleName().toString());
     }
 
-    private static final int AGGREGATE_TYPE_INDEX = 1;
+    private ComponentDocFactory componentDocFactory;
+
+    private AggregateDocFactory aggregateDocFactory;
 }

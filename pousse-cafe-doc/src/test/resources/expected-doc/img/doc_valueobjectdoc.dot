@@ -9,7 +9,7 @@ overlap=false;
 "ModuleComponentDoc"[shape=ellipse];
 "ComponentDoc"[shape=ellipse];
 "ModuleDoc"[shape=box,style=bold];
-"ModuleDocId"[shape=ellipse];
 "ValueObjectDocId"[shape=ellipse];
+"ModuleDocId"[shape=ellipse];
 "ValueObjectDoc"[shape=box,style=bold];
 }

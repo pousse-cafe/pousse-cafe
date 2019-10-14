@@ -137,9 +137,6 @@ public class PousseCafeDoclet implements Doclet {
         ValueObjectDocCreator valueObjectDocCreator = new ValueObjectDocCreator(environment);
         runtime.injector().injectDependenciesInto(valueObjectDocCreator);
 
-        FactoryDocCreator factoryDocCreator = new FactoryDocCreator(environment);
-        runtime.injector().injectDependenciesInto(factoryDocCreator);
-
         ProcessStepDocCreator messageListenerDocCreator = new ProcessStepDocCreator(environment);
         runtime.injector().injectDependenciesInto(messageListenerDocCreator);
 
@@ -148,7 +145,6 @@ public class PousseCafeDoclet implements Doclet {
                 .classDocConsumer(serviceDocCreator)
                 .classDocConsumer(entityDocCreator)
                 .classDocConsumer(valueObjectDocCreator)
-                .classDocConsumer(factoryDocCreator)
                 .classDocConsumer(messageListenerDocCreator)
                 .build();
         runtime.injector().injectDependenciesInto(codeAnalyzer);

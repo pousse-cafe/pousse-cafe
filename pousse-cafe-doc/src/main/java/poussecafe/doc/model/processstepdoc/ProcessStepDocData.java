@@ -8,6 +8,8 @@ import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ModuleComponentDocData;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
+import poussecafe.doc.model.aggregatedoc.adapters.AggregateDocIdDataAdapter;
 
 @SuppressWarnings("serial")
 public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attributes {
@@ -80,4 +82,15 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     }
 
     private HashSet<String> fromExternals = new HashSet<>();
+
+    @Override
+    public OptionalAttribute<AggregateDocId> aggregate() {
+        return AttributeBuilder.optional(AggregateDocId.class)
+                .usingDataAdapter(AggregateDocIdDataAdapter.instance())
+                .read(() -> aggregateClassName)
+                .write(value -> aggregateClassName = value)
+                .build();
+    }
+
+    private String aggregateClassName;
 }

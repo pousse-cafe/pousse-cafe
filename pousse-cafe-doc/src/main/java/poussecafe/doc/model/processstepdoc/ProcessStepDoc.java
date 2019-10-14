@@ -5,6 +5,7 @@ import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.doc.model.ModuleComponentDoc;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
@@ -27,5 +28,7 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
         SetAttribute<String> toExternals();
 
         SetAttribute<String> fromExternals();
+
+        OptionalAttribute<AggregateDocId> aggregate();
     }
 }

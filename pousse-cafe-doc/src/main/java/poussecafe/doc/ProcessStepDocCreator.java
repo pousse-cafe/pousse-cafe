@@ -4,10 +4,8 @@ import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
-import poussecafe.doc.model.factorydoc.FactoryDocFactory;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.process.ProcessStepDocCreation;
-import poussecafe.domain.Repository;
 
 public class ProcessStepDocCreator extends ModuleComponentDocCreator {
 
@@ -18,18 +16,14 @@ public class ProcessStepDocCreator extends ModuleComponentDocCreator {
     @Override
     protected boolean isComponentDoc(TypeElement classDoc) {
         return aggregateDocFactory.isAggregateDoc(classDoc) ||
-                factoryDocFactory.isFactoryDoc(classDoc) ||
+                aggregateDocFactory.isFactoryDoc(classDoc) ||
                 domainProcessDocFactory.isDomainProcessDoc(classDoc) ||
-                classDocPredicates.documentsWithSuperclass(classDoc, Repository.class);
+                aggregateDocFactory.isRepositoryDoc(classDoc);
     }
 
     private AggregateDocFactory aggregateDocFactory;
 
-    private FactoryDocFactory factoryDocFactory;
-
     private DomainProcessDocFactory domainProcessDocFactory;
-
-    private ClassDocPredicates classDocPredicates;
 
     @Override
     protected String componentName() {

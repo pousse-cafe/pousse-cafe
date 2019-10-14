@@ -2,19 +2,18 @@ graph {
 splines=spline;
 overlap=false;
 "ModuleDoc" -- "ValueObjectDoc" [style=solid];
+"AggregateDoc" -- "ProcessStepDoc" [style=solid];
 "ModuleDoc" -- "ProcessStepDoc" [style=solid];
 "ModuleDoc" -- "ServiceDoc" [style=solid];
 "AggregateDoc" -- "ModuleDoc" [style=solid];
 "DomainProcessDoc" -- "ModuleDoc" [style=solid];
 "EntityDoc" -- "ModuleDoc" [style=solid];
-"FactoryDoc" -- "ModuleDoc" [style=solid];
 "ServiceDoc"[shape=box,style=bold];
 "ModuleDoc"[shape=box,style=bold];
 "Relation"[shape=box,style=bold];
 "ProcessStepDoc"[shape=box,style=bold];
 "EntityDoc"[shape=box,style=bold];
 "ValueObjectDoc"[shape=box,style=bold];
-"FactoryDoc"[shape=box,style=bold];
 "AggregateDoc"[shape=box,style=bold];
 "DomainProcessDoc"[shape=box,style=bold];
 }
