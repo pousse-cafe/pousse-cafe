@@ -2,6 +2,7 @@ package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
@@ -29,7 +30,6 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
     public List<ProcessStepDocData> findConsuming(ModuleDocId moduleDocId,
             String eventName) {
         return findAll().stream()
-                .filter(data -> data.processName().value().isPresent())
                 .filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(moduleDocId))
                 .filter(data -> data.stepMethodSignature().value().isPresent())
                 .filter(data -> data.stepMethodSignature().value().get().consumedEventName().isPresent())
@@ -41,9 +41,16 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
     public List<ProcessStepDocData> findProducing(ModuleDocId moduleDocId,
             String eventName) {
         return findAll().stream()
-                .filter(data -> data.processName().value().isPresent())
                 .filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(moduleDocId))
                 .filter(data -> data.producedEvents().contains(eventName))
+                .collect(toList());
+    }
+
+    @Override
+    public List<ProcessStepDocData> findByAggregateDocId(AggregateDocId aggregateDocId) {
+        return findAll().stream()
+                .filter(data -> data.aggregate().value().isPresent())
+                .filter(data -> data.aggregate().value().get().equals(aggregateDocId))
                 .collect(toList());
     }
 }

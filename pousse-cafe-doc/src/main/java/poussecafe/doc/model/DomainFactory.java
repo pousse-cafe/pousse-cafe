@@ -15,6 +15,8 @@ import poussecafe.doc.model.entitydoc.EntityDocId;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocRepository;
+import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
+import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.relation.ComponentType;
 import poussecafe.doc.model.relation.Relation;
 import poussecafe.doc.model.relation.RelationRepository;
@@ -73,6 +75,7 @@ public class DomainFactory implements Service {
                 .documentation(aggregateDoc)
                 .entities(entities(aggregateDoc))
                 .valueObjects(valueObjects(aggregateDoc))
+                .processSteps(processSteps(aggregateDoc))
                 .build();
     }
 
@@ -123,6 +126,12 @@ public class DomainFactory implements Service {
     }
 
     private ValueObjectDocRepository valueObjectDocRepository;
+
+    private List<ProcessStepDoc> processSteps(AggregateDoc aggregateDoc) {
+        return processStepDocRepository.findByAggregateDocId(aggregateDoc.attributes().identifier().value());
+    }
+
+    private ProcessStepDocRepository processStepDocRepository;
 
     private List<ServiceDoc> services(ModuleDoc moduleDoc) {
         return serviceDocRepository.findByModuleId(moduleDoc.attributes().identifier().value());

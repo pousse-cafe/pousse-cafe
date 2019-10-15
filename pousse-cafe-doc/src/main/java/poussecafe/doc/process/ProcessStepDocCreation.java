@@ -3,6 +3,7 @@ package poussecafe.doc.process;
 import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.TypeElement;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
@@ -29,13 +30,21 @@ public class ProcessStepDocCreation extends DomainProcess {
         } else {
             runInTransaction(ModuleDoc.class, () -> {
                 ProcessStepDoc processStepDoc = processStepRepository.get(id);
+
                 Optional<String> processName = processStepDoc.attributes().processName().value();
                 if(!processName.isPresent()) {
                     processStepDoc.attributes().processName().valueOf(doc.attributes().processName());
                 }
+
                 processStepDoc.attributes().producedEvents().addAll(doc.attributes().producedEvents().value());
                 processStepDoc.attributes().fromExternals().addAll(doc.attributes().fromExternals().value());
                 processStepDoc.attributes().toExternals().addAll(doc.attributes().toExternals().value());
+
+                Optional<AggregateDocId> aggregate = doc.attributes().aggregate().value();
+                if(aggregate.isPresent()) {
+                    processStepDoc.attributes().aggregate().valueOf(doc.attributes().aggregate());
+                }
+
                 processStepRepository.update(processStepDoc);
             });
         }

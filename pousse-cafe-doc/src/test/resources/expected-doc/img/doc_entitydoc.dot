@@ -1,8 +1,8 @@
 graph {
 splines=spline;
 overlap=false;
-"EntityDoc" -- "EntityDocId" [style=solid];
 "ModuleComponentDoc" -- "ModuleDocId" [style=solid];
+"EntityDoc" -- "EntityDocId" [style=solid];
 "ComponentDoc" -- "ModuleComponentDoc" [style=solid];
 "ModuleDoc" -- "ModuleDocId" [style=dotted];
 "EntityDoc" -- "ModuleComponentDoc" [style=solid];

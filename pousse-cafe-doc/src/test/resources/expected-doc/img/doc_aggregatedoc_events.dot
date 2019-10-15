@@ -1,0 +1,6 @@
+digraph {
+splines=spline;
+"CreateAggregateDoc" -> "AggregateDoc" [style=solid];
+"AggregateDoc"[shape=box,style=bold];
+"CreateAggregateDoc"[shape=ellipse];
+}

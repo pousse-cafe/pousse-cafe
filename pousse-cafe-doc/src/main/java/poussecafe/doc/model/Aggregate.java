@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.entitydoc.EntityDoc;
+import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 
 public class Aggregate {
@@ -28,10 +29,16 @@ public class Aggregate {
             return this;
         }
 
+        public Builder processSteps(List<ProcessStepDoc> processSteps) {
+            aggregate.processSteps = new ArrayList<>(processSteps);
+            return this;
+        }
+
         public Aggregate build() {
             Objects.requireNonNull(aggregate.documentation);
             Objects.requireNonNull(aggregate.entities);
             Objects.requireNonNull(aggregate.valueObjects);
+            Objects.requireNonNull(aggregate.processSteps);
             return aggregate;
         }
     }
@@ -56,5 +63,11 @@ public class Aggregate {
 
     public List<ValueObjectDoc> valueObjects() {
         return valueObjects;
+    }
+
+    private List<ProcessStepDoc> processSteps;
+
+    public List<ProcessStepDoc> processSteps() {
+        return processSteps;
     }
 }

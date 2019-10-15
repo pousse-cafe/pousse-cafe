@@ -1,0 +1,4 @@
+digraph {
+splines=spline;
+"EntityDoc"[shape=box,style=bold];
+}

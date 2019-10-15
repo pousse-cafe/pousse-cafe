@@ -34,7 +34,7 @@ public class DirectedEdge implements Edge {
         this.style = style;
     }
 
-    public DirectedEdge(String node1, String node2) {
+    private DirectedEdge(String node1, String node2) {
         setNode1(node1);
         setNode2(node2);
     }

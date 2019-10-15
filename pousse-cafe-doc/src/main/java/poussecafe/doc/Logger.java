@@ -1,5 +1,6 @@
 package poussecafe.doc;
 
+import java.util.function.Consumer;
 import javax.tools.Diagnostic.Kind;
 import jdk.javadoc.doclet.Reporter;
 
@@ -15,23 +16,23 @@ public class Logger {
 
     private static Reporter rootDoc;
 
-    public static void debug(String message) {
-        rootDoc.print(Kind.OTHER, message);
+    public static void debug(String message, Object... args) {
+        log(message, text -> rootDoc.print(Kind.OTHER, text), args);
     }
 
-    public static void warn(String message) {
-        rootDoc.print(Kind.WARNING, message);
+    public static void warn(String message, Object... args) {
+        log(message, text -> rootDoc.print(Kind.WARNING, text), args);
     }
 
-    public static void error(String message) {
-        rootDoc.print(Kind.ERROR, message);
-    }
-
-    public static void info(String message) {
-        rootDoc.print(Kind.NOTE, message);
+    public static void error(String message, Object... args) {
+        log(message, text -> rootDoc.print(Kind.ERROR, text), args);
     }
 
     public static void info(String message, Object...args) {
+        log(message, text -> rootDoc.print(Kind.NOTE, text), args);
+    }
+
+    private static void log(String message, Consumer<String> logger, Object...args) {
         String[] parts = message.split("\\{\\}");
         StringBuilder builder = new StringBuilder();
         int minPartsArgs = Math.min(args.length, parts.length);
@@ -42,6 +43,6 @@ public class Logger {
         for(int i = args.length; i < parts.length; ++i) {
             builder.append(parts[i]);
         }
-        info(builder.toString());
+        logger.accept(builder.toString());
     }
 }

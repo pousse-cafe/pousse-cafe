@@ -49,6 +49,7 @@ Pousse-Café Doc Domain Model
           </ol>
           <li><a href="#doc_services">Services</a></li>
           <ol>
+            <li><a href="#doc_aggregateeventsgraphfactory">AggregateEventsGraphFactory</a></li>
             <li><a href="#doc_annotationsresolver">AnnotationsResolver</a></li>
             <li><a href="#doc_classdocpredicates">ClassDocPredicates</a></li>
             <li><a href="#doc_classdocrepository">ClassDocRepository</a></li>
@@ -151,8 +152,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_aggregatedoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_aggregatedoc_events.png"/>
 </div>
 
 <h4 id="doc_domainprocessdoc">DomainProcessDoc</h4>
@@ -165,8 +172,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_domainprocessdoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_domainprocessdoc_events.png"/>
 </div>
 
 <h4 id="doc_entitydoc">EntityDoc</h4>
@@ -179,8 +192,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_entitydoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_entitydoc_events.png"/>
 </div>
 
 <h4 id="doc_moduledoc">ModuleDoc</h4>
@@ -192,8 +211,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_moduledoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_moduledoc_events.png"/>
 </div>
 
 <h4 id="doc_processstepdoc">ProcessStepDoc</h4>
@@ -206,8 +231,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_processstepdoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_processstepdoc_events.png"/>
 </div>
 
 <h4 id="doc_relation">Relation</h4>
@@ -220,8 +251,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_relation.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_relation_events.png"/>
 </div>
 
 <h4 id="doc_servicedoc">ServiceDoc</h4>
@@ -235,8 +272,14 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_servicedoc.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_servicedoc_events.png"/>
 </div>
 
 <h4 id="doc_valueobjectdoc">ValueObjectDoc</h4>
@@ -250,12 +293,20 @@ a process, most of them are called when handling a Domain Event.</p>
 </ul>
 
 
+<h5>Relations</h5>
 <div class="figure">
   <img src="img/doc_valueobjectdoc.png"/>
 </div>
 
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/doc_valueobjectdoc_events.png"/>
+</div>
+
 
 <h3 id="doc_services">Services</h3>
+<h4 id="doc_aggregateeventsgraphfactory">AggregateEventsGraphFactory</h4>
+
 <h4 id="doc_annotationsresolver">AnnotationsResolver</h4>
 
 <h4 id="doc_classdocpredicates">ClassDocPredicates</h4>
@@ -361,6 +412,7 @@ a process, most of them are called when handling a Domain Event.</p>
 <ol class="ubiquitousLanguage">
 <li><span class="entryName">AggregateDoc (Doc)</span>, Aggregate, </li>
 <li><span class="entryName">AggregateDocCreation (Doc)</span>, Domain Process, </li>
+<li><span class="entryName">AggregateEventsGraphFactory (Doc)</span>, Service, </li>
 <li><span class="entryName">AnnotationsResolver (Doc)</span>, Service, </li>
 <li><span class="entryName">ClassDocPredicates (Doc)</span>, Service, </li>
 <li><span class="entryName">ClassDocRepository (Doc)</span>, Service, </li>

@@ -56,9 +56,14 @@ public class GraphImagesWriter {
         for (AggregateDoc aggregateDoc : aggregateDocRepository
                 .findByModule(moduleDoc.attributes().identifier().value())) {
             Logger.debug("Drawing aggregate " + aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name() + " graph...");
-            graphImageWriter
-                    .writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
-                            moduleDoc.id() + "_" + aggregateDoc.id());
+
+            String aggregateGraphBaseName = moduleDoc.id() + "_" + aggregateDoc.id();
+            graphImageWriter.writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
+                    aggregateGraphBaseName);
+
+            String aggregateGraphEventsBaseName = moduleDoc.id() + "_" + aggregateDoc.id() + "_events";
+            graphImageWriter.writeImage(aggregateEventsGraphFactory.buildGraph(aggregateDoc), outputDirectory,
+                    aggregateGraphEventsBaseName);
         }
     }
 
@@ -67,6 +72,8 @@ public class GraphImagesWriter {
     private AggregateDocRepository aggregateDocRepository;
 
     private GraphFactory graphFactory;
+
+    private AggregateEventsGraphFactory aggregateEventsGraphFactory;
 
     private void writeDomainProcessesGraphs(ModuleDoc moduleDoc) throws IOException {
         File outputDirectory = outputDirectory();

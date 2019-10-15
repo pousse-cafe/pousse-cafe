@@ -1,6 +1,7 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.util.List;
+import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc.Attributes;
 import poussecafe.domain.Repository;
@@ -25,5 +26,9 @@ public class ProcessStepDocRepository extends Repository<ProcessStepDoc, Process
     public List<ProcessStepDoc> findProducing(ModuleDocId moduleDocId,
             String eventName) {
         return wrap(dataAccess().findProducing(moduleDocId, eventName));
+    }
+
+    public List<ProcessStepDoc> findByAggregateDocId(AggregateDocId aggregateDocId) {
+        return wrap(dataAccess().findByAggregateDocId(aggregateDocId));
     }
 }

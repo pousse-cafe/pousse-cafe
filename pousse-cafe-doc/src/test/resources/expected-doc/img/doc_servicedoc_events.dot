@@ -1,0 +1,4 @@
+digraph {
+splines=spline;
+"ServiceDoc"[shape=box,style=bold];
+}

@@ -15,4 +15,9 @@ public class AggregateDocId extends StringId implements ValueObject {
     private AggregateDocId(String id) {
         super(id);
     }
+
+    public String name() {
+        String[] elements = stringValue().split("\\.");
+        return elements[elements.length - 1];
+    }
 }

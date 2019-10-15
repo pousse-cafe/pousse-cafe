@@ -1,0 +1,4 @@
+digraph {
+splines=spline;
+"Relation"[shape=box,style=bold];
+}

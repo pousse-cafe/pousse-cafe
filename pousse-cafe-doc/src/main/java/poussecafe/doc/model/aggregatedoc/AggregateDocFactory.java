@@ -32,7 +32,7 @@ public class AggregateDocFactory extends Factory<AggregateDocId, AggregateDoc, A
         AggregateDocId id = AggregateDocId.ofClassName(aggregateClassDoc.getQualifiedName().toString());
         AggregateDoc aggregateDoc = newAggregateWithId(id);
 
-        String name = name(aggregateClassDoc);
+        String name = id.name();
         ModuleDocId moduleDocId = command.moduleId().value();
         aggregateDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
@@ -49,10 +49,6 @@ public class AggregateDocFactory extends Factory<AggregateDocId, AggregateDoc, A
     private ComponentDocFactory componentDocFactory;
 
     private EntityDocFactory entityDocFactory;
-
-    public static String name(TypeElement classDoc) {
-        return classDoc.getSimpleName().toString();
-    }
 
     public boolean isAggregateDoc(TypeElement classDoc) {
         return classDocPredicates.documentsWithSuperclass(classDoc, AggregateRoot.class);

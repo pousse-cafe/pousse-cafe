@@ -1,0 +1,4 @@
+digraph {
+splines=spline;
+"ModuleDoc"[shape=box,style=bold];
+}

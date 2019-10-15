@@ -85,7 +85,7 @@ public class ProcessStepDocExtractor implements Service {
                             .build())
                     .build();
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
-                    moduleComponentDoc, Optional.empty());
+                    moduleComponentDoc);
             processStepDoc.attributes().processName().value(processName(methodDoc));
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
             processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
@@ -172,12 +172,13 @@ public class ProcessStepDocExtractor implements Service {
 
         AggregateDocId aggregate = declaringAggregate(methodDoc);
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
-                moduleComponentDoc, Optional.of(aggregate));
+                moduleComponentDoc);
         processStepDoc.attributes().processName().value(processName(methodDoc));
         processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
         processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
         processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
         processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
+        processStepDoc.attributes().aggregate().value(Optional.of(aggregate));
 
         if(aggregateDocFactory.isFactoryDoc(enclosingType)) {
             TypeElement aggregateTypeElement = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
@@ -206,7 +207,7 @@ public class ProcessStepDocExtractor implements Service {
         } else {
             aggregateType = enclosingType;
         }
-        return AggregateDocId.ofClassName(aggregateType.getSimpleName().toString());
+        return AggregateDocId.ofClassName(aggregateType.getQualifiedName().toString());
     }
 
     private ComponentDocFactory componentDocFactory;
