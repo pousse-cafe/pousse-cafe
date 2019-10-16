@@ -10,13 +10,12 @@ public class DefaultConsumptionHandler implements MessageConsumptionHandler {
     }
 
     @Override
-    public void handleFailure(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, Exception e) {
+    public void handleFailure(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, Throwable e) {
         // By default, do nothing.
     }
 
     @Override
-    public boolean retryOnOptimisticLockingException(OriginalAndMarshaledMessage original) {
-        // By default, retry
-        return true;
+    public OptimisticLockingExceptionHandlingResult handleOptimisticLockingException(OriginalAndMarshaledMessage original) {
+        return OptimisticLockingExceptionHandlingResult.RETRY;
     }
 }

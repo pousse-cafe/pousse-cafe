@@ -8,13 +8,10 @@ import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
-import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.ConsumptionIdGenerator;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
-import poussecafe.runtime.OptimisticLockingException;
+import poussecafe.runtime.MessageListenerExecutionStatus;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
-import poussecafe.util.MethodInvokerException;
 
 import static java.util.stream.Collectors.toList;
 
@@ -118,70 +115,49 @@ class MessageProcessor {
     private boolean consumeMessageOrRetry(String consumptionId,
             OriginalAndMarshaledMessage receivedMessage,
             MessageListener listener) {
-        String messageClassName = receivedMessage.original().getClass().getName();
-        logger.debug("    {} consumes {}", listener, messageClassName);
 
-        String transactionName = listener.shortId();
+        MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
+                .consumptionId(consumptionId)
+                .listener(listener)
+                .messageConsumptionHandler(messageConsumptionHandler)
+                .receivedMessage(receivedMessage)
+                .failFast(failFast)
+                .build();
+
+        executeInApmTransaction(executor);
+
+        return executor.status() == MessageListenerExecutionStatus.EXPECTING_RETRY;
+    }
+
+    private MessageListenerExecutionStatus executeInApmTransaction(MessageListenerExecutor executor) {
+        String transactionName = executor.listener().shortId();
         ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
-        try {
-            listener.consumer().accept(receivedMessage.original());
-            logger.debug("      Success of {} with {}", listener, messageClassName);
-            messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
-            apmTransaction.setResult(APM_TRANSACTION_SUCCESS);
-            return false;
-        } catch (SameOperationException e) {
-            apmTransaction.captureException(e);
-            logger.warn("       Ignoring probable dubbed message consumption", e);
-            apmTransaction.setResult(APM_TRANSACTION_SKIP);
-            return false;
-        } catch (OptimisticLockingException e) {
-            if(!handleOptimisticLockingException(consumptionId, receivedMessage, listener, e)) {
-                apmTransaction.captureException(e);
-                apmTransaction.setResult(APM_TRANSACTION_FAILURE);
-                return false;
-            } else {
-                apmTransaction.setResult(APM_TRANSACTION_SKIP);
-                return true;
-            }
-        } catch (MethodInvokerException e) {
-            apmTransaction.captureException(e.getCause());
-            apmTransaction.setResult(APM_TRANSACTION_FAILURE);
-            return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
-        } catch (Exception e) {
-            apmTransaction.captureException(e);
-            apmTransaction.setResult(APM_TRANSACTION_FAILURE);
-            return handleConsumptionError(consumptionId, receivedMessage, listener, messageClassName, e);
-        } finally {
+        executor.executeListener();
+        endOrIgnoreApmTransaction(executor, apmTransaction);
+        return executor.status();
+    }
+
+    private void endOrIgnoreApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
+        MessageListenerExecutionStatus status = executor.status();
+        boolean endApmTransaction = true;
+        if(status == MessageListenerExecutionStatus.SUCCESS) {
+            apmTransaction.setResult(ApmTransactionResults.SUCCESS);
+        } else if(status == MessageListenerExecutionStatus.EXPECTING_RETRY) {
+            endApmTransaction = false;
+        } else if(status == MessageListenerExecutionStatus.IGNORED) {
+            apmTransaction.setResult(ApmTransactionResults.SKIP);
+            endApmTransaction = true;
+        } else if(status == MessageListenerExecutionStatus.FAILED) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            apmTransaction.captureException(executor.executionError().orElseThrow());
+            endApmTransaction = true;
+        } else {
+            throw new IllegalArgumentException("Unsupported listener execution status " + status);
+        }
+        if(endApmTransaction) {
             apmTransaction.end();
         }
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
-
-    private static final String APM_TRANSACTION_SUCCESS = "success";
-
-    private static final String APM_TRANSACTION_SKIP = "skip";
-
-    private boolean handleOptimisticLockingException(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, OptimisticLockingException e) {
-        if(messageConsumptionHandler.retryOnOptimisticLockingException(receivedMessage)) {
-            logger.warn("       Optimistic locking failure detected, will retry", e);
-            return true;
-        } else {
-            messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
-            return false;
-        }
-    }
-
-    private static final String APM_TRANSACTION_FAILURE = "failure";
-
-    private boolean handleConsumptionError(String consumptionId, OriginalAndMarshaledMessage receivedMessage, MessageListener listener, String messageClassName, Exception e) {
-        if(failFast) {
-            logger.error("      Failing fast on exception from listener {}", listener, e);
-            throw new FailFastException("Failing fast on exception from listener {}", e);
-        } else {
-            logger.error("      Failure of {} with {}", listener, messageClassName, e);
-            messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
-            return false;
-        }
-    }
 }
