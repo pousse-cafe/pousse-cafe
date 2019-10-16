@@ -8,7 +8,10 @@
     </parent>
 
     <artifactId>pousse-cafe-sample-app</artifactId>
-    <name>Pousse-Café - Sample App</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -35,6 +38,14 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -42,10 +53,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <scm>
-        <connection>scm:git:https://github.com/pousse-cafe/pousse-cafe-sample-app.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/pousse-cafe/pousse-cafe-sample-app.git</developerConnection>
-        <url>http://github.com/pousse-cafe/pousse-cafe-sample-app</url>
-    </scm>
 </project>

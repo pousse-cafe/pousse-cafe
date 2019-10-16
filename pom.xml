@@ -185,8 +185,13 @@
     <repositories>
         <repository>
             <id>ossrh</id>
-            <name>Sonatype repository</name>
             <url>https://oss.sonatype.org/content/groups/public/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
