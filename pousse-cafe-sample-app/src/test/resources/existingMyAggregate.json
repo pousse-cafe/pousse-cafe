@@ -1,5 +1,5 @@
 {
-  "poussecafe.myboundedcontext.domain.myaggregate.MyAggregate": [
+  "poussecafe.mymodule.domain.myaggregate.MyAggregate": [
     {
       "id": "aggregate-id",
       "x": 0

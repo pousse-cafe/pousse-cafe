@@ -1,10 +1,9 @@
 package process;
 
 import org.junit.Test;
+import poussecafe.mymodule.ACommand;
 import poussecafe.mymodule.domain.myaggregate.MyAggregate;
 import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
-import poussecafe.mymodule.process.MyProcess;
-import poussecafe.mymodule.process.MyProcess.DoSomethingParameters;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -20,26 +19,29 @@ public class MyProcessTest extends MyModuleTest {
     @Test
     public void myCommandUpdatesAggregate() {
         givenAvailableAggregate(); // Let's create an aggregate to execute a command against
+        givenCommand(); // Let's create a command with the purpose of modifying the existing aggregate
         whenProcessingCommand(); // Now, let's to the actual execution of the command
         thenAggregateUpdated(); // Finally, let's check that the aggregate was properly updated
     }
 
     private void givenAvailableAggregate() {
-        parameters.id = new MyAggregateId("id");
-        myProcess.createMyAggregate(parameters.id);
+        loadDataFile("/existingMyAggregate.json");
     }
 
-    private MyProcess.DoSomethingParameters parameters = new DoSomethingParameters();
+    private void givenCommand() {
+        command = newCommand(ACommand.class);
+        command.id().value(new MyAggregateId("aggregate-id")); // aggregate-id is the ID in loaded JSON file
+        command.x().value(10);
+    }
 
-    private MyProcess myProcess;
+    private ACommand command;
 
     private void whenProcessingCommand() {
-        parameters.x = 10;
-        myProcess.doSomeAction(parameters);
+        submitCommand(command);
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = getOptional(MyAggregate.class, parameters.id).orElseThrow();
-        assertThat(aggregate.attributes().x().value(), equalTo(parameters.x));
+        MyAggregate aggregate = getOptional(MyAggregate.class, command.id().value()).orElseThrow();
+        assertThat(aggregate.attributes().x().value(), equalTo(command.x().value()));
     }
 }

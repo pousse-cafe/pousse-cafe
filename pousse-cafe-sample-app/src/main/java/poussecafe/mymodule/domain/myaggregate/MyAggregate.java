@@ -6,6 +6,7 @@ import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.mymodule.ACommand;
 import poussecafe.mymodule.domain.AnotherDomainEvent;
 import poussecafe.mymodule.domain.MyDomainEvent;
 
@@ -21,7 +22,9 @@ public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attrib
     /*
      * Below action updates aggregate's state and triggers the emission of a Domain Event in case of success
      */
-    public void doSomething(int x) {
+    @MessageListener(runner = DoSomethingRunner.class)
+    public void doSomething(ACommand command) {
+        int x = command.x().value();
         if(x <= 0) {
             throw new DomainException("X cannot be <=0");
         }
@@ -43,7 +46,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attrib
      */
     @MessageListener(runner = DoSomethingElseRunner.class)
     public void doSomething(AnotherDomainEvent event) {
-        doSomething(event.x().value());
+        attributes().x().valueOf(event.x());
     }
 
     /*
