@@ -16,4 +16,9 @@ public class DefaultApmTransaction implements ApmTransaction {
     public void setResult(String result) {
         // Do nothing
     }
+
+    @Override
+    public void addLabel(String key, String value) {
+        // Do nothing
+    }
 }

@@ -1,4 +1,4 @@
-package poussecafe.processing;
+package poussecafe.apm;
 
 public class ApmTransactionResults {
 

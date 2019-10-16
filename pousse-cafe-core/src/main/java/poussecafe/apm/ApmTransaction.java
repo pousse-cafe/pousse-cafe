@@ -7,4 +7,6 @@ public interface ApmTransaction {
     void end();
 
     void setResult(String result);
+
+    void addLabel(String key, String value);
 }

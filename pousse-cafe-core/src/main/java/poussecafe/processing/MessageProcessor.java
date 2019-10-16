@@ -6,6 +6,8 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmTransaction;
+import poussecafe.apm.ApmTransactionLabels;
+import poussecafe.apm.ApmTransactionResults;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.runtime.ConsumptionIdGenerator;
@@ -139,24 +141,20 @@ class MessageProcessor {
 
     private void endOrIgnoreApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
         MessageListenerExecutionStatus status = executor.status();
-        boolean endApmTransaction = true;
         if(status == MessageListenerExecutionStatus.SUCCESS) {
             apmTransaction.setResult(ApmTransactionResults.SUCCESS);
         } else if(status == MessageListenerExecutionStatus.EXPECTING_RETRY) {
-            endApmTransaction = false;
+            apmTransaction.setResult(ApmTransactionResults.SKIP);
         } else if(status == MessageListenerExecutionStatus.IGNORED) {
             apmTransaction.setResult(ApmTransactionResults.SKIP);
-            endApmTransaction = true;
+            apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, executor.executionError().orElseThrow().getClass().getSimpleName());
         } else if(status == MessageListenerExecutionStatus.FAILED) {
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(executor.executionError().orElseThrow());
-            endApmTransaction = true;
         } else {
             throw new IllegalArgumentException("Unsupported listener execution status " + status);
         }
-        if(endApmTransaction) {
-            apmTransaction.end();
-        }
+        apmTransaction.end();
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;

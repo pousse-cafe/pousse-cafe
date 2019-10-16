@@ -103,6 +103,7 @@ class MessageListenerExecutor {
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
         status = MessageListenerExecutionStatus.IGNORED;
+        executionError = e;
     }
 
     private void handleOptimisticLockingException(OptimisticLockingException e) {
