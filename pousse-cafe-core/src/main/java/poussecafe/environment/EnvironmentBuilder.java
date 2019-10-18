@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
@@ -149,9 +150,15 @@ public class EnvironmentBuilder {
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
+    public EnvironmentBuilder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+        this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+        return this;
+    }
+
     public Environment build() {
         Objects.requireNonNull(transactionRunnerLocator);
         Objects.requireNonNull(injector);
+        Objects.requireNonNull(applicationPerformanceMonitoring);
 
         checkEnvironment();
 
@@ -238,13 +245,18 @@ public class EnvironmentBuilder {
     }
 
     private void registerAggregateServices() {
-        AggregateServicesFactory entityServicesFactory = new AggregateServicesFactory(environment);
+        AggregateServicesFactory entityServicesFactory = new AggregateServicesFactory.Builder()
+                .environment(environment)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .build();
         for (AggregateDefinition definition : aggregateDefinitions.values()) {
             if(definition.hasFactory() && definition.hasRepository()) {
                 registerAggregateServices(entityServicesFactory.buildEntityServices(definition));
             }
         }
     }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     @SuppressWarnings("rawtypes")
     private void registerAggregateServices(AggregateServices entityServices) {

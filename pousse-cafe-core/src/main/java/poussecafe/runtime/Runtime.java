@@ -104,6 +104,7 @@ public class Runtime {
         }
 
         public Runtime build() {
+            environmentBuilder.applicationPerformanceMonitoring(runtime.applicationPerformanceMonitoring);
             runtime.environment = environmentBuilder.build();
             runtime.transactionRunnerLocator.setEnvironment(runtime.environment);
             load();
