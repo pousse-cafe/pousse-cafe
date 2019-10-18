@@ -16,7 +16,7 @@ public class ReadWriteNumberAttributeBuilder<T extends Number> {
 
     public NumberAttribute<T> build() {
         Objects.requireNonNull(addOperator);
-        return new NumberAttribute<T>() {
+        return new NumberAttribute<>() {
             @Override
             public T value() {
                 return compositeAttribute.getter.get();
@@ -24,6 +24,7 @@ public class ReadWriteNumberAttributeBuilder<T extends Number> {
 
             @Override
             public void value(T value) {
+                Objects.requireNonNull(value);
                 compositeAttribute.setter.accept(value);
             }
 

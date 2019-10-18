@@ -5,6 +5,11 @@ public class DefaultApplicationPerformanceMonitoring implements ApplicationPerfo
 
     @Override
     public ApmTransaction startTransaction(String name) {
-        return new DefaultApmTransaction();
+        return DefaultApmTransaction.instance();
+    }
+
+    @Override
+    public ApmSpan currentSpan() {
+        return DefaultApmTransaction.instance();
     }
 }

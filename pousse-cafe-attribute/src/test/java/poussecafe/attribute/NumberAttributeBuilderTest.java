@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
 import org.junit.Test;
 import poussecafe.attribute.AddOperator;

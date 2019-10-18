@@ -3,6 +3,9 @@ package poussecafe.domain;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
+import poussecafe.apm.ApmSpan;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.EntityFactory;
 import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.exception.NotFoundException;
@@ -30,6 +33,12 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
 
     private MessageCollectionValidator messageCollectionValidator;
 
+    public void setApplicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+        this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+    }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
     /**
      * @deprecated use getOptional instead.
      */
@@ -39,12 +48,34 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     public Optional<A> getOptional(K id) {
-        checkId(id);
-        D data = dataAccess.findData(id);
-        return wrapNullable(data);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("get(" + entityClass.getSimpleName() + ")");
+        try {
+            checkId(id);
+            return wrapNullable(dataAccess.findData(id));
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
     }
 
     private EntityDataAccess<K, D> dataAccess;
+
+    protected Optional<A> getOptional(String queryName, Supplier<D> query) {
+        Objects.requireNonNull(query);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName(queryName);
+        try {
+            return wrapNullable(query.get());
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
 
     private void checkId(K id) {
         Objects.requireNonNull(id);
@@ -84,9 +115,18 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     public void add(A entity) {
-        checkEntity(entity);
-        entity.onAdd();
-        addData(entity);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("add(" + entityClass.getSimpleName() + ")");
+        try {
+            checkEntity(entity);
+            entity.onAdd();
+            addData(entity);
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
     }
 
     protected void addData(A entity) {
@@ -110,9 +150,17 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     public void update(A entity) {
-        checkEntity(entity);
-        entity.onUpdate();
-        updateData(entity);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("update(" + entityClass.getSimpleName() + ")");
+        try {
+            checkEntity(entity);
+            entity.onUpdate();
+            updateData(entity);
+        } catch (Exception e) {
+            span.captureException(e);
+        } finally {
+            span.end();
+        }
     }
 
     protected void updateData(A entity) {
@@ -131,14 +179,21 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     }
 
     public void delete(K id) {
-        checkId(id);
-        Optional<A> entity = getOptional(id);
-        if (entity.isPresent()) {
-            delete(entity.get());
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("deleteByKey(" + entityClass.getSimpleName() + ")");
+        try {
+            checkId(id);
+            Optional<A> entity = getOptional(id);
+            if (entity.isPresent()) {
+                deleteWithoutSpan(entity.get());
+            }
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
         }
     }
 
-    public void delete(A entity) {
+    private void deleteWithoutSpan(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
         messageCollectionValidator.validate(messageCollection);
@@ -146,9 +201,34 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         considerMessageSendingAfterDelete(entity, messageCollection);
     }
 
+    public void delete(A entity) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("delete(" + entityClass.getSimpleName() + ")");
+        try {
+            deleteWithoutSpan(entity);
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        }
+    }
+
     private void considerMessageSendingAfterDelete(A entity,
             MessageCollection messageCollection) {
         entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
+    }
+
+    protected List<A> find(String queryName, Supplier<List<D>> query) {
+        Objects.requireNonNull(query);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName(queryName);
+        try {
+            return wrap(query.get());
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
     }
 
     protected List<A> wrap(List<D> data) {

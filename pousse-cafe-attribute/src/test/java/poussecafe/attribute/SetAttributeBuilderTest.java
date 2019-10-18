@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
 import java.util.HashSet;
 import java.util.Set;

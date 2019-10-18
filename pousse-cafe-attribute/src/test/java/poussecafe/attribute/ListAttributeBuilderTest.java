@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,12 +1,13 @@
 package poussecafe.attribute;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import poussecafe.attribute.adapters.DataAdapter;
 
-public class ReadWritePrimitiveAttributeBuilder<U, T> {
+public class ReadWriteSingleAttributeBuilder<U, T> {
 
-    ReadWritePrimitiveAttributeBuilder() {
+    ReadWriteSingleAttributeBuilder() {
 
     }
 
@@ -17,7 +18,7 @@ public class ReadWritePrimitiveAttributeBuilder<U, T> {
     Consumer<U> setter;
 
     public Attribute<T> build() {
-        return new Attribute<T>() {
+        return new Attribute<>() {
             @Override
             public T value() {
                 return adapter.adaptGet(getter.get());
@@ -25,6 +26,7 @@ public class ReadWritePrimitiveAttributeBuilder<U, T> {
 
             @Override
             public void value(T value) {
+                Objects.requireNonNull(value);
                 setter.accept(adapter.adaptSet(value));
             }
         };

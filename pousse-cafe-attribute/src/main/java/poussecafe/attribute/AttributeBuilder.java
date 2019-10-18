@@ -54,31 +54,31 @@ public class AttributeBuilder {
         return new IntegerAttributeBuilder();
     }
 
-    public static <T extends StringId> PrimitiveAttributeBuilder<String, T> stringId(Class<T> stringIdClass) {
+    public static <T extends StringId> SingleAdaptingAttributeBuilder<String, T> stringId(Class<T> stringIdClass) {
         return singleUsingDataAdapter(DataAdapters.stringId(stringIdClass));
     }
 
-    public static <U, T> PrimitiveAttributeBuilder<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
-        return new PrimitiveAttributeBuilder<>(dataAdapter);
+    public static <U, T> SingleAdaptingAttributeBuilder<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
+        return new SingleAdaptingAttributeBuilder<>(dataAdapter);
     }
 
-    public static PrimitiveAttributeBuilder<String, OffsetDateTime> offsetDateTime() {
+    public static SingleAdaptingAttributeBuilder<String, OffsetDateTime> offsetDateTime() {
         return singleUsingDataAdapter(DataAdapters.stringOffsetDateTime());
     }
 
-    public static PrimitiveAttributeBuilder<String, LocalDateTime> localDateTime() {
+    public static SingleAdaptingAttributeBuilder<String, LocalDateTime> localDateTime() {
         return singleUsingDataAdapter(DataAdapters.stringLocalDateTime());
     }
 
-    public static PrimitiveAttributeBuilder<String, LocalDate> localDate() {
+    public static SingleAdaptingAttributeBuilder<String, LocalDate> localDate() {
         return singleUsingDataAdapter(DataAdapters.stringLocalDate());
     }
 
-    public static PrimitiveAttributeBuilder<String, BigDecimal> bigDecimal() {
+    public static SingleAdaptingAttributeBuilder<String, BigDecimal> bigDecimal() {
         return singleUsingDataAdapter(DataAdapters.stringBigDecimal());
     }
 
-    public static <E extends Enum<E>> PrimitiveAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
+    public static <E extends Enum<E>> SingleAdaptingAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
         return singleUsingDataAdapter(DataAdapters.stringEnum(enumClass));
     }
 

@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import poussecafe.attribute.adapters.DataAdapter;
 
-public class ReadOnlyPrimitiveAttributeBuilder<U, T> {
+public class ReadOnlySingleAttributeBuilder<U, T> {
 
-    ReadOnlyPrimitiveAttributeBuilder() {
+    ReadOnlySingleAttributeBuilder() {
 
     }
 
@@ -15,9 +15,9 @@ public class ReadOnlyPrimitiveAttributeBuilder<U, T> {
 
     Supplier<U> getter;
 
-    public ReadWritePrimitiveAttributeBuilder<U, T> write(Consumer<U> setter) {
+    public ReadWriteSingleAttributeBuilder<U, T> write(Consumer<U> setter) {
         Objects.requireNonNull(setter);
-        ReadWritePrimitiveAttributeBuilder<U, T> builder = new ReadWritePrimitiveAttributeBuilder<>();
+        ReadWriteSingleAttributeBuilder<U, T> builder = new ReadWriteSingleAttributeBuilder<>();
         builder.adapter = adapter;
         builder.getter = getter;
         builder.setter = setter;

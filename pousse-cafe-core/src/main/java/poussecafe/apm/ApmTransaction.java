@@ -1,10 +1,6 @@
 package poussecafe.apm;
 
-public interface ApmTransaction {
-
-    void captureException(Throwable e);
-
-    void end();
+public interface ApmTransaction extends ApmSpan {
 
     void setResult(String result);
 

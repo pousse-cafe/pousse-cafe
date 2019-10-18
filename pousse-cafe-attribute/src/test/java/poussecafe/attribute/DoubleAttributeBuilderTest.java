@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
 import poussecafe.attribute.AddOperator;
 import poussecafe.attribute.AddOperators;

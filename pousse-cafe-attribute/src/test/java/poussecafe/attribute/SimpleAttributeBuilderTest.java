@@ -1,19 +1,14 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
-import java.util.Optional;
 import org.junit.Test;
-import poussecafe.attribute.OptionalAttribute;
+import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.util.StringId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OptionalAttributeBuilderTest {
-
-    private void thenValueWithoutConvertionIs(Optional<String> value) {
-        assertThat(valueWithoutConversion, is(value));
-    }
+public class SimpleAttributeBuilderTest {
 
     @Test
     public void readWriteNoConversion() {
@@ -23,13 +18,13 @@ public class OptionalAttributeBuilderTest {
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
-        propertyWithoutConversion = AttributeBuilder.optional(String.class)
+        propertyWithoutConversion = AttributeBuilder.single(String.class)
                 .read(() -> value)
                 .write(newValue -> value = newValue)
                 .build();
     }
 
-    private OptionalAttribute<String> propertyWithoutConversion;
+    private Attribute<String> propertyWithoutConversion;
 
     private String value = "current";
 
@@ -38,27 +33,23 @@ public class OptionalAttributeBuilderTest {
         valueWithoutConversion = propertyWithoutConversion.value();
     }
 
-    private Optional<String> newValue = Optional.of("new");
+    private String newValue = "new";
 
-    private OptionalAttribute<StringId> propertyWithConversion;
+    private String valueWithoutConversion;
 
-    private Optional<String> valueWithoutConversion;
-
-    private void thenValueWithConvertionIs(Optional<StringId> value) {
-        assertThat(valueWithConversion, is(value));
+    private void thenValueWithoutConvertionIs(String value) {
+        assertThat(valueWithoutConversion, is(value));
     }
-
-    private Optional<StringId> valueWithConversion;
 
     @Test
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
-        thenValueWithConvertionIs(newValue.map(StringId::new));
+        thenValueWithConvertionIs(new StringId(newValue));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.optional(StringId.class)
+        propertyWithConversion = AttributeBuilder.single(StringId.class)
                 .storedAs(String.class)
                 .adaptOnRead(StringId::new)
                 .read(() -> value)
@@ -67,8 +58,16 @@ public class OptionalAttributeBuilderTest {
                 .build();
     }
 
+    private Attribute<StringId> propertyWithConversion;
+
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.map(StringId::new));
+        propertyWithConversion.value(new StringId(newValue));
         valueWithConversion = propertyWithConversion.value();
+    }
+
+    private StringId valueWithConversion;
+
+    private void thenValueWithConvertionIs(StringId value) {
+        assertThat(valueWithConversion, is(value));
     }
 }

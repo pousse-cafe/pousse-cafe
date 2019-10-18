@@ -1,4 +1,4 @@
-package poussecafe.property;
+package poussecafe.attribute;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

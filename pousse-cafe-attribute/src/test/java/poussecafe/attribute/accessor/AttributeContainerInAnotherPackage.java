@@ -1,7 +1,7 @@
-package poussecafe.property.accessor;
+package poussecafe.attribute.accessor;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.property.AttributeContainer;
+import poussecafe.attribute.AttributeContainer;
 
 public class AttributeContainerInAnotherPackage implements AttributeContainer {
 
