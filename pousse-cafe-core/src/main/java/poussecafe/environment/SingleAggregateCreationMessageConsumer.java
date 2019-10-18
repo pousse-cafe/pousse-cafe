@@ -3,6 +3,8 @@ package poussecafe.environment;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import poussecafe.apm.ApmSpan;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.messaging.Message;
@@ -32,10 +34,16 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            consumer.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public SingleAggregateCreationMessageConsumer build() {
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
             Objects.requireNonNull(consumer.invoker);
+            Objects.requireNonNull(consumer.applicationPerformanceMonitoring);
             return consumer;
         }
     }
@@ -46,14 +54,7 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
 
     @Override
     public void accept(Message message) {
-        Object result = invoker.invoke(message);
-        AggregateRoot aggregate;
-        if(result instanceof Optional) {
-            Optional<? extends AggregateRoot> optional = (Optional<? extends AggregateRoot>) result;
-            aggregate = optional.orElse(null);
-        } else {
-            aggregate = (AggregateRoot) result;
-        }
+        AggregateRoot aggregate = createAggregate(message);
         if(aggregate != null) {
             Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
             Repository repository = aggregateServices.repository();
@@ -62,7 +63,30 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
         }
     }
 
+    private AggregateRoot createAggregate(Message message) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("createAggregate");
+        try {
+            Object result = invoker.invoke(message);
+            AggregateRoot aggregate;
+            if(result instanceof Optional) {
+                Optional<? extends AggregateRoot> optional = (Optional<? extends AggregateRoot>) result;
+                aggregate = optional.orElse(null);
+            } else {
+                aggregate = (AggregateRoot) result;
+            }
+            return aggregate;
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+
     private MethodInvoker invoker;
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private TransactionRunnerLocator transactionRunnerLocator;
 

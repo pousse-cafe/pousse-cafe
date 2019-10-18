@@ -296,6 +296,7 @@ public class EnvironmentBuilder {
     private void registerMessageListeners() {
         MessageListenerFactory messageListenerFactory = new MessageListenerFactory.Builder()
                 .environment(environment)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .build();
         for(MessageListenerDefinition definition : definedListeners) {

@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import poussecafe.apm.ApmSpan;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.exception.SameOperationException;
@@ -40,10 +42,16 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            consumer.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public AggregateUpdateMessageConsumer build() {
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
             Objects.requireNonNull(consumer.method);
+            Objects.requireNonNull(consumer.applicationPerformanceMonitoring);
             return consumer;
         }
     }
@@ -68,11 +76,26 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
                         .rethrow(SameOperationException.class)
                         .rethrow(OptimisticLockingException.class)
                         .build();
-                invoker.invoke(message);
+                updateInSpan(message, invoker);
                 repository.update(targetAggregateRoot);
             });
         }
     }
+
+    private void updateInSpan(Message message, MethodInvoker invoker) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("updateAggregate");
+        try {
+            invoker.invoke(message);
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private AggregateMessageListenerRunner runner;
 

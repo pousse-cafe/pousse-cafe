@@ -2,6 +2,8 @@ package poussecafe.environment;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import poussecafe.apm.ApmSpan;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.messaging.Message;
@@ -31,6 +33,11 @@ public class SeveralAggregatesCreationMessageConsumer implements Consumer<Messag
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            consumer.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public SeveralAggregatesCreationMessageConsumer build() {
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
@@ -45,7 +52,7 @@ public class SeveralAggregatesCreationMessageConsumer implements Consumer<Messag
 
     @Override
     public void accept(Message message) {
-        Iterable<AggregateRoot> iterable = (Iterable<AggregateRoot>) invoker.invoke(message);
+        Iterable<AggregateRoot> iterable = createAggregates(message);
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         Repository repository = aggregateServices.repository();
@@ -54,7 +61,22 @@ public class SeveralAggregatesCreationMessageConsumer implements Consumer<Messag
         }
     }
 
+    private Iterable<AggregateRoot> createAggregates(Message message) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("createAggregates");
+        try {
+            return (Iterable<AggregateRoot>) invoker.invoke(message);
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+
     private MethodInvoker invoker;
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private TransactionRunnerLocator transactionRunnerLocator;
 

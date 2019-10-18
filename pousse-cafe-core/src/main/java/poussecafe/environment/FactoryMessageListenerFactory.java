@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Factory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
@@ -29,9 +30,15 @@ public class FactoryMessageListenerFactory {
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            factory.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public FactoryMessageListenerFactory build() {
             Objects.requireNonNull(factory.environment);
             Objects.requireNonNull(factory.transactionRunnerLocator);
+            Objects.requireNonNull(factory.applicationPerformanceMonitoring);
             return factory;
         }
     }
@@ -77,8 +84,11 @@ public class FactoryMessageListenerFactory {
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .build();
     }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
@@ -88,6 +98,7 @@ public class FactoryMessageListenerFactory {
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .build();
     }
 }

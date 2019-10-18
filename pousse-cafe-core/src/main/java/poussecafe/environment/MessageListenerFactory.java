@@ -1,6 +1,7 @@
 package poussecafe.environment;
 
 import java.util.Objects;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
@@ -27,6 +28,13 @@ public class MessageListenerFactory {
 
         private TransactionRunnerLocator transactionRunnerLocator;
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
+        private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
         public MessageListenerFactory build() {
             Objects.requireNonNull(environment);
             Objects.requireNonNull(transactionRunnerLocator);
@@ -35,14 +43,17 @@ public class MessageListenerFactory {
             factory.factoryMessageListenerFactory = new FactoryMessageListenerFactory.Builder()
                     .environment(environment)
                     .transactionRunnerLocator(transactionRunnerLocator)
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .build();
             factory.repositoryMessageListenerFactory = new RepositoryMessageListenerFactory.Builder()
                     .environment(environment)
                     .transactionRunnerLocator(transactionRunnerLocator)
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .build();
             factory.aggregateRootMessageListenerFactory = new AggregateRootMessageListenerFactory.Builder()
                     .environment(environment)
                     .transactionRunnerLocator(transactionRunnerLocator)
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .build();
 
             return factory;

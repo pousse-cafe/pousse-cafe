@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import poussecafe.apm.ApmSpan;
+import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
@@ -30,9 +32,15 @@ public class RepositoryMessageListenerFactory {
             return this;
         }
 
+        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
+            factory.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
         public RepositoryMessageListenerFactory build() {
             Objects.requireNonNull(factory.environment);
             Objects.requireNonNull(factory.transactionRunnerLocator);
+            Objects.requireNonNull(factory.applicationPerformanceMonitoring);
             return factory;
         }
     }
@@ -67,9 +75,24 @@ public class RepositoryMessageListenerFactory {
     private Consumer<Message> buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
         return message -> {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-            transactionRunner.runInTransaction(() -> invoker.invoke(message));
+            transactionRunner.runInTransaction(() -> invokeInSpan(invoker, message));
         };
     }
 
     private TransactionRunnerLocator transactionRunnerLocator;
+
+    private void invokeInSpan(MethodInvoker invoker, Message message) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("repositoryInvocation");
+        try {
+            invoker.invoke(message);
+        } catch (Exception e) {
+            span.captureException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 }
