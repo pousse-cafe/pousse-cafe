@@ -134,12 +134,20 @@ class MessageProcessor {
     private MessageListenerExecutionStatus executeInApmTransaction(MessageListenerExecutor executor) {
         String transactionName = executor.listener().shortId();
         ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
-        executor.executeListener();
-        endOrIgnoreApmTransaction(executor, apmTransaction);
-        return executor.status();
+        try {
+            executor.executeListener();
+            configureApmTransaction(executor, apmTransaction);
+            return executor.status();
+        } catch (Exception e) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            apmTransaction.captureException(e);
+        } finally {
+            apmTransaction.end();
+        }
+        return MessageListenerExecutionStatus.FAILED;
     }
 
-    private void endOrIgnoreApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
+    private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
         MessageListenerExecutionStatus status = executor.status();
         if(status == MessageListenerExecutionStatus.SUCCESS) {
             apmTransaction.setResult(ApmTransactionResults.SUCCESS);
@@ -154,7 +162,6 @@ class MessageProcessor {
         } else {
             throw new IllegalArgumentException("Unsupported listener execution status " + status);
         }
-        apmTransaction.end();
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;

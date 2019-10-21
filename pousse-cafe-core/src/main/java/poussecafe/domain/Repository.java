@@ -53,9 +53,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         try {
             checkId(id);
             return wrapNullable(dataAccess.findData(id));
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }
@@ -69,9 +66,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         span.setName(queryName);
         try {
             return wrapNullable(query.get());
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }
@@ -121,9 +115,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
             checkEntity(entity);
             entity.onAdd();
             addData(entity);
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }
@@ -156,8 +147,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
             checkEntity(entity);
             entity.onUpdate();
             updateData(entity);
-        } catch (Exception e) {
-            span.captureException(e);
         } finally {
             span.end();
         }
@@ -187,9 +176,8 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
             if (entity.isPresent()) {
                 deleteWithoutSpan(entity.get());
             }
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
+        } finally {
+            span.end();
         }
     }
 
@@ -206,9 +194,8 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         span.setName("delete(" + entityClass.getSimpleName() + ")");
         try {
             deleteWithoutSpan(entity);
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
+        } finally {
+            span.end();
         }
     }
 
@@ -223,9 +210,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         span.setName(queryName);
         try {
             return wrap(query.get());
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }
