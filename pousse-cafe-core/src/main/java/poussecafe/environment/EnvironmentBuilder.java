@@ -164,6 +164,7 @@ public class EnvironmentBuilder {
 
         injector.registerInjectableService(environment);
         injector.registerInjectableService(environment.entityFactory());
+        injector.registerInjectableService(applicationPerformanceMonitoring);
 
         registerAggregateServices();
         registerServices();
