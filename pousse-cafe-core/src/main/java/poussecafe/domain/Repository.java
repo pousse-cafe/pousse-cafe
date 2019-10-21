@@ -127,12 +127,18 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
             D data = entity.attributes();
             dataAccess.addData(data);
         }
-        considerMessageSendingAfterAdd(entity, messageCollection);
+        considerMessageSending(entity, messageCollection);
     }
 
-    private void considerMessageSendingAfterAdd(A entity,
+    private void considerMessageSending(A entity,
             MessageCollection messageCollection) {
-        entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("sendMessages");
+        try {
+            entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
+        } finally {
+            span.end();
+        }
     }
 
     private void checkEntity(A entity) {
@@ -159,12 +165,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
             D data = entity.attributes();
             dataAccess.updateData(data);
         }
-        considerMessageSendingAfterUpdate(entity, messageCollection);
-    }
-
-    private void considerMessageSendingAfterUpdate(A entity,
-            MessageCollection messageCollection) {
-        entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
+        considerMessageSending(entity, messageCollection);
     }
 
     public void delete(K id) {
@@ -186,7 +187,7 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         MessageCollection messageCollection = entity.messageCollection();
         messageCollectionValidator.validate(messageCollection);
         dataAccess.deleteData(entity.attributes().identifier().value());
-        considerMessageSendingAfterDelete(entity, messageCollection);
+        considerMessageSending(entity, messageCollection);
     }
 
     public void delete(A entity) {
@@ -197,11 +198,6 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
         } finally {
             span.end();
         }
-    }
-
-    private void considerMessageSendingAfterDelete(A entity,
-            MessageCollection messageCollection) {
-        entity.storage().getMessageSendingPolicy().considerSending(messageCollection);
     }
 
     protected List<A> find(String queryName, Supplier<List<D>> query) {
