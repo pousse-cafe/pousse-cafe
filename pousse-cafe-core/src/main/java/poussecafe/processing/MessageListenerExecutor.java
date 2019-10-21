@@ -114,6 +114,8 @@ class MessageListenerExecutor {
             fail(e);
         } else if(result == OptimisticLockingExceptionHandlingResult.IGNORE) {
             ignore(e);
+        } else {
+            throw new UnsupportedOperationException("Unexpected OptimisticLockingExceptionHandlingResult " + result);
         }
     }
 

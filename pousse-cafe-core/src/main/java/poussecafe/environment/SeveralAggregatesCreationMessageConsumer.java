@@ -63,12 +63,9 @@ public class SeveralAggregatesCreationMessageConsumer implements Consumer<Messag
 
     private Iterable<AggregateRoot> createAggregates(Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName("createAggregates");
+        span.setName(invoker.method().getName());
         try {
             return (Iterable<AggregateRoot>) invoker.invoke(message);
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }

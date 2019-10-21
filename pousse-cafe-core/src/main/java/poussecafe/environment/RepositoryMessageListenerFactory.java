@@ -83,12 +83,9 @@ public class RepositoryMessageListenerFactory {
 
     private void invokeInSpan(MethodInvoker invoker, Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName("repositoryInvocation");
+        span.setName(invoker.method().getName());
         try {
             invoker.invoke(message);
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }

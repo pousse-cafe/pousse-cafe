@@ -63,4 +63,8 @@ public class MethodInvoker {
     private Object target;
 
     private Set<Class<? extends Exception>> exceptions = new HashSet<>();
+
+    public Method method() {
+        return method;
+    }
 }

@@ -65,7 +65,7 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
 
     private AggregateRoot createAggregate(Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName("createAggregate");
+        span.setName(invoker.method().getName());
         try {
             Object result = invoker.invoke(message);
             AggregateRoot aggregate;
@@ -76,9 +76,6 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
                 aggregate = (AggregateRoot) result;
             }
             return aggregate;
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }

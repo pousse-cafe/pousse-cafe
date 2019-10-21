@@ -84,12 +84,9 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
 
     private void updateInSpan(Message message, MethodInvoker invoker) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName("updateAggregate");
+        span.setName(invoker.method().getName());
         try {
             invoker.invoke(message);
-        } catch (Exception e) {
-            span.captureException(e);
-            throw e;
         } finally {
             span.end();
         }
