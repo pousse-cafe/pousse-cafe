@@ -11,6 +11,7 @@ import poussecafe.apm.ApmTransactionResults;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.runtime.ConsumptionIdGenerator;
+import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.MessageListenerExecutionStatus;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -138,6 +139,10 @@ class MessageProcessor {
             executor.executeListener();
             configureApmTransaction(executor, apmTransaction);
             return executor.status();
+        } catch (FailFastException e) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            apmTransaction.captureException(e);
+            throw e;
         } catch (Exception e) {
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(e);
