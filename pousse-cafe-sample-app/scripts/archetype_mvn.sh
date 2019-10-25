@@ -23,6 +23,15 @@ cd target/generated-sources/archetype/
 echo "Archetype POM fixing..."
 ARCHETYPE_POM=pom.xml
 
+echo "  Adding parent element"
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -i "/n:project/n:groupId" -t elem -n parent -v "" $ARCHETYPE_POM
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -s "/n:project/n:parent" -t elem -n "groupId" -v "org.pousse-cafe-framework" $ARCHETYPE_POM
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -s "/n:project/n:parent" -t elem -n "artifactId" -v "pousse-cafe" $ARCHETYPE_POM
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -s "/n:project/n:parent" -t elem -n "version" -v "$VERSION" $ARCHETYPE_POM
+
+echo "    Removing useless elements"
+xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -d "/n:project/n:version" $ARCHETYPE_POM
+
 echo "    Updating description"
 xmlstarlet ed -L -N "n=http://maven.apache.org/POM/4.0.0" -u "/n:project/n:description" -v "$DESCRIPTION" $ARCHETYPE_POM
 
