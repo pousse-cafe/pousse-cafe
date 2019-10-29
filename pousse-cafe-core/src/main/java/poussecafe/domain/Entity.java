@@ -44,12 +44,15 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         return messageFactory;
     }
 
+    @Deprecated
     protected void dontPersist(boolean value) {
         dontPersist = value;
     }
 
+    @Deprecated
     private boolean dontPersist;
 
+    @Deprecated
     public boolean dontPersist() {
         return dontPersist;
     }
