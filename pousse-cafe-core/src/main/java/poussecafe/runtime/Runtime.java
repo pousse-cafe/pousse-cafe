@@ -188,7 +188,7 @@ public class Runtime {
         started = true;
         configureMessageProcessing();
         messageProcessingThreadPool.start();
-        startMessageHandling();
+        openConnections();
     }
 
     private boolean started;
@@ -213,11 +213,11 @@ public class Runtime {
 
     private List<MessagingConnection> connections = new ArrayList<>();
 
-    private void startMessageHandling() {
-        logger.info("Starting message handling...");
+    private void openConnections() {
+        logger.info("Open connections...");
         connectMessaging();
         for(MessagingConnection connection : connections) {
-            connection.startReceiving();
+            connection.open();
         }
     }
 
@@ -239,13 +239,13 @@ public class Runtime {
             return;
         }
         started = false;
-        stopMessageHandling();
+        closeConnections();
         messageProcessingThreadPool.stop();
     }
 
-    private void stopMessageHandling() {
+    private void closeConnections() {
         for(MessagingConnection connection : connections) {
-            connection.stopReceiving();
+            connection.close();
         }
     }
 

@@ -55,11 +55,12 @@ public class MessagingConnection {
         return messageReceiver;
     }
 
-    public void startReceiving() {
+    public void open() {
         messageReceiver.startReceiving();
     }
 
-    public void stopReceiving() {
+    public void close() {
+        messageSender.close();
         messageReceiver.stopReceiving();
     }
 }
