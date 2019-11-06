@@ -110,4 +110,16 @@ public abstract class PousseCafeTest {
                     .instantiateData(true)
                     .build());
     }
+
+    public void given(String resourceName) {
+        loadDataFile("/" + resourceName + ".json");
+    }
+
+    public void when(Command command) {
+        submitCommand(command);
+    }
+
+    public void when(DomainEvent event) {
+        emitDomainEvent(event);
+    }
 }
