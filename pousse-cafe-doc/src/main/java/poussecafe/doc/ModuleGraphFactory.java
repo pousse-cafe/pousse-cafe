@@ -1,6 +1,8 @@
 package poussecafe.doc;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedEdge;
@@ -72,10 +74,16 @@ public class ModuleGraphFactory {
     }
 
     private void addAggregateRelations(AggregateDoc aggregateDoc) {
-        addAggregateRelations(aggregateDoc, aggregateDoc.className());
+        addAggregateRelations(aggregateDoc, aggregateDoc.className(), new ExplorationState());
     }
 
-    private void addAggregateRelations(AggregateDoc aggregateDoc, String fromClassName) {
+    private class ExplorationState {
+
+        Set<String> exploredComponends = new HashSet<>();
+    }
+
+    private void addAggregateRelations(AggregateDoc aggregateDoc, String fromClassName, ExplorationState explorationState) {
+        explorationState.exploredComponends.add(fromClassName);
         for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
             if(relation.toComponent().type() == ComponentType.AGGREGATE) {
                 AggregateDoc otherAggregate = aggregateDocRepository.get(AggregateDocId.ofClassName(relation.toComponent().className()));
@@ -86,8 +94,8 @@ public class ModuleGraphFactory {
                                     name(relation.toComponent()));
                     graph.getNodesAndEdges().addEdge(edge);
                 }
-            } else {
-                addAggregateRelations(aggregateDoc, relation.toComponent().className());
+            } else if(!explorationState.exploredComponends.contains(relation.toComponent().className())) {
+                addAggregateRelations(aggregateDoc, relation.toComponent().className(), explorationState);
             }
         }
     }
@@ -95,10 +103,9 @@ public class ModuleGraphFactory {
     private RelationRepository relationRepository;
 
     private String name(Component component) {
-        switch(component.type()) {
-        case AGGREGATE:
+        if(component.type() == ComponentType.AGGREGATE) {
             return aggregateDocRepository.get(AggregateDocId.ofClassName(component.className())).attributes().moduleComponentDoc().value().componentDoc().name();
-        default:
+        } else {
             throw new IllegalArgumentException("Unsupported component type " + component.type());
         }
     }
