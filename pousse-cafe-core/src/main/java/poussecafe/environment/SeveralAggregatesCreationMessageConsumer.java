@@ -54,23 +54,25 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
         MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
-        TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-        Repository repository = aggregateServices.repository();
         Message message = state.message().original();
         if(state.isFirstConsumption()) {
-            Iterable<AggregateRoot> iterable = createAggregates(message);
-            for(AggregateRoot aggregate : iterable) {
-                    reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
-            }
+            createAggregates(state, message, reportBuilder);
         }
         return reportBuilder.build();
     }
 
-    private Iterable<AggregateRoot> createAggregates(Message message) {
+    private void createAggregates(MessageListenerGroupConsumptionState state, Message message, MessageConsumptionReport.Builder reportBuilder) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(invoker.method().getName());
         try {
-            return (Iterable<AggregateRoot>) invoker.invoke(message);
+            Class entityClass = aggregateServices.aggregateRootEntityClass();
+            TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
+            Repository repository = aggregateServices.repository();
+
+            Iterable<AggregateRoot> aggregates = (Iterable<AggregateRoot>) invoker.invoke(message);
+            for(AggregateRoot aggregate : aggregates) {
+                reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+            }
         } finally {
             span.end();
         }

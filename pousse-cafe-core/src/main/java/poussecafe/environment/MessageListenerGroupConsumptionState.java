@@ -23,8 +23,8 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
-        public Builder aggregateStatus(Object instanceKey, ConsumptionStatus status) {
-            state.aggregateStatusPerAggregateInstance.put(instanceKey, status);
+        public Builder aggregateUpdateStatus(Object id, ConsumptionStatus status) {
+            state.aggregateUpdateStatusPerInstance.put(id, status);
             return this;
         }
 
@@ -58,14 +58,14 @@ public class MessageListenerGroupConsumptionState {
         return aggregateRootClass;
     }
 
-    private Map<Object, ConsumptionStatus> aggregateStatusPerAggregateInstance = new HashMap<>();
+    private Map<Object, ConsumptionStatus> aggregateUpdateStatusPerInstance = new HashMap<>();
 
     public boolean mustRun(MessageListener listener) {
         return isFirstConsumption() || listener.priority() == MessageListenerPriority.AGGREGATE;
     }
 
     public boolean mustRunAggregateListener(Object id) {
-        ConsumptionStatus consumptionStatus = aggregateStatusPerAggregateInstance.get(id);
+        ConsumptionStatus consumptionStatus = aggregateUpdateStatusPerInstance.get(id);
         return consumptionStatus == null
                 || consumptionStatus == ConsumptionStatus.RETRY;
     }

@@ -40,7 +40,7 @@ public class MessageConsumptionState {
             Map<Object, ConsumptionStatus> aggregateUpdateStatus = aggregatesUpdatesState.get(listenerGroupAggregateRoot.get());
             if(aggregateUpdateStatus != null) {
                 for(Entry<Object, ConsumptionStatus> entry : aggregateUpdateStatus.entrySet()) {
-                    stateBuilder.aggregateStatus(entry.getKey(), entry.getValue());
+                    stateBuilder.aggregateUpdateStatus(entry.getKey(), entry.getValue());
                 }
             }
             return stateBuilder.build();
@@ -56,7 +56,8 @@ public class MessageConsumptionState {
     public void update(List<MessageConsumptionReport> reports) {
         for(MessageConsumptionReport report : reports) {
             Optional<Class> aggregateRootClass = report.aggregateType();
-            if(aggregateRootClass.isPresent() && report.listenerType() == MessageListenerPriority.AGGREGATE) {
+            if(aggregateRootClass.isPresent()
+                    && report.listenerType() == MessageListenerPriority.AGGREGATE) {
                 Map<Object, ConsumptionStatus> state = aggregatesUpdatesState.computeIfAbsent(aggregateRootClass.get(), key -> new HashMap<>());
                 setStatus(state, report.successfulAggregatesIds(), ConsumptionStatus.SUCCESS);
                 setStatus(state, report.failedAggregatesIds(), ConsumptionStatus.FAILURE);

@@ -88,6 +88,10 @@ public class MessageConsumptionReport {
                 throw new IllegalStateException("Unknown aggregate IDs reported");
             }
 
+            if(report.allAggregatesIds.size() != (report.aggregateIdsToRetry.size() + report.failedAggregatesIds.size() + report.successfulAggregatesIds().size())) {
+                throw new IllegalStateException("Unconsistent sets of IDs");
+            }
+
             return report;
         }
 

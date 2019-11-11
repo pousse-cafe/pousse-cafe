@@ -58,32 +58,36 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
         reportBuilder.aggregateType(aggregateRootEntityClass);
         if(state.isFirstConsumption()) {
             Message message = state.message().original();
-            AggregateRoot aggregate = createAggregate(message);
+            createAggregate(state, reportBuilder, aggregateRootEntityClass, message);
+        }
+        return reportBuilder.build();
+    }
+
+    private void createAggregate(MessageListenerGroupConsumptionState state, MessageConsumptionReport.Builder reportBuilder, Class aggregateRootEntityClass, Message message) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName(invoker.method().getName());
+        try {
+            AggregateRoot aggregate = newAggregate(message);
             if(aggregate != null) {
                 Repository repository = aggregateServices.repository();
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(aggregateRootEntityClass);
                 reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
-        }
-        return reportBuilder.build();
-    }
-
-    private AggregateRoot createAggregate(Message message) {
-        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName(invoker.method().getName());
-        try {
-            Object result = invoker.invoke(message);
-            AggregateRoot aggregate;
-            if(result instanceof Optional) {
-                Optional<? extends AggregateRoot> optional = (Optional<? extends AggregateRoot>) result;
-                aggregate = optional.orElse(null);
-            } else {
-                aggregate = (AggregateRoot) result;
-            }
-            return aggregate;
         } finally {
             span.end();
         }
+    }
+
+    private AggregateRoot newAggregate(Message message) {
+        Object result = invoker.invoke(message);
+        AggregateRoot aggregate;
+        if(result instanceof Optional) {
+            Optional<? extends AggregateRoot> optional = (Optional<? extends AggregateRoot>) result;
+            aggregate = optional.orElse(null);
+        } else {
+            aggregate = (AggregateRoot) result;
+        }
+        return aggregate;
     }
 
     private MethodInvoker invoker;
