@@ -91,7 +91,7 @@ public class RepositoryMessageListenerFactory {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(invoker.method().getName());
         try {
-            invoker.invoke(state.message());
+            invoker.invoke(state.message().original());
         } finally {
             span.end();
         }
