@@ -77,7 +77,7 @@ public class MessageProcessorTest {
 
     private void thenMessageForwardedToListenersConsumers() {
         for(MessageListener listener : listeners) {
-            verify(listener.consumer()).consume(message.original());
+            verify(listener.consumer()).consume(any());
         }
     }
 

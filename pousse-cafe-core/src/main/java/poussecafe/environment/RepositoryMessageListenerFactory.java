@@ -8,7 +8,6 @@ import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
-import poussecafe.messaging.Message;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
@@ -73,20 +72,26 @@ public class RepositoryMessageListenerFactory {
     private Environment environment;
 
     private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
-        return message -> {
-            TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-            transactionRunner.runInTransaction(() -> invokeInSpan(invoker, message));
-            return MessageConsumptionReport.success();
+        return state -> {
+            if(state.isFirstConsumption()) {
+                TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
+                transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
+                return MessageConsumptionReport.success();
+            } else {
+                return new MessageConsumptionReport.Builder()
+                        .skipped(true)
+                        .build();
+            }
         };
     }
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
-    private void invokeInSpan(MethodInvoker invoker, Message message) {
+    private void invokeInSpan(MethodInvoker invoker, MessageListenerGroupConsumptionState state) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(invoker.method().getName());
         try {
-            invoker.invoke(message);
+            invoker.invoke(state.message());
         } finally {
             span.end();
         }

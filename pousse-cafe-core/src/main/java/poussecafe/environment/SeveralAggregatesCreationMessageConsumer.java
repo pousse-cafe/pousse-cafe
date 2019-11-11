@@ -50,15 +50,18 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
     }
 
     @Override
-    public MessageConsumptionReport consume(Message message) {
+    public MessageConsumptionReport consume(MessageListenerGroupConsumptionState state) {
         MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         Repository repository = aggregateServices.repository();
+        Message message = state.message().original();
         Iterable<AggregateRoot> iterable = createAggregates(message);
         for(AggregateRoot aggregate : iterable) {
-            reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+            if(state.isFirstConsumption()) {
+                reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+            }
         }
         return reportBuilder.build();
     }

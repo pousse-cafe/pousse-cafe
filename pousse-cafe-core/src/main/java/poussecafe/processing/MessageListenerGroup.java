@@ -3,12 +3,14 @@ package poussecafe.processing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApmTransactionLabels;
 import poussecafe.apm.ApmTransactionResults;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -49,12 +51,19 @@ public class MessageListenerGroup {
             return this;
         }
 
+        @SuppressWarnings("rawtypes")
+        public Builder aggregateRootClass(Optional<Class> aggregateRootClass) {
+            group.aggregateRootClass = aggregateRootClass;
+            return this;
+        }
+
         public MessageListenerGroup build() {
             Objects.requireNonNull(group.consumptionId);
             Objects.requireNonNull(group.message);
             Objects.requireNonNull(group.listeners);
             Objects.requireNonNull(group.messageConsumptionHandler);
             Objects.requireNonNull(group.applicationPerformanceMonitoring);
+            Objects.requireNonNull(group.aggregateRootClass);
             group.listeners.sort(null);
             return group;
         }
@@ -66,18 +75,19 @@ public class MessageListenerGroup {
 
     private List<MessageListener> listeners;
 
-    public List<MessageConsumptionReport> consumeMessageOrRetry() {
+    public List<MessageConsumptionReport> consumeMessageOrRetry(MessageListenerGroupConsumptionState consumptionState) {
         List<MessageConsumptionReport> reports = new ArrayList<>();
         for(MessageListener listener : listeners) {
-            MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
-                    .consumptionId(consumptionId)
-                    .listener(listener)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .receivedMessage(message)
-                    .failFast(failFast)
-                    .build();
-
-            reports.add(executeInApmTransaction(executor));
+            if(consumptionState.mustRun(listener)) {
+                MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
+                        .consumptionId(consumptionId)
+                        .listener(listener)
+                        .messageConsumptionHandler(messageConsumptionHandler)
+                        .consumptionState(consumptionState)
+                        .failFast(failFast)
+                        .build();
+                reports.add(executeInApmTransaction(executor));
+            }
         }
         return reports;
     }
@@ -128,4 +138,12 @@ public class MessageListenerGroup {
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
+    @SuppressWarnings("rawtypes")
+    public Optional<Class> aggregateRootClass() {
+        return aggregateRootClass;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Optional<Class> aggregateRootClass = Optional.empty();
 }

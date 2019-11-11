@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
@@ -64,6 +66,9 @@ public class MessageConsumption {
             Objects.requireNonNull(consumption.applicationPerformanceMonitoring);
             Objects.requireNonNull(consumption.logger);
             Objects.requireNonNull(consumption.message);
+
+            consumption.messageConsumptionState = new MessageConsumptionState(consumption.message);
+
             return consumption;
         }
     }
@@ -109,9 +114,10 @@ public class MessageConsumption {
         List<MessageListenerGroup> groups = new ArrayList<>();
         for(Entry<Class, List<MessageListener>> entry : listenersPerAggregateRootClass.entrySet()) {
             MessageListenerGroup group = new MessageListenerGroup.Builder()
+                    .listeners(entry.getValue())
+                    .aggregateRootClass(Optional.of(entry.getKey()))
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .consumptionId(consumptionId)
-                    .listeners(entry.getValue())
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .failFast(failFast)
@@ -120,9 +126,10 @@ public class MessageConsumption {
         }
         for(MessageListener customListener : customListeners) {
             MessageListenerGroup group = new MessageListenerGroup.Builder()
+                    .listeners(asList(customListener))
+                    .aggregateRootClass(Optional.empty())
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .consumptionId(consumptionId)
-                    .listeners(asList(customListener))
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .failFast(failFast)
@@ -145,6 +152,7 @@ public class MessageConsumption {
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
+        messageConsumptionState.isFirstConsumption(false);
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
@@ -159,9 +167,13 @@ public class MessageConsumption {
     protected Logger logger;
 
     private boolean consumeMessageOrRetry(MessageListenerGroup listener) {
-        List<MessageConsumptionReport> reports = listener.consumeMessageOrRetry();
+        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState(listener);
+        List<MessageConsumptionReport> reports = listener.consumeMessageOrRetry(consumptionState);
+        messageConsumptionState.update(reports);
         return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
     }
+
+    private MessageConsumptionState messageConsumptionState;
 
     private MessageConsumptionHandler messageConsumptionHandler;
 

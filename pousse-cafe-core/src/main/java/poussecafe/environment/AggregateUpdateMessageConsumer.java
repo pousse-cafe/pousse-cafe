@@ -59,7 +59,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
     }
 
     @Override
-    public MessageConsumptionReport consume(Message message) {
+    public MessageConsumptionReport consume(MessageListenerGroupConsumptionState state) {
+        Message message = state.message().original();
         MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
@@ -67,7 +68,9 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         reportBuilder.allAggregatesIds(targetAggregatesId);
         Repository repository = aggregateServices.repository();
         for(Object id : targetAggregatesId) {
-            reportBuilder.runAndReport(id, () -> updateAggregate(message, repository, entityClass, id));
+            if(state.mustRunAggregateListener(id)) {
+                reportBuilder.runAndReport(id, () -> updateAggregate(message, repository, entityClass, id));
+            }
         }
         return reportBuilder.build();
     }

@@ -32,6 +32,11 @@ public class MessageConsumptionReport {
             report.toRetry = toRetry;
             return this;
         }
+        
+        public Builder listenerType(MessageListenerPriority listenerType) {
+            report.listenerType = listenerType;
+            return this;
+        }
 
         @SuppressWarnings("rawtypes")
         public Builder aggregateType(Class aggregateType) {
@@ -120,6 +125,12 @@ public class MessageConsumptionReport {
 
     public boolean toRetry() {
         return toRetry;
+    }
+    
+    private MessageListenerPriority listenerType;
+
+    public MessageListenerPriority listenerType() {
+        return listenerType;
     }
 
     @SuppressWarnings("rawtypes")

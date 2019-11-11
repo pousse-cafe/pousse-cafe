@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
@@ -24,8 +25,8 @@ class MessageListenerExecutor {
             return this;
         }
 
-        public Builder receivedMessage(OriginalAndMarshaledMessage receivedMessage) {
-            executor.receivedMessage = receivedMessage;
+        public Builder consumptionState(MessageListenerGroupConsumptionState consumptionState) {
+            executor.consumptionState = consumptionState;
             return this;
         }
 
@@ -46,7 +47,7 @@ class MessageListenerExecutor {
 
         public MessageListenerExecutor build() {
             Objects.requireNonNull(executor.consumptionId);
-            Objects.requireNonNull(executor.receivedMessage);
+            Objects.requireNonNull(executor.consumptionState);
             Objects.requireNonNull(executor.listener);
             Objects.requireNonNull(executor.messageConsumptionHandler);
             return executor;
@@ -59,7 +60,7 @@ class MessageListenerExecutor {
 
     private String consumptionId;
 
-    private OriginalAndMarshaledMessage receivedMessage;
+    private MessageListenerGroupConsumptionState consumptionState;
 
     private MessageListener listener;
 
@@ -72,13 +73,14 @@ class MessageListenerExecutor {
     private boolean failFast;
 
     public void executeListener() {
+        OriginalAndMarshaledMessage receivedMessage = consumptionState.message();
         String messageClassName = receivedMessage.original().getClass().getName();
         if(logger.isDebugEnabled()) {
             logger.debug("    {} consumes {}", listener.shortId(), messageClassName);
         }
 
         try {
-            messageConsumptionReport = listener.consumer().consume(receivedMessage.original());
+            messageConsumptionReport = listener.consumer().consume(consumptionState);
         } catch (SameOperationException e) {
             ignore(e);
         } catch (OptimisticLockingException e) {
@@ -99,7 +101,7 @@ class MessageListenerExecutor {
     }
 
     private void handleOptimisticLockingException(OptimisticLockingException e) {
-        OptimisticLockingExceptionHandlingResult result = messageConsumptionHandler.handleOptimisticLockingException(receivedMessage);
+        OptimisticLockingExceptionHandlingResult result = messageConsumptionHandler.handleOptimisticLockingException(consumptionState.message());
         if(result == OptimisticLockingExceptionHandlingResult.RETRY) {
             retry(e);
         } else if(result == OptimisticLockingExceptionHandlingResult.FAIL) {
@@ -126,6 +128,7 @@ class MessageListenerExecutor {
                 .failure(e)
                 .build();
 
+        OriginalAndMarshaledMessage receivedMessage = consumptionState.message();
         String messageClassName = receivedMessage.original().getClass().getName();
         if(failFast) {
             logger.error("      Failing fast on exception from listener {}", listener, e);
