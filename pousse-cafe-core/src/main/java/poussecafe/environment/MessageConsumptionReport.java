@@ -192,6 +192,6 @@ public class MessageConsumptionReport {
     }
 
     public boolean isFailed() {
-        return !failures.isEmpty() || !failedAggregatesIds.isEmpty();
+        return (!skipped && !toRetry && !failures.isEmpty()) || !failedAggregatesIds.isEmpty();
     }
 }
