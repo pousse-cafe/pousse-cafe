@@ -6,6 +6,7 @@ import org.junit.Test;
 import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerPriority;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.DefaultConsumptionHandler;
 import poussecafe.runtime.FailFastException;
@@ -42,7 +43,7 @@ public class MessageProcessorTest {
                 .id("id")
                 .shortId("shortId")
                 .messageClass(Message.class)
-                .priority(0)
+                .priority(MessageListenerPriority.CUSTOM)
                 .build();
     }
 
@@ -93,7 +94,7 @@ public class MessageProcessorTest {
                 .id("id")
                 .shortId("shortId")
                 .messageClass(Message.class)
-                .priority(0)
+                .priority(MessageListenerPriority.CUSTOM)
                 .build());
     }
 

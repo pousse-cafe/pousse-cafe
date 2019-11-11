@@ -40,15 +40,18 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder priority(int priority) {
-            this.priority = priority;
+        public Builder priority(MessageListenerPriority priority) {
+            listener.priority = priority;
             return this;
         }
 
-        private Integer priority;
-
         public Builder collisionSpace(Optional<String> collisionSpace) {
             listener.collisionSpace = collisionSpace;
+            return this;
+        }
+
+        public Builder aggregateRootClass(@SuppressWarnings("rawtypes") Optional<Class> aggregateRootClass) {
+            listener.aggregateRootClass = aggregateRootClass;
             return this;
         }
 
@@ -58,12 +61,9 @@ public class MessageListener implements Comparable<MessageListener> {
             Objects.requireNonNull(listener.messageClass);
             Objects.requireNonNull(listener.consumer);
             Objects.requireNonNull(listener.runner);
-
-            Objects.requireNonNull(priority);
-            listener.priority = priority;
-
+            Objects.requireNonNull(listener.priority);
             Objects.requireNonNull(listener.collisionSpace);
-
+            Objects.requireNonNull(listener.aggregateRootClass);
             return listener;
         }
     }
@@ -104,9 +104,9 @@ public class MessageListener implements Comparable<MessageListener> {
         return runner;
     }
 
-    private int priority;
+    private MessageListenerPriority priority;
 
-    public int priority() {
+    public MessageListenerPriority priority() {
         return priority;
     }
 
@@ -116,6 +116,14 @@ public class MessageListener implements Comparable<MessageListener> {
         return collisionSpace;
     }
 
+    @SuppressWarnings("rawtypes")
+    private Optional<Class> aggregateRootClass = Optional.empty();
+
+    @SuppressWarnings("rawtypes")
+    public Optional<Class> aggregateRootClass() {
+        return aggregateRootClass;
+    }
+
     @Override
     public String toString() {
         return id;
@@ -123,7 +131,7 @@ public class MessageListener implements Comparable<MessageListener> {
 
     @Override
     public int compareTo(MessageListener o) {
-        return priority - o.priority;
+        return priority.compareTo(o.priority);
     }
 
     @Override

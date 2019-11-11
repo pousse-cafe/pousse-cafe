@@ -51,6 +51,7 @@ public class FactoryMessageListenerFactory {
                 .priority(MessageListenerPriority.FACTORY)
                 .consumer(buildFactoryListenerConsumer(target, definition))
                 .collisionSpace(collisionSpace)
+                .aggregateRootClass(Optional.of(target.entityClass()))
                 .build();
     }
 

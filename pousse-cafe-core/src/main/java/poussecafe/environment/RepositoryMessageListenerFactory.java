@@ -66,6 +66,7 @@ public class RepositoryMessageListenerFactory {
                 .priority(MessageListenerPriority.REPOSITORY)
                 .consumer(buildRepositoryMessageConsumer(entityClass, invoker))
                 .collisionSpace(collisionSpace)
+                .aggregateRootClass(Optional.of(repository.entityClass()))
                 .build();
     }
 

@@ -1,20 +1,20 @@
 package poussecafe.processing;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import org.slf4j.Logger;
-import poussecafe.apm.ApmTransaction;
-import poussecafe.apm.ApmTransactionLabels;
-import poussecafe.apm.ApmTransactionResults;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
 
 public class MessageConsumption {
 
@@ -78,41 +78,78 @@ public class MessageConsumption {
 
     public void execute() {
         logger.debug("Handling received message {}", message.original());
-        List<MessageListener> listeners = listenersPartition.partitionListenersSet().messageListenersOf(message.original().getClass()).stream()
-                .sorted()
-                .collect(toList());
+        List<MessageListenerGroup> listeners = buildMessageListenerGroups();
         if(!listeners.isEmpty()) {
             logger.debug("  Found {} listeners", listeners.size());
-            List<MessageListener> toRetryInitially = consumeMessageOrRetryListeners(message, consumptionId, listeners);
+            List<MessageListenerGroup> toRetryInitially = consumeMessageOrRetryListeners(listeners);
             if(!toRetryInitially.isEmpty()) {
-                retryConsumption(message, consumptionId, toRetryInitially);
+                retryConsumption(toRetryInitially);
             }
         }
         logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
+    @SuppressWarnings("rawtypes")
+    private List<MessageListenerGroup> buildMessageListenerGroups() {
+        Collection<MessageListener> listeners = listenersPartition.partitionListenersSet()
+                .messageListenersOf(message.original().getClass());
+        List<MessageListener> customListeners = new ArrayList<>();
+        Map<Class, List<MessageListener>> listenersPerAggregateRootClass = new HashMap<>();
+        for(MessageListener listener : listeners) {
+            List<MessageListener> groupList;
+            if(listener.aggregateRootClass().isPresent()) {
+                groupList = listenersPerAggregateRootClass.computeIfAbsent(listener.aggregateRootClass().orElseThrow(),
+                        key -> new ArrayList<>());
+            } else {
+                groupList = customListeners;
+            }
+            groupList.add(listener);
+        }
+
+        List<MessageListenerGroup> groups = new ArrayList<>();
+        for(Entry<Class, List<MessageListener>> entry : listenersPerAggregateRootClass.entrySet()) {
+            MessageListenerGroup group = new MessageListenerGroup.Builder()
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                    .consumptionId(consumptionId)
+                    .listeners(entry.getValue())
+                    .message(message)
+                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .failFast(failFast)
+                    .build();
+            groups.add(group);
+        }
+        for(MessageListener customListener : customListeners) {
+            MessageListenerGroup group = new MessageListenerGroup.Builder()
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                    .consumptionId(consumptionId)
+                    .listeners(asList(customListener))
+                    .message(message)
+                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .failFast(failFast)
+                    .build();
+            groups.add(group);
+        }
+        return groups;
+    }
+
     private ListenersSetPartition listenersPartition;
 
-    private List<MessageListener> consumeMessageOrRetryListeners(OriginalAndMarshaledMessage message,
-            String consumptionId,
-            List<MessageListener> listeners) {
-        List<MessageListener> toRetry = new ArrayList<>();
-        for (MessageListener listener : listeners) {
-            if(consumeMessageOrRetry(consumptionId, message, listener)) {
+    private List<MessageListenerGroup> consumeMessageOrRetryListeners(List<MessageListenerGroup> listeners) {
+        List<MessageListenerGroup> toRetry = new ArrayList<>();
+        for (MessageListenerGroup listener : listeners) {
+            if(consumeMessageOrRetry(listener)) {
                 toRetry.add(listener);
             }
         }
         return toRetry;
     }
 
-    private void retryConsumption(OriginalAndMarshaledMessage message,
-            String consumptionId,
-            List<MessageListener> toRetryInitially) {
+    private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
         int retry = 1;
-        List<MessageListener> toRetry = toRetryInitially;
+        List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
             logger.debug("    Try #{} for {} listeners", retry, toRetry.size());
-            toRetry = consumeMessageOrRetryListeners(message, consumptionId, toRetry);
+            toRetry = consumeMessageOrRetryListeners(toRetry);
             ++retry;
         }
     }
@@ -121,66 +158,14 @@ public class MessageConsumption {
 
     protected Logger logger;
 
-    private boolean consumeMessageOrRetry(String consumptionId,
-            OriginalAndMarshaledMessage receivedMessage,
-            MessageListener listener) {
-
-        MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
-                .consumptionId(consumptionId)
-                .listener(listener)
-                .messageConsumptionHandler(messageConsumptionHandler)
-                .receivedMessage(receivedMessage)
-                .failFast(failFast)
-                .build();
-
-        MessageConsumptionReport report = executeInApmTransaction(executor);
-        return report.mustRetry();
+    private boolean consumeMessageOrRetry(MessageListenerGroup listener) {
+        List<MessageConsumptionReport> reports = listener.consumeMessageOrRetry();
+        return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
     }
 
     private MessageConsumptionHandler messageConsumptionHandler;
 
     private boolean failFast;
-
-    private MessageConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
-        String transactionName = executor.listener().shortId();
-        ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
-        try {
-            executor.executeListener();
-            configureApmTransaction(executor, apmTransaction);
-            return executor.messageConsumptionReport();
-        } catch (FailFastException e) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(e);
-            throw e;
-        } catch (Exception e) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(e);
-            return new MessageConsumptionReport.Builder()
-                    .failure(e)
-                    .build();
-        } finally {
-            apmTransaction.end();
-        }
-    }
-
-    private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
-        MessageConsumptionReport report = executor.messageConsumptionReport();
-        if(report.isSuccess()) {
-            apmTransaction.setResult(ApmTransactionResults.SUCCESS);
-        } else if(report.mustRetry()) {
-            apmTransaction.setResult(ApmTransactionResults.SKIP);
-        } else if(report.isSkipped()) {
-            apmTransaction.setResult(ApmTransactionResults.SKIP);
-            if(!report.failures().isEmpty()) {
-                apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, report.failures().get(0).getClass().getSimpleName());
-            }
-        } else if(report.isFailed()) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(report.failures().get(0));
-        } else {
-            throw new IllegalArgumentException("Unsupported consumption report");
-        }
-    }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 }
