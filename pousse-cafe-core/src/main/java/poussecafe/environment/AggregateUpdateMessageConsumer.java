@@ -64,10 +64,9 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
-        Set targetAggregatesId = runner.targetAggregatesIds(message);
-        reportBuilder.allAggregatesIds(targetAggregatesId);
+        Set targetAggregatesIds = runner.targetAggregatesIds(message);
         Repository repository = aggregateServices.repository();
-        for(Object id : targetAggregatesId) {
+        for(Object id : targetAggregatesIds) {
             if(state.mustRunAggregateListener(id)) {
                 reportBuilder.runAndReport(state, id, () -> updateAggregate(message, repository, entityClass, id));
             }

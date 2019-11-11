@@ -57,10 +57,10 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         Repository repository = aggregateServices.repository();
         Message message = state.message().original();
-        Iterable<AggregateRoot> iterable = createAggregates(message);
-        for(AggregateRoot aggregate : iterable) {
-            if(state.isFirstConsumption()) {
-                reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+        if(state.isFirstConsumption()) {
+            Iterable<AggregateRoot> iterable = createAggregates(message);
+            for(AggregateRoot aggregate : iterable) {
+                    reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         }
         return reportBuilder.build();
