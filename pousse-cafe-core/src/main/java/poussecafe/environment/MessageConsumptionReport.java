@@ -184,7 +184,7 @@ public class MessageConsumptionReport {
     }
 
     public boolean isSuccess() {
-        return failures.isEmpty() || successfulAggregatesIds.size() == allAggregatesIds.size();
+        return failures.isEmpty() && successfulAggregatesIds.size() == allAggregatesIds.size();
     }
 
     public boolean isSkipped() {
