@@ -78,16 +78,14 @@ public class MessageListenerGroup {
     public List<MessageConsumptionReport> consumeMessageOrRetry(MessageListenerGroupConsumptionState consumptionState) {
         List<MessageConsumptionReport> reports = new ArrayList<>();
         for(MessageListener listener : listeners) {
-            if(consumptionState.mustRun(listener)) {
-                MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
-                        .consumptionId(consumptionId)
-                        .listener(listener)
-                        .messageConsumptionHandler(messageConsumptionHandler)
-                        .consumptionState(consumptionState)
-                        .failFast(failFast)
-                        .build();
-                reports.add(executeInApmTransaction(executor));
-            }
+            MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
+                    .consumptionId(consumptionId)
+                    .listener(listener)
+                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .consumptionState(consumptionState)
+                    .failFast(failFast)
+                    .build();
+            reports.add(executeInApmTransaction(executor));
         }
         return reports;
     }

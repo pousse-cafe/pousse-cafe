@@ -1,7 +1,5 @@
 package poussecafe.environment;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -20,11 +18,6 @@ public class MessageListenerGroupConsumptionState {
         @SuppressWarnings("rawtypes")
         public Builder aggregateRootClass(Optional<Class> aggregateRootClass) {
             state.aggregateRootClass = aggregateRootClass;
-            return this;
-        }
-
-        public Builder aggregateUpdateStatus(Object id, ConsumptionStatus status) {
-            state.aggregateUpdateStatusPerInstance.put(id, status);
             return this;
         }
 
@@ -56,18 +49,6 @@ public class MessageListenerGroupConsumptionState {
     @SuppressWarnings("rawtypes")
     public Optional<Class> aggregateRootClass() {
         return aggregateRootClass;
-    }
-
-    private Map<Object, ConsumptionStatus> aggregateUpdateStatusPerInstance = new HashMap<>();
-
-    public boolean mustRun(MessageListener listener) {
-        return isFirstConsumption() || listener.priority() == MessageListenerPriority.AGGREGATE;
-    }
-
-    public boolean mustRunAggregateListener(Object id) {
-        ConsumptionStatus consumptionStatus = aggregateUpdateStatusPerInstance.get(id);
-        return consumptionStatus == null
-                || consumptionStatus == ConsumptionStatus.RETRY;
     }
 
     public boolean isFirstConsumption() {

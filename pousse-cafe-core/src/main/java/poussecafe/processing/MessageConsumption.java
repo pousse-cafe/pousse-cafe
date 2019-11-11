@@ -167,7 +167,7 @@ public class MessageConsumption {
     protected Logger logger;
 
     private boolean consumeMessageOrRetry(MessageListenerGroup listener) {
-        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState(listener);
+        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState();
         List<MessageConsumptionReport> reports = listener.consumeMessageOrRetry(consumptionState);
         messageConsumptionState.update(reports);
         return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
