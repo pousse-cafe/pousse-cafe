@@ -8,6 +8,7 @@ import java.util.Set;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
+import poussecafe.util.MethodInvokerException;
 
 public class MessageConsumptionReport {
 
@@ -106,6 +107,9 @@ public class MessageConsumptionReport {
                     failure(e);
                     failedAggregateId(id);
                 }
+            } catch (MethodInvokerException e) {
+                failure(e.getCause());
+                failedAggregateId(id);
             } catch (Exception e) {
                 failure(e);
                 failedAggregateId(id);
