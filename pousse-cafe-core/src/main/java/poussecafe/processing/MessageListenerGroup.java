@@ -122,6 +122,9 @@ public class MessageListenerGroup {
         MessageConsumptionReport report = executor.messageConsumptionReport();
         if(report.isSuccess()) {
             apmTransaction.setResult(ApmTransactionResults.SUCCESS);
+        } else if(report.isFailed()) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            apmTransaction.captureException(report.failures().get(0));
         } else if(report.mustRetry()) {
             apmTransaction.setResult(ApmTransactionResults.SKIP);
         } else if(report.isSkipped()) {
@@ -129,9 +132,6 @@ public class MessageListenerGroup {
             if(!report.failures().isEmpty()) {
                 apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, report.failures().get(0).getClass().getSimpleName());
             }
-        } else if(report.isFailed()) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(report.failures().get(0));
         } else {
             throw new IllegalArgumentException("Unsupported consumption report");
         }
