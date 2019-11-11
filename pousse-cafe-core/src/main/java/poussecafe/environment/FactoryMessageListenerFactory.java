@@ -3,12 +3,10 @@ package poussecafe.environment;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Factory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.SameOperationException;
-import poussecafe.messaging.Message;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.MethodInvoker;
@@ -58,7 +56,7 @@ public class FactoryMessageListenerFactory {
 
     private Environment environment;
 
-    private Consumer<Message> buildFactoryListenerConsumer(Factory factory, MessageListenerDefinition definition) {
+    private MessageConsumer buildFactoryListenerConsumer(Factory factory, MessageListenerDefinition definition) {
         Class entityClass = factory.entityClass();
         AggregateServices aggregateServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
         Method method = definition.method();
@@ -78,7 +76,7 @@ public class FactoryMessageListenerFactory {
         }
     }
 
-    private Consumer<Message> addSingleCreatedAggregate(MethodInvoker invoker,
+    private MessageConsumer addSingleCreatedAggregate(MethodInvoker invoker,
             AggregateServices aggregateServices) {
         return new SingleAggregateCreationMessageConsumer.Builder()
                 .transactionRunnerLocator(transactionRunnerLocator)
@@ -92,7 +90,7 @@ public class FactoryMessageListenerFactory {
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
-    private Consumer<Message> addIterableCreatedAggregates(MethodInvoker invoker,
+    private MessageConsumer addIterableCreatedAggregates(MethodInvoker invoker,
             AggregateServices aggregateServices) {
         return new SeveralAggregatesCreationMessageConsumer.Builder()
                 .transactionRunnerLocator(transactionRunnerLocator)

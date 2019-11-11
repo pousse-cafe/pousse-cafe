@@ -21,10 +21,17 @@ public class DomainProcessMessageListenerFactory {
                 .build();
         return definition.messageListenerBuilder()
                 .priority(MessageListenerPriority.DOMAIN_PROCESS)
-                .consumer(invoker::invoke)
+                .consumer(buildConsumer(invoker))
                 .collisionSpace(definition.collisionSpace())
                 .build();
     }
 
     private Environment environment;
+
+    private MessageConsumer buildConsumer(MethodInvoker invoker) {
+        return message -> {
+            invoker.invoke(message);
+            return MessageConsumptionReport.success();
+        };
+    }
 }

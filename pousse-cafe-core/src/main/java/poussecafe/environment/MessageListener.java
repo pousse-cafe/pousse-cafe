@@ -2,7 +2,6 @@ package poussecafe.environment;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.messaging.Message;
@@ -30,7 +29,7 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder consumer(Consumer<Message> consumer) {
+        public Builder consumer(MessageConsumer consumer) {
             listener.consumer = consumer;
             return this;
         }
@@ -91,9 +90,9 @@ public class MessageListener implements Comparable<MessageListener> {
         return messageClass;
     }
 
-    private Consumer<Message> consumer;
+    private MessageConsumer consumer;
 
-    public Consumer<Message> consumer() {
+    public MessageConsumer consumer() {
         return consumer;
     }
 

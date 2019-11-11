@@ -1,7 +1,6 @@
 package poussecafe.environment;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
@@ -12,7 +11,7 @@ import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class SeveralAggregatesCreationMessageConsumer implements Consumer<Message> {
+public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer {
 
     public static class Builder {
 
@@ -51,14 +50,17 @@ public class SeveralAggregatesCreationMessageConsumer implements Consumer<Messag
     }
 
     @Override
-    public void accept(Message message) {
-        Iterable<AggregateRoot> iterable = createAggregates(message);
+    public MessageConsumptionReport consume(Message message) {
+        MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
+        reportBuilder.aggregateType(entityClass);
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         Repository repository = aggregateServices.repository();
+        Iterable<AggregateRoot> iterable = createAggregates(message);
         for(AggregateRoot aggregate : iterable) {
-            addCreatedAggregate(transactionRunner, repository, aggregate);
+            reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
         }
+        return reportBuilder.build();
     }
 
     private Iterable<AggregateRoot> createAggregates(Message message) {

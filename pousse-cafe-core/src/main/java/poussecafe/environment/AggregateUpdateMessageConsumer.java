@@ -3,20 +3,18 @@ package poussecafe.environment;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
-import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class AggregateUpdateMessageConsumer implements Consumer<Message> {
+public class AggregateUpdateMessageConsumer implements MessageConsumer {
 
     public static class Builder {
 
@@ -61,25 +59,32 @@ public class AggregateUpdateMessageConsumer implements Consumer<Message> {
     }
 
     @Override
-    public void accept(Message message) {
-        Set targetAggregatesId = runner.targetAggregatesIds(message);
-        Repository repository = aggregateServices.repository();
+    public MessageConsumptionReport consume(Message message) {
+        MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class entityClass = aggregateServices.aggregateRootEntityClass();
+        reportBuilder.aggregateType(entityClass);
+        Set targetAggregatesId = runner.targetAggregatesIds(message);
+        reportBuilder.allAggregatesIds(targetAggregatesId);
+        Repository repository = aggregateServices.repository();
         for(Object id : targetAggregatesId) {
-            TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-            transactionRunner.runInTransaction(() -> {
-                AggregateRoot targetAggregateRoot = repository.get(id);
-                targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
-                MethodInvoker invoker = new MethodInvoker.Builder()
-                        .method(method)
-                        .target(targetAggregateRoot)
-                        .rethrow(SameOperationException.class)
-                        .rethrow(OptimisticLockingException.class)
-                        .build();
-                updateInSpan(message, invoker);
-                repository.update(targetAggregateRoot);
-            });
+            reportBuilder.runAndReport(id, () -> updateAggregate(message, repository, entityClass, id));
         }
+        return reportBuilder.build();
+    }
+
+    private void updateAggregate(Message message, Repository repository, Class entityClass, Object id) {
+        TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
+        transactionRunner.runInTransaction(() -> {
+            AggregateRoot targetAggregateRoot = repository.get(id);
+            targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
+            MethodInvoker invoker = new MethodInvoker.Builder()
+                    .method(method)
+                    .target(targetAggregateRoot)
+                    .rethrow(SameOperationException.class)
+                    .build();
+            updateInSpan(message, invoker);
+            repository.update(targetAggregateRoot);
+        });
     }
 
     private void updateInSpan(Message message, MethodInvoker invoker) {

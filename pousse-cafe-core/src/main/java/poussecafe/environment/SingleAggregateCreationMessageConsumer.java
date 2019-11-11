@@ -2,7 +2,6 @@ package poussecafe.environment;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
@@ -13,7 +12,7 @@ import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class SingleAggregateCreationMessageConsumer implements Consumer<Message> {
+public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
 
     public static class Builder {
 
@@ -53,14 +52,17 @@ public class SingleAggregateCreationMessageConsumer implements Consumer<Message>
     }
 
     @Override
-    public void accept(Message message) {
+    public MessageConsumptionReport consume(Message message) {
+        MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
+        Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
+        reportBuilder.aggregateType(aggregateRootEntityClass);
         AggregateRoot aggregate = createAggregate(message);
         if(aggregate != null) {
-            Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
             Repository repository = aggregateServices.repository();
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(aggregateRootEntityClass);
-            addCreatedAggregate(transactionRunner, repository, aggregate);
+            reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
         }
+        return reportBuilder.build();
     }
 
     private AggregateRoot createAggregate(Message message) {

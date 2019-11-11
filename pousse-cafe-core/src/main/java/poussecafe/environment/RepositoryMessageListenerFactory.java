@@ -3,7 +3,6 @@ package poussecafe.environment;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Repository;
@@ -72,10 +71,11 @@ public class RepositoryMessageListenerFactory {
 
     private Environment environment;
 
-    private Consumer<Message> buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
+    private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
         return message -> {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
             transactionRunner.runInTransaction(() -> invokeInSpan(invoker, message));
+            return MessageConsumptionReport.success();
         };
     }
 

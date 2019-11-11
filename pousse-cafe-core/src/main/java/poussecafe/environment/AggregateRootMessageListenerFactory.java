@@ -3,11 +3,9 @@ package poussecafe.environment;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.DomainException;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.messaging.Message;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.ReflectionUtils;
 
@@ -59,7 +57,7 @@ public class AggregateRootMessageListenerFactory {
 
     private Environment environment;
 
-    private Consumer<Message> buildAggregateRootMessageConsumer(MessageListenerDefinition definition, AggregateMessageListenerRunner runner) {
+    private MessageConsumer buildAggregateRootMessageConsumer(MessageListenerDefinition definition, AggregateMessageListenerRunner runner) {
         Method method = definition.method();
         Class entityClass = method.getDeclaringClass();
         AggregateServices aggregateServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);

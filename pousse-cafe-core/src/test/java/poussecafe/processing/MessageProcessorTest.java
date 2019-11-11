@@ -2,9 +2,9 @@ package poussecafe.processing;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 import org.junit.Test;
 import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
+import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageListener;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.DefaultConsumptionHandler;
@@ -36,8 +36,7 @@ public class MessageProcessorTest {
     private Set<MessageListener> listeners = new HashSet<>();
 
     private MessageListener buildListener(String id) {
-        @SuppressWarnings("unchecked")
-        Consumer<Message> consumer = mock(Consumer.class);
+        MessageConsumer consumer = mock(MessageConsumer.class);
         return new MessageListener.Builder()
                 .consumer(consumer)
                 .id("id")
@@ -77,7 +76,7 @@ public class MessageProcessorTest {
 
     private void thenMessageForwardedToListenersConsumers() {
         for(MessageListener listener : listeners) {
-            verify(listener.consumer()).accept(message.original());
+            verify(listener.consumer()).consume(message.original());
         }
     }
 

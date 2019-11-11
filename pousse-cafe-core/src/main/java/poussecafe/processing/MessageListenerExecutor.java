@@ -1,14 +1,13 @@
 package poussecafe.processing;
 
 import java.util.Objects;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
-import poussecafe.runtime.MessageListenerExecutionStatus;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.OptimisticLockingExceptionHandlingResult;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -79,8 +78,7 @@ class MessageListenerExecutor {
         }
 
         try {
-            listener.consumer().accept(receivedMessage.original());
-            succeed();
+            messageConsumptionReport = listener.consumer().consume(receivedMessage.original());
         } catch (SameOperationException e) {
             ignore(e);
         } catch (OptimisticLockingException e) {
@@ -92,18 +90,12 @@ class MessageListenerExecutor {
         }
     }
 
-    private void succeed() {
-        String messageClassName = receivedMessage.original().getClass().getName();
-        logger.debug("      Success of {} with {}", listener, messageClassName);
-
-        messageConsumptionHandler.handleSuccess(consumptionId, receivedMessage, listener);
-        status = MessageListenerExecutionStatus.SUCCESS;
-    }
-
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
-        status = MessageListenerExecutionStatus.IGNORED;
-        executionError = e;
+        messageConsumptionReport = new MessageConsumptionReport.Builder()
+                .failure(e)
+                .skipped(true)
+                .build();
     }
 
     private void handleOptimisticLockingException(OptimisticLockingException e) {
@@ -121,14 +113,18 @@ class MessageListenerExecutor {
 
     private void retry(Throwable e) {
         logger.warn("       Retrying following consumption error", e);
-        status = MessageListenerExecutionStatus.EXPECTING_RETRY;
+        messageConsumptionReport = new MessageConsumptionReport.Builder()
+                .failure(e)
+                .toRetry(true)
+                .build();
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void fail(Throwable e) {
-        status = MessageListenerExecutionStatus.FAILED;
-        executionError = e;
+        messageConsumptionReport = new MessageConsumptionReport.Builder()
+                .failure(e)
+                .build();
 
         String messageClassName = receivedMessage.original().getClass().getName();
         if(failFast) {
@@ -140,15 +136,9 @@ class MessageListenerExecutor {
         }
     }
 
-    private MessageListenerExecutionStatus status = MessageListenerExecutionStatus.NOT_EXECUTED;
+    private MessageConsumptionReport messageConsumptionReport;
 
-    public MessageListenerExecutionStatus status() {
-        return status;
-    }
-
-    private Throwable executionError;
-
-    public Optional<Throwable> executionError() {
-        return Optional.ofNullable(executionError);
+    public MessageConsumptionReport messageConsumptionReport() {
+        return messageConsumptionReport;
     }
 }

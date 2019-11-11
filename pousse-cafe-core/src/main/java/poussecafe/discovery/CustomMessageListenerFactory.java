@@ -2,8 +2,9 @@ package poussecafe.discovery;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-import java.util.function.Consumer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
+import poussecafe.environment.MessageConsumer;
+import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.environment.MessageListenerPriority;
 import poussecafe.exception.PousseCafeException;
@@ -53,12 +54,13 @@ public class CustomMessageListenerFactory {
                 .build();
     }
 
-    protected Consumer<Message> buildMessageConsumer(Object target,
+    protected MessageConsumer buildMessageConsumer(Object target,
             Method method) {
         MessageListenerDefinition.checkMethodIsListener(method);
         return message -> {
             try {
                 method.invoke(target, message);
+                return MessageConsumptionReport.success();
             } catch (Exception e) {
                 throw new PousseCafeException("Unable to invoke declared listener", e);
             }
