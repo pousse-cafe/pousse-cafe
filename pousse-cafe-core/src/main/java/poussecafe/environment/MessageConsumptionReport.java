@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.exception.SameOperationException;
+import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
 
 public class MessageConsumptionReport {
@@ -32,7 +33,7 @@ public class MessageConsumptionReport {
             report.toRetry = toRetry;
             return this;
         }
-        
+
         public Builder listenerType(MessageListenerPriority listenerType) {
             report.listenerType = listenerType;
             return this;
@@ -89,7 +90,7 @@ public class MessageConsumptionReport {
             return report;
         }
 
-        public void runAndReport(Object id, Runnable runnable) {
+        public void runAndReport(MessageListenerGroupConsumptionState state, Object id, Runnable runnable) {
             aggregateId(id);
             try {
                 runnable.run();
@@ -98,6 +99,13 @@ public class MessageConsumptionReport {
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
                 aggregateIdToRetry(id);
+            } catch (DuplicateKeyException e) {
+                if(state.isFirstConsumption()) {
+                    aggregateIdToRetry(id);
+                } else {
+                    failure(e);
+                    failedAggregateId(id);
+                }
             } catch (Exception e) {
                 failure(e);
                 failedAggregateId(id);
@@ -126,7 +134,7 @@ public class MessageConsumptionReport {
     public boolean toRetry() {
         return toRetry;
     }
-    
+
     private MessageListenerPriority listenerType;
 
     public MessageListenerPriority listenerType() {

@@ -69,7 +69,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         Repository repository = aggregateServices.repository();
         for(Object id : targetAggregatesId) {
             if(state.mustRunAggregateListener(id)) {
-                reportBuilder.runAndReport(id, () -> updateAggregate(message, repository, entityClass, id));
+                reportBuilder.runAndReport(state, id, () -> updateAggregate(message, repository, entityClass, id));
             }
         }
         return reportBuilder.build();

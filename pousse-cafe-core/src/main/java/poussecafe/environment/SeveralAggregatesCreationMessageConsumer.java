@@ -60,7 +60,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
         Iterable<AggregateRoot> iterable = createAggregates(message);
         for(AggregateRoot aggregate : iterable) {
             if(state.isFirstConsumption()) {
-                reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+                reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         }
         return reportBuilder.build();

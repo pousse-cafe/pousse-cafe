@@ -62,7 +62,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
             if(aggregate != null) {
                 Repository repository = aggregateServices.repository();
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(aggregateRootEntityClass);
-                reportBuilder.runAndReport(aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
+                reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         }
         return reportBuilder.build();

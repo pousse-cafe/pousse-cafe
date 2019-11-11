@@ -16,6 +16,7 @@ import poussecafe.collection.Multimap;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.storage.internal.uniqueindex.AdditionPlan;
 import poussecafe.storage.internal.uniqueindex.Plan;
 import poussecafe.storage.internal.uniqueindex.UniqueIndex;
@@ -61,7 +62,7 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
     public synchronized void addData(D data) {
         K id = data.identifier().value();
         if (storage.containsKey(id)) {
-            throw new InternalStorageException("Duplicate id " + id);
+            throw new DuplicateKeyException("Duplicate id " + id);
         }
         List<AdditionPlan> additionPlans = prepareAddition(data);
         if(locker.isPresent()) {
