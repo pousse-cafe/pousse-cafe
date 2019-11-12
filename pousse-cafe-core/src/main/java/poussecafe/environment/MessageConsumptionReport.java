@@ -47,32 +47,37 @@ public class MessageConsumptionReport {
         }
 
         public Builder aggregateId(Object aggregateId) {
-            report.allAggregatesIds.add(aggregateId);
-            return this;
-        }
-
-        public Builder allAggregatesIds(Set<Object> allAggregatesIds) {
-            report.allAggregatesIds.addAll(allAggregatesIds);
+            if(!report.allAggregatesIds.add(aggregateId)) {
+                throw new IllegalArgumentException("Alraedy reported " + aggregateId);
+            }
             return this;
         }
 
         public Builder successfulAggregateId(Object successfulAggregateId) {
-            report.successfulAggregatesIds.add(successfulAggregateId);
+            if(!report.successfulAggregatesIds.add(successfulAggregateId)) {
+                throw new IllegalArgumentException("Alraedy reported success for " + successfulAggregateId);
+            }
             return this;
         }
 
         public Builder failedAggregateId(Object failedAggregateId) {
-            report.failedAggregatesIds.add(failedAggregateId);
+            if(!report.failedAggregatesIds.add(failedAggregateId)) {
+                throw new IllegalArgumentException("Alraedy reported failure for " + failedAggregateId);
+            }
             return this;
         }
 
         public Builder aggregateIdToRetry(Object aggregateIdToRetry) {
-            report.aggregateIdsToRetry.add(aggregateIdToRetry);
+            if(!report.aggregateIdsToRetry.add(aggregateIdToRetry)) {
+                throw new IllegalArgumentException("Alraedy reported retry for " + aggregateIdToRetry);
+            }
             return this;
         }
 
         public Builder skippedAggregateId(Object skippedAggregateId) {
-            report.skippedAggregatesIds.add(skippedAggregateId);
+            if(!report.skippedAggregatesIds.add(skippedAggregateId)) {
+                throw new IllegalArgumentException("Alraedy reported skip for " + skippedAggregateId);
+            }
             return this;
         }
 
@@ -88,8 +93,16 @@ public class MessageConsumptionReport {
                 throw new IllegalStateException("Unknown aggregate IDs reported");
             }
 
-            if(report.allAggregatesIds.size() != (report.aggregateIdsToRetry.size() + report.failedAggregatesIds.size() + report.successfulAggregatesIds().size())) {
-                throw new IllegalStateException("Unconsistent sets of IDs");
+            int allAggregates = report.allAggregatesIds.size();
+            int aggregatesToRetry = report.aggregateIdsToRetry.size();
+            int failedAggregates = report.failedAggregatesIds.size();
+            int successfulAggregates = report.successfulAggregatesIds.size();
+            if(allAggregates != (aggregatesToRetry + failedAggregates + successfulAggregates)) {
+                throw new IllegalStateException(String.format("Unconsistent sets of IDs: %d <> %d + %d + %d",
+                        allAggregates,
+                        aggregatesToRetry,
+                        failedAggregates,
+                        successfulAggregates));
             }
 
             return report;

@@ -56,10 +56,8 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
         MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
         Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(aggregateRootEntityClass);
-        if(state.isFirstConsumption()) {
-            Message message = state.message().original();
-            createAggregate(state, reportBuilder, aggregateRootEntityClass, message);
-        }
+        Message message = state.message().original();
+        createAggregate(state, reportBuilder, aggregateRootEntityClass, message);
         return reportBuilder.build();
     }
 

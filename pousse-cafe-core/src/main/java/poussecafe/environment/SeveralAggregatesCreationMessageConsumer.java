@@ -55,9 +55,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
         Message message = state.message().original();
-        if(state.isFirstConsumption()) {
-            createAggregates(state, message, reportBuilder);
-        }
+        createAggregates(state, message, reportBuilder);
         return reportBuilder.build();
     }
 

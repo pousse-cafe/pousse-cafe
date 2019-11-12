@@ -73,15 +73,9 @@ public class RepositoryMessageListenerFactory {
 
     private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
         return state -> {
-            if(state.isFirstConsumption()) {
-                TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-                transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
-                return MessageConsumptionReport.success();
-            } else {
-                return new MessageConsumptionReport.Builder()
-                        .skipped(true)
-                        .build();
-            }
+            TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
+            transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
+            return MessageConsumptionReport.success();
         };
     }
 
