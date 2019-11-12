@@ -1,6 +1,7 @@
 package poussecafe.environment;
 
-public enum MessageListenerPriority {
+// WARNING: order of values is used to order message listeners
+public enum MessageListenerType {
     REPOSITORY,
     AGGREGATE,
     FACTORY,

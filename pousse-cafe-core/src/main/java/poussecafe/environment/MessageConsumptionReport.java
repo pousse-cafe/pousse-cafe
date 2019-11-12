@@ -1,6 +1,7 @@
 package poussecafe.environment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class MessageConsumptionReport {
             return this;
         }
 
-        public Builder listenerType(MessageListenerPriority listenerType) {
+        public Builder listenerType(MessageListenerType listenerType) {
             report.listenerType = listenerType;
             return this;
         }
@@ -48,35 +49,35 @@ public class MessageConsumptionReport {
 
         public Builder aggregateId(Object aggregateId) {
             if(!report.allAggregatesIds.add(aggregateId)) {
-                throw new IllegalArgumentException("Alraedy reported " + aggregateId);
+                throw new IllegalArgumentException("Already reported " + aggregateId);
             }
             return this;
         }
 
         public Builder successfulAggregateId(Object successfulAggregateId) {
             if(!report.successfulAggregatesIds.add(successfulAggregateId)) {
-                throw new IllegalArgumentException("Alraedy reported success for " + successfulAggregateId);
+                throw new IllegalArgumentException("Already reported success for " + successfulAggregateId);
             }
             return this;
         }
 
         public Builder failedAggregateId(Object failedAggregateId) {
             if(!report.failedAggregatesIds.add(failedAggregateId)) {
-                throw new IllegalArgumentException("Alraedy reported failure for " + failedAggregateId);
+                throw new IllegalArgumentException("Already reported failure for " + failedAggregateId);
             }
             return this;
         }
 
         public Builder aggregateIdToRetry(Object aggregateIdToRetry) {
             if(!report.aggregateIdsToRetry.add(aggregateIdToRetry)) {
-                throw new IllegalArgumentException("Alraedy reported retry for " + aggregateIdToRetry);
+                throw new IllegalArgumentException("Already reported retry for " + aggregateIdToRetry);
             }
             return this;
         }
 
         public Builder skippedAggregateId(Object skippedAggregateId) {
             if(!report.skippedAggregatesIds.add(skippedAggregateId)) {
-                throw new IllegalArgumentException("Alraedy reported skip for " + skippedAggregateId);
+                throw new IllegalArgumentException("Already reported skip for " + skippedAggregateId);
             }
             return this;
         }
@@ -156,9 +157,9 @@ public class MessageConsumptionReport {
         return toRetry;
     }
 
-    private MessageListenerPriority listenerType;
+    private MessageListenerType listenerType;
 
-    public MessageListenerPriority listenerType() {
+    public MessageListenerType listenerType() {
         return listenerType;
     }
 
@@ -173,31 +174,31 @@ public class MessageConsumptionReport {
     private Set<Object> allAggregatesIds = new HashSet<>();
 
     public Set<Object> allAggregatesIds() {
-        return allAggregatesIds;
+        return Collections.unmodifiableSet(allAggregatesIds);
     }
 
     private Set<Object> successfulAggregatesIds = new HashSet<>();
 
     public Set<Object> successfulAggregatesIds() {
-        return successfulAggregatesIds;
+        return Collections.unmodifiableSet(successfulAggregatesIds);
     }
 
     private Set<Object> failedAggregatesIds = new HashSet<>();
 
     public Set<Object> failedAggregatesIds() {
-        return failedAggregatesIds;
+        return Collections.unmodifiableSet(failedAggregatesIds);
     }
 
     private Set<Object> aggregateIdsToRetry = new HashSet<>();
 
     public Set<Object> aggregateIdsToRetry() {
-        return aggregateIdsToRetry;
+        return Collections.unmodifiableSet(aggregateIdsToRetry);
     }
 
     private Set<Object> skippedAggregatesIds = new HashSet<>();
 
     public Set<Object> skippedAggregatesIds() {
-        return skippedAggregatesIds;
+        return Collections.unmodifiableSet(skippedAggregatesIds);
     }
 
     public boolean mustRetry() {

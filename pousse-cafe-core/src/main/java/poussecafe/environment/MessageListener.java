@@ -40,7 +40,7 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder priority(MessageListenerPriority priority) {
+        public Builder priority(MessageListenerType priority) {
             listener.priority = priority;
             return this;
         }
@@ -104,9 +104,9 @@ public class MessageListener implements Comparable<MessageListener> {
         return runner;
     }
 
-    private MessageListenerPriority priority;
+    private MessageListenerType priority;
 
-    public MessageListenerPriority priority() {
+    public MessageListenerType priority() {
         return priority;
     }
 

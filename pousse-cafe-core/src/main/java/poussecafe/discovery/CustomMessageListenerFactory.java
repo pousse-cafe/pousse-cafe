@@ -6,7 +6,7 @@ import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListenerDefinition;
-import poussecafe.environment.MessageListenerPriority;
+import poussecafe.environment.MessageListenerType;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 
@@ -48,7 +48,7 @@ public class CustomMessageListenerFactory {
                 .id(listenerId)
                 .shortId(listenerShortId)
                 .messageClass(messageClass)
-                .priority(MessageListenerPriority.CUSTOM)
+                .priority(MessageListenerType.CUSTOM)
                 .consumer(buildMessageConsumer(target, method))
                 .collisionSpace(collisionSpace)
                 .build();

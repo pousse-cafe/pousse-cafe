@@ -62,7 +62,7 @@ public class RepositoryMessageListenerFactory {
             collisionSpace = Optional.of(repository.entityClass().getName());
         }
         return definition.messageListenerBuilder()
-                .priority(MessageListenerPriority.REPOSITORY)
+                .priority(MessageListenerType.REPOSITORY)
                 .consumer(buildRepositoryMessageConsumer(entityClass, invoker))
                 .collisionSpace(collisionSpace)
                 .aggregateRootClass(Optional.of(repository.entityClass()))

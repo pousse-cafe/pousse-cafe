@@ -44,7 +44,7 @@ public class MessageListenersPoolTest {
                     .id(label + "_" + i)
                     .shortId(label + "_" + i)
                     .messageClass(Message.class)
-                    .priority(MessageListenerPriority.CUSTOM)
+                    .priority(MessageListenerType.CUSTOM)
                     .collisionSpace(Optional.of(label))
                     .consumer(message -> MessageConsumptionReport.success())
                     .build();

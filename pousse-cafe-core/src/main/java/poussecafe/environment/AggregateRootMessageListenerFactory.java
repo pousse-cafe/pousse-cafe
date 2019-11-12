@@ -49,7 +49,7 @@ public class AggregateRootMessageListenerFactory {
             collisionSpace = Optional.of(aggregateRootClass.getName());
         }
         return definition.messageListenerBuilder()
-                .priority(MessageListenerPriority.AGGREGATE)
+                .priority(MessageListenerType.AGGREGATE)
                 .consumer(buildAggregateRootMessageConsumer(definition, runner))
                 .runner(Optional.of(runner))
                 .collisionSpace(collisionSpace)
