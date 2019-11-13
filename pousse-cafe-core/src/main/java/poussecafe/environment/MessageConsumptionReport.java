@@ -98,12 +98,14 @@ public class MessageConsumptionReport {
             int aggregatesToRetry = report.aggregateIdsToRetry.size();
             int failedAggregates = report.failedAggregatesIds.size();
             int successfulAggregates = report.successfulAggregatesIds.size();
-            if(allAggregates != (aggregatesToRetry + failedAggregates + successfulAggregates)) {
-                throw new IllegalStateException(String.format("Unconsistent sets of IDs: %d <> %d + %d + %d",
+            int skippedAggregates = report.skippedAggregatesIds.size();
+            if(allAggregates != (aggregatesToRetry + failedAggregates + successfulAggregates + skippedAggregates)) {
+                throw new IllegalStateException(String.format("Unconsistent sets of IDs: %d <> %d + %d + %d + %d",
                         allAggregates,
                         aggregatesToRetry,
                         failedAggregates,
-                        successfulAggregates));
+                        successfulAggregates,
+                        skippedAggregates));
             }
 
             return report;
