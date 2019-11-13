@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
@@ -117,24 +119,40 @@ public class MessageConsumptionReport {
                 runnable.run();
                 successfulAggregateId(id);
             } catch (SameOperationException e) {
+                logger.debug("Will skip", e);
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
+                logWillRetry(e);
                 aggregateIdToRetry(id);
             } catch (DuplicateKeyException e) {
                 if(state.isFirstConsumption()) {
+                    logWillRetry(e);
                     aggregateIdToRetry(id);
                 } else {
+                    logWillFail(e);
                     failure(e);
                     failedAggregateId(id);
                 }
             } catch (MethodInvokerException e) {
+                logWillFail(e.getCause());
                 failure(e.getCause());
                 failedAggregateId(id);
             } catch (Exception e) {
+                logWillFail(e);
                 failure(e);
                 failedAggregateId(id);
             }
         }
+
+        private void logWillRetry(Throwable e) {
+            logger.warn("Will retry", e);
+        }
+
+        private void logWillFail(Throwable e) {
+            logger.error("Will fail", e);
+        }
+
+        private Logger logger = LoggerFactory.getLogger(getClass());
     }
 
     private MessageConsumptionReport() {

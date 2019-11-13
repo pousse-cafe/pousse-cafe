@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApmTransactionLabels;
 import poussecafe.apm.ApmTransactionResults;
@@ -102,10 +104,12 @@ public class MessageListenerGroup {
             configureApmTransaction(executor, apmTransaction);
             return executor.messageConsumptionReport();
         } catch (FailFastException e) {
+            logger.error("Failing fast", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(e);
             throw e;
         } catch (Exception e) {
+            logger.error("Listener failed", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(e);
             return new MessageConsumptionReport.Builder()
@@ -115,6 +119,8 @@ public class MessageListenerGroup {
             apmTransaction.end();
         }
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
         MessageConsumptionReport report = executor.messageConsumptionReport();
