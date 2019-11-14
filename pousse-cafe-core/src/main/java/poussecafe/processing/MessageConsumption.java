@@ -121,7 +121,7 @@ public class MessageConsumption {
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
-        logger.warn("Retrying consumption of {}", message.original(), toRetryInitially.size());
+        logger.warn("Retrying consumption of {}", message.original());
         messageConsumptionState.isFirstConsumption(false);
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
