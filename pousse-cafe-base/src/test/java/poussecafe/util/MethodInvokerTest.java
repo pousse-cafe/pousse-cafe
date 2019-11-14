@@ -20,14 +20,14 @@ public class MethodInvokerTest {
         invoker = new MethodInvoker.Builder()
                 .method(getClass().getMethod("thrower"))
                 .target(this)
-                .rethrow(RuntimeException.class)
+                .rethrow(SampleRuntimeException.class)
                 .build();
     }
 
     private MethodInvoker invoker;
 
     public void thrower() {
-        throw new RuntimeException();
+        throw new SampleRuntimeException();
     }
 
     private void whenInvokingMethodThrowing() {
@@ -42,7 +42,7 @@ public class MethodInvokerTest {
 
     private void thenExceptionIsRethrown() {
         assertThat(exception, notNullValue());
-        assertThat(exception.getClass(), equalTo(RuntimeException.class));
+        assertThat(exception.getClass(), equalTo(SampleRuntimeException.class));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class MethodInvokerTest {
         invoker = new MethodInvoker.Builder()
                 .method(getClass().getMethod("notRethrownThrower"))
                 .target(this)
-                .rethrow(RuntimeException.class)
+                .rethrow(SampleRuntimeException.class)
                 .build();
     }
 
@@ -67,5 +67,6 @@ public class MethodInvokerTest {
     private void thenExceptionIsNotRethrown() {
         assertThat(exception, notNullValue());
         assertThat(exception.getClass(), equalTo(MethodInvokerException.class));
+        assertThat(exception.getCause().getClass(), equalTo(PousseCafeException.class));
     }
 }
