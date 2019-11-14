@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -106,18 +106,19 @@ public class MessageConsumption {
     private List<MessageListenerGroup> consumeMessageOrRetryGroups(List<MessageListenerGroup> groups) {
         List<MessageListenerGroup> toRetry = new ArrayList<>();
         for (MessageListenerGroup group : groups) {
-            if(consumeMessageOrRetry(group)) {
+            boolean mustRetry = consumeMessage(group);
+            if(mustRetry) {
                 toRetry.add(group);
             }
         }
         return toRetry;
     }
 
-    private boolean consumeMessageOrRetry(MessageListenerGroup group) {
+    private boolean consumeMessage(MessageListenerGroup group) {
         MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState();
-        List<MessageConsumptionReport> reports = group.consumeMessageOrRetry(consumptionState);
+        List<MessageListenerConsumptionReport> reports = group.consumeMessageOrRetry(consumptionState);
         messageConsumptionState.update(reports);
-        return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
+        return reports.stream().anyMatch(MessageListenerConsumptionReport::mustRetry);
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {

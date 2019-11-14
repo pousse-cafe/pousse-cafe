@@ -2,7 +2,7 @@ package poussecafe.processing;
 
 import java.util.List;
 import java.util.Objects;
-import poussecafe.environment.MessageConsumptionReport;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
@@ -28,7 +28,7 @@ public class MessageConsumptionState {
             .build();
     }
 
-    public void update(List<MessageConsumptionReport> reports) {
+    public void update(List<MessageListenerConsumptionReport> reports) {
         // Do nothing for the moment
     }
 }

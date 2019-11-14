@@ -1,9 +1,9 @@
 package poussecafe.environment;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -13,20 +13,15 @@ import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.util.MethodInvokerException;
 
-public class MessageConsumptionReport {
+public class MessageListenerConsumptionReport {
 
-    public static MessageConsumptionReport success() {
-        return new MessageConsumptionReport.Builder().build();
+    public static MessageListenerConsumptionReport success() {
+        return new MessageListenerConsumptionReport.Builder().build();
     }
 
     public static class Builder {
 
-        private MessageConsumptionReport report = new MessageConsumptionReport();
-
-        public Builder failure(Throwable failure) {
-            report.failures.add(failure);
-            return this;
-        }
+        private MessageListenerConsumptionReport report = new MessageListenerConsumptionReport();
 
         public Builder skipped(boolean skipped) {
             report.skipped = skipped;
@@ -35,6 +30,11 @@ public class MessageConsumptionReport {
 
         public Builder toRetry(boolean toRetry) {
             report.toRetry = toRetry;
+            return this;
+        }
+
+        public Builder failure(Throwable failure) {
+            report.failure = failure;
             return this;
         }
 
@@ -63,9 +63,9 @@ public class MessageConsumptionReport {
             return this;
         }
 
-        public Builder failedAggregateId(Object failedAggregateId) {
-            if(!report.failedAggregatesIds.add(failedAggregateId)) {
-                throw new IllegalArgumentException("Already reported failure for " + failedAggregateId);
+        public Builder failure(Object aggregateId, Throwable failure) {
+            if(report.failures.put(aggregateId, failure) != null) {
+                throw new IllegalArgumentException("Already reported failure for " + aggregateId);
             }
             return this;
         }
@@ -84,21 +84,25 @@ public class MessageConsumptionReport {
             return this;
         }
 
-        public MessageConsumptionReport build() {
+        public MessageListenerConsumptionReport build() {
             if(!report.allAggregatesIds.isEmpty() && report.aggregateType.isEmpty()) {
                 throw new IllegalStateException("Aggregate IDs provided but no type given");
             }
 
+            if(report.aggregateType.isPresent() && (report.toRetry || report.skipped || report.failure != null)) {
+                throw new IllegalStateException("Cannot use unidentified flags when aggregate type provided");
+            }
+
             if(!report.allAggregatesIds.containsAll(report.skippedAggregatesIds)
                     || !report.allAggregatesIds.containsAll(report.aggregateIdsToRetry)
-                    || !report.allAggregatesIds.containsAll(report.failedAggregatesIds)
+                    || !report.allAggregatesIds.containsAll(report.failures.keySet())
                     || !report.allAggregatesIds.containsAll(report.successfulAggregatesIds)) {
                 throw new IllegalStateException("Unknown aggregate IDs reported");
             }
 
             int allAggregates = report.allAggregatesIds.size();
             int aggregatesToRetry = report.aggregateIdsToRetry.size();
-            int failedAggregates = report.failedAggregatesIds.size();
+            int failedAggregates = report.failures.size();
             int successfulAggregates = report.successfulAggregatesIds.size();
             int skippedAggregates = report.skippedAggregatesIds.size();
             if(allAggregates != (aggregatesToRetry + failedAggregates + successfulAggregates + skippedAggregates)) {
@@ -119,7 +123,7 @@ public class MessageConsumptionReport {
                 runnable.run();
                 successfulAggregateId(id);
             } catch (SameOperationException e) {
-                logger.debug("Will skip", e);
+                logger.debug("Must skip", e);
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
                 logWillRetry(e);
@@ -130,39 +134,36 @@ public class MessageConsumptionReport {
                     aggregateIdToRetry(id);
                 } else {
                     logWillFail(e);
-                    failure(e);
-                    failedAggregateId(id);
+                    failure(id, e);
                 }
             } catch (MethodInvokerException e) {
                 logWillFail(e.getCause());
-                failure(e.getCause());
-                failedAggregateId(id);
+                failure(id, e);
             } catch (Exception e) {
                 logWillFail(e);
-                failure(e);
-                failedAggregateId(id);
+                failure(id, e);
             }
         }
 
         private void logWillRetry(Throwable e) {
-            logger.warn("Will retry", e);
+            logger.warn("Must retry", e);
         }
 
         private void logWillFail(Throwable e) {
-            logger.error("Will fail", e);
+            logger.error("Must fail", e);
         }
 
         private Logger logger = LoggerFactory.getLogger(getClass());
     }
 
-    private MessageConsumptionReport() {
+    private MessageListenerConsumptionReport() {
 
     }
 
-    private List<Throwable> failures = new ArrayList<>();
+    private Map<Object, Throwable> failures = new HashMap<>();
 
-    public List<Throwable> failures() {
-        return failures;
+    public Map<Object, Throwable> failures() {
+        return Collections.unmodifiableMap(failures);
     }
 
     private boolean skipped;
@@ -175,6 +176,12 @@ public class MessageConsumptionReport {
 
     public boolean toRetry() {
         return toRetry;
+    }
+
+    private Throwable failure;
+
+    public Throwable failure() {
+        return failure;
     }
 
     private MessageListenerType listenerType;
@@ -203,12 +210,6 @@ public class MessageConsumptionReport {
         return Collections.unmodifiableSet(successfulAggregatesIds);
     }
 
-    private Set<Object> failedAggregatesIds = new HashSet<>();
-
-    public Set<Object> failedAggregatesIds() {
-        return Collections.unmodifiableSet(failedAggregatesIds);
-    }
-
     private Set<Object> aggregateIdsToRetry = new HashSet<>();
 
     public Set<Object> aggregateIdsToRetry() {
@@ -226,7 +227,7 @@ public class MessageConsumptionReport {
     }
 
     public boolean isSuccess() {
-        return failures.isEmpty() && successfulAggregatesIds.size() == allAggregatesIds.size();
+        return failure == null && failures.isEmpty();
     }
 
     public boolean isSkipped() {
@@ -234,6 +235,6 @@ public class MessageConsumptionReport {
     }
 
     public boolean isFailed() {
-        return (!skipped && !toRetry && !failures.isEmpty()) || !failedAggregatesIds.isEmpty();
+        return failure != null || !failures.isEmpty();
     }
 }

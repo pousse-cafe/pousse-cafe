@@ -46,7 +46,7 @@ public class MessageListenersPoolTest {
                     .messageClass(Message.class)
                     .priority(MessageListenerType.CUSTOM)
                     .collisionSpace(Optional.of(label))
-                    .consumer(message -> MessageConsumptionReport.success())
+                    .consumer(message -> MessageListenerConsumptionReport.success())
                     .build();
             listeners.add(listener);
         }

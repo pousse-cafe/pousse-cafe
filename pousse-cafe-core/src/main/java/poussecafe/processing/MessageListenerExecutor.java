@@ -3,8 +3,8 @@ package poussecafe.processing;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.FailFastException;
@@ -94,8 +94,7 @@ class MessageListenerExecutor {
 
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
-        messageConsumptionReport = new MessageConsumptionReport.Builder()
-                .failure(e)
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
                 .skipped(true)
                 .build();
     }
@@ -115,8 +114,7 @@ class MessageListenerExecutor {
 
     private void retry(Throwable e) {
         logger.warn("       Retrying following consumption error", e);
-        messageConsumptionReport = new MessageConsumptionReport.Builder()
-                .failure(e)
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
                 .toRetry(true)
                 .build();
     }
@@ -124,7 +122,7 @@ class MessageListenerExecutor {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void fail(Throwable e) {
-        messageConsumptionReport = new MessageConsumptionReport.Builder()
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
                 .failure(e)
                 .build();
 
@@ -139,9 +137,9 @@ class MessageListenerExecutor {
         }
     }
 
-    private MessageConsumptionReport messageConsumptionReport;
+    private MessageListenerConsumptionReport messageConsumptionReport;
 
-    public MessageConsumptionReport messageConsumptionReport() {
+    public MessageListenerConsumptionReport messageConsumptionReport() {
         return messageConsumptionReport;
     }
 }

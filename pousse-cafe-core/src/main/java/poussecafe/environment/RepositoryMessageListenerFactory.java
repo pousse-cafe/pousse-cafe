@@ -75,7 +75,7 @@ public class RepositoryMessageListenerFactory {
         return state -> {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
             transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
-            return MessageConsumptionReport.success();
+            return MessageListenerConsumptionReport.success();
         };
     }
 

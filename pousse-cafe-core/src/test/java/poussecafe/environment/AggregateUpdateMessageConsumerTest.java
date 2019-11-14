@@ -99,7 +99,7 @@ public class AggregateUpdateMessageConsumerTest {
         report = consumer.consume(state);
     }
 
-    private MessageConsumptionReport report;
+    private MessageListenerConsumptionReport report;
 
     private void thenReportSkip() {
         assertTrue(report.isSkipped());

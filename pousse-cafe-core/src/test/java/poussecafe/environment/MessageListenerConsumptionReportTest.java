@@ -6,7 +6,7 @@ import poussecafe.domain.SimpleAggregateId;
 
 import static org.junit.Assert.assertTrue;
 
-public class MessageConsumptionReportTest {
+public class MessageListenerConsumptionReportTest {
 
     @Test
     public void reportWithSkippedIds() {
@@ -17,12 +17,12 @@ public class MessageConsumptionReportTest {
 
     private void givenAggregateUpdateReport() {
         aggregateId = new SimpleAggregateId("aggregateId");
-        reportBuilder = new MessageConsumptionReport.Builder()
+        reportBuilder = new MessageListenerConsumptionReport.Builder()
                 .aggregateType(SimpleAggregate.class)
                 .aggregateId(aggregateId);
     }
 
-    private MessageConsumptionReport.Builder reportBuilder;
+    private MessageListenerConsumptionReport.Builder reportBuilder;
 
     private SimpleAggregateId aggregateId;
 

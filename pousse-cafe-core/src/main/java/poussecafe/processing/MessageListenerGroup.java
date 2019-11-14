@@ -11,8 +11,8 @@ import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApmTransactionLabels;
 import poussecafe.apm.ApmTransactionResults;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.environment.MessageConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
@@ -78,8 +78,8 @@ public class MessageListenerGroup {
 
     private List<MessageListener> listeners;
 
-    public List<MessageConsumptionReport> consumeMessageOrRetry(MessageListenerGroupConsumptionState consumptionState) {
-        List<MessageConsumptionReport> reports = new ArrayList<>();
+    public List<MessageListenerConsumptionReport> consumeMessageOrRetry(MessageListenerGroupConsumptionState consumptionState) {
+        List<MessageListenerConsumptionReport> reports = new ArrayList<>();
         for(MessageListener listener : listeners) {
             MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
                     .consumptionId(consumptionId)
@@ -97,7 +97,7 @@ public class MessageListenerGroup {
 
     private boolean failFast;
 
-    private MessageConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
+    private MessageListenerConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
         String transactionName = executor.listener().shortId();
         ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
         try {
@@ -112,7 +112,7 @@ public class MessageListenerGroup {
             logger.error("Listener failed", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(e);
-            return new MessageConsumptionReport.Builder()
+            return new MessageListenerConsumptionReport.Builder()
                     .failure(e)
                     .build();
         } finally {
@@ -123,12 +123,14 @@ public class MessageListenerGroup {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
-        MessageConsumptionReport report = executor.messageConsumptionReport();
+        MessageListenerConsumptionReport report = executor.messageConsumptionReport();
         if(report.isSuccess()) {
             apmTransaction.setResult(ApmTransactionResults.SUCCESS);
         } else if(report.isFailed()) {
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(report.failures().get(0));
+            if(report.failure() != null) {
+                apmTransaction.captureException(report.failure());
+            }
         } else if(report.mustRetry()) {
             apmTransaction.setResult(ApmTransactionResults.SKIP);
             apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, "retry_later");

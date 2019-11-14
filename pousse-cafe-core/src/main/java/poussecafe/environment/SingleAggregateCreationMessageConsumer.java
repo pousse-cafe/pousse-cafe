@@ -52,8 +52,8 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
     }
 
     @Override
-    public MessageConsumptionReport consume(MessageListenerGroupConsumptionState state) {
-        MessageConsumptionReport.Builder reportBuilder = new MessageConsumptionReport.Builder();
+    public MessageListenerConsumptionReport consume(MessageListenerGroupConsumptionState state) {
+        MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder();
         Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(aggregateRootEntityClass);
         Message message = state.message().original();
@@ -61,7 +61,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
         return reportBuilder.build();
     }
 
-    private void createAggregate(MessageListenerGroupConsumptionState state, MessageConsumptionReport.Builder reportBuilder, Class aggregateRootEntityClass, Message message) {
+    private void createAggregate(MessageListenerGroupConsumptionState state, MessageListenerConsumptionReport.Builder reportBuilder, Class aggregateRootEntityClass, Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(invoker.method().getName());
         try {
@@ -71,6 +71,9 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(aggregateRootEntityClass);
                 reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
+        } catch(Exception e) {
+            span.captureException(e);
+            throw e;
         } finally {
             span.end();
         }

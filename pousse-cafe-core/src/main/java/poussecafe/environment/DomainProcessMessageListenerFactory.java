@@ -31,7 +31,7 @@ public class DomainProcessMessageListenerFactory {
     private MessageConsumer buildConsumer(MethodInvoker invoker) {
         return message -> {
             invoker.invoke(message);
-            return MessageConsumptionReport.success();
+            return MessageListenerConsumptionReport.success();
         };
     }
 }

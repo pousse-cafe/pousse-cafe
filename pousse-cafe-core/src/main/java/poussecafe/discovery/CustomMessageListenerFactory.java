@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.environment.MessageConsumer;
-import poussecafe.environment.MessageConsumptionReport;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.environment.MessageListenerType;
 import poussecafe.exception.PousseCafeException;
@@ -60,7 +60,7 @@ public class CustomMessageListenerFactory {
         return state -> {
             try {
                 method.invoke(target, state.message().original());
-                return MessageConsumptionReport.success();
+                return MessageListenerConsumptionReport.success();
             } catch (Exception e) {
                 throw new PousseCafeException("Unable to invoke declared listener", e);
             }
