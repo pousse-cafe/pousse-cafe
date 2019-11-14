@@ -105,7 +105,6 @@ public class MessageListenerGroup {
             configureApmTransaction(executor, apmTransaction);
             return executor.messageConsumptionReport();
         } catch (FailFastException e) {
-            logger.error("Failing fast", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             apmTransaction.captureException(e);
             throw e;

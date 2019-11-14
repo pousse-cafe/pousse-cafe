@@ -121,11 +121,12 @@ public class MessageConsumption {
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
+        logger.warn("Retrying consumption of {}", message.original(), toRetryInitially.size());
         messageConsumptionState.isFirstConsumption(false);
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
-            logger.warn("Retrying consumption of {} by {} groups", message.original(), toRetry.size());
+            logger.debug("Retrying consumption of {} by {} groups", message.original(), toRetry.size());
             toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
         }
