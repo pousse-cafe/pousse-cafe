@@ -92,6 +92,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         span.setName(invoker.method().getName());
         try {
             invoker.invoke(message);
+        } catch(SameOperationException e) {
+            throw e;
         } catch(Exception e) {
             span.captureException(e);
             throw e;

@@ -5,6 +5,7 @@ import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
+import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
@@ -71,6 +72,8 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
             for(AggregateRoot aggregate : aggregates) {
                 reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
+        } catch(SameOperationException e) {
+            throw e;
         } catch(Exception e) {
             span.captureException(e);
             throw e;
