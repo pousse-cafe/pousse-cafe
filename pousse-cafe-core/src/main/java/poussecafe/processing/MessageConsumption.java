@@ -2,12 +2,8 @@ package poussecafe.processing;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageConsumptionReport;
@@ -15,8 +11,6 @@ import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
-
-import static java.util.Arrays.asList;
 
 public class MessageConsumption {
 
@@ -83,10 +77,10 @@ public class MessageConsumption {
 
     public void execute() {
         logger.debug("Handling received message {}", message.original());
-        List<MessageListenerGroup> listeners = buildMessageListenerGroups();
-        if(!listeners.isEmpty()) {
-            logger.debug("  Found {} listeners", listeners.size());
-            List<MessageListenerGroup> toRetryInitially = consumeMessageOrRetryListeners(listeners);
+        List<MessageListenerGroup> groups = buildMessageListenerGroups();
+        if(!groups.isEmpty()) {
+            logger.debug("  Found {} groups", groups.size());
+            List<MessageListenerGroup> toRetryInitially = consumeMessageOrRetryGroups(groups);
             if(!toRetryInitially.isEmpty()) {
                 retryConsumption(toRetryInitially);
             }
@@ -94,61 +88,36 @@ public class MessageConsumption {
         logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
-    @SuppressWarnings("rawtypes")
     private List<MessageListenerGroup> buildMessageListenerGroups() {
         Collection<MessageListener> listeners = listenersPartition.partitionListenersSet()
                 .messageListenersOf(message.original().getClass());
-        List<MessageListener> customListeners = new ArrayList<>();
-        Map<Class, List<MessageListener>> listenersPerAggregateRootClass = new HashMap<>();
-        for(MessageListener listener : listeners) {
-            List<MessageListener> groupList;
-            if(listener.aggregateRootClass().isPresent()) {
-                groupList = listenersPerAggregateRootClass.computeIfAbsent(listener.aggregateRootClass().orElseThrow(),
-                        key -> new ArrayList<>());
-            } else {
-                groupList = customListeners;
-            }
-            groupList.add(listener);
-        }
-
-        List<MessageListenerGroup> groups = new ArrayList<>();
-        for(Entry<Class, List<MessageListener>> entry : listenersPerAggregateRootClass.entrySet()) {
-            MessageListenerGroup group = new MessageListenerGroup.Builder()
-                    .listeners(entry.getValue())
-                    .aggregateRootClass(Optional.of(entry.getKey()))
-                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                    .consumptionId(consumptionId)
-                    .message(message)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .failFast(failFast)
-                    .build();
-            groups.add(group);
-        }
-        for(MessageListener customListener : customListeners) {
-            MessageListenerGroup group = new MessageListenerGroup.Builder()
-                    .listeners(asList(customListener))
-                    .aggregateRootClass(Optional.empty())
-                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                    .consumptionId(consumptionId)
-                    .message(message)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .failFast(failFast)
-                    .build();
-            groups.add(group);
-        }
-        return groups;
+        return new MessageListenersGroupsFactory.Builder()
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .consumptionId(consumptionId)
+                .failFast(failFast)
+                .message(message)
+                .messageConsumptionHandler(messageConsumptionHandler)
+                .build()
+                .buildMessageListenerGroups(listeners);
     }
 
     private ListenersSetPartition listenersPartition;
 
-    private List<MessageListenerGroup> consumeMessageOrRetryListeners(List<MessageListenerGroup> listeners) {
+    private List<MessageListenerGroup> consumeMessageOrRetryGroups(List<MessageListenerGroup> groups) {
         List<MessageListenerGroup> toRetry = new ArrayList<>();
-        for (MessageListenerGroup listener : listeners) {
-            if(consumeMessageOrRetry(listener)) {
-                toRetry.add(listener);
+        for (MessageListenerGroup group : groups) {
+            if(consumeMessageOrRetry(group)) {
+                toRetry.add(group);
             }
         }
         return toRetry;
+    }
+
+    private boolean consumeMessageOrRetry(MessageListenerGroup group) {
+        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState();
+        List<MessageConsumptionReport> reports = group.consumeMessageOrRetry(consumptionState);
+        messageConsumptionState.update(reports);
+        return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
@@ -156,22 +125,19 @@ public class MessageConsumption {
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
-            logger.debug("    Try #{} for {} listeners", retry, toRetry.size());
-            toRetry = consumeMessageOrRetryListeners(toRetry);
+            logger.debug("    Try #{} for {} groups", retry, toRetry.size());
+            toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
+        }
+        if(retry < MAX_RETRIES) {
+            logger.error("Reached max. # of retries, giving up handling of {} with {} remaining groups", message.original(), toRetry.size());
+            logger.error("Unhandled message: {}", message.marshaled());
         }
     }
 
     private static final int MAX_RETRIES = 10;
 
     protected Logger logger;
-
-    private boolean consumeMessageOrRetry(MessageListenerGroup listener) {
-        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState();
-        List<MessageConsumptionReport> reports = listener.consumeMessageOrRetry(consumptionState);
-        messageConsumptionState.update(reports);
-        return reports.stream().anyMatch(MessageConsumptionReport::mustRetry);
-    }
 
     private MessageConsumptionState messageConsumptionState;
 

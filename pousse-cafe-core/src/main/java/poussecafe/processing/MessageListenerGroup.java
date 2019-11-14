@@ -1,6 +1,7 @@
 package poussecafe.processing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -149,4 +150,8 @@ public class MessageListenerGroup {
 
     @SuppressWarnings("rawtypes")
     private Optional<Class> aggregateRootClass = Optional.empty();
+
+    public List<MessageListener> listeners() {
+        return Collections.unmodifiableList(listeners);
+    }
 }
