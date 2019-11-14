@@ -129,8 +129,8 @@ public class MessageConsumption {
             toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
         }
-        if(retry < MAX_RETRIES) {
-            logger.error("Reached max. # of retries, giving up handling of {} with {} remaining groups", message.original(), toRetry.size());
+        if(!toRetry.isEmpty()) {
+            logger.error("Reached max. # of retries, giving up handling of {} with {} remaining groups", message.original().getClass().getName(), toRetry.size());
             logger.error("Unhandled message: {}", message.marshaled());
         }
     }
