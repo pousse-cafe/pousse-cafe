@@ -125,7 +125,7 @@ public class MessageConsumption {
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
-            logger.debug("    Try #{} for {} groups", retry, toRetry.size());
+            logger.warn("Retrying consumption of {} by {} groups", message.original(), toRetry.size());
             toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
         }
