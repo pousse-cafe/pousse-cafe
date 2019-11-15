@@ -94,7 +94,7 @@ class MessageListenerExecutor {
 
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
-        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder(listener.shortId())
                 .skipped(true)
                 .build();
     }
@@ -114,7 +114,7 @@ class MessageListenerExecutor {
 
     private void retry(Throwable e) {
         logger.warn("       Retrying following consumption error", e);
-        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder(listener.shortId())
                 .toRetry(true)
                 .build();
     }
@@ -122,7 +122,7 @@ class MessageListenerExecutor {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private void fail(Throwable e) {
-        messageConsumptionReport = new MessageListenerConsumptionReport.Builder()
+        messageConsumptionReport = new MessageListenerConsumptionReport.Builder(listener.shortId())
                 .failure(e)
                 .build();
 

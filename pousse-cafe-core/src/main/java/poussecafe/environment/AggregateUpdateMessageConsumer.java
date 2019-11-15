@@ -12,6 +12,7 @@ import poussecafe.messaging.Message;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
+import poussecafe.util.MethodInvokerException;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class AggregateUpdateMessageConsumer implements MessageConsumer {
@@ -19,6 +20,11 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
     public static class Builder {
 
         private AggregateUpdateMessageConsumer consumer = new AggregateUpdateMessageConsumer();
+
+        public Builder listenerId(String listenerId) {
+            consumer.listenerId = listenerId;
+            return this;
+        }
 
         public Builder method(Method method) {
             consumer.method = method;
@@ -46,6 +52,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         }
 
         public AggregateUpdateMessageConsumer build() {
+            Objects.requireNonNull(consumer.listenerId);
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
             Objects.requireNonNull(consumer.method);
@@ -61,7 +68,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
     @Override
     public MessageListenerConsumptionReport consume(MessageListenerGroupConsumptionState state) {
         Message message = state.message().original();
-        MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder();
+        MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder(listenerId);
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
         Set targetAggregatesIds = runner.targetAggregatesIds(message);
@@ -71,6 +78,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         }
         return reportBuilder.build();
     }
+
+    private String listenerId;
 
     private void updateAggregate(Message message, Repository repository, Class entityClass, Object id) {
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
@@ -93,6 +102,9 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         try {
             invoker.invoke(message);
         } catch(SameOperationException e) {
+            throw e;
+        } catch(MethodInvokerException e) {
+            span.captureException(e.getCause());
             throw e;
         } catch(Exception e) {
             span.captureException(e);

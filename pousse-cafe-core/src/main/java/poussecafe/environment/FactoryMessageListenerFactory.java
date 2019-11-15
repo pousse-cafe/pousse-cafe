@@ -69,17 +69,18 @@ public class FactoryMessageListenerFactory {
                 .build();
         Class<?> returnType = method.getReturnType();
         if(entityClass.isAssignableFrom(returnType) || returnType.isAssignableFrom(Optional.class)) {
-            return addSingleCreatedAggregate(invoker, aggregateServices);
+            return addSingleCreatedAggregate(invoker, aggregateServices, definition.shortId());
         } else if(Iterable.class.isAssignableFrom(returnType)) {
-            return addIterableCreatedAggregates(invoker, aggregateServices);
+            return addIterableCreatedAggregates(invoker, aggregateServices, definition.shortId());
         } else {
             throw new PousseCafeException("Method " + method.getName() + " of " + factory.getClass().getName() + " is not a valid factory message listener");
         }
     }
 
     private MessageConsumer addSingleCreatedAggregate(MethodInvoker invoker,
-            AggregateServices aggregateServices) {
+            AggregateServices aggregateServices, String listenerId) {
         return new SingleAggregateCreationMessageConsumer.Builder()
+                .listenerId(listenerId)
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)
@@ -92,8 +93,9 @@ public class FactoryMessageListenerFactory {
     private TransactionRunnerLocator transactionRunnerLocator;
 
     private MessageConsumer addIterableCreatedAggregates(MethodInvoker invoker,
-            AggregateServices aggregateServices) {
+            AggregateServices aggregateServices, String listenerId) {
         return new SeveralAggregatesCreationMessageConsumer.Builder()
+                .listenerId(listenerId)
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)

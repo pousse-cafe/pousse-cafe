@@ -17,7 +17,7 @@ public class MessageListenerConsumptionReportTest {
 
     private void givenAggregateUpdateReport() {
         aggregateId = new SimpleAggregateId("aggregateId");
-        reportBuilder = new MessageListenerConsumptionReport.Builder()
+        reportBuilder = new MessageListenerConsumptionReport.Builder("listenerId")
                 .aggregateType(SimpleAggregate.class)
                 .aggregateId(aggregateId);
     }

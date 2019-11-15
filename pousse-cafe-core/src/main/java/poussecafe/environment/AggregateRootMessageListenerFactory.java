@@ -64,6 +64,7 @@ public class AggregateRootMessageListenerFactory {
         Class entityClass = method.getDeclaringClass();
         AggregateServices aggregateServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
         return new AggregateUpdateMessageConsumer.Builder()
+                .listenerId(definition.shortId())
                 .aggregateServices(aggregateServices)
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .method(method)

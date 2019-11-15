@@ -1,8 +1,8 @@
 package poussecafe.processing;
 
 import org.junit.Test;
-import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListener;
+import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerType;
 import poussecafe.environment.MessageListenersPool;
 import poussecafe.messaging.Message;
@@ -24,7 +24,7 @@ public class ListenersSetTest {
             MessageListener listener = new MessageListener.Builder()
                     .id(Integer.toString(i))
                     .shortId(Integer.toString(i))
-                    .consumer(message -> MessageListenerConsumptionReport.success())
+                    .consumer(message -> MessageListenerConsumptionReport.success("listenerId"))
                     .messageClass(Message.class)
                     .priority(MessageListenerType.CUSTOM)
                     .build();

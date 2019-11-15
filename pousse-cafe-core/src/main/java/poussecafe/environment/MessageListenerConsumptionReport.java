@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -15,13 +16,19 @@ import poussecafe.util.MethodInvokerException;
 
 public class MessageListenerConsumptionReport {
 
-    public static MessageListenerConsumptionReport success() {
-        return new MessageListenerConsumptionReport.Builder().build();
+    public static MessageListenerConsumptionReport success(String listenerId) {
+        return new MessageListenerConsumptionReport.Builder(listenerId).build();
     }
 
     public static class Builder {
 
-        private MessageListenerConsumptionReport report = new MessageListenerConsumptionReport();
+        public Builder(String listenerId) {
+            report = new MessageListenerConsumptionReport();
+            Objects.requireNonNull(listenerId);
+            report.listenerId = listenerId;
+        }
+
+        private MessageListenerConsumptionReport report;
 
         public Builder skipped(boolean skipped) {
             report.skipped = skipped;
@@ -123,7 +130,7 @@ public class MessageListenerConsumptionReport {
                 runnable.run();
                 successfulAggregateId(id);
             } catch (SameOperationException e) {
-                logger.debug("Must skip", e);
+                logger.debug("Must skip {}", report.listenerId, e);
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
                 logWillRetry(e);
@@ -138,7 +145,7 @@ public class MessageListenerConsumptionReport {
                 }
             } catch (MethodInvokerException e) {
                 logWillFail(e.getCause());
-                failure(id, e);
+                failure(id, e.getCause());
             } catch (Exception e) {
                 logWillFail(e);
                 failure(id, e);
@@ -146,11 +153,11 @@ public class MessageListenerConsumptionReport {
         }
 
         private void logWillRetry(Throwable e) {
-            logger.warn("Must retry", e);
+            logger.info("Must retry {}", report.listenerId, e);
         }
 
         private void logWillFail(Throwable e) {
-            logger.error("Must fail", e);
+            logger.error("{} failed", report.listenerId, e);
         }
 
         private Logger logger = LoggerFactory.getLogger(getClass());
@@ -158,6 +165,12 @@ public class MessageListenerConsumptionReport {
 
     private MessageListenerConsumptionReport() {
 
+    }
+
+    private String listenerId;
+
+    public String listenerId() {
+        return listenerId;
     }
 
     private Map<Object, Throwable> failures = new HashMap<>();

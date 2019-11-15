@@ -49,18 +49,18 @@ public class CustomMessageListenerFactory {
                 .shortId(listenerShortId)
                 .messageClass(messageClass)
                 .priority(MessageListenerType.CUSTOM)
-                .consumer(buildMessageConsumer(target, method))
+                .consumer(buildMessageConsumer(target, method, listenerShortId))
                 .collisionSpace(collisionSpace)
                 .build();
     }
 
     protected MessageConsumer buildMessageConsumer(Object target,
-            Method method) {
+            Method method, String listenerShortId) {
         MessageListenerDefinition.checkMethodIsListener(method);
         return state -> {
             try {
                 method.invoke(target, state.message().original());
-                return MessageListenerConsumptionReport.success();
+                return MessageListenerConsumptionReport.success(listenerShortId);
             } catch (Exception e) {
                 throw new PousseCafeException("Unable to invoke declared listener", e);
             }

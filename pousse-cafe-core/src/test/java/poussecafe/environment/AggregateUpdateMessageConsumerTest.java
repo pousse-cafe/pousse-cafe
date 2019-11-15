@@ -67,6 +67,7 @@ public class AggregateUpdateMessageConsumerTest {
 
         try {
             consumer = new AggregateUpdateMessageConsumer.Builder()
+                    .listenerId("listenerId")
                     .aggregateServices(aggregateServices)
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .method(aggregateRoot.getClass().getDeclaredMethod(methodName, Message.class))

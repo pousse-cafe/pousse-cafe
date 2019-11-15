@@ -11,6 +11,7 @@ import poussecafe.messaging.Message;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
+import poussecafe.util.MethodInvokerException;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
@@ -18,6 +19,11 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
     public static class Builder {
 
         private SingleAggregateCreationMessageConsumer consumer = new SingleAggregateCreationMessageConsumer();
+
+        public Builder listenerId(String listenerId) {
+            consumer.listenerId = listenerId;
+            return this;
+        }
 
         public Builder invoker(MethodInvoker invoker) {
             consumer.invoker = invoker;
@@ -40,6 +46,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
         }
 
         public SingleAggregateCreationMessageConsumer build() {
+            Objects.requireNonNull(consumer.listenerId);
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
             Objects.requireNonNull(consumer.invoker);
@@ -54,13 +61,15 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
 
     @Override
     public MessageListenerConsumptionReport consume(MessageListenerGroupConsumptionState state) {
-        MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder();
+        MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder(listenerId);
         Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(aggregateRootEntityClass);
         Message message = state.message().original();
         createAggregate(state, reportBuilder, aggregateRootEntityClass, message);
         return reportBuilder.build();
     }
+
+    private String listenerId;
 
     private void createAggregate(MessageListenerGroupConsumptionState state, MessageListenerConsumptionReport.Builder reportBuilder, Class aggregateRootEntityClass, Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
@@ -73,6 +82,9 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
                 reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         } catch(SameOperationException e) {
+            throw e;
+        } catch(MethodInvokerException e) {
+            span.captureException(e.getCause());
             throw e;
         } catch(Exception e) {
             span.captureException(e);

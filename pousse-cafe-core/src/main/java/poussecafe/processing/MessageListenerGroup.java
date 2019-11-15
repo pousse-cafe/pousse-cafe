@@ -17,6 +17,7 @@ import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
+import poussecafe.util.MethodInvokerException;
 
 public class MessageListenerGroup {
 
@@ -111,12 +112,20 @@ public class MessageListenerGroup {
         } catch (Exception e) {
             logger.error("Listener failed", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(e);
-            return new MessageListenerConsumptionReport.Builder()
+            captureException(apmTransaction, e);
+            return new MessageListenerConsumptionReport.Builder(executor.listener().shortId())
                     .failure(e)
                     .build();
         } finally {
             apmTransaction.end();
+        }
+    }
+
+    private void captureException(ApmTransaction apmTransaction, Throwable e) {
+        if(e instanceof MethodInvokerException) {
+            apmTransaction.captureException(e.getCause());
+        } else {
+            apmTransaction.captureException(e);
         }
     }
 
@@ -129,7 +138,7 @@ public class MessageListenerGroup {
         } else if(report.isFailed()) {
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             if(report.failure() != null) {
-                apmTransaction.captureException(report.failure());
+                captureException(apmTransaction, report.failure());
             }
         } else if(report.mustRetry()) {
             apmTransaction.setResult(ApmTransactionResults.SKIP);

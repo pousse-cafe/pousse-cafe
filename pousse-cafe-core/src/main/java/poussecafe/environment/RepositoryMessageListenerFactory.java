@@ -63,7 +63,7 @@ public class RepositoryMessageListenerFactory {
         }
         return definition.messageListenerBuilder()
                 .priority(MessageListenerType.REPOSITORY)
-                .consumer(buildRepositoryMessageConsumer(entityClass, invoker))
+                .consumer(buildRepositoryMessageConsumer(entityClass, invoker, definition.shortId()))
                 .collisionSpace(collisionSpace)
                 .aggregateRootClass(Optional.of(repository.entityClass()))
                 .build();
@@ -71,11 +71,11 @@ public class RepositoryMessageListenerFactory {
 
     private Environment environment;
 
-    private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker) {
+    private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker, String listenerId) {
         return state -> {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
             transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
-            return MessageListenerConsumptionReport.success();
+            return MessageListenerConsumptionReport.success(listenerId);
         };
     }
 
