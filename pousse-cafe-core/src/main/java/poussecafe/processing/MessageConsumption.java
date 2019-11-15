@@ -11,6 +11,7 @@ import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
+import poussecafe.util.ExponentialBackoff;
 
 public class MessageConsumption {
 
@@ -123,9 +124,19 @@ public class MessageConsumption {
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
         messageConsumptionState.isFirstConsumption(false);
+        ExponentialBackoff exponentialBackoff = new ExponentialBackoff.Builder()
+                .slotTime(1)
+                .build();
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
+            try {
+                Thread.sleep((long) exponentialBackoff.nextValue());
+            } catch (InterruptedException e) {
+                logger.error("Thread was interrupted during backoff");
+                Thread.currentThread().interrupt();
+                break;
+            }
             logger.info("Retrying consumption of {} for {} groups", message.original().getClass().getSimpleName(), toRetry.size());
             toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
