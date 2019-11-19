@@ -39,11 +39,17 @@ class MessageProcessor {
             return this;
         }
 
+        public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
+            processor.messageConsumptionConfiguration = messageConsumptionConfiguration;
+            return this;
+        }
+
         public MessageProcessor build() {
             Objects.requireNonNull(processor.consumptionIdGenerator);
             Objects.requireNonNull(processor.listenersPartition);
             Objects.requireNonNull(processor.messageConsumptionHandler);
             Objects.requireNonNull(processor.applicationPerformanceMonitoring);
+            Objects.requireNonNull(processor.messageConsumptionConfiguration);
             processor.logger = LoggerFactory.getLogger(MessageProcessor.class.getName() + "_" + processor.consumptionIdGenerator.prefix());
             return processor;
         }
@@ -65,6 +71,7 @@ class MessageProcessor {
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .listenersPartition(listenersPartition)
                 .messageConsumptionHandler(messageConsumptionHandler)
+                .messageConsumptionConfiguration(messageConsumptionConfiguration)
                 .failFast(failFast)
                 .logger(logger)
                 .build();
@@ -78,4 +85,6 @@ class MessageProcessor {
     protected Logger logger;
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
+    private MessageConsumptionConfiguration messageConsumptionConfiguration;
 }

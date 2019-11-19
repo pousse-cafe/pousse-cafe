@@ -48,7 +48,13 @@ public class MessageProcessorTest {
     }
 
     private void givenMessageProcessor() {
-        messageProcessor = messageProcessorBuilder().build();
+        messageProcessor = messageProcessorBuilder()
+                .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
+                        .backOffCeiling(10)
+                        .backOffSlotTime(1.0)
+                        .maxConsumptionRetries(10)
+                        .build())
+                .build();
     }
 
     @SuppressWarnings("unchecked")
@@ -101,6 +107,11 @@ public class MessageProcessorTest {
     private void givenFailfastMessageProcessor() {
         messageProcessor = messageProcessorBuilder()
                 .failFast(true)
+                .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
+                        .backOffCeiling(10)
+                        .backOffSlotTime(1.0)
+                        .maxConsumptionRetries(10)
+                        .build())
                 .build();
     }
 }

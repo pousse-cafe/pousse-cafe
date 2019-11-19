@@ -18,6 +18,7 @@ import poussecafe.messaging.MessageReceiverConfiguration;
 import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.processing.MessageBroker;
+import poussecafe.processing.MessageConsumptionConfiguration;
 import poussecafe.processing.MessageProcessingThreadPool;
 import poussecafe.processing.ReceivedMessage;
 import poussecafe.storage.Storage;
@@ -94,6 +95,11 @@ public class Runtime {
 
         public Builder processingThreads(int processingThreads) {
             runtime.processingThreads = processingThreads;
+            return this;
+        }
+
+        public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
+            runtime.messageConsumptionConfiguration = messageConsumptionConfiguration;
             return this;
         }
 
@@ -205,11 +211,18 @@ public class Runtime {
                 .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .messageConsumptionConfiguration(messageConsumptionConfiguration)
                 .listenersSet(environment.messageListenersSet())
                 .build();
     }
 
     private int processingThreads = 1;
+
+    private MessageConsumptionConfiguration messageConsumptionConfiguration = new MessageConsumptionConfiguration.Builder()
+            .backOffCeiling(10)
+            .backOffSlotTime(1.0)
+            .maxConsumptionRetries(10)
+            .build();
 
     private List<MessagingConnection> connections = new ArrayList<>();
 

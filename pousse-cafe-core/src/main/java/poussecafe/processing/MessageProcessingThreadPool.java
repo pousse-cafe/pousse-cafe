@@ -46,6 +46,13 @@ public class MessageProcessingThreadPool {
 
         private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
+        public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
+            this.messageConsumptionConfiguration = messageConsumptionConfiguration;
+            return this;
+        }
+
+        private MessageConsumptionConfiguration messageConsumptionConfiguration;
+
         public MessageProcessingThreadPool build() {
             createThreads();
             if(numberOfThreads <= 0) {
@@ -63,7 +70,13 @@ public class MessageProcessingThreadPool {
                         .failFast(failFast)
                         .messageConsumptionHandler(messageConsumptionHandler)
                         .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                        .messageConsumptionConfiguration(messageConsumptionConfiguration)
                         .listenersPartition(listenersPartition)
+                        .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
+                                .backOffCeiling(10)
+                                .backOffSlotTime(1.0)
+                                .maxConsumptionRetries(10)
+                                .build())
                         .build();
                 MessageProcessingThread thread = new MessageProcessingThread.Builder()
                         .threadId(i)

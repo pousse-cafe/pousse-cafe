@@ -54,6 +54,11 @@ public class MessageConsumption {
             return this;
         }
 
+        public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
+            consumption.messageConsumptionConfiguration = messageConsumptionConfiguration;
+            return this;
+        }
+
         public MessageConsumption build() {
             Objects.requireNonNull(consumption.consumptionId);
             Objects.requireNonNull(consumption.listenersPartition);
@@ -61,6 +66,7 @@ public class MessageConsumption {
             Objects.requireNonNull(consumption.applicationPerformanceMonitoring);
             Objects.requireNonNull(consumption.logger);
             Objects.requireNonNull(consumption.message);
+            Objects.requireNonNull(consumption.messageConsumptionConfiguration);
 
             consumption.messageConsumptionState = new MessageConsumptionState(consumption.message);
 
@@ -125,11 +131,12 @@ public class MessageConsumption {
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {
         messageConsumptionState.isFirstConsumption(false);
         ExponentialBackoff exponentialBackoff = new ExponentialBackoff.Builder()
-                .slotTime(1)
+                .slotTime(messageConsumptionConfiguration.backOffSlotTime())
+                .ceiling(messageConsumptionConfiguration.backOffCeiling())
                 .build();
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
-        while(!toRetry.isEmpty() && retry <= MAX_RETRIES) {
+        while(!toRetry.isEmpty() && retry <= messageConsumptionConfiguration.maxConsumptionRetries()) {
             try {
                 Thread.sleep((long) exponentialBackoff.nextValue());
             } catch (InterruptedException e) {
@@ -147,7 +154,7 @@ public class MessageConsumption {
         }
     }
 
-    private static final int MAX_RETRIES = 10;
+    private MessageConsumptionConfiguration messageConsumptionConfiguration;
 
     protected Logger logger;
 
