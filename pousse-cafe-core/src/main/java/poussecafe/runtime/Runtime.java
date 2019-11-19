@@ -220,8 +220,8 @@ public class Runtime {
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration = new MessageConsumptionConfiguration.Builder()
             .backOffCeiling(10)
-            .backOffSlotTime(1.0)
-            .maxConsumptionRetries(10)
+            .backOffSlotTime(3.0)
+            .maxConsumptionRetries(50)
             .build();
 
     private List<MessagingConnection> connections = new ArrayList<>();
