@@ -16,6 +16,10 @@ public class InternalStorage extends Storage {
 
     private static final InternalStorage SINGLETON = new InternalStorage();
 
+    private InternalStorage() {
+
+    }
+
     @Override
     protected MessageSendingPolicy initMessageSendingPolicy() {
         return new DirectMessageSending();
