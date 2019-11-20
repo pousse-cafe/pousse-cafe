@@ -30,8 +30,6 @@ public class DomainProcessHierarchyListenerDiscoveryTest {
     private Set<MessageListenerDefinition> listeners;
 
     private void thenExpectedListenersDefined() throws NoSuchMethodException {
-        assertTrue(listeners.size() == 4);
-
         assertTrue(listeners.contains(new MessageListenerDefinition.Builder()
                 .containerClass(DomainProcess1.class)
                 .method(DomainProcess1.class.getMethod("handle", Event1.class))

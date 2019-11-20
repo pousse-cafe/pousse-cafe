@@ -1,6 +1,5 @@
 package poussecafe.discovery;
 
-import com.google.common.base.Predicate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,10 +11,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.Factory;
@@ -28,30 +30,40 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
+import poussecafe.runtime.Command;
 import poussecafe.storage.Storage;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 class ClassPathExplorer {
 
-    ClassPathExplorer(Collection<String> packagePrefix) {
-        packagePrefixes = new HashSet<>(packagePrefix);
+    ClassPathExplorer(Collection<String> packagePrefixes) {
+        this.packagePrefixes = new HashSet<>(packagePrefixes);
+        this.packagePrefixes.add("poussecafe.messaging");
+        this.packagePrefixes.add("poussecafe.runtime");
+        this.packagePrefixes.add("poussecafe.domain");
 
-        ConfigurationBuilder reflectionsConfigurationBuilder = ConfigurationBuilder.build(packagePrefixes.toArray());
-        reflectionsConfigurationBuilder.filterInputsBy(onlyByteCodeFiles);
+        ConfigurationBuilder reflectionsConfigurationBuilder = new ConfigurationBuilder();
+        FilterBuilder filter = new FilterBuilder();
+        ClassLoader[] classLoaders = null;
+        for(String packagePrefix : this.packagePrefixes) {
+            filter.includePackage(packagePrefix);
+            reflectionsConfigurationBuilder.addUrls(ClasspathHelper.forPackage(packagePrefix, classLoaders));
+        }
+        filter.exclude(".*\\.java");
+
+        reflectionsConfigurationBuilder.filterInputsBy(filter);
+        reflectionsConfigurationBuilder.setExpandSuperTypes(false);
         reflections = new Reflections(reflectionsConfigurationBuilder);
     }
 
     private Set<String> packagePrefixes = new HashSet<>();
 
-    private Predicate<String> onlyByteCodeFiles = input -> input.endsWith(".class") || input.endsWith(".jar");
-
     private Reflections reflections;
 
-    public List<AggregateDefinition> discoverDefinitions() {
-        Set<Class<?>> aggregateRootClasses = getTypesAnnotatedWith(Aggregate.class);
+    public List<AggregateDefinition> discoverAggregates() {
+        Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
 
         List<AggregateDefinition> definitions = new ArrayList<>();
         for(Class<?> aggregateRootClass : aggregateRootClasses) {
@@ -82,34 +94,29 @@ class ClassPathExplorer {
     }
 
     public List<Class<? extends Message>> discoverMessages() {
-        return getSubTypesOf(Message.class)
+        List<Class<? extends Message>> messages = getSubTypesOf(Message.class)
                 .filter(this::isMessageDefinition)
                 .filter(this::hasNotAbstractMessageAnnotation)
                 .collect(toList());
+        if(logger.isDebugEnabled()) {
+            messages.forEach(messageClass -> logger.debug("Adding message definition {}", messageClass));
+        }
+        return messages;
     }
 
     private boolean isMessageDefinition(Class<? extends Message> messageClass) {
         MessageImplementation annotation = messageClass.getAnnotation(MessageImplementation.class);
         if(annotation == null) {
-            return messageClass.isInterface();
+            return messageClass.isInterface()
+                    && messageClass != DomainEvent.class
+                    && messageClass != Command.class;
         } else {
             return annotation.message() == messageClass;
         }
     }
 
     private <C> Stream<Class<? extends C>> getSubTypesOf(Class<C> type) {
-        return reflections.getSubTypesOf(type)
-                .stream()
-                .filter(this::inGivenPackages);
-    }
-
-    private boolean inGivenPackages(Class<?> aClass) {
-        for(String packagePrefix : packagePrefixes) {
-            if(aClass.getPackage().getName().startsWith(packagePrefix)) {
-                return true;
-            }
-        }
-        return false;
+        return reflections.getSubTypesOf(type).stream();
     }
 
     private boolean hasNotAbstractMessageAnnotation(Class<? extends Message> messageClass) {
@@ -120,7 +127,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<Class<Message>> getMessageImplementations(Messaging messaging) {
-        Set<Class<?>> implementationClasses = getTypesAnnotatedWith(MessageImplementation.class);
+        Set<Class<?>> implementationClasses = reflections.getTypesAnnotatedWith(MessageImplementation.class);
 
         Set<Class<Message>> messageImplementationClasses = new HashSet<>();
         for(Class<?> messageImplementationClass : implementationClasses) {
@@ -134,16 +141,9 @@ class ClassPathExplorer {
         return messageImplementationClasses;
     }
 
-    public Set<Class<?>> getTypesAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return reflections.getTypesAnnotatedWith(annotation)
-                .stream()
-                .filter(this::inGivenPackages)
-                .collect(toSet());
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Set<Class<EntityDataAccess>> getDataAccessImplementations(Storage storage) {
-        Set<Class<?>> dataAccessImplementations = getTypesAnnotatedWith(DataAccessImplementation.class);
+        Set<Class<?>> dataAccessImplementations = reflections.getTypesAnnotatedWith(DataAccessImplementation.class);
         Set<Class<?>> aggregateRoots = new HashSet<>();
 
         Set<Class<EntityDataAccess>> entityDataAccessClasses = new HashSet<>();
@@ -163,7 +163,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<Class<EntityAttributes<?>>> getDataImplementations(Storage storage) {
-        Set<Class<?>> dataImplementations = getTypesAnnotatedWith(DataImplementation.class);
+        Set<Class<?>> dataImplementations = reflections.getTypesAnnotatedWith(DataImplementation.class);
 
         Set<Class<EntityAttributes<?>>> entityDataClasses = new HashSet<>();
         for(Class<?> entityDataClass : dataImplementations) {
@@ -179,7 +179,7 @@ class ClassPathExplorer {
 
     @SuppressWarnings("unchecked")
     public Set<poussecafe.environment.ServiceImplementation> discoverServiceImplementations() {
-        Set<Class<?>> serviceImplementations = getTypesAnnotatedWith(ServiceImplementation.class);
+        Set<Class<?>> serviceImplementations = reflections.getTypesAnnotatedWith(ServiceImplementation.class);
         Set<poussecafe.environment.ServiceImplementation> implementations = new HashSet<>();
         for(Class<?> serviceImplementationClass : serviceImplementations) {
             ServiceImplementation annotation = serviceImplementationClass.getAnnotation(ServiceImplementation.class);

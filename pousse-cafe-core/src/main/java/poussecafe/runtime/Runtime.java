@@ -1,7 +1,6 @@
 package poussecafe.runtime;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +45,7 @@ public class Runtime {
 
         private Runtime runtime;
 
-        public Builder withBundles(Collection<Bundle> bundles) {
+        public Builder withBundles(Bundles bundles) {
             bundles.forEach(this::withBundle);
             return this;
         }

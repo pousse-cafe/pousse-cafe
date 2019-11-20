@@ -37,7 +37,7 @@ public class BundleConfigurer {
 
     public BundleDefinition define() {
         BundleDefinition.Builder builder = new BundleDefinition.Builder();
-        builder.withAggregateDefinitions(classPathExplorer.discoverDefinitions());
+        builder.withAggregateDefinitions(classPathExplorer.discoverAggregates());
         builder.withDomainProcesses(classPathExplorer.discoverDomainProcesses());
         builder.withServices(classPathExplorer.discoverServices());
         builder.withMessages(classPathExplorer.discoverMessages());

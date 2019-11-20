@@ -9,6 +9,7 @@ import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.environment.Bundle;
 import poussecafe.environment.NewEntityInstanceSpecification;
+import poussecafe.runtime.Bundles;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
@@ -30,7 +31,9 @@ public abstract class PousseCafeTest {
     protected Runtime.Builder runtimeBuilder() {
         return new Runtime.Builder()
                 .failFast(true)
-                .withBundles(bundles()) // for backward compatibility
+                .withBundles(new Bundles.Builder()
+                        .withList(bundles()) // for backward compatibility
+                        .build())
                 .processingThreads(2);
     }
 
