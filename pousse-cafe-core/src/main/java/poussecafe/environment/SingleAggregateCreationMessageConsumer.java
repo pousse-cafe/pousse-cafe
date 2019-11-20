@@ -65,20 +65,21 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
         Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(aggregateRootEntityClass);
         Message message = state.message().original();
-        createAggregate(state, reportBuilder, aggregateRootEntityClass, message);
+        createAggregate(state, reportBuilder, message);
         return reportBuilder.build();
     }
 
     private String listenerId;
 
-    private void createAggregate(MessageListenerGroupConsumptionState state, MessageListenerConsumptionReport.Builder reportBuilder, Class aggregateRootEntityClass, Message message) {
+    private void createAggregate(MessageListenerGroupConsumptionState state, MessageListenerConsumptionReport.Builder reportBuilder, Message message) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(invoker.method().getName());
         try {
             AggregateRoot aggregate = newAggregate(message);
             if(aggregate != null) {
+                Class entityClass = aggregateServices.aggregateRootEntityClass();
                 Repository repository = aggregateServices.repository();
-                TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(aggregateRootEntityClass);
+                TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
                 reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         } catch(SameOperationException e) {

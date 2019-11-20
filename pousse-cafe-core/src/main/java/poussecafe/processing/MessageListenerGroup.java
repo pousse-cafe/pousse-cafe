@@ -2,6 +2,7 @@ package poussecafe.processing;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -139,6 +140,13 @@ public class MessageListenerGroup {
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
             if(report.failure() != null) {
                 captureException(apmTransaction, report.failure());
+            } else if(!report.failures().isEmpty()) {
+                Iterator<Throwable> exceptionsIterator = report.failures().values().iterator();
+                Throwable oneException = exceptionsIterator.next();
+                captureException(apmTransaction, oneException);
+                if(exceptionsIterator.hasNext()) {
+                    logger.warn("Some exceptions where not captured by APM");
+                }
             }
         } else if(report.mustRetry()) {
             apmTransaction.setResult(ApmTransactionResults.SKIP);

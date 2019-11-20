@@ -83,7 +83,13 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
 
     private void updateAggregate(Message message, Repository repository, Class entityClass, Object id) {
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-        transactionRunner.runInTransaction(() -> {
+        transactionRunner.runInTransaction(() -> updateInSpan(message, repository, id));
+    }
+
+    private void updateInSpan(Message message, Repository repository, Object id) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName(method.getName());
+        try {
             AggregateRoot targetAggregateRoot = repository.get(id);
             targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
             MethodInvoker invoker = new MethodInvoker.Builder()
@@ -91,16 +97,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .target(targetAggregateRoot)
                     .rethrow(SameOperationException.class)
                     .build();
-            updateInSpan(message, invoker);
-            repository.update(targetAggregateRoot);
-        });
-    }
-
-    private void updateInSpan(Message message, MethodInvoker invoker) {
-        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
-        span.setName(invoker.method().getName());
-        try {
             invoker.invoke(message);
+            repository.update(targetAggregateRoot);
         } catch(SameOperationException e) {
             throw e;
         } catch(MethodInvokerException e) {
