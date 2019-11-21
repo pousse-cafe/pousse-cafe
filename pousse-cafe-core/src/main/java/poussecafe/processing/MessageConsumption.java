@@ -149,7 +149,7 @@ public class MessageConsumption {
             ++retry;
         }
         if(!toRetry.isEmpty()) {
-            logger.error("Reached max. # of retries, giving up handling of {} with {} remaining groups", message.original().getClass().getName(), toRetry.size());
+            logger.error("Reached max. # of retries ({}), giving up handling of {} with {} remaining groups", messageConsumptionConfiguration.maxConsumptionRetries(), message.original().getClass().getName(), toRetry.size());
             logger.error("Unhandled message: {}", message.marshaled());
         }
     }
