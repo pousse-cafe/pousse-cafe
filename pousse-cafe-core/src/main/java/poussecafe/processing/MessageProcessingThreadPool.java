@@ -72,11 +72,6 @@ public class MessageProcessingThreadPool {
                         .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                         .messageConsumptionConfiguration(messageConsumptionConfiguration)
                         .listenersPartition(listenersPartition)
-                        .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
-                                .backOffCeiling(10)
-                                .backOffSlotTime(1.0)
-                                .maxConsumptionRetries(10)
-                                .build())
                         .build();
                 MessageProcessingThread thread = new MessageProcessingThread.Builder()
                         .threadId(i)
