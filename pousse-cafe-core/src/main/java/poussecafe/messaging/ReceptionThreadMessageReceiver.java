@@ -41,7 +41,7 @@ public abstract class ReceptionThreadMessageReceiver<E> extends MessageReceiver<
             }
         });
         receptionThread.setDaemon(true);
-        receptionThread.setName("Internal Messaging Reception Thread");
+        receptionThread.setName("Messaging Reception Thread");
         receptionThread.start();
     }
 
