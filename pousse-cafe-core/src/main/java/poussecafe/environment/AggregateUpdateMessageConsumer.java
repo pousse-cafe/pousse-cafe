@@ -74,16 +74,16 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         reportBuilder.aggregateType(entityClass);
         Set targetAggregatesIds = runner.targetAggregatesIds(message);
         Repository repository = aggregateServices.repository();
+        TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         for(Object id : targetAggregatesIds) {
-            reportBuilder.runAndReport(state, id, () -> updateAggregate(message, repository, entityClass, id));
+            reportBuilder.runAndReport(state, id, () -> updateAggregate(message, repository, transactionRunner, id));
         }
         return reportBuilder.build();
     }
 
     private String listenerId;
 
-    private void updateAggregate(Message message, Repository repository, Class entityClass, Object id) {
-        TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
+    private void updateAggregate(Message message, Repository repository, TransactionRunner transactionRunner, Object id) {
         transactionRunner.runInTransaction(() -> updateInSpan(message, repository, id));
     }
 
