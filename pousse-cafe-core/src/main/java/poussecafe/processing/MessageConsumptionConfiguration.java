@@ -30,19 +30,19 @@ public class MessageConsumptionConfiguration {
 
     }
 
-    private double backOffSlotTime;
+    private double backOffSlotTime = 1.0;
 
     public double backOffSlotTime() {
         return backOffSlotTime;
     }
 
-    private int backOffCeiling;
+    private int backOffCeiling = 10;
 
     public int backOffCeiling() {
         return backOffCeiling;
     }
 
-    private int maxConsumptionRetries;
+    private int maxConsumptionRetries = 50;
 
     public int maxConsumptionRetries() {
         return maxConsumptionRetries;

@@ -56,6 +56,8 @@ public class MessageProcessingThreadPoolTest {
                 .listenersSet(listenersSet)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
+                        .build())
                 .build();
     }
 
