@@ -9,6 +9,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
+import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
@@ -99,7 +100,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .build();
             invoker.invoke(message);
             repository.update(targetAggregateRoot);
-        } catch(SameOperationException e) {
+        } catch(SameOperationException | OptimisticLockingException e) {
             throw e;
         } catch(MethodInvokerException e) {
             span.captureException(e.getCause());
