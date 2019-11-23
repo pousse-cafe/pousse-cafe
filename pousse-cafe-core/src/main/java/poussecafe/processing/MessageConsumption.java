@@ -149,14 +149,15 @@ public class MessageConsumption {
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= messageConsumptionConfiguration.maxConsumptionRetries()) {
+            long waitTime = (long) exponentialBackoff.nextValue();
             try {
-                Thread.sleep((long) exponentialBackoff.nextValue());
+                Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 logger.error("Thread was interrupted during backoff");
                 Thread.currentThread().interrupt();
                 break;
             }
-            logger.info("Retrying consumption of {} for {} groups", message.original().getClass().getSimpleName(), toRetry.size());
+            logger.info("Retrying consumption of {} for {} groups after {} ms", message.original().getClass().getSimpleName(), toRetry.size(), waitTime);
             toRetry = consumeMessageOrRetryGroups(toRetry);
             ++retry;
         }
