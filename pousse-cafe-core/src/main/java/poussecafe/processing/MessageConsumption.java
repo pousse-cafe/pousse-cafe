@@ -85,14 +85,26 @@ public class MessageConsumption {
     public void execute() {
         logger.debug("Handling received message {}", message.original());
         List<MessageListenerGroup> groups = buildMessageListenerGroups();
+        logGroup(groups);
         if(!groups.isEmpty()) {
-            logger.debug("  Found {} groups", groups.size());
             List<MessageListenerGroup> toRetryInitially = consumeMessageOrRetryGroups(groups);
             if(!toRetryInitially.isEmpty()) {
                 retryConsumption(toRetryInitially);
             }
         }
         logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
+    }
+
+    private void logGroup(List<MessageListenerGroup> groups) {
+        if(logger.isDebugEnabled()) {
+            logger.debug("Built {} groups:", groups.size());
+            for(MessageListenerGroup group : groups) {
+                logger.debug("    group {}", group.aggregateRootClass());
+                for(MessageListener listener : group.listeners()) {
+                    logger.debug("        - {}", listener.shortId());
+                }
+            }
+        }
     }
 
     private List<MessageListenerGroup> buildMessageListenerGroups() {
