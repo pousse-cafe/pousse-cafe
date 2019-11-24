@@ -15,6 +15,7 @@ import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.NoTransactionRunner;
 
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -96,6 +97,7 @@ public class AggregateUpdateMessageConsumerTest {
                     .build())
                 .isFirstConsumption(true)
                 .aggregateRootClass(Optional.of(aggregateRoot.getClass()))
+                .idsToRetry(emptySet())
                 .build();
         report = consumer.consume(state);
     }
