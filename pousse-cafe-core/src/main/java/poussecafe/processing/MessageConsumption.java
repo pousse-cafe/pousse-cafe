@@ -149,7 +149,7 @@ public class MessageConsumption {
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
         while(!toRetry.isEmpty() && retry <= messageConsumptionConfiguration.maxConsumptionRetries()) {
-            long waitTime = (long) exponentialBackoff.nextValue();
+            long waitTime = (long) Math.ceil(exponentialBackoff.nextValue());
             try {
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
