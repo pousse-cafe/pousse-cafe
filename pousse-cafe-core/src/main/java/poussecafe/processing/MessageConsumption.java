@@ -167,7 +167,7 @@ public class MessageConsumption {
             logger.error("Reached max. # of retries ({}), giving up handling of {} with {} remaining groups", messageConsumptionConfiguration.maxConsumptionRetries(), message.original().getClass().getName(), toRetry.size());
             logger.error("Unhandled message: {}", message.marshaled());
         } else {
-            logger.info("Message {} successfully consumed after {} retries ({} cumulated wait time)", message.original().getClass().getSimpleName(), (retry - 1), cumulatedWaitTime);
+            logger.info("Message {} successfully consumed after {} retries ({} ms cumulated wait time)", message.original().getClass().getSimpleName(), (retry - 1), cumulatedWaitTime);
         }
     }
 
