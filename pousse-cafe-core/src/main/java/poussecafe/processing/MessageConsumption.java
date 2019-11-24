@@ -125,7 +125,8 @@ public class MessageConsumption {
     private List<MessageListenerGroup> consumeMessageOrRetryGroups(List<MessageListenerGroup> groups) {
         List<MessageListenerGroup> toRetry = new ArrayList<>();
         for (MessageListenerGroup group : groups) {
-            boolean mustRetry = consumeMessage(group);
+            List<MessageListenerConsumptionReport> reports = consumeMessage(group);
+            boolean mustRetry = reports.stream().anyMatch(MessageListenerConsumptionReport::mustRetry);
             if(mustRetry) {
                 toRetry.add(group);
             }
@@ -133,11 +134,12 @@ public class MessageConsumption {
         return toRetry;
     }
 
-    private boolean consumeMessage(MessageListenerGroup group) {
-        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState.buildMessageListenerGroupState();
+    private List<MessageListenerConsumptionReport> consumeMessage(MessageListenerGroup group) {
+        MessageListenerGroupConsumptionState consumptionState = messageConsumptionState
+                .buildMessageListenerGroupState(group);
         List<MessageListenerConsumptionReport> reports = group.consumeMessageOrRetry(consumptionState);
-        messageConsumptionState.update(reports);
-        return reports.stream().anyMatch(MessageListenerConsumptionReport::mustRetry);
+        messageConsumptionState.update(group, reports);
+        return reports;
     }
 
     private void retryConsumption(List<MessageListenerGroup> toRetryInitially) {

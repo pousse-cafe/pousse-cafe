@@ -2,6 +2,7 @@ package poussecafe.environment;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageListenerGroupConsumptionState {
@@ -23,6 +24,11 @@ public class MessageListenerGroupConsumptionState {
 
         public Builder isFirstConsumption(boolean isFirstConsumption) {
             state.isFirstConsumption = isFirstConsumption;
+            return this;
+        }
+
+        public Builder idsToRetry(Set<Object> idsToRetry) {
+            state.idsToRetry = idsToRetry;
             return this;
         }
 
@@ -56,4 +62,10 @@ public class MessageListenerGroupConsumptionState {
     }
 
     private boolean isFirstConsumption;
+
+    public Set<Object> idsToRetry() {
+        return idsToRetry;
+    }
+
+    private Set<Object> idsToRetry;
 }

@@ -3,6 +3,8 @@ package poussecafe.environment;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
@@ -73,6 +75,9 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
         Set targetAggregatesIds = runner.targetAggregatesIds(message);
+        if(!targetAggregatesIds.containsAll(state.idsToRetry())) {
+            logger.warn("Missing aggregates while retrying");
+        }
         Repository repository = aggregateServices.repository();
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         for(Object id : targetAggregatesIds) {
@@ -80,6 +85,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         }
         return reportBuilder.build();
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String listenerId;
 
