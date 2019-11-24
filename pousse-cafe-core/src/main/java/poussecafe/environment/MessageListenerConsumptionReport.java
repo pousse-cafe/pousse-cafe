@@ -130,14 +130,14 @@ public class MessageListenerConsumptionReport {
                 runnable.run();
                 successfulAggregateId(id);
             } catch (SameOperationException e) {
-                logger.debug("Must skip {}", report.listenerId, e);
+                logger.info("Report skip {}", report.listenerId, e);
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
-                logWillRetry(e);
+                logWillRetry(e, "update");
                 aggregateIdToRetry(id);
             } catch (DuplicateKeyException e) {
                 if(state.isFirstConsumption()) {
-                    logWillRetry(e);
+                    logWillRetry(e, "insert");
                     aggregateIdToRetry(id);
                 } else {
                     logWillFail(e);
@@ -152,8 +152,8 @@ public class MessageListenerConsumptionReport {
             }
         }
 
-        private void logWillRetry(Throwable e) {
-            logger.info("Must retry {}", report.listenerId, e);
+        private void logWillRetry(Throwable e, String operation) {
+            logger.info("Report retry {} following conflict on {}", report.listenerId, operation, e);
         }
 
         private void logWillFail(Throwable e) {
