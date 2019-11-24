@@ -148,8 +148,10 @@ public class MessageConsumption {
                 .build();
         int retry = 1;
         List<MessageListenerGroup> toRetry = toRetryInitially;
+        long cumulatedWaitTime = 0;
         while(!toRetry.isEmpty() && retry <= messageConsumptionConfiguration.maxConsumptionRetries()) {
             long waitTime = (long) Math.ceil(exponentialBackoff.nextValue());
+            logger.warn("Retrying consumption of {} for {} groups in {} ms", message.original().getClass().getSimpleName(), toRetry.size(), waitTime);
             try {
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
@@ -157,15 +159,15 @@ public class MessageConsumption {
                 Thread.currentThread().interrupt();
                 break;
             }
-            logger.info("Retrying consumption of {} for {} groups after {} ms", message.original().getClass().getSimpleName(), toRetry.size(), waitTime);
             toRetry = consumeMessageOrRetryGroups(toRetry);
+            cumulatedWaitTime += waitTime;
             ++retry;
         }
         if(!toRetry.isEmpty()) {
             logger.error("Reached max. # of retries ({}), giving up handling of {} with {} remaining groups", messageConsumptionConfiguration.maxConsumptionRetries(), message.original().getClass().getName(), toRetry.size());
             logger.error("Unhandled message: {}", message.marshaled());
         } else {
-            logger.info("Message {} successfully consumed after {} retries", message.original().getClass().getSimpleName(), (retry - 1));
+            logger.info("Message {} successfully consumed after {} retries ({} cumulated wait time)", message.original().getClass().getSimpleName(), (retry - 1), cumulatedWaitTime);
         }
     }
 
