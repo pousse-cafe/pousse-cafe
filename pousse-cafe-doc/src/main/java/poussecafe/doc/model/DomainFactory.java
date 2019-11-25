@@ -88,13 +88,20 @@ public class DomainFactory implements Service {
     }
 
     private Set<EntityDocId> findEntities(String fromClassName) {
+        return findEntities(fromClassName, new HashSet<>());
+    }
+
+    private Set<EntityDocId> findEntities(String fromClassName, Set<String> exploredClasses) {
         Set<EntityDocId> ids = new HashSet<>();
-        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
-            if(relation.toComponent().type() == ComponentType.ENTITY) {
-                ids.add(EntityDocId.ofClassName(relation.toComponent().className()));
-            }
-            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                ids.addAll(findEntities(relation.toComponent().className()));
+        if(!exploredClasses.contains(fromClassName)) {
+            exploredClasses.add(fromClassName);
+            for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
+                if(relation.toComponent().type() == ComponentType.ENTITY) {
+                    ids.add(EntityDocId.ofClassName(relation.toComponent().className()));
+                }
+                if(relation.toComponent().type() != ComponentType.AGGREGATE) {
+                    ids.addAll(findEntities(relation.toComponent().className(), exploredClasses));
+                }
             }
         }
         return ids;
@@ -113,13 +120,20 @@ public class DomainFactory implements Service {
     }
 
     private Set<ValueObjectDocId> findValueObjects(String fromClassName) {
+        return findValueObjects(fromClassName, new HashSet<>());
+    }
+
+    private Set<ValueObjectDocId> findValueObjects(String fromClassName, Set<String> exploredClassNames) {
         Set<ValueObjectDocId> ids = new HashSet<>();
-        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
-            if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
-                ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className()));
-            }
-            if(relation.toComponent().type() != ComponentType.AGGREGATE) {
-                ids.addAll(findValueObjects(relation.toComponent().className()));
+        if(!exploredClassNames.contains(fromClassName)) {
+            exploredClassNames.add(fromClassName);
+            for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
+                if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
+                    ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className()));
+                }
+                if(relation.toComponent().type() != ComponentType.AGGREGATE) {
+                    ids.addAll(findValueObjects(relation.toComponent().className(), exploredClassNames));
+                }
             }
         }
         return ids;

@@ -69,7 +69,7 @@ public class AggregateGraphFactory {
 
     private UndirectedGraph graph = new UndirectedGraph();
 
-    private Set<String> exploredPaths = new HashSet<>();
+    private Set<String> exploredFromClassNames = new HashSet<>();
 
     public UndirectedGraph buildGraph() {
         String aggregateNodeName = addAggregate();
@@ -88,27 +88,21 @@ public class AggregateGraphFactory {
     }
 
     private void addAllRelations(AggregateGraphPath path, String fromClassName) {
-        for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
-            Component toComponent = relation.toComponent();
+        if(!exploredFromClassNames.contains(fromClassName)) {
+            exploredFromClassNames.add(fromClassName);
 
-            Logger.debug("Relation " + fromClassName + " -> " + toComponent.className());
-            if(toComponent.type() != ComponentType.AGGREGATE) {
-                String newNodeName = name(toComponent);
+            for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
+                Component toComponent = relation.toComponent();
 
-                String formattedNewPath = path.formatNamesWith(newNodeName);
-                if(!exploredPaths.contains(formattedNewPath)) {
-                    Logger.debug("New path: " + formattedNewPath);
-                    exploredPaths.add(formattedNewPath);
-
+                Logger.debug("Relation " + fromClassName + " -> " + toComponent.className());
+                if(toComponent.type() != ComponentType.AGGREGATE) {
+                    String newNodeName = name(toComponent);
                     AggregateGraphPath newPath = path.with(newNodeName);
                     addNonAggregateRelation(path, toComponent, newNodeName);
                     addAllRelations(newPath, relation.toComponent().className());
                 } else {
-                    Logger.debug("Ignored known path: " + formattedNewPath);
+                    addAggregateRelation(path, toComponent);
                 }
-            } else {
-                Logger.debug("New path to aggregate");
-                addAggregateRelation(path, toComponent);
             }
         }
     }
