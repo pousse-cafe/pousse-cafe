@@ -1,11 +1,8 @@
 package process;
 
-import java.util.List;
-import poussecafe.environment.Bundle;
 import poussecafe.mymodule.MyModule;
+import poussecafe.runtime.Runtime.Builder;
 import poussecafe.test.PousseCafeTest;
-
-import static java.util.Arrays.asList;
 
 /*
  * Parent class of all tests related to MyModule.
@@ -13,7 +10,8 @@ import static java.util.Arrays.asList;
 public abstract class MyModuleTest extends PousseCafeTest {
 
     @Override
-    protected List<Bundle> bundles() {
-        return asList(MyModule.configure().defineAndImplementDefault().build());
+    protected Builder runtimeBuilder() {
+        return super.runtimeBuilder()
+                .withBundle(MyModule.configure().defineAndImplementDefault().build());
     }
 }

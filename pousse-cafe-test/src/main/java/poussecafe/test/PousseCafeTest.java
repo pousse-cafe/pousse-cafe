@@ -7,13 +7,11 @@ import org.junit.Before;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.environment.Bundle;
 import poussecafe.environment.NewEntityInstanceSpecification;
-import poussecafe.runtime.Bundles;
 import poussecafe.runtime.Command;
+import poussecafe.runtime.MessageListenersPoolSplitStrategySpecification;
+import poussecafe.runtime.MessageListenersPoolSplitStrategyType;
 import poussecafe.runtime.Runtime;
-
-import static java.util.Collections.emptyList;
 
 public abstract class PousseCafeTest {
 
@@ -31,21 +29,13 @@ public abstract class PousseCafeTest {
     protected Runtime.Builder runtimeBuilder() {
         return new Runtime.Builder()
                 .failFast(true)
-                .withBundles(new Bundles.Builder()
-                        .withList(bundles()) // for backward compatibility
-                        .build())
-                .processingThreads(2);
+                .messageListenersPoolSplitStrategySpecification(new MessageListenersPoolSplitStrategySpecification.Builder()
+                        .expectedNumberOfPools(2)
+                        .strategyType(MessageListenersPoolSplitStrategyType.COLLISION_PREVENTION)
+                        .build());
     }
 
-    /**
-     * @deprecated use runtimeBuilder() and register bounded contexts directly.
-     */
-    @Deprecated(since = "0.9.0", forRemoval = true)
-    protected List<Bundle> bundles() {
-        return emptyList();
-    }
-
-    protected Runtime testRuntime() {
+    public Runtime testRuntime() {
         return wrapper.runtime();
     }
 
@@ -67,7 +57,7 @@ public abstract class PousseCafeTest {
         wrapper.waitUntilEndOfMessageProcessing();
     }
 
-    protected <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
+    public <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {
         return wrapper.runtime().environment().messageFactory().newMessage(eventClass);
     }
 
@@ -107,7 +97,7 @@ public abstract class PousseCafeTest {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected <E> E newEntity(Class<E> entityClass) {
+    public <E> E newEntity(Class<E> entityClass) {
         return (E) testRuntime().environment().entityFactory().newEntity(new NewEntityInstanceSpecification.Builder()
                     .entityClass(entityClass)
                     .instantiateData(true)

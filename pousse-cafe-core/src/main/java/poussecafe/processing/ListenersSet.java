@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenersPool;
+import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.messaging.Message;
 
 public class ListenersSet {
@@ -23,9 +24,9 @@ public class ListenersSet {
         return messageListenersPool.getListeners(messageClass);
     }
 
-    ListenersSetPartition[] split(int expectedNumberOfPartitions) {
-        MessageListenersPool[] pools = messageListenersPool.split(expectedNumberOfPartitions);
-        ListenersSetPartition[] partitions = new ListenersSetPartition[expectedNumberOfPartitions];
+    ListenersSetPartition[] split(MessageListenersPoolSplitStrategy strategy) {
+        MessageListenersPool[] pools = strategy.split(messageListenersPool);
+        ListenersSetPartition[] partitions = new ListenersSetPartition[pools.length];
         for(int i = 0; i < partitions.length; ++i) {
             ListenersSet listenersSet = new ListenersSet(pools[i]);
             partitions[i] = new ListenersSetPartition.Builder()

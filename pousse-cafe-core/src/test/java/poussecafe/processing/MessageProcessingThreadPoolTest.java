@@ -2,6 +2,7 @@ package poussecafe.processing;
 
 import org.junit.Test;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.runtime.MessageConsumptionHandler;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -14,6 +15,7 @@ public class MessageProcessingThreadPoolTest {
     @Test
     public void createdPoolHasExpectedNumberOfThreads() {
         givenExpectedNumberOfThreads();
+        givenMessageListenersPoolSplitStrategy();
         givenListenersSet();
         givenMessageConsumptionHandler();
         givenApplicationPerformanceMonitoring();
@@ -27,13 +29,19 @@ public class MessageProcessingThreadPoolTest {
 
     private int expectedNumberOfThreads;
 
+    private void givenMessageListenersPoolSplitStrategy() {
+        messageListenersPoolSplitStrategy = mock(MessageListenersPoolSplitStrategy.class);
+    }
+
+    private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy;
+
     private void givenListenersSet() {
         listenersSet = mock(ListenersSet.class);
         ListenersSetPartition[] partitions = new ListenersSetPartition[expectedNumberOfThreads];
         for(int i = 0; i < partitions.length; ++i) {
             partitions[i] = mock(ListenersSetPartition.class);
         }
-        when(listenersSet.split(expectedNumberOfThreads)).thenReturn(partitions);
+        when(listenersSet.split(messageListenersPoolSplitStrategy)).thenReturn(partitions);
     }
 
     private ListenersSet listenersSet;
@@ -52,7 +60,7 @@ public class MessageProcessingThreadPoolTest {
 
     private void whenCreatingPool() {
         pool = new MessageProcessingThreadPool.Builder()
-                .numberOfThreads(expectedNumberOfThreads)
+                .messageListenersPoolSplitStrategy(messageListenersPoolSplitStrategy)
                 .listenersSet(listenersSet)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)

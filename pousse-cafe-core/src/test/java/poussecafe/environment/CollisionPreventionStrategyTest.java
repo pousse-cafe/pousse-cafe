@@ -11,7 +11,7 @@ import poussecafe.messaging.Message;
 
 import static org.junit.Assert.assertTrue;
 
-public class MessageListenersPoolTest {
+public class CollisionPreventionStrategyTest {
 
     @Test
     public void splitDoesNotSeparateListenersWithSameLabel() {
@@ -58,7 +58,9 @@ public class MessageListenersPoolTest {
     private MessageListenersPool pool;
 
     private void whenSplitting(int partitions) {
-        pools = pool.split(partitions);
+        pools = new CollisionPreventionStrategy.Builder()
+                .expectedNumberOfPools(partitions)
+                .build().split(pool);
     }
 
     private MessageListenersPool[] pools;
@@ -94,5 +96,33 @@ public class MessageListenersPoolTest {
         givenMessageListenersPool(8);
         whenSplitting(42);
         thenListenersWithSameLabelAreInSamePool();
+    }
+
+    @Test
+    public void splitProducesActualPartitions() {
+        givenMessageListenersPool(42);
+        whenSplitting(8);
+        thenPoolsAreActualPartitions();
+    }
+
+    private void thenPoolsAreActualPartitions() {
+        for(int i = 0; i < pools.length; ++i) {
+            MessageListenersPool pool = pools[i];
+            for(MessageListener listener : pool.allListeners()) {
+                assertTrue(listenerOnlyInPartition(listener, i));
+            }
+        }
+    }
+
+    private boolean listenerOnlyInPartition(MessageListener listener, int poolIndex) {
+        for(int i = 0; i < pools.length; ++i) {
+            if(i != poolIndex) {
+                MessageListenersPool pool = pools[i];
+                if(pool.allListeners().contains(listener)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

@@ -27,7 +27,6 @@ public class WaitOnInternalQueueWorksWithLongChains extends PousseCafeTest {
     @Override
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
-                .processingThreads(2)
                 .withBundle(Chain1Bundle.configure().defineAndImplementDefault().build())
                 .withBundle(Chain2Bundle.configure().defineAndImplementDefault().build())
                 .withBundle(Chain3Bundle.configure().defineAndImplementDefault().build());

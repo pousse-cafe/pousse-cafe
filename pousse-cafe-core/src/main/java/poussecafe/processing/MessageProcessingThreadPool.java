@@ -3,6 +3,7 @@ package poussecafe.processing;
 import java.util.ArrayList;
 import java.util.List;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.runtime.MessageConsumptionHandler;
 
 public class MessageProcessingThreadPool {
@@ -18,12 +19,12 @@ public class MessageProcessingThreadPool {
 
         private ListenersSet listenersSet;
 
-        public Builder numberOfThreads(int numberOfThreads) {
-            this.numberOfThreads = numberOfThreads;
+        public Builder messageListenersPoolSplitStrategy(MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy) {
+            this.messageListenersPoolSplitStrategy = messageListenersPoolSplitStrategy;
             return this;
         }
 
-        private int numberOfThreads;
+        private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy;
 
         public Builder failFast(boolean failFast) {
             this.failFast = failFast;
@@ -55,15 +56,15 @@ public class MessageProcessingThreadPool {
 
         public MessageProcessingThreadPool build() {
             createThreads();
-            if(numberOfThreads <= 0) {
+            if(pool.messageProcessingThreads.isEmpty()) {
                 throw new IllegalStateException("Cannot create empty pool");
             }
             return pool;
         }
 
         private void createThreads() {
-            ListenersSetPartition[] partitions = listenersSet.split(numberOfThreads);
-            for(int i = 0; i < numberOfThreads; ++i) {
+            ListenersSetPartition[] partitions = listenersSet.split(messageListenersPoolSplitStrategy);
+            for(int i = 0; i < partitions.length; ++i) {
                 ListenersSetPartition listenersPartition = partitions[i];
                 MessageProcessor processor = new MessageProcessor.Builder()
                         .id(Integer.toString(i))
