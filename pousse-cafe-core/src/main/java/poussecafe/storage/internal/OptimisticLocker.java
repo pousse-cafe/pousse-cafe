@@ -18,7 +18,7 @@ public class OptimisticLocker {
     public void ensureAndIncrement(long expectedVersion, Object data) {
         Optional<Long> actualVersion = getVersion(data);
         if(!actualVersion.isPresent() || actualVersion.get() != expectedVersion) {
-            throw new OptimisticLockingException("Actual version " + actualVersion + " <> " + expectedVersion);
+            throw new OptimisticLockingException("Actual version " + actualVersion.get() + " <> " + expectedVersion);
         }
         setVersion(data, expectedVersion + 1);
     }

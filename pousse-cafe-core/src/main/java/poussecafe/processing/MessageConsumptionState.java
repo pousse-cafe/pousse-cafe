@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -14,9 +15,29 @@ import static java.util.Collections.emptySet;
 
 public class MessageConsumptionState {
 
-    public MessageConsumptionState(OriginalAndMarshaledMessage message) {
-        Objects.requireNonNull(message);
-        this.message = message;
+    public static class Builder {
+
+        private MessageConsumptionState state = new MessageConsumptionState();
+
+        public Builder message(OriginalAndMarshaledMessage message) {
+            state.message = message;
+            return this;
+        }
+
+        public Builder processorLogger(Logger processorLogger) {
+            state.processorLogger = processorLogger;
+            return this;
+        }
+
+        public MessageConsumptionState build() {
+            Objects.requireNonNull(state.message);
+            Objects.requireNonNull(state.processorLogger);
+            return state;
+        }
+    }
+
+    private MessageConsumptionState() {
+
     }
 
     private OriginalAndMarshaledMessage message;
@@ -32,8 +53,11 @@ public class MessageConsumptionState {
             .message(message)
             .isFirstConsumption(isFirstConsumption)
             .idsToRetry(idsToRetry.getOrDefault(group, emptySet()))
+            .processorLogger(processorLogger)
             .build();
     }
+
+    private Logger processorLogger;
 
     public void update(MessageListenerGroup group, List<MessageListenerConsumptionReport> reports) {
         Set<Object> ids = new HashSet<>();

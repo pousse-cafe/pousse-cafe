@@ -72,6 +72,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
     public MessageListenerConsumptionReport consume(MessageListenerGroupConsumptionState state) {
         Message message = state.message().original();
         MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder(listenerId);
+        reportBuilder.logger(state.processorLogger());
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
         Set targetAggregatesIds = runner.targetAggregatesIds(message);

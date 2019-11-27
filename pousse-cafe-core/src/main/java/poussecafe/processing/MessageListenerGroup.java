@@ -62,6 +62,11 @@ public class MessageListenerGroup {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            group.logger = logger;
+            return this;
+        }
+
         public MessageListenerGroup build() {
             Objects.requireNonNull(group.consumptionId);
             Objects.requireNonNull(group.message);
@@ -69,6 +74,7 @@ public class MessageListenerGroup {
             Objects.requireNonNull(group.messageConsumptionHandler);
             Objects.requireNonNull(group.applicationPerformanceMonitoring);
             Objects.requireNonNull(group.aggregateRootClass);
+            Objects.requireNonNull(group.logger);
             group.listeners.sort(null);
             return group;
         }
@@ -89,6 +95,7 @@ public class MessageListenerGroup {
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .consumptionState(consumptionState)
                     .failFast(failFast)
+                    .logger(logger)
                     .build();
             reports.add(executeInApmTransaction(executor));
         }

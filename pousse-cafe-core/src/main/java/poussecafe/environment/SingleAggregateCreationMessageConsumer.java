@@ -62,6 +62,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
     @Override
     public MessageListenerConsumptionReport consume(MessageListenerGroupConsumptionState state) {
         MessageListenerConsumptionReport.Builder reportBuilder = new MessageListenerConsumptionReport.Builder(listenerId);
+        reportBuilder.logger(state.processorLogger());
         Class aggregateRootEntityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(aggregateRootEntityClass);
         Message message = state.message().original();

@@ -24,8 +24,8 @@ public class MessageConsumption {
             return this;
         }
 
-        public Builder logger(Logger logger) {
-            consumption.logger = logger;
+        public Builder processorLogger(Logger processorLogger) {
+            consumption.processorLogger = processorLogger;
             return this;
         }
 
@@ -64,11 +64,14 @@ public class MessageConsumption {
             Objects.requireNonNull(consumption.listenersPartition);
             Objects.requireNonNull(consumption.messageConsumptionHandler);
             Objects.requireNonNull(consumption.applicationPerformanceMonitoring);
-            Objects.requireNonNull(consumption.logger);
+            Objects.requireNonNull(consumption.processorLogger);
             Objects.requireNonNull(consumption.message);
             Objects.requireNonNull(consumption.messageConsumptionConfiguration);
 
-            consumption.messageConsumptionState = new MessageConsumptionState(consumption.message);
+            consumption.messageConsumptionState = new MessageConsumptionState.Builder()
+                    .message(consumption.message)
+                    .processorLogger(consumption.processorLogger)
+                    .build();
 
             return consumption;
         }
@@ -83,7 +86,7 @@ public class MessageConsumption {
     private OriginalAndMarshaledMessage message;
 
     public void execute() {
-        logger.debug("Handling received message {}", message.original());
+        processorLogger.debug("Handling received message {}", message.original());
         List<MessageListenerGroup> groups = buildMessageListenerGroups();
         logGroup(groups);
         if(!groups.isEmpty()) {
@@ -92,16 +95,16 @@ public class MessageConsumption {
                 retryConsumption(toRetryInitially);
             }
         }
-        logger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
+        processorLogger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
     private void logGroup(List<MessageListenerGroup> groups) {
-        if(logger.isDebugEnabled()) {
-            logger.debug("Built {} groups:", groups.size());
+        if(processorLogger.isDebugEnabled()) {
+            processorLogger.debug("Built {} groups:", groups.size());
             for(MessageListenerGroup group : groups) {
-                logger.debug("    group {}", group.aggregateRootClass());
+                processorLogger.debug("    group {}", group.aggregateRootClass());
                 for(MessageListener listener : group.listeners()) {
-                    logger.debug("        - {}", listener.shortId());
+                    processorLogger.debug("        - {}", listener.shortId());
                 }
             }
         }
@@ -116,6 +119,7 @@ public class MessageConsumption {
                 .failFast(failFast)
                 .message(message)
                 .messageConsumptionHandler(messageConsumptionHandler)
+                .logger(processorLogger)
                 .build()
                 .buildMessageListenerGroups(listeners);
     }
@@ -153,11 +157,11 @@ public class MessageConsumption {
         long cumulatedWaitTime = 0;
         while(!toRetry.isEmpty() && retry <= messageConsumptionConfiguration.maxConsumptionRetries()) {
             long waitTime = (long) Math.ceil(exponentialBackoff.nextValue());
-            logger.warn("Retrying consumption of {} for {} groups in {} ms", message.original().getClass().getSimpleName(), toRetry.size(), waitTime);
+            processorLogger.warn("Retrying consumption of {} for {} groups in {} ms", message.original().getClass().getSimpleName(), toRetry.size(), waitTime);
             try {
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
-                logger.error("Thread was interrupted during backoff");
+                processorLogger.error("Thread was interrupted during backoff");
                 Thread.currentThread().interrupt();
                 break;
             }
@@ -166,16 +170,16 @@ public class MessageConsumption {
             ++retry;
         }
         if(!toRetry.isEmpty()) {
-            logger.error("Reached max. # of retries ({}), giving up handling of {} with {} remaining groups", messageConsumptionConfiguration.maxConsumptionRetries(), message.original().getClass().getName(), toRetry.size());
-            logger.error("Unhandled message: {}", message.marshaled());
+            processorLogger.error("Reached max. # of retries ({}), giving up handling of {} with {} remaining groups", messageConsumptionConfiguration.maxConsumptionRetries(), message.original().getClass().getName(), toRetry.size());
+            processorLogger.error("Unhandled message: {}", message.marshaled());
         } else {
-            logger.info("Message {} successfully consumed after {} retries ({} ms cumulated wait time)", message.original().getClass().getSimpleName(), (retry - 1), cumulatedWaitTime);
+            processorLogger.info("Message {} successfully consumed after {} retries ({} ms cumulated wait time)", message.original().getClass().getSimpleName(), (retry - 1), cumulatedWaitTime);
         }
     }
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration;
 
-    protected Logger logger;
+    protected Logger processorLogger;
 
     private MessageConsumptionState messageConsumptionState;
 

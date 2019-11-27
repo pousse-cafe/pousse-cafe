@@ -11,8 +11,10 @@ import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
 import poussecafe.environment.Bundle;
+import poussecafe.environment.CollisionPreventionStrategy;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;
+import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.injector.Injector;
 import poussecafe.messaging.MessageReceiverConfiguration;
 import poussecafe.messaging.Messaging;
@@ -93,8 +95,8 @@ public class Runtime {
             return this;
         }
 
-        public Builder messageListenersPoolSplitStrategySpecification(MessageListenersPoolSplitStrategySpecification messageListenersPoolSplitStrategySpecification) {
-            runtime.messageListenersPoolSplitStrategySpecification = messageListenersPoolSplitStrategySpecification;
+        public Builder messageListenersPoolSplitStrategy(MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy) {
+            runtime.messageListenersPoolSplitStrategy = messageListenersPoolSplitStrategy;
             return this;
         }
 
@@ -110,7 +112,7 @@ public class Runtime {
         }
 
         public Runtime build() {
-            Objects.requireNonNull(runtime.messageListenersPoolSplitStrategySpecification);
+            Objects.requireNonNull(runtime.messageListenersPoolSplitStrategy);
             environmentBuilder.applicationPerformanceMonitoring(runtime.applicationPerformanceMonitoring);
             runtime.environment = environmentBuilder.build();
             runtime.transactionRunnerLocator.setEnvironment(runtime.environment);
@@ -208,8 +210,7 @@ public class Runtime {
 
     private MessageProcessingThreadPool newMessageProcessingThreadPool() {
         return new MessageProcessingThreadPool.Builder()
-                .messageListenersPoolSplitStrategy(messageListenersPoolSplitStrategyFactory
-                        .build(messageListenersPoolSplitStrategySpecification))
+                .messageListenersPoolSplitStrategy(messageListenersPoolSplitStrategy)
                 .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
@@ -218,12 +219,9 @@ public class Runtime {
                 .build();
     }
 
-    private MessageListenersPoolSplitStrategySpecification messageListenersPoolSplitStrategySpecification = new MessageListenersPoolSplitStrategySpecification.Builder()
+    private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy = new CollisionPreventionStrategy.Builder()
             .expectedNumberOfPools(1)
-            .strategyType(MessageListenersPoolSplitStrategyType.COLLISION_PREVENTION)
             .build();
-
-    private MessageListenersPoolSplitStrategyFactory messageListenersPoolSplitStrategyFactory = new MessageListenersPoolSplitStrategyFactory();
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration = new MessageConsumptionConfiguration.Builder()
             .backOffCeiling(10)

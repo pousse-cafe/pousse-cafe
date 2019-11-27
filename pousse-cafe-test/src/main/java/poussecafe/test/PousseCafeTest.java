@@ -7,10 +7,9 @@ import org.junit.Before;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.runtime.Command;
-import poussecafe.runtime.MessageListenersPoolSplitStrategySpecification;
-import poussecafe.runtime.MessageListenersPoolSplitStrategyType;
 import poussecafe.runtime.Runtime;
 
 public abstract class PousseCafeTest {
@@ -28,11 +27,11 @@ public abstract class PousseCafeTest {
 
     protected Runtime.Builder runtimeBuilder() {
         return new Runtime.Builder()
-                .failFast(true)
-                .messageListenersPoolSplitStrategySpecification(new MessageListenersPoolSplitStrategySpecification.Builder()
-                        .expectedNumberOfPools(2)
-                        .strategyType(MessageListenersPoolSplitStrategyType.COLLISION_PREVENTION)
-                        .build());
+                .failFast(true);
+    }
+
+    public MessageListenersPoolSplitStrategy replicationStrategy(int numberOfPools) {
+        return new ReplicationStrategy(numberOfPools);
     }
 
     public Runtime testRuntime() {

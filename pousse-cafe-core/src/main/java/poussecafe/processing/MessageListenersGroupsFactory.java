@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.runtime.MessageConsumptionHandler;
@@ -46,12 +48,17 @@ public class MessageListenersGroupsFactory {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            factory.logger = logger;
+            return this;
+        }
+
         public MessageListenersGroupsFactory build() {
             Objects.requireNonNull(factory.consumptionId);
             Objects.requireNonNull(factory.message);
             Objects.requireNonNull(factory.messageConsumptionHandler);
             Objects.requireNonNull(factory.applicationPerformanceMonitoring);
-
+            Objects.requireNonNull(factory.logger);
             return factory;
         }
     }
@@ -85,6 +92,7 @@ public class MessageListenersGroupsFactory {
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .failFast(failFast)
+                    .logger(logger)
                     .build();
             groups.add(group);
         }
@@ -99,6 +107,7 @@ public class MessageListenersGroupsFactory {
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .failFast(failFast)
+                    .logger(logger)
                     .build();
             groups.add(group);
         }
@@ -113,6 +122,8 @@ public class MessageListenersGroupsFactory {
     private MessageConsumptionHandler messageConsumptionHandler;
 
     private boolean failFast;
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 }

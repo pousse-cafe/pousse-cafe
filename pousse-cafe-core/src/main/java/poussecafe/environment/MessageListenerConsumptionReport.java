@@ -30,6 +30,12 @@ public class MessageListenerConsumptionReport {
 
         private MessageListenerConsumptionReport report;
 
+        public Builder logger(Logger logger) {
+            Objects.requireNonNull(logger);
+            this.logger = logger;
+            return this;
+        }
+
         public Builder skipped(boolean skipped) {
             report.skipped = skipped;
             return this;

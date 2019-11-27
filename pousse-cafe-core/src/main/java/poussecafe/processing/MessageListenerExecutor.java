@@ -45,11 +45,17 @@ class MessageListenerExecutor {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            executor.logger = logger;
+            return this;
+        }
+
         public MessageListenerExecutor build() {
             Objects.requireNonNull(executor.consumptionId);
             Objects.requireNonNull(executor.consumptionState);
             Objects.requireNonNull(executor.listener);
             Objects.requireNonNull(executor.messageConsumptionHandler);
+            Objects.requireNonNull(executor.logger);
             return executor;
         }
     }
@@ -75,8 +81,10 @@ class MessageListenerExecutor {
     public void executeListener() {
         OriginalAndMarshaledMessage receivedMessage = consumptionState.message();
         String messageClassName = receivedMessage.original().getClass().getName();
-        if(logger.isDebugEnabled()) {
+        if(consumptionState.isFirstConsumption() && logger.isDebugEnabled()) {
             logger.debug("    {} consumes {}", listener.shortId(), messageClassName);
+        } else if(!consumptionState.isFirstConsumption() && logger.isInfoEnabled()) {
+            logger.info("    {} retries {}", listener.shortId(), messageClassName);
         }
 
         try {

@@ -3,6 +3,7 @@ package poussecafe.environment;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageListenerGroupConsumptionState {
@@ -32,9 +33,15 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
+        public Builder processorLogger(Logger processorLogger) {
+            state.processorLogger = processorLogger;
+            return this;
+        }
+
         public MessageListenerGroupConsumptionState build() {
             Objects.requireNonNull(state.message);
             Objects.requireNonNull(state.aggregateRootClass);
+            Objects.requireNonNull(state.processorLogger);
             return state;
         }
     }
@@ -68,4 +75,10 @@ public class MessageListenerGroupConsumptionState {
     }
 
     private Set<Object> idsToRetry;
+
+    public Logger processorLogger() {
+        return processorLogger;
+    }
+
+    private Logger processorLogger;
 }

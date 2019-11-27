@@ -73,7 +73,7 @@ class MessageProcessor {
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .messageConsumptionConfiguration(messageConsumptionConfiguration)
                 .failFast(failFast)
-                .logger(logger)
+                .processorLogger(logger)
                 .build();
         consumption.execute();
     }
