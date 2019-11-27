@@ -2,6 +2,7 @@ package poussecafe.environment;
 
 import java.util.Optional;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
@@ -98,6 +99,7 @@ public class AggregateUpdateMessageConsumerTest {
                 .isFirstConsumption(true)
                 .aggregateRootClass(Optional.of(aggregateRoot.getClass()))
                 .idsToRetry(emptySet())
+                .processorLogger(LoggerFactory.getLogger(getClass()))
                 .build();
         report = consumer.consume(state);
     }
