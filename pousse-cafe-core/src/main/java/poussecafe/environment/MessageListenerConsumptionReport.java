@@ -134,36 +134,37 @@ public class MessageListenerConsumptionReport {
             aggregateId(id);
             try {
                 runnable.run();
+                logger.debug("Report {} success for ID {}", report.listenerId, id);
                 successfulAggregateId(id);
             } catch (SameOperationException e) {
-                logger.info("Report skip {}", report.listenerId, e);
+                logger.info("Report {} skip for ID {}", report.listenerId, id, e);
                 skippedAggregateId(id);
             } catch (OptimisticLockingException e) {
-                logWillRetry(e, "update");
+                logWillRetry(e, "update", id);
                 aggregateIdToRetry(id);
             } catch (DuplicateKeyException e) {
                 if(state.isFirstConsumption()) {
-                    logWillRetry(e, "insert");
+                    logWillRetry(e, "insert", id);
                     aggregateIdToRetry(id);
                 } else {
-                    logWillFail(e);
+                    logWillFail(e, id);
                     failure(id, e);
                 }
             } catch (MethodInvokerException e) {
-                logWillFail(e.getCause());
+                logWillFail(e.getCause(), id);
                 failure(id, e.getCause());
             } catch (Exception e) {
-                logWillFail(e);
+                logWillFail(e, id);
                 failure(id, e);
             }
         }
 
-        private void logWillRetry(Throwable e, String operation) {
-            logger.info("Report retry {} following conflict on {}", report.listenerId, operation, e);
+        private void logWillRetry(Throwable e, String operation, Object id) {
+            logger.info("Report {} retry following conflict on {} for ID {}", report.listenerId, operation, id, e);
         }
 
-        private void logWillFail(Throwable e) {
-            logger.error("{} failed", report.listenerId, e);
+        private void logWillFail(Throwable e, Object id) {
+            logger.error("Report {} failure for ID {}", report.listenerId, id, e);
         }
 
         private Logger logger = LoggerFactory.getLogger(getClass());
