@@ -69,6 +69,7 @@ public class MessageConsumption {
             Objects.requireNonNull(consumption.messageConsumptionConfiguration);
 
             consumption.messageConsumptionState = new MessageConsumptionState.Builder()
+                    .consumptionId(consumption.consumptionId)
                     .message(consumption.message)
                     .processorLogger(consumption.processorLogger)
                     .build();
@@ -88,7 +89,7 @@ public class MessageConsumption {
     public void execute() {
         processorLogger.debug("Handling received message {}", message.original());
         List<MessageListenerGroup> groups = buildMessageListenerGroups();
-        logGroup(groups);
+        logGroups(groups);
         if(!groups.isEmpty()) {
             List<MessageListenerGroup> toRetryInitially = consumeMessageOrRetryGroups(groups);
             if(!toRetryInitially.isEmpty()) {
@@ -98,7 +99,7 @@ public class MessageConsumption {
         processorLogger.debug("Message {} handled (consumption ID {})", message.original(), consumptionId);
     }
 
-    private void logGroup(List<MessageListenerGroup> groups) {
+    private void logGroups(List<MessageListenerGroup> groups) {
         if(processorLogger.isDebugEnabled()) {
             processorLogger.debug("Built {} groups:", groups.size());
             for(MessageListenerGroup group : groups) {

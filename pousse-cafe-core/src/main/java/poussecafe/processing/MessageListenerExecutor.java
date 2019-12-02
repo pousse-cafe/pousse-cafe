@@ -1,8 +1,10 @@
 package poussecafe.processing;
 
 import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.environment.AggregateUpdateMessageConsumer;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
@@ -19,11 +21,6 @@ class MessageListenerExecutor {
     static class Builder {
 
         private MessageListenerExecutor executor = new MessageListenerExecutor();
-
-        public Builder consumptionId(String consumptionId) {
-            executor.consumptionId = consumptionId;
-            return this;
-        }
 
         public Builder consumptionState(MessageListenerGroupConsumptionState consumptionState) {
             executor.consumptionState = consumptionState;
@@ -50,12 +47,17 @@ class MessageListenerExecutor {
             return this;
         }
 
+        public Builder toUpdate(Optional<Object> toUpdate) {
+            executor.toUpdate = toUpdate;
+            return this;
+        }
+
         public MessageListenerExecutor build() {
-            Objects.requireNonNull(executor.consumptionId);
             Objects.requireNonNull(executor.consumptionState);
             Objects.requireNonNull(executor.listener);
             Objects.requireNonNull(executor.messageConsumptionHandler);
             Objects.requireNonNull(executor.logger);
+            Objects.requireNonNull(executor.toUpdate);
             return executor;
         }
     }
@@ -63,8 +65,6 @@ class MessageListenerExecutor {
     private MessageListenerExecutor() {
 
     }
-
-    private String consumptionId;
 
     private MessageListenerGroupConsumptionState consumptionState;
 
@@ -88,7 +88,12 @@ class MessageListenerExecutor {
         }
 
         try {
-            messageConsumptionReport = listener.consumer().consume(consumptionState);
+            if(toUpdate.isPresent()) {
+                AggregateUpdateMessageConsumer consumer = (AggregateUpdateMessageConsumer) listener.consumer();
+                messageConsumptionReport = consumer.consume(consumptionState, toUpdate.get());
+            } else {
+                messageConsumptionReport = listener.consumer().consume(consumptionState);
+            }
         } catch (SameOperationException e) {
             ignore(e);
         } catch (OptimisticLockingException e) {
@@ -99,6 +104,8 @@ class MessageListenerExecutor {
             fail(e);
         }
     }
+
+    private Optional<Object> toUpdate = Optional.empty();
 
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
@@ -141,7 +148,7 @@ class MessageListenerExecutor {
             throw new FailFastException("Failing fast on exception from listener {}", e);
         } else {
             logger.error("      Failure of {} with {}", listener, messageClassName, e);
-            messageConsumptionHandler.handleFailure(consumptionId, receivedMessage, listener, e);
+            messageConsumptionHandler.handleFailure(consumptionState.consumptionId(), receivedMessage, listener, e);
         }
     }
 

@@ -98,7 +98,8 @@ public class MessageListenerConsumptionReport {
         }
 
         public MessageListenerConsumptionReport build() {
-            if(!report.allAggregatesIds.isEmpty() && report.aggregateType.isEmpty()) {
+            if(!report.allAggregatesIds.isEmpty()
+                    && report.aggregateType.isEmpty()) {
                 throw new IllegalStateException("Aggregate IDs provided but no type given");
             }
 
@@ -143,7 +144,8 @@ public class MessageListenerConsumptionReport {
                 logWillRetry(e, "update", id);
                 aggregateIdToRetry(id);
             } catch (DuplicateKeyException e) {
-                if(state.isFirstConsumption()) {
+                if(state.isFirstConsumption()
+                        && state.hasUpdates()) {
                     logWillRetry(e, "insert", id);
                     aggregateIdToRetry(id);
                 } else {

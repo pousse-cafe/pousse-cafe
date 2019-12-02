@@ -1,5 +1,6 @@
 package poussecafe.environment;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -28,8 +29,8 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
-        public Builder idsToRetry(Set<Object> idsToRetry) {
-            state.idsToRetry = idsToRetry;
+        public Builder toUpdate(Set<Object> toUpdate) {
+            state.toUpdate = toUpdate;
             return this;
         }
 
@@ -38,10 +39,21 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
+        public Builder hasUpdates(boolean hasUpdates) {
+            state.hasUpdates = hasUpdates;
+            return this;
+        }
+
+        public Builder consumptionId(String consumptionId) {
+            state.consumptionId = consumptionId;
+            return this;
+        }
+
         public MessageListenerGroupConsumptionState build() {
             Objects.requireNonNull(state.message);
             Objects.requireNonNull(state.aggregateRootClass);
             Objects.requireNonNull(state.processorLogger);
+            Objects.requireNonNull(state.consumptionId);
             return state;
         }
     }
@@ -70,15 +82,27 @@ public class MessageListenerGroupConsumptionState {
 
     private boolean isFirstConsumption;
 
-    public Set<Object> idsToRetry() {
-        return idsToRetry;
+    public Set<Object> toUpdate() {
+        return toUpdate;
     }
 
-    private Set<Object> idsToRetry;
+    private Set<Object> toUpdate = new HashSet<>();
 
     public Logger processorLogger() {
         return processorLogger;
     }
 
     private Logger processorLogger;
+
+    private boolean hasUpdates;
+
+    public boolean hasUpdates() {
+        return hasUpdates;
+    }
+
+    private String consumptionId;
+
+    public String consumptionId() {
+        return consumptionId;
+    }
 }

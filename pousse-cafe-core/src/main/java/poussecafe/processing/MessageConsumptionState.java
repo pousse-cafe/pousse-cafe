@@ -29,9 +29,15 @@ public class MessageConsumptionState {
             return this;
         }
 
+        public Builder consumptionId(String consumptionId) {
+            state.consumptionId = consumptionId;
+            return this;
+        }
+
         public MessageConsumptionState build() {
             Objects.requireNonNull(state.message);
             Objects.requireNonNull(state.processorLogger);
+            Objects.requireNonNull(state.consumptionId);
             return state;
         }
     }
@@ -52,8 +58,10 @@ public class MessageConsumptionState {
         return new MessageListenerGroupConsumptionState.Builder()
             .message(message)
             .isFirstConsumption(isFirstConsumption)
-            .idsToRetry(idsToRetry.getOrDefault(group, emptySet()))
+            .toUpdate(idsToRetry.getOrDefault(group, emptySet()))
             .processorLogger(processorLogger)
+            .hasUpdates(group.hasUpdates())
+            .consumptionId(consumptionId)
             .build();
     }
 
@@ -68,4 +76,10 @@ public class MessageConsumptionState {
     }
 
     private Map<MessageListenerGroup, Set<Object>> idsToRetry = new HashMap<>();
+
+    private String consumptionId;
+
+    public String consumptionId() {
+        return consumptionId;
+    }
 }

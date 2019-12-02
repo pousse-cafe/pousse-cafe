@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static poussecafe.collection.Collections.asSet;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class AggregateUpdateMessageConsumerTest {
@@ -62,7 +61,9 @@ public class AggregateUpdateMessageConsumerTest {
         when(currentSpan.startSpan()).thenReturn(newSpan);
 
         AggregateMessageListenerRunner runner = mock(AggregateMessageListenerRunner.class);
-        when(runner.targetAggregatesIds(any())).thenReturn(asSet("id"));
+        when(runner.targetAggregates(any())).thenReturn(new TargetAggregates.Builder<>()
+                .toUpdate("id")
+                .build());
 
         TransactionRunnerLocator transactionRunnerLocator = mock(TransactionRunnerLocator.class);
         when(transactionRunnerLocator.locateTransactionRunner(Aggregate.class)).thenReturn(new NoTransactionRunner());
@@ -98,10 +99,11 @@ public class AggregateUpdateMessageConsumerTest {
                     .build())
                 .isFirstConsumption(true)
                 .aggregateRootClass(Optional.of(aggregateRoot.getClass()))
-                .idsToRetry(emptySet())
+                .toUpdate(emptySet())
                 .processorLogger(LoggerFactory.getLogger(getClass()))
+                .consumptionId("consumptionId")
                 .build();
-        report = consumer.consume(state);
+        report = consumer.consume(state, "id");
     }
 
     private MessageListenerConsumptionReport report;
