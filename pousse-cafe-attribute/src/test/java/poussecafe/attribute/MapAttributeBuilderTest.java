@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
-import poussecafe.attribute.MapAttribute;
-import poussecafe.attribute.AttributeBuilder;
 import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class MapAttributeBuilderTest {
@@ -19,15 +18,16 @@ public class MapAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
+        thenValueIsImmutable(valueWithoutConversion, "test", "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
-        propertyWithoutConversion = AttributeBuilder.map(String.class, String.class)
+        attributeWithoutConversion = AttributeBuilder.map(String.class, String.class)
                 .withMap(value)
                 .build();
     }
 
-    private MapAttribute<String, String> propertyWithoutConversion;
+    private MapAttribute<String, String> attributeWithoutConversion;
 
     private Map<String, String> value = initValue();
 
@@ -38,8 +38,8 @@ public class MapAttributeBuilderTest {
     }
 
     private void whenWritingValueWithoutConversion() {
-        propertyWithoutConversion.value(newValue);
-        valueWithoutConversion = propertyWithoutConversion.value();
+        attributeWithoutConversion.value(newValue);
+        valueWithoutConversion = attributeWithoutConversion.value();
     }
 
     private Map<String, String> newValue = initNewValue();
@@ -56,6 +56,17 @@ public class MapAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
+    private <K, V> void thenValueIsImmutable(Map<K, V> value, K newKey, V newValue) {
+        boolean modificationSuccessful;
+        try {
+            value.put(newKey, newValue);
+            modificationSuccessful = true;
+        } catch (Exception e) {
+            modificationSuccessful = false;
+        }
+        assertFalse(modificationSuccessful);
+    }
+
     private Map<StringId, BigDecimal> valueWithConversion;
 
     private void thenValueWithConvertionIs(Map<StringId, BigDecimal> value) {
@@ -67,10 +78,11 @@ public class MapAttributeBuilderTest {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(valueWithConversion);
+        thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
+        attributeWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
                 .entriesStoredAs(String.class, String.class)
                 .adaptOnRead(StringId::new, BigDecimal::new)
                 .adaptOnWrite(StringId::stringValue, BigDecimal::toString)
@@ -78,13 +90,13 @@ public class MapAttributeBuilderTest {
                 .build();
     }
 
-    private MapAttribute<StringId, BigDecimal> propertyWithConversion;
+    private MapAttribute<StringId, BigDecimal> attributeWithConversion;
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue
+        attributeWithConversion.value(newValue
                 .entrySet()
                 .stream()
                 .collect(toMap(entry -> new StringId(entry.getKey()), entry -> new BigDecimal(entry.getValue()))));
-        valueWithConversion = propertyWithConversion.value();
+        valueWithConversion = attributeWithConversion.value();
     }
 }

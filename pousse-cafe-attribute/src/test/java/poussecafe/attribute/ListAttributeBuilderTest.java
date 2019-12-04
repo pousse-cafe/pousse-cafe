@@ -3,13 +3,12 @@ package poussecafe.attribute;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import poussecafe.attribute.ListAttribute;
-import poussecafe.attribute.AttributeBuilder;
 import poussecafe.util.StringId;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class ListAttributeBuilderTest {
@@ -19,21 +18,22 @@ public class ListAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
+        thenValueIsImmutable(valueWithoutConversion, "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
-        propertyWithoutConversion = AttributeBuilder.list(String.class)
+        attributeWithoutConversion = AttributeBuilder.list(String.class)
                 .withList(value)
                 .build();
     }
 
-    private ListAttribute<String> propertyWithoutConversion;
+    private ListAttribute<String> attributeWithoutConversion;
 
     private List<String> value = new ArrayList<>(asList("current"));
 
     private void whenWritingValueWithoutConversion() {
-        propertyWithoutConversion.value(newValue);
-        valueWithoutConversion = propertyWithoutConversion.value();
+        attributeWithoutConversion.value(newValue);
+        valueWithoutConversion = attributeWithoutConversion.value();
     }
 
     private List<String> newValue = asList("new");
@@ -44,7 +44,18 @@ public class ListAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private ListAttribute<StringId> propertyWithConversion;
+    private <T> void thenValueIsImmutable(List<T> value, T newElement) {
+        boolean modificationSuccessful;
+        try {
+            value.add(newElement);
+            modificationSuccessful = true;
+        } catch (Exception e) {
+            modificationSuccessful = false;
+        }
+        assertFalse(modificationSuccessful);
+    }
+
+    private ListAttribute<StringId> attributeWithConversion;
 
     private List<StringId> valueWithConversion;
 
@@ -57,10 +68,11 @@ public class ListAttributeBuilderTest {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(valueWithConversion);
+        thenValueIsImmutable(valueWithConversion, new StringId("test"));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.list(StringId.class)
+        attributeWithConversion = AttributeBuilder.list(StringId.class)
                 .itemsStoredAs(String.class)
                 .adaptOnGet(StringId::new)
                 .adaptOnSet(StringId::stringValue)
@@ -69,7 +81,7 @@ public class ListAttributeBuilderTest {
     }
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.stream().map(StringId::new).collect(toList()));
-        valueWithConversion = propertyWithConversion.value();
+        attributeWithConversion.value(newValue.stream().map(StringId::new).collect(toList()));
+        valueWithConversion = attributeWithConversion.value();
     }
 }

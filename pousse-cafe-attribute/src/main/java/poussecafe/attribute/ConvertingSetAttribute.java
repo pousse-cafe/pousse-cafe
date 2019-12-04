@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -19,7 +20,7 @@ public abstract class ConvertingSetAttribute<F, T> implements SetAttribute<T> {
 
     @Override
     public Set<T> value() {
-        return setAttribute.stream().map(this::convertFrom).collect(toSet());
+        return Collections.unmodifiableSet(setAttribute.stream().map(this::convertFrom).collect(toSet()));
     }
 
     protected abstract T convertFrom(F from);

@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +20,7 @@ public abstract class ConvertingListAttribute<F, T> implements ListAttribute<T> 
 
     @Override
     public List<T> value() {
-        return listAttribute.stream().map(this::convertFrom).collect(toList());
+        return Collections.unmodifiableList(listAttribute.stream().map(this::convertFrom).collect(toList()));
     }
 
     protected abstract T convertFrom(F from);

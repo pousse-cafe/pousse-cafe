@@ -3,13 +3,12 @@ package poussecafe.attribute;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
-import poussecafe.attribute.AttributeBuilder;
-import poussecafe.attribute.SetAttribute;
 import poussecafe.util.StringId;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static poussecafe.collection.Collections.asSet;
 
@@ -20,21 +19,22 @@ public class SetAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
+        thenValueIsImmutable(valueWithoutConversion, "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
-        propertyWithoutConversion = AttributeBuilder.set(String.class)
+        attributeWithoutConversion = AttributeBuilder.set(String.class)
                 .withSet(value)
                 .build();
     }
 
-    private SetAttribute<String> propertyWithoutConversion;
+    private SetAttribute<String> attributeWithoutConversion;
 
     private Set<String> value = new HashSet<>(asList("current"));
 
     private void whenWritingValueWithoutConversion() {
-        propertyWithoutConversion.value(newValue);
-        valueWithoutConversion = propertyWithoutConversion.value();
+        attributeWithoutConversion.value(newValue);
+        valueWithoutConversion = attributeWithoutConversion.value();
     }
 
     private Set<String> newValue = asSet("new");
@@ -45,15 +45,27 @@ public class SetAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
+    private <T> void thenValueIsImmutable(Set<T> value, T newElement) {
+        boolean modificationSuccessful;
+        try {
+            value.add(newElement);
+            modificationSuccessful = true;
+        } catch (Exception e) {
+            modificationSuccessful = false;
+        }
+        assertFalse(modificationSuccessful);
+    }
+
     @Test
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(value.stream().map(StringId::new).collect(toSet()));
+        thenValueIsImmutable(valueWithConversion, new StringId("test"));
     }
 
     private void givenReadWriteAttributeWithConversion() {
-        propertyWithConversion = AttributeBuilder.set(StringId.class)
+        attributeWithConversion = AttributeBuilder.set(StringId.class)
                 .itemsStoredAs(String.class)
                 .adaptOnGet(StringId::new)
                 .adaptOnSet(StringId::stringValue)
@@ -61,11 +73,11 @@ public class SetAttributeBuilderTest {
                 .build();
     }
 
-    private SetAttribute<StringId> propertyWithConversion;
+    private SetAttribute<StringId> attributeWithConversion;
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.value(newValue.stream().map(StringId::new).collect(toSet()));
-        valueWithConversion = propertyWithConversion.value();
+        attributeWithConversion.value(newValue.stream().map(StringId::new).collect(toSet()));
+        valueWithConversion = attributeWithConversion.value();
     }
 
     private Set<StringId> valueWithConversion;

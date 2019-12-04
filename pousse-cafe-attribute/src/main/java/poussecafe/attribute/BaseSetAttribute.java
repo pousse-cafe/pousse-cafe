@@ -1,7 +1,7 @@
 package poussecafe.attribute;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -18,7 +18,7 @@ public class BaseSetAttribute<T> implements SetAttribute<T> {
 
     @Override
     public Set<T> value() {
-        return new HashSet<>(set);
+        return Collections.unmodifiableSet(set);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BaseSetAttribute<T> implements SetAttribute<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return set.iterator();
+        return value().iterator();
     }
 
     @Override
