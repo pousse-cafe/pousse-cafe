@@ -300,8 +300,10 @@ public class EnvironmentBuilder {
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .build();
+        MessageListenerConsistencyValidator messageListenerConsistencyValidator = new MessageListenerConsistencyValidator();
         for(MessageListenerDefinition definition : definedListeners) {
             MessageListener listener = messageListenerFactory.build(definition);
+            messageListenerConsistencyValidator.include(listener);
             environment.messageListenerRegistrar.registerListener(listener);
         }
     }
