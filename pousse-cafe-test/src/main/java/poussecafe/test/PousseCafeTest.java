@@ -26,8 +26,7 @@ public abstract class PousseCafeTest {
     }
 
     protected Runtime.Builder runtimeBuilder() {
-        return new Runtime.Builder()
-                .failFast(true);
+        return new Runtime.Builder();
     }
 
     public MessageListenersPoolSplitStrategy replicationStrategy(int numberOfPools) {
