@@ -100,6 +100,13 @@ public class Runtime {
             return this;
         }
 
+        public Builder processingThreads(int processingThreads) {
+            runtime.messageListenersPoolSplitStrategy = new CollisionPreventionStrategy.Builder()
+                    .expectedNumberOfPools(processingThreads)
+                    .build();
+            return this;
+        }
+
         public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
             runtime.messageConsumptionConfiguration = messageConsumptionConfiguration;
             return this;
