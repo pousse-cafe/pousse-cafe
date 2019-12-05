@@ -9,19 +9,19 @@ public class MessageListeners {
             if(factoryListener == null) {
                 factoryListener = listener;
             } else {
-                throw new IllegalArgumentException("There is already a factory listener for message " + listener.messageClass().getName());
+                throw new IllegalArgumentException("There is already a factory listener in " + listener.aggregateRootClass().orElseThrow() + " for message " + listener.messageClass().getName());
             }
         } else if(priority == MessageListenerType.AGGREGATE) {
             if(aggregateListener == null) {
                 aggregateListener = listener;
             } else {
-                throw new IllegalArgumentException("There is already a aggregate listener for message " + listener.messageClass().getName());
+                throw new IllegalArgumentException("There is already an aggregate listener in " + listener.aggregateRootClass().orElseThrow() + " for message " + listener.messageClass().getName());
             }
         } else if(priority == MessageListenerType.REPOSITORY) {
             if(repositoryListener == null) {
                 repositoryListener = listener;
             } else {
-                throw new IllegalArgumentException("There is already a repository listener for message " + listener.messageClass().getName());
+                throw new IllegalArgumentException("There is already a repository listener in " + listener.aggregateRootClass().orElseThrow() + " for message " + listener.messageClass().getName());
             }
         } else {
             throw new UnsupportedOperationException("Unsupported priority " + priority);
