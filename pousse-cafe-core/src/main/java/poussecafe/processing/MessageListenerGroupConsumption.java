@@ -1,6 +1,7 @@
 package poussecafe.processing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,6 +52,11 @@ public class MessageListenerGroupConsumption {
             return this;
         }
 
+        public Builder repositoryListeners(List<MessageListener> repositoryListeners) {
+            consumption.repositoryListeners = repositoryListeners;
+            return this;
+        }
+
         public Builder otherListeners(List<MessageListener> otherListeners) {
             consumption.otherListeners = otherListeners;
             return this;
@@ -81,6 +87,7 @@ public class MessageListenerGroupConsumption {
             Objects.requireNonNull(consumption.consumptionState);
             Objects.requireNonNull(consumption.aggregateListeners);
             Objects.requireNonNull(consumption.factoryListeners);
+            Objects.requireNonNull(consumption.repositoryListeners);
             Objects.requireNonNull(consumption.otherListeners);
             Objects.requireNonNull(consumption.messageConsumptionHandler);
             Objects.requireNonNull(consumption.aggregateRootClass);
@@ -98,6 +105,8 @@ public class MessageListenerGroupConsumption {
 
     private List<MessageListener> factoryListeners;
 
+    private List<MessageListener> repositoryListeners;
+
     private List<MessageListener> otherListeners;
 
     private MessageConsumptionHandler messageConsumptionHandler;
@@ -105,10 +114,96 @@ public class MessageListenerGroupConsumption {
     private boolean failFast;
 
     public void execute() {
+        executeRepositoryListeners();
         executeUpdates();
         executeCreations();
         planUpdatesRetryFromMissingCreations();
         executeOtherListeners();
+    }
+
+    private void executeRepositoryListeners() {
+        executeSimpleListeners(repositoryListeners);
+    }
+
+    private void executeSimpleListeners(Collection<MessageListener> listeners) {
+        for(MessageListener listener : listeners) {
+            MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
+                    .listener(listener)
+                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .consumptionState(consumptionState)
+                    .failFast(failFast)
+                    .logger(logger)
+                    .build();
+            reports.add(executeInApmTransaction(executor));
+        }
+    }
+
+    private List<MessageListenerConsumptionReport> reports = new ArrayList<>();
+
+    public List<MessageListenerConsumptionReport> reports() {
+        return Collections.unmodifiableList(reports);
+    }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private MessageListenerConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
+        String transactionName = executor.listener().shortId();
+        ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
+        try {
+            executor.executeListener();
+            configureApmTransaction(executor, apmTransaction);
+            return executor.messageConsumptionReport();
+        } catch (FailFastException e) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            apmTransaction.captureException(e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Listener failed", e);
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            captureException(apmTransaction, e);
+            return new MessageListenerConsumptionReport.Builder(executor.listener().shortId())
+                    .failure(e)
+                    .build();
+        } finally {
+            apmTransaction.end();
+        }
+    }
+
+    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
+    private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
+        MessageListenerConsumptionReport report = executor.messageConsumptionReport();
+        if(report.isSuccess()) {
+            apmTransaction.setResult(ApmTransactionResults.SUCCESS);
+        } else if(report.isFailed()) {
+            apmTransaction.setResult(ApmTransactionResults.FAILURE);
+            if(report.failure() != null) {
+                captureException(apmTransaction, report.failure());
+            } else if(!report.failures().isEmpty()) {
+                Iterator<Throwable> exceptionsIterator = report.failures().values().iterator();
+                Throwable oneException = exceptionsIterator.next();
+                captureException(apmTransaction, oneException);
+                if(exceptionsIterator.hasNext()) {
+                    logger.warn("Some exceptions where not captured by APM");
+                }
+            }
+        } else if(report.mustRetry()) {
+            apmTransaction.setResult(ApmTransactionResults.SKIP);
+            apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, "retry_later");
+        } else if(report.isSkipped()) {
+            apmTransaction.setResult(ApmTransactionResults.SKIP);
+            apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, "already_executed");
+        } else {
+            throw new IllegalArgumentException("Unsupported consumption report");
+        }
+    }
+
+    private void captureException(ApmTransaction apmTransaction, Throwable e) {
+        if(e instanceof MethodInvokerException) {
+            apmTransaction.captureException(e.getCause());
+        } else {
+            apmTransaction.captureException(e);
+        }
     }
 
     private void executeUpdates() {
@@ -166,74 +261,6 @@ public class MessageListenerGroupConsumption {
 
     private List<MessageListenerConsumptionReport> updatesReports = new ArrayList<>();
 
-    private List<MessageListenerConsumptionReport> reports = new ArrayList<>();
-
-    public List<MessageListenerConsumptionReport> reports() {
-        return Collections.unmodifiableList(reports);
-    }
-
-    private MessageListenerConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
-        String transactionName = executor.listener().shortId();
-        ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
-        try {
-            executor.executeListener();
-            configureApmTransaction(executor, apmTransaction);
-            return executor.messageConsumptionReport();
-        } catch (FailFastException e) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Listener failed", e);
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            captureException(apmTransaction, e);
-            return new MessageListenerConsumptionReport.Builder(executor.listener().shortId())
-                    .failure(e)
-                    .build();
-        } finally {
-            apmTransaction.end();
-        }
-    }
-
-    private void captureException(ApmTransaction apmTransaction, Throwable e) {
-        if(e instanceof MethodInvokerException) {
-            apmTransaction.captureException(e.getCause());
-        } else {
-            apmTransaction.captureException(e);
-        }
-    }
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
-        MessageListenerConsumptionReport report = executor.messageConsumptionReport();
-        if(report.isSuccess()) {
-            apmTransaction.setResult(ApmTransactionResults.SUCCESS);
-        } else if(report.isFailed()) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            if(report.failure() != null) {
-                captureException(apmTransaction, report.failure());
-            } else if(!report.failures().isEmpty()) {
-                Iterator<Throwable> exceptionsIterator = report.failures().values().iterator();
-                Throwable oneException = exceptionsIterator.next();
-                captureException(apmTransaction, oneException);
-                if(exceptionsIterator.hasNext()) {
-                    logger.warn("Some exceptions where not captured by APM");
-                }
-            }
-        } else if(report.mustRetry()) {
-            apmTransaction.setResult(ApmTransactionResults.SKIP);
-            apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, "retry_later");
-        } else if(report.isSkipped()) {
-            apmTransaction.setResult(ApmTransactionResults.SKIP);
-            apmTransaction.addLabel(ApmTransactionLabels.SKIP_REASON, "already_executed");
-        } else {
-            throw new IllegalArgumentException("Unsupported consumption report");
-        }
-    }
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
-
     private void executeCreations() {
         for(MessageListener listener : factoryListeners) {
             MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
@@ -275,16 +302,7 @@ public class MessageListenerGroupConsumption {
     }
 
     private void executeOtherListeners() {
-        for(MessageListener listener : otherListeners) {
-            MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
-                    .listener(listener)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .consumptionState(consumptionState)
-                    .failFast(failFast)
-                    .logger(logger)
-                    .build();
-            reports.add(executeInApmTransaction(executor));
-        }
+        executeSimpleListeners(otherListeners);
     }
 
     @SuppressWarnings("rawtypes")

@@ -71,6 +71,8 @@ public class MessageListenerGroup {
                     group.aggregateListeners.add(listener);
                 } else if(listener.priority() == MessageListenerType.FACTORY) {
                     group.factoryListeners.add(listener);
+                } else if(listener.priority() == MessageListenerType.REPOSITORY) {
+                    group.repositoryListeners.add(listener);
                 } else {
                     group.otherListeners.add(listener);
                 }
@@ -86,6 +88,8 @@ public class MessageListenerGroup {
 
     private List<MessageListener> factoryListeners = new ArrayList<>();
 
+    private List<MessageListener> repositoryListeners = new ArrayList<>();
+
     private List<MessageListener> otherListeners = new ArrayList<>();
 
     private List<MessageListener> listeners;
@@ -96,6 +100,7 @@ public class MessageListenerGroup {
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .consumptionState(consumptionState)
                 .factoryListeners(factoryListeners)
+                .repositoryListeners(repositoryListeners)
                 .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .otherListeners(otherListeners)
