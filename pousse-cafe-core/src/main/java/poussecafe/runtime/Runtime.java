@@ -296,7 +296,11 @@ public class Runtime {
         return environment.messageFactory().newMessage(commandClass);
     }
 
-    public CompletableFuture<Void> submitCommand(Command command) {
+    public synchronized CompletableFuture<Void> submitCommand(Command command) {
+        if(!started) {
+            throw new IllegalStateException("Cannot submit command if Runtime is not started yet. Did you forget to call Runtime.start()?");
+        }
+
         CompletableFuture<Void> future = new CompletableFuture<>();
         messageBroker.dispatch(new ReceivedMessage.Builder()
                 .payload(new OriginalAndMarshaledMessage.Builder()
