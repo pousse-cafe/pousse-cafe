@@ -15,16 +15,16 @@ public class MessageListenerDefinition {
 
     public static void checkMethodIsListener(Method method) {
         if(method.getParameterCount() != 1) {
-            throw new PousseCafeException("A message listener takes exactly one argument");
+            throw new PousseCafeException("Message listener " + method + " does not take exactly one argument");
         }
 
         Class<?> argumentType = method.getParameterTypes()[0];
         if(!Message.class.isAssignableFrom(argumentType)) {
-            throw new PousseCafeException("A message listener only accepts a sub-class of Message as argument");
+            throw new PousseCafeException("Message listener " + method + " does not accept a sub-class of Message as argument");
         }
 
         if(!Modifier.isPublic(method.getModifiers())) {
-            throw new PousseCafeException("A message listener must be a public method");
+            throw new PousseCafeException("Message listener " + method + " must be a public");
         }
     }
 
