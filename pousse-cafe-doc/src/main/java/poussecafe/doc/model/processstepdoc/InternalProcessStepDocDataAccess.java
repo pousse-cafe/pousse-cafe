@@ -20,9 +20,8 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
     public List<ProcessStepDocData> findByDomainProcess(ModuleDocId moduleDocId,
             String processName) {
         return findAll().stream()
-                .filter(data -> data.processName().value().isPresent())
                 .filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(moduleDocId))
-                .filter(data -> data.processName().value().get().equals(processName))
+                .filter(data -> data.processNames().value().contains(processName))
                 .collect(toList());
     }
 

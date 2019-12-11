@@ -19,7 +19,7 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
 
         Attribute<ModuleComponentDoc> moduleComponentDoc();
 
-        OptionalAttribute<String> processName();
+        SetAttribute<String> processNames();
 
         OptionalAttribute<StepMethodSignature> stepMethodSignature();
 

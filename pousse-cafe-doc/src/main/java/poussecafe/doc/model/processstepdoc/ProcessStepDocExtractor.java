@@ -1,9 +1,11 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -28,7 +30,9 @@ import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
+import static poussecafe.collection.Collections.asSet;
 
 public class ProcessStepDocExtractor implements Service {
 
@@ -73,6 +77,11 @@ public class ProcessStepDocExtractor implements Service {
     private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
+        Set<String> processNames = processNames(methodDoc);
+        Set<String> producedEvents = new HashSet<>(annotationsResolver.event(methodDoc));
+        Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
+        Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
+
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
             Logger.info("Extracting custom step " + signature);
@@ -84,13 +93,14 @@ public class ProcessStepDocExtractor implements Service {
                             .description(annotationsResolver.renderCommentBody(methodDoc))
                             .build())
                     .build();
+
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
                     moduleComponentDoc);
-            processStepDoc.attributes().processName().value(processName(methodDoc));
+            processStepDoc.attributes().processNames().value(processNames);
             processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
-            processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
-            processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
-            processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
+            processStepDoc.attributes().producedEvents().value(producedEvents);
+            processStepDoc.attributes().fromExternals().value(fromExternals);
+            processStepDoc.attributes().toExternals().value(toExternals);
             stepDocs.add(processStepDoc);
         }
         return stepDocs;
@@ -139,21 +149,26 @@ public class ProcessStepDocExtractor implements Service {
 
     private ProcessStepDocFactory messageListenerDocFactory;
 
-    private Optional<String> processName(ExecutableElement methodDoc) {
+    private Set<String> processNames(ExecutableElement methodDoc) {
         TypeElement containingClass = (TypeElement) methodDoc.getEnclosingElement();
-        List<String> processNames = annotationsResolver.process(methodDoc);
+        Set<String> processNames = new HashSet<>(annotationsResolver.process(methodDoc));
         if(domainProcessDocFactory.isDomainProcessDoc(containingClass)) {
-            return Optional.of(domainProcessDocFactory.name(containingClass));
+            return asSet(domainProcessDocFactory.name(containingClass));
         } else if(!processNames.isEmpty()) {
-            return Optional.of(processNames.get(0));
+            return Collections.unmodifiableSet(processNames);
         } else {
-            return Optional.empty();
+            return emptySet();
         }
     }
 
     private ProcessStepDoc extractDeclaredStep(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
+
+        Set<String> processNames = processNames(methodDoc);
+        Set<String> producedEvents = new HashSet<>(annotationsResolver.event(methodDoc));
+        Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
+        Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
 
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
@@ -164,21 +179,6 @@ public class ProcessStepDocExtractor implements Service {
                         .build())
                 .consumedMessageName(consumedMessage)
                 .build();
-        ProcessStepDocId id = new ProcessStepDocId(stepMethodSignature);
-        ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
-                .moduleDocId(moduleDocId)
-                .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
-                .build();
-
-        AggregateDocId aggregate = declaringAggregate(methodDoc);
-        ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
-                moduleComponentDoc);
-        processStepDoc.attributes().processName().value(processName(methodDoc));
-        processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
-        processStepDoc.attributes().producedEvents().value(new HashSet<>(annotationsResolver.event(methodDoc)));
-        processStepDoc.attributes().fromExternals().value(new HashSet<>(annotationsResolver.fromExternal(methodDoc)));
-        processStepDoc.attributes().toExternals().value(new HashSet<>(annotationsResolver.toExternal(methodDoc)));
-        processStepDoc.attributes().aggregate().value(Optional.of(aggregate));
 
         if(aggregateDocFactory.isFactoryDoc(enclosingType)) {
             TypeElement aggregateTypeElement = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
@@ -189,10 +189,27 @@ public class ProcessStepDocExtractor implements Service {
                     .findFirst();
             if(onAddMethod.isPresent()) {
                 ExecutableElement presentOnAddMethod = onAddMethod.get();
-                processStepDoc.attributes().producedEvents().addAll(annotationsResolver.event(presentOnAddMethod));
-                processStepDoc.attributes().toExternals().addAll(annotationsResolver.toExternal(presentOnAddMethod));
+                producedEvents.addAll(annotationsResolver.event(presentOnAddMethod));
+                toExternals.addAll(annotationsResolver.toExternal(presentOnAddMethod));
             }
         }
+
+        AggregateDocId aggregate = declaringAggregate(methodDoc);
+
+        ProcessStepDocId id = new ProcessStepDocId(stepMethodSignature);
+        ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
+                .moduleDocId(moduleDocId)
+                .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
+                .build();
+
+        ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
+                moduleComponentDoc);
+        processStepDoc.attributes().processNames().value(processNames);
+        processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
+        processStepDoc.attributes().producedEvents().value(producedEvents);
+        processStepDoc.attributes().fromExternals().value(fromExternals);
+        processStepDoc.attributes().toExternals().value(toExternals);
+        processStepDoc.attributes().aggregate().value(Optional.of(aggregate));
 
         return processStepDoc;
     }

@@ -181,9 +181,11 @@ public class DomainProcessStepsFactory implements Service {
         Set<String> otherDomainProcesses = new HashSet<>();
         for(String producedEvent : producedEvents) {
             for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(moduleDocId, producedEvent)) {
-                Optional<String> processName = stepDoc.attributes().processName().value();
-                if(processName.isPresent() && !domainProcessName.equals(processName.get())) {
-                    otherDomainProcesses.add(processName.get());
+                Set<String> processNames = stepDoc.attributes().processNames().value();
+                for(String processName : processNames) {
+                    if(!processName.equals(domainProcessName)) {
+                        otherDomainProcesses.add(processName);
+                    }
                 }
             }
         }
@@ -197,11 +199,13 @@ public class DomainProcessStepsFactory implements Service {
             Optional<String> consumedEvent) {
         Set<String> otherDomainProcesses = new HashSet<>();
         if(consumedEvent.isPresent()) {
-            List<ProcessStepDoc> stepsproducingEvent = messageListenerDocRepository.findProducing(moduleDocId, consumedEvent.get());
-            for(ProcessStepDoc stepDoc : stepsproducingEvent) {
-                Optional<String> processName = stepDoc.attributes().processName().value();
-                if(processName.isPresent() && !domainProcessName.equals(processName.get())) {
-                    otherDomainProcesses.add(processName.get());
+            List<ProcessStepDoc> stepsProducingEvent = messageListenerDocRepository.findProducing(moduleDocId, consumedEvent.get());
+            for(ProcessStepDoc stepDoc : stepsProducingEvent) {
+                Set<String> processNames = stepDoc.attributes().processNames().value();
+                for(String processName : processNames) {
+                    if(!processName.equals(domainProcessName)) {
+                        otherDomainProcesses.add(processName);
+                    }
                 }
             }
         }

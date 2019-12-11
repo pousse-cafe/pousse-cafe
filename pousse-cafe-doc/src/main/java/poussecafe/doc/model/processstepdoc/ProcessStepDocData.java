@@ -45,14 +45,13 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     private HashSet<String> producedEvents = new HashSet<>();
 
     @Override
-    public OptionalAttribute<String> processName() {
-        return AttributeBuilder.optional(String.class)
-                .read(() -> processName)
-                .write(value -> processName = value)
+    public SetAttribute<String> processNames() {
+        return AttributeBuilder.set(String.class)
+                .withSet(processNames)
                 .build();
     }
 
-    private String processName;
+    private HashSet<String> processNames = new HashSet<>();
 
     @Override
     public OptionalAttribute<StepMethodSignature> stepMethodSignature() {

@@ -31,11 +31,7 @@ public class ProcessStepDocCreation extends DomainProcess {
             runInTransaction(ModuleDoc.class, () -> {
                 ProcessStepDoc processStepDoc = processStepRepository.get(id);
 
-                Optional<String> processName = processStepDoc.attributes().processName().value();
-                if(!processName.isPresent()) {
-                    processStepDoc.attributes().processName().valueOf(doc.attributes().processName());
-                }
-
+                processStepDoc.attributes().processNames().addAll(doc.attributes().processNames().value());
                 processStepDoc.attributes().producedEvents().addAll(doc.attributes().producedEvents().value());
                 processStepDoc.attributes().fromExternals().addAll(doc.attributes().fromExternals().value());
                 processStepDoc.attributes().toExternals().addAll(doc.attributes().toExternals().value());
