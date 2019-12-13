@@ -6,6 +6,10 @@ import poussecafe.messaging.Message;
 
 import static poussecafe.collection.Collections.asSet;
 
+/**
+ * @deprecated use AlwaysUpdateOneRunner instead
+ */
+@Deprecated(since = "0.16.0")
 public abstract class SingleAggregateMessageListenerRunner<M extends Message, K, A extends AggregateRoot<K, ?>> extends DefaultAggregateMessageListenerRunner<M, K, A> {
 
     @Override

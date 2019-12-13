@@ -15,4 +15,6 @@ public interface EntityDataAccess<K, D extends EntityAttributes<K>> {
     void deleteAll();
 
     List<D> findAll();
+
+    boolean existsById(K id);
 }

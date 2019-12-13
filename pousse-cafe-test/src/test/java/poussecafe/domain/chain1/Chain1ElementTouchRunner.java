@@ -1,21 +1,19 @@
 package poussecafe.domain.chain1;
 
-import java.util.Set;
-import poussecafe.discovery.DefaultAggregateMessageListenerRunner;
+import poussecafe.environment.TargetAggregates;
+import poussecafe.listeners.NoContextByDefaultRunner;
 import poussecafe.messaging.internal.NextChainElementId;
 
-import static java.util.Collections.emptySet;
-import static poussecafe.collection.Collections.asSet;
-
-public class Chain1ElementTouchRunner extends DefaultAggregateMessageListenerRunner<ChainElementTouchable, Chain1ElementId, Chain1Element> {
+public class Chain1ElementTouchRunner
+extends NoContextByDefaultRunner<ChainElementTouchable, Chain1ElementId, Chain1Element> {
 
     @Override
-    public Set<Chain1ElementId> targetAggregatesIds(ChainElementTouchable event) {
+    public TargetAggregates<Chain1ElementId> targetAggregates(ChainElementTouchable event) {
         NextChainElementId elementId = event.next().value();
+        TargetAggregates.Builder<Chain1ElementId> builder = new TargetAggregates.Builder<>();
         if(elementId.typeNumber() == 1) {
-            return asSet(elementId.toChain1ElementId());
-        } else {
-            return emptySet();
+            builder.toUpdate(elementId.toChain1ElementId());
         }
+        return builder.build();
     }
 }

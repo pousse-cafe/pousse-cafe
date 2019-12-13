@@ -190,4 +190,9 @@ public class InternalDataAccess<K, D extends EntityAttributes<K>> implements Ent
         }
         locker = Optional.of(new OptimisticLocker(versionField));
     }
+
+    @Override
+    public synchronized boolean existsById(K id) {
+        return storage.containsKey(id);
+    }
 }

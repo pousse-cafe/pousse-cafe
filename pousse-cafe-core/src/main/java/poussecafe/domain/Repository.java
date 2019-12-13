@@ -224,4 +224,14 @@ public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends Ent
     public EntityDataAccess<K, D> dataAccess() {
         return dataAccess;
     }
+
+    public boolean existsById(K id) {
+        ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
+        span.setName("existsById(" + entityClass.getSimpleName() + ")");
+        try {
+            return dataAccess.existsById(id);
+        } finally {
+            span.end();
+        }
+    }
 }

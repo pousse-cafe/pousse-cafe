@@ -1,12 +1,13 @@
 package poussecafe.mymodule.domain.myaggregate;
 
-import poussecafe.discovery.SingleAggregateMessageListenerRunner;
+import poussecafe.listeners.AlwaysUpdateOneRunner;
 import poussecafe.mymodule.ACommand;
 
-public class DoSomethingRunner extends SingleAggregateMessageListenerRunner<ACommand, MyAggregateId, MyAggregate> {
+public class DoSomethingRunner
+extends AlwaysUpdateOneRunner<ACommand, MyAggregateId, MyAggregate> {
 
     @Override
-    public MyAggregateId targetAggregateId(ACommand message) {
+    protected MyAggregateId aggregateId(ACommand message) {
         return message.id().value();
     }
 }
