@@ -18,15 +18,15 @@ public class MessageProcessingThreadTest implements Callback {
 
     @Test
     public void startedThreadEventuallyProcessesMessages() {
-        givenStartedProcessingThreadWithProcessorNotFailingFast();
+        givenProcessorNotFailing();
+        givenStartedThread();
         givenMessagesToProcess();
         whenSubmittingMessagesAndStopping();
         thenMessagesHandled();
     }
 
-    private void givenStartedProcessingThreadWithProcessorNotFailingFast() {
+    private void givenProcessorNotFailing() {
         messageProcessor = mock(MessageProcessor.class);
-        givenStartedThread();
     }
 
     private void givenStartedThread() {
@@ -97,20 +97,34 @@ public class MessageProcessingThreadTest implements Callback {
 
     @Test
     public void failFastExceptionThrownByProcessorCallsFailfastAndStopsThread() {
-        givenStartedProcessingThreadWithFailinFastProcessor();
+        givenFailinFastProcessor();
+        givenStartedThread();
         givenMessagesToProcess();
         whenSubmittingMessages();
         thenFailFastCalled();
     }
 
-    private void givenStartedProcessingThreadWithFailinFastProcessor() {
+    private void givenFailinFastProcessor() {
         messageProcessor = mock(MessageProcessor.class);
         doThrow(FailFastException.class).when(messageProcessor).processMessage(any(OriginalAndMarshaledMessage.class));
-        givenStartedThread();
     }
 
     private void thenFailFastCalled() {
         thread.join(Duration.ofSeconds(3));
         assertTrue(failFast);
+    }
+
+    @Test
+    public void anyExceptionThrownByProcessorExceptFailFastIsCaughtAndMessageAcked() {
+        givenFailinProcessor();
+        givenStartedThread();
+        givenMessagesToProcess();
+        whenSubmittingMessagesAndStopping();
+        thenMessagesHandled();
+    }
+
+    private void givenFailinProcessor() {
+        messageProcessor = mock(MessageProcessor.class);
+        doThrow(RuntimeException.class).when(messageProcessor).processMessage(any(OriginalAndMarshaledMessage.class));
     }
 }
