@@ -90,6 +90,8 @@ class MessageProcessingThread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new PousseCafeException("Unable to process message, current thread was interrupted");
+            } catch (Exception e) {
+                logger.error("Unhandled exception in processing thread", e);
             }
         }
         logger.info("Processing thread {} stops.", threadId);
@@ -104,6 +106,9 @@ class MessageProcessingThread {
         } catch (FailFastException e) {
             unitOfWork.message.failFast();
             stop();
+        } catch (Exception e) {
+            logger.error("Unhandled exception while processing unit of work", e);
+            unitOfWork.message.signalProcessed(threadId);
         }
     }
 
