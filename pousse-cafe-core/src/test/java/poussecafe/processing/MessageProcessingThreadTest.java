@@ -119,7 +119,7 @@ public class MessageProcessingThreadTest implements Callback {
         givenFailinProcessor();
         givenStartedThread();
         givenMessagesToProcess();
-        whenSubmittingMessages();
+        whenSubmittingMessagesAndStopping();
         thenMessagesHandled();
     }
 
