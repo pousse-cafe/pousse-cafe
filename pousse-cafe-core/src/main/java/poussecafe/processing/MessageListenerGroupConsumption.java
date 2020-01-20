@@ -214,17 +214,29 @@ public class MessageListenerGroupConsumption {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void planUpdates() {
-        Message original = consumptionState.message().original();
         for(MessageListener listener : aggregateListeners) {
-            AggregateUpdateMessageConsumer consumer = (AggregateUpdateMessageConsumer) listener.consumer();
-            AggregateMessageListenerRunner runner = consumer.runner();
-            TargetAggregates targetAggregates = runner.targetAggregates(original);
-            for(Object aggregateId : targetAggregates.toUpdate()) {
-                if(updates.put(aggregateId, listener) != null) {
-                    throw new IllegalStateException("Cannot have several listeners of an aggregate consuming the same message");
+            Optional<TargetAggregates> targetAggregates = safelyGetTargetAggregates(listener);
+            if(targetAggregates.isPresent()) {
+                for(Object aggregateId : targetAggregates.get().toUpdate()) {
+                    if(updates.put(aggregateId, listener) != null) {
+                        throw new IllegalStateException("Cannot have several listeners of an aggregate consuming the same message");
+                    }
                 }
+                toCreate.addAll(targetAggregates.get().toCreate());
             }
-            toCreate.addAll(targetAggregates.toCreate());
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Optional<TargetAggregates> safelyGetTargetAggregates(MessageListener listener) {
+        AggregateUpdateMessageConsumer consumer = (AggregateUpdateMessageConsumer) listener.consumer();
+        AggregateMessageListenerRunner runner = consumer.runner();
+        Message original = consumptionState.message().original();
+        try {
+            return Optional.of(runner.targetAggregates(original));
+        } catch (Exception e) {
+            logger.error("Runner of listener {} failed", listener.shortId(), e);
+            return Optional.empty();
         }
     }
 
