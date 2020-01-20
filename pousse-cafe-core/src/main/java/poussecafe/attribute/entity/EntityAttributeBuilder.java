@@ -23,4 +23,12 @@ public class EntityAttributeBuilder {
         builder.dataClass = dataClass;
         return builder;
     }
+
+    public static <D extends EntityAttributes<?>, E extends Entity<?, D>, F extends D> OptionalEntityAttributeBuilder<D, E, F> optional(Class<E> entityClass, Class<F> dataClass) {
+        Objects.requireNonNull(entityClass);
+        OptionalEntityAttributeBuilder<D, E, F> builder = new OptionalEntityAttributeBuilder<>();
+        builder.entityClass = entityClass;
+        builder.dataClass = dataClass;
+        return builder;
+    }
 }
