@@ -11,6 +11,7 @@ public class MapAttributeBuilder<K, V> {
     }
 
     public ReadWriteMapAttributeBuilder<K, V> withMap(Map<K, V> map) {
+        Objects.requireNonNull(map);
         return new ReadWriteMapAttributeBuilder<>(map);
     }
 

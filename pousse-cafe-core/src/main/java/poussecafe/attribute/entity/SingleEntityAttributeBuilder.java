@@ -49,13 +49,15 @@ public class SingleEntityAttributeBuilder<D extends EntityAttributes<?>, E exten
             return new EntityAttributeData<>(entityClass) {
                 @Override
                 protected D getData() {
-                    return getter.get();
+                    D storedData = getter.get();
+                    Objects.requireNonNull(storedData, "Stored Entity data cannot be null");
+                    return storedData;
                 }
 
                 @SuppressWarnings("unchecked")
                 @Override
                 protected void setData(D data) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, "Cannot set null Entity data");
                     setter.accept((F) data);
                 }
             };

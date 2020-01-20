@@ -21,12 +21,14 @@ public class ReadWriteSingleAttributeBuilder<U, T> {
         return new Attribute<>() {
             @Override
             public T value() {
-                return adapter.adaptGet(getter.get());
+                U storedValue = getter.get();
+                Objects.requireNonNull(storedValue, "Stored value cannot be null");
+                return adapter.adaptGet(storedValue);
             }
 
             @Override
             public void value(T value) {
-                Objects.requireNonNull(value);
+                Objects.requireNonNull(value, "Stored value cannot be null");
                 setter.accept(adapter.adaptSet(value));
             }
         };
