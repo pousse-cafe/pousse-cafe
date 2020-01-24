@@ -1,6 +1,7 @@
 package poussecafe.discovery;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.exception.PousseCafeException;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 class MessageListenerDefinitionDiscoverer {
@@ -46,22 +48,49 @@ class MessageListenerDefinitionDiscoverer {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void configureExpectedEvents(Class<?> containerClass, Method method, MessageListenerDefinition.Builder definitionBuilder) {
+        List<ProducesEvent> producesEventAnnotations = producesEventAnnotationsOf(method);
+        if(Factory.class.isAssignableFrom(containerClass)) {
+            producesEventAnnotations.addAll(producesEventAnnotationsOfAggregateRootOnAdd((Class<? extends Factory>) containerClass));
+        }
+        boolean withExpectedEvents = !producesEventAnnotations.isEmpty();
+        if(withExpectedEvents) {
+            if(isAggregateRootOrAggregateService(containerClass)) {
+                List<ExpectedEvent> expectedEvents = producesEventAnnotations.stream()
+                        .map(this::expectedEvent)
+                        .collect(toList());
+                definitionBuilder.withExpectedEvents(true);
+                definitionBuilder.expectedEvents(expectedEvents);
+            } else {
+                throw new PousseCafeException(ProducesEvent.class.getSimpleName() + " annotation is only allowed on AggregateRoot, Factory or Repository instances");
+            }
+        }
+    }
+
+    private List<ProducesEvent> producesEventAnnotationsOf(Method method) {
+        List<ProducesEvent> producesEventAnnotations = new ArrayList<>();
         ProducesEvents producesEventsAnnotation = method.getAnnotation(ProducesEvents.class);
         if(producesEventsAnnotation != null) {
-            ProducesEvent[] producesEventAnnotations = producesEventsAnnotation.value();
-            boolean withExpectedEvents = producesEventAnnotations.length > 0;
-            if(withExpectedEvents) {
-                if(isAggregateRootOrAggregateService(containerClass)) {
-                    List<ExpectedEvent> expectedEvents = asList(producesEventAnnotations).stream()
-                            .map(this::expectedEvent)
-                            .collect(toList());
-                    definitionBuilder.withExpectedEvents(true);
-                    definitionBuilder.expectedEvents(expectedEvents);
-                } else {
-                    throw new PousseCafeException(ProducesEvent.class.getSimpleName() + " annotation is only allowed on AggregateRoot, Factory or Repository instances");
-                }
+            producesEventAnnotations.addAll(asList(producesEventsAnnotation.value()));
+        } else {
+            ProducesEvent producesEventAnnotation = method.getAnnotation(ProducesEvent.class);
+            if(producesEventAnnotation != null) {
+                producesEventAnnotations.add(producesEventAnnotation);
             }
+        }
+        return producesEventAnnotations;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private List<ProducesEvent> producesEventAnnotationsOfAggregateRootOnAdd(Class<? extends Factory> factoryClass) {
+        ParameterizedType factoryParametrizedType = (ParameterizedType) factoryClass.getGenericSuperclass();
+        Class<? extends Factory> aggregateRootClass = (Class<? extends Factory>) factoryParametrizedType.getActualTypeArguments()[1];
+        try {
+            Method onAddMethod = aggregateRootClass.getDeclaredMethod("onAdd");
+            return producesEventAnnotationsOf(onAddMethod);
+        } catch (NoSuchMethodException | SecurityException e) {
+            return emptyList();
         }
     }
 
