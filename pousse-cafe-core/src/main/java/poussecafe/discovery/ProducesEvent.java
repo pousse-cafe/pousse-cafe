@@ -16,5 +16,5 @@ public @interface ProducesEvent {
 
     Class<? extends DomainEvent> event();
 
-    boolean required() default false;
+    boolean required() default true;
 }

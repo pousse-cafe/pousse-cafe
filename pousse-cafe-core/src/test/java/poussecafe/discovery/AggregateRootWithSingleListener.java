@@ -9,8 +9,8 @@ import poussecafe.runtime.TestDomainEvent3;
 public class AggregateRootWithSingleListener extends AggregateRoot<String, EntityAttributes<String>> {
 
     @MessageListener
-    @ProducesEvent(event = TestDomainEvent2.class)
-    @ProducesEvent(event = TestDomainEvent3.class, required = true)
+    @ProducesEvent(event = TestDomainEvent2.class, required = false)
+    @ProducesEvent(event = TestDomainEvent3.class)
     public void listener(TestDomainEvent event) {
         emitDomainEvent(new TestDomainEvent3());
     }
