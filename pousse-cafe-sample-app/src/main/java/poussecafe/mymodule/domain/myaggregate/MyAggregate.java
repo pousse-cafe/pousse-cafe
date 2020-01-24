@@ -24,7 +24,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attrib
      * Below action updates aggregate's state and triggers the emission of a Domain Event in case of success
      */
     @MessageListener(runner = DoSomethingRunner.class)
-    @ProducesEvent(event = MyDomainEvent.class)
+    @ProducesEvent(MyDomainEvent.class)
     public void doSomething(ACommand command) {
         int x = command.x().value();
         if(x <= 0) {

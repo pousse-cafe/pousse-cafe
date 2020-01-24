@@ -8,7 +8,7 @@ import poussecafe.runtime.TestDomainEvent2;
 public class FactoryWithSingleListener extends Factory<String, AggregateRootWithSingleListener, EntityAttributes<String>> {
 
     @MessageListener
-    @ProducesEvent(event = TestDomainEvent2.class, required = false)
+    @ProducesEvent(value = TestDomainEvent2.class, required = false)
     public AggregateRootWithSingleListener listener(TestDomainEvent event) {
         return new AggregateRootWithSingleListener();
     }

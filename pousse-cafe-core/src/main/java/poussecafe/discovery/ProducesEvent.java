@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(ProducesEvents.class)
 public @interface ProducesEvent {
 
-    Class<? extends DomainEvent> event();
+    Class<? extends DomainEvent> value();
 
     boolean required() default true;
 }

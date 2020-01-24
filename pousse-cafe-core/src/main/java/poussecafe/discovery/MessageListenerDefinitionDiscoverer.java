@@ -119,7 +119,7 @@ class MessageListenerDefinitionDiscoverer {
 
     private ExpectedEvent expectedEvent(ProducesEvent annotation) {
         return new ExpectedEvent.Builder()
-                .producedEventClass(annotation.event())
+                .producedEventClass(annotation.value())
                 .required(annotation.required())
                 .build();
     }
