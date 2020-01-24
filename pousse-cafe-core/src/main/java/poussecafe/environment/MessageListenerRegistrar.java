@@ -13,7 +13,7 @@ public class MessageListenerRegistrar {
     public void registerListener(MessageListener listener) {
         logger.debug("Registering listener {}", listener);
 
-        Class<? extends Message> messageClass = listener.messageClass();
+        Class<? extends Message> messageClass = listener.consumedMessageClass();
         messageListenersPool.registerListenerForMessageClass(listener, messageClass);
 
         if(ReflectionUtils.isAbstract(messageClass)) {

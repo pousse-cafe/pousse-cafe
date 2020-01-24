@@ -104,7 +104,7 @@ public class MessageListenerDefinition {
         return new MessageListener.Builder()
                 .id(id())
                 .shortId(shortId())
-                .messageClass(messageClass());
+                .consumedMessageClass(messageClass());
     }
 
     public String id() {

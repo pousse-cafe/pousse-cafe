@@ -47,7 +47,7 @@ public class CustomMessageListenerFactory {
         return new poussecafe.environment.MessageListener.Builder()
                 .id(listenerId)
                 .shortId(listenerShortId)
-                .messageClass(messageClass)
+                .consumedMessageClass(messageClass)
                 .priority(MessageListenerType.CUSTOM)
                 .consumer(buildMessageConsumer(target, method, listenerShortId))
                 .collisionSpace(collisionSpace)

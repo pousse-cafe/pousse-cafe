@@ -1,14 +1,17 @@
 package poussecafe.environment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.DomainEvent;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
@@ -94,6 +97,11 @@ public class MessageListenerConsumptionReport {
             if(!report.skippedAggregatesIds.add(skippedAggregateId)) {
                 throw new IllegalArgumentException("Already reported skip for " + skippedAggregateId);
             }
+            return this;
+        }
+
+        public Builder producedEvents(List<DomainEvent> producedEvents) {
+            report.producedEvents = new ArrayList<>(producedEvents);
             return this;
         }
 
@@ -259,4 +267,10 @@ public class MessageListenerConsumptionReport {
     public boolean isFailed() {
         return failure != null || !failures.isEmpty();
     }
+
+    public List<DomainEvent> producedEvents() {
+        return Collections.unmodifiableList(producedEvents);
+    }
+
+    private List<DomainEvent> producedEvents;
 }

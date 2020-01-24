@@ -42,7 +42,7 @@ public class MessageProcessorTest {
                 .consumer(consumer)
                 .id("id")
                 .shortId("shortId")
-                .messageClass(Message.class)
+                .consumedMessageClass(Message.class)
                 .priority(MessageListenerType.CUSTOM)
                 .build();
     }
@@ -99,7 +99,7 @@ public class MessageProcessorTest {
                 .consumer(message -> {throw new RuntimeException();})
                 .id("id")
                 .shortId("shortId")
-                .messageClass(Message.class)
+                .consumedMessageClass(Message.class)
                 .priority(MessageListenerType.CUSTOM)
                 .build());
     }

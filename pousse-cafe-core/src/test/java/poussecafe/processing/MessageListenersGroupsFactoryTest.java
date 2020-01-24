@@ -41,7 +41,7 @@ public class MessageListenersGroupsFactoryTest {
                 .id("custom")
                 .shortId("custom")
                 .consumer(consumer)
-                .messageClass(SimpleMessage.class)
+                .consumedMessageClass(SimpleMessage.class)
                 .priority(MessageListenerType.CUSTOM)
                 .build());
 
@@ -49,7 +49,7 @@ public class MessageListenersGroupsFactoryTest {
                 .id("process")
                 .shortId("process")
                 .consumer(consumer)
-                .messageClass(SimpleMessage.class)
+                .consumedMessageClass(SimpleMessage.class)
                 .priority(MessageListenerType.DOMAIN_PROCESS)
                 .build());
 
@@ -57,7 +57,7 @@ public class MessageListenersGroupsFactoryTest {
                 .id("factory")
                 .shortId("factory")
                 .consumer(consumer)
-                .messageClass(SimpleMessage.class)
+                .consumedMessageClass(SimpleMessage.class)
                 .priority(MessageListenerType.FACTORY)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .build());
@@ -68,7 +68,7 @@ public class MessageListenersGroupsFactoryTest {
                 .id("aggregate")
                 .shortId("aggregate")
                 .consumer(consumer)
-                .messageClass(SimpleMessage.class)
+                .consumedMessageClass(SimpleMessage.class)
                 .priority(MessageListenerType.AGGREGATE)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .runner(Optional.of(runner))
@@ -78,7 +78,7 @@ public class MessageListenersGroupsFactoryTest {
                 .id("repository")
                 .shortId("repository")
                 .consumer(consumer)
-                .messageClass(SimpleMessage.class)
+                .consumedMessageClass(SimpleMessage.class)
                 .priority(MessageListenerType.REPOSITORY)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .build());

@@ -1,5 +1,8 @@
 package poussecafe.environment;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -24,8 +27,8 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder messageClass(Class<? extends Message> messageClass) {
-            listener.messageClass = messageClass;
+        public Builder consumedMessageClass(Class<? extends Message> consumedMessageClass) {
+            listener.consumedMessageClass = consumedMessageClass;
             return this;
         }
 
@@ -55,15 +58,33 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
+        public Builder producedEvents(List<ExpectedEvent> expectedEvents) {
+            listener.withExpectedEvents = true;
+            listener.expectedEvents = new ArrayList<>(expectedEvents);
+            return this;
+        }
+
+        public Builder withExpectedEvents(boolean withExpectedEvents) {
+            listener.withExpectedEvents = withExpectedEvents;
+            return this;
+        }
+
         public MessageListener build() {
             Objects.requireNonNull(listener.id);
             Objects.requireNonNull(listener.shortId);
-            Objects.requireNonNull(listener.messageClass);
+            Objects.requireNonNull(listener.consumedMessageClass);
             Objects.requireNonNull(listener.consumer);
             Objects.requireNonNull(listener.runner);
             Objects.requireNonNull(listener.priority);
             Objects.requireNonNull(listener.collisionSpace);
             Objects.requireNonNull(listener.aggregateRootClass);
+            Objects.requireNonNull(listener.expectedEvents);
+
+            if(listener.withExpectedEvents
+                    && listener.aggregateRootClass.isEmpty()) {
+                throw new IllegalStateException("Cannot check produced events on a listener which is not on an AggregateRoot, Factory or Repository");
+            }
+
             return listener;
         }
     }
@@ -84,10 +105,10 @@ public class MessageListener implements Comparable<MessageListener> {
         return shortId;
     }
 
-    private Class<? extends Message> messageClass;
+    private Class<? extends Message> consumedMessageClass;
 
-    public Class<? extends Message> messageClass() {
-        return messageClass;
+    public Class<? extends Message> consumedMessageClass() {
+        return consumedMessageClass;
     }
 
     private MessageConsumer consumer;
@@ -123,6 +144,18 @@ public class MessageListener implements Comparable<MessageListener> {
     public Optional<Class> aggregateRootClass() {
         return aggregateRootClass;
     }
+
+    public List<ExpectedEvent> expectedEvents() {
+        return Collections.unmodifiableList(expectedEvents);
+    }
+
+    private List<ExpectedEvent> expectedEvents = Collections.emptyList();
+
+    public boolean withExpectedEvents() {
+        return withExpectedEvents;
+    }
+
+    private boolean withExpectedEvents;
 
     @Override
     public String toString() {

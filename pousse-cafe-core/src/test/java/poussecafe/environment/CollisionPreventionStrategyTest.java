@@ -43,7 +43,7 @@ public class CollisionPreventionStrategyTest {
             MessageListener listener = new MessageListener.Builder()
                     .id(label + "_" + i)
                     .shortId(label + "_" + i)
-                    .messageClass(Message.class)
+                    .consumedMessageClass(Message.class)
                     .priority(MessageListenerType.CUSTOM)
                     .collisionSpace(Optional.of(label))
                     .consumer(message -> MessageListenerConsumptionReport.success("listenerId"))

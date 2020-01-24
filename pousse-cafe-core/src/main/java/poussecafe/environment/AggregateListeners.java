@@ -7,7 +7,7 @@ import java.util.Map;
 public class AggregateListeners {
 
     public void include(MessageListener listener) {
-        Class messageClass = listener.messageClass();
+        Class messageClass = listener.consumedMessageClass();
         MessageListeners listeners = messagesListeners.computeIfAbsent(messageClass, key -> new MessageListeners());
         listeners.include(listener);
     }

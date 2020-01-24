@@ -1,10 +1,14 @@
 package poussecafe.processing;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.DomainEvent;
 import poussecafe.environment.AggregateUpdateMessageConsumer;
+import poussecafe.environment.ExpectedEvent;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
@@ -15,6 +19,8 @@ import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.OptimisticLockingExceptionHandlingResult;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.util.MethodInvokerException;
+
+import static java.util.stream.Collectors.toSet;
 
 class MessageListenerExecutor {
 
@@ -94,6 +100,9 @@ class MessageListenerExecutor {
             } else {
                 messageConsumptionReport = listener.consumer().consume(consumptionState);
             }
+            if(listener.withExpectedEvents()) {
+                checkProducedEvents();
+            }
         } catch (SameOperationException e) {
             ignore(e);
         } catch (OptimisticLockingException e) {
@@ -106,6 +115,25 @@ class MessageListenerExecutor {
     }
 
     private Optional<Object> toUpdate = Optional.empty();
+
+    private void checkProducedEvents() {
+        List<ExpectedEvent> expectedEvents = listener.expectedEvents();
+        Set<ExpectedEvent> requiredEvents = expectedEvents.stream()
+                .filter(ExpectedEvent::required)
+                .collect(toSet());
+        List<DomainEvent> producedEvents = messageConsumptionReport.producedEvents();
+        for(DomainEvent producedEvent : producedEvents) {
+            Optional<ExpectedEvent> match = expectedEvents.stream().filter(expectedEvent -> expectedEvent.matches(producedEvent)).findFirst();
+            if(match.isPresent()) {
+                requiredEvents.remove(match.get());
+            } else {
+                throw new IllegalStateException("Produced event " + producedEvent + " does not match any expected event of listener " + listener.shortId());
+            }
+        }
+        if(!requiredEvents.isEmpty()) {
+            throw new IllegalStateException("Some required events where not produced by listener " + listener.shortId());
+        }
+    }
 
     private void ignore(Throwable e) {
         logger.warn("       Ignoring consumption error", e);
