@@ -58,8 +58,7 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder producedEvents(List<ExpectedEvent> expectedEvents) {
-            listener.withExpectedEvents = true;
+        public Builder expectedEvents(List<ExpectedEvent> expectedEvents) {
             listener.expectedEvents = new ArrayList<>(expectedEvents);
             return this;
         }

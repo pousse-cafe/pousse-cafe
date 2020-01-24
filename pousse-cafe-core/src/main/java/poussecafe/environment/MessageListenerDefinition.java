@@ -2,6 +2,9 @@ package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -57,12 +60,23 @@ public class MessageListenerDefinition {
             return this;
         }
 
+        public Builder expectedEvents(List<ExpectedEvent> expectedEvents) {
+            definition.expectedEvents = new ArrayList<>(expectedEvents);
+            return this;
+        }
+
+        public Builder withExpectedEvents(boolean withExpectedEvents) {
+            definition.withExpectedEvents = withExpectedEvents;
+            return this;
+        }
+
         public MessageListenerDefinition build() {
             Objects.requireNonNull(definition.containerClass);
             Objects.requireNonNull(definition.method);
             checkMethodIsListener(definition.method);
             Objects.requireNonNull(definition.customId);
             Objects.requireNonNull(definition.runner);
+            Objects.requireNonNull(definition.expectedEvents);
             return definition;
         }
     }
@@ -104,7 +118,9 @@ public class MessageListenerDefinition {
         return new MessageListener.Builder()
                 .id(id())
                 .shortId(shortId())
-                .consumedMessageClass(messageClass());
+                .consumedMessageClass(messageClass())
+                .withExpectedEvents(withExpectedEvents())
+                .expectedEvents(expectedEvents());
     }
 
     public String id() {
@@ -138,6 +154,18 @@ public class MessageListenerDefinition {
         return collisionSpace;
     }
 
+    public List<ExpectedEvent> expectedEvents() {
+        return Collections.unmodifiableList(expectedEvents);
+    }
+
+    private List<ExpectedEvent> expectedEvents = Collections.emptyList();
+
+    public boolean withExpectedEvents() {
+        return withExpectedEvents;
+    }
+
+    private boolean withExpectedEvents;
+
     @Override
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
@@ -146,6 +174,7 @@ public class MessageListenerDefinition {
                 .append(customId, other.customId)
                 .append(runner, other.runner)
                 .append(collisionSpace, other.collisionSpace)
+                .append(expectedEvents, other.expectedEvents)
                 .build());
     }
 
@@ -157,6 +186,7 @@ public class MessageListenerDefinition {
                 .append(customId)
                 .append(runner)
                 .append(collisionSpace)
+                .append(expectedEvents)
                 .build();
     }
 

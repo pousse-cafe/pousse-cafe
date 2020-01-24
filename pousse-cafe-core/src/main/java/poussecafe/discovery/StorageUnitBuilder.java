@@ -44,8 +44,9 @@ public class StorageUnitBuilder {
                 .map(EntityImplementation::getEntityClass)
                 .collect(toSet());
 
-        Set<Class<EntityAttributes<?>>> entityDataClasses = classPathExplorer.getDataImplementations(storage);
-        for(Class<EntityAttributes<?>> entityDataClass : entityDataClasses) {
+        @SuppressWarnings("rawtypes")
+        Set<Class<EntityAttributes>> entityDataClasses = classPathExplorer.getDataImplementations(storage);
+        for(@SuppressWarnings("rawtypes") Class<EntityAttributes> entityDataClass : entityDataClasses) {
             DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
             if(aggregateRoots.contains(annotation.entity())) {
                 throw new PousseCafeException("Aggregate root implementation can only be declared with @" + DataAccessImplementation.class.getSimpleName());
@@ -71,7 +72,7 @@ public class StorageUnitBuilder {
                 .build();
     }
 
-    private EntityImplementation buildNonRootEntityImplementation(Class<EntityAttributes<?>> entityDataClass) {
+    private EntityImplementation buildNonRootEntityImplementation(@SuppressWarnings("rawtypes") Class<EntityAttributes> entityDataClass) {
         DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
         return new EntityImplementation.Builder()
                 .withEntityClass(annotation.entity())

@@ -1,13 +1,11 @@
 package poussecafe.discovery;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
@@ -24,7 +22,6 @@ import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.environment.AggregateDefinition;
-import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -161,17 +158,17 @@ class ClassPathExplorer {
         return entityDataAccessClasses;
     }
 
-    @SuppressWarnings("unchecked")
-    public Set<Class<EntityAttributes<?>>> getDataImplementations(Storage storage) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Set<Class<EntityAttributes>> getDataImplementations(Storage storage) {
         Set<Class<?>> dataImplementations = reflections.getTypesAnnotatedWith(DataImplementation.class);
 
-        Set<Class<EntityAttributes<?>>> entityDataClasses = new HashSet<>();
+        Set<Class<EntityAttributes>> entityDataClasses = new HashSet<>();
         for(Class<?> entityDataClass : dataImplementations) {
             DataImplementation annotation = entityDataClass.getAnnotation(DataImplementation.class);
             if(annotation.storageNames().length == 0 ||
                     storage.nameIn(annotation.storageNames())) {
                 logger.debug("Adding data implementation {}", entityDataClass);
-                entityDataClasses.add((Class<EntityAttributes<?>>) entityDataClass);
+                entityDataClasses.add((Class<EntityAttributes>) entityDataClass);
             }
         }
         return entityDataClasses;
@@ -202,43 +199,9 @@ class ClassPathExplorer {
         Set<MessageListenerDefinition> definitions = new HashSet<>();
         for(Class<?> containerClass : listenersContainers) {
             if(!Modifier.isAbstract(containerClass.getModifiers())) {
-                definitions.addAll(discoverListenersOfClass(containerClass));
+                definitions.addAll(new MessageListenerDefinitionDiscoverer(containerClass).discoverListenersOfClass());
             }
         }
         return definitions;
-    }
-
-    private Collection<MessageListenerDefinition> discoverListenersOfClass(Class<?> containerClass) {
-        List<MessageListenerDefinition> definitions = new ArrayList<>();
-        for(Method method : containerClass.getMethods()) {
-            MessageListener annotation = method.getAnnotation(MessageListener.class);
-            if(annotation != null) {
-                logger.debug("Defining listener for method {} of {}", method, containerClass);
-                definitions.add(new MessageListenerDefinition.Builder()
-                        .containerClass(containerClass)
-                        .method(method)
-                        .customId(customId(annotation.id()))
-                        .runner(runner(annotation.runner()))
-                        .build());
-            }
-        }
-        return definitions;
-    }
-
-    private Optional<String> customId(String id) {
-        if(id == null || id.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(id);
-        }
-    }
-
-    private Optional<Class<? extends AggregateMessageListenerRunner<?, ?, ?>>> runner(
-            Class<? extends AggregateMessageListenerRunner<?, ?, ?>> runner) {
-        if(runner == VoidAggregateMessageListenerRunner.class) {
-            return Optional.empty();
-        } else {
-            return Optional.of(runner);
-        }
     }
 }
