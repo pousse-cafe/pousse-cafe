@@ -17,4 +17,6 @@ public @interface ProducesEvent {
     Class<? extends DomainEvent> value();
 
     boolean required() default true;
+
+    String[] consumedByExternal() default {};
 }

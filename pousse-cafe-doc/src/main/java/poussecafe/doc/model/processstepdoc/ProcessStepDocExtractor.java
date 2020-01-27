@@ -76,12 +76,19 @@ public class ProcessStepDocExtractor implements Service {
         List<String> javadocTagEvents = annotationsResolver.event(methodDoc);
         if(!javadocTagEvents.isEmpty()) {
             Logger.warn("@event tag is deprecated, use @ProducesEvent annotation instead");
-            producedEvents.addAll(new HashSet<>(javadocTagEvents));
+            producedEvents.addAll(javadocTagEvents);
         }
+        producedEvents.addAll(producesEventAnnotations(methodDoc)
+                .stream()
+                .map(annotation -> annotation.value().getSimpleName())
+                .collect(toList()));
+        return producedEvents;
+    }
+
+    private List<ProducesEvent> producesEventAnnotations(ExecutableElement methodDoc) {
+        List<ProducesEvent> producedEvents = new ArrayList<>();
         ProducesEvent[] annotations = methodDoc.getAnnotationsByType(ProducesEvent.class);
-        for(ProducesEvent producesEvent : annotations) {
-            producedEvents.add(producesEvent.value().getSimpleName());
-        }
+        producedEvents.addAll(asList(annotations));
         return producedEvents;
     }
 
@@ -91,7 +98,7 @@ public class ProcessStepDocExtractor implements Service {
         Set<String> processNames = processNames(methodDoc);
         Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
-        Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
+        Set<String> toExternals = extractToExternals(methodDoc);
 
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
@@ -115,6 +122,19 @@ public class ProcessStepDocExtractor implements Service {
             stepDocs.add(processStepDoc);
         }
         return stepDocs;
+    }
+
+    private Set<String> extractToExternals(ExecutableElement methodDoc) {
+        Set<String> toExternals = new HashSet<>();
+        List<String> javadocTagToExternals = annotationsResolver.toExternal(methodDoc);
+        if(!javadocTagToExternals.isEmpty()) {
+            Logger.warn("@to_external tag is deprecated, use @ProducesEvent annotation and set consumedByExternal attribute instead");
+            toExternals.addAll(javadocTagToExternals);
+        }
+        for(ProducesEvent annotation : producesEventAnnotations(methodDoc)) {
+            toExternals.addAll(asList(annotation.consumedByExternal()));
+        }
+        return toExternals;
     }
 
     private List<StepMethodSignature> customStepsSignatures(ExecutableElement methodDoc) {
@@ -179,7 +199,7 @@ public class ProcessStepDocExtractor implements Service {
         Set<String> processNames = processNames(methodDoc);
         Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
-        Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
+        Set<String> toExternals = extractToExternals(methodDoc);
 
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
@@ -201,7 +221,7 @@ public class ProcessStepDocExtractor implements Service {
             if(onAddMethod.isPresent()) {
                 ExecutableElement presentOnAddMethod = onAddMethod.get();
                 producedEvents.addAll(extractProducedEvents(presentOnAddMethod));
-                toExternals.addAll(annotationsResolver.toExternal(presentOnAddMethod));
+                toExternals.addAll(extractToExternals(presentOnAddMethod));
             }
         }
 

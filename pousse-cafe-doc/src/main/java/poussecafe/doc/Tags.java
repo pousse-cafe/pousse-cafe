@@ -6,6 +6,7 @@ public interface Tags {
 
     String STEP = "step";
 
+    @Deprecated(since = "0.16")
     String TO_EXTERNAL = "to_external";
 
     String FROM_EXTERNAL = "from_external";

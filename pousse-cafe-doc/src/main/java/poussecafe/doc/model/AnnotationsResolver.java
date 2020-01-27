@@ -90,6 +90,7 @@ public class AnnotationsResolver implements Service {
         }
     }
 
+    @Deprecated(since = "0.16")
     public List<String> toExternal(ExecutableElement methodDoc) {
         return tags(methodDoc, Tags.TO_EXTERNAL).stream()
                 .map(this::render)
