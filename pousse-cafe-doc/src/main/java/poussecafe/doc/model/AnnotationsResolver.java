@@ -110,6 +110,7 @@ public class AnnotationsResolver implements Service {
         return optionalTag(doc, Tags.SHORT);
     }
 
+    @Deprecated(since = "0.16")
     public List<String> event(ExecutableElement methodDoc) {
         return tags(methodDoc, Tags.EVENT).stream()
                 .map(this::render)

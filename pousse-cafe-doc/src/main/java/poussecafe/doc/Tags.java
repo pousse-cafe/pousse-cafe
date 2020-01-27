@@ -14,6 +14,7 @@ public interface Tags {
 
     String SHORT = "short";
 
+    @Deprecated(since = "0.16")
     String EVENT = "event";
 
     String MODULE = "module";

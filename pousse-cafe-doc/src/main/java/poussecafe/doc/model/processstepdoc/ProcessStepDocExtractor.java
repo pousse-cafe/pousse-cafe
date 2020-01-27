@@ -13,6 +13,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.discovery.ProducesEvent;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
 import poussecafe.doc.model.AnnotationsResolver;
@@ -58,7 +59,7 @@ public class ProcessStepDocExtractor implements Service {
             return annotationsResolver.isStep(methodDoc);
         } else {
             Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
-            List<String> producedEvents = extractProducedEvents(methodDoc);
+            Set<String> producedEvents = extractProducedEvents(methodDoc);
             return annotationsResolver.isStep(methodDoc) ||
                     (docletAccess.isPublic(methodDoc) && (consumedMessage.isPresent() || !producedEvents.isEmpty()));
         }
@@ -70,15 +71,25 @@ public class ProcessStepDocExtractor implements Service {
 
     private ConsumedMessageExtractor consumedMessageExtractor;
 
-    private List<String> extractProducedEvents(ExecutableElement methodDoc) {
-        return annotationsResolver.event(methodDoc);
+    private Set<String> extractProducedEvents(ExecutableElement methodDoc) {
+        Set<String> producedEvents = new HashSet<>();
+        List<String> javadocTagEvents = annotationsResolver.event(methodDoc);
+        if(!javadocTagEvents.isEmpty()) {
+            Logger.warn("@event tag is deprecated, use @ProducesEvent annotation instead");
+            producedEvents.addAll(new HashSet<>(javadocTagEvents));
+        }
+        ProducesEvent[] annotations = methodDoc.getAnnotationsByType(ProducesEvent.class);
+        for(ProducesEvent producesEvent : annotations) {
+            producedEvents.add(producesEvent.value().getSimpleName());
+        }
+        return producedEvents;
     }
 
     private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         Set<String> processNames = processNames(methodDoc);
-        Set<String> producedEvents = new HashSet<>(annotationsResolver.event(methodDoc));
+        Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
         Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
 
@@ -166,7 +177,7 @@ public class ProcessStepDocExtractor implements Service {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
 
         Set<String> processNames = processNames(methodDoc);
-        Set<String> producedEvents = new HashSet<>(annotationsResolver.event(methodDoc));
+        Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
         Set<String> toExternals = new HashSet<>(annotationsResolver.toExternal(methodDoc));
 
@@ -189,7 +200,7 @@ public class ProcessStepDocExtractor implements Service {
                     .findFirst();
             if(onAddMethod.isPresent()) {
                 ExecutableElement presentOnAddMethod = onAddMethod.get();
-                producedEvents.addAll(annotationsResolver.event(presentOnAddMethod));
+                producedEvents.addAll(extractProducedEvents(presentOnAddMethod));
                 toExternals.addAll(annotationsResolver.toExternal(presentOnAddMethod));
             }
         }
