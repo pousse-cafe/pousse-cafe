@@ -3,15 +3,21 @@ package poussecafe.doc.model;
 import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.UnknownBlockTagTree;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.discovery.MessageListener;
+import poussecafe.doc.Logger;
 import poussecafe.doc.ProcessDescription;
 import poussecafe.doc.TagContentStringBuilder;
 import poussecafe.doc.Tags;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 
@@ -44,13 +50,37 @@ public class AnnotationsResolver implements Service {
     private DocletEnvironment docletEnvironment;
 
     public boolean isStep(ExecutableElement methodDoc) {
-        return hasTag(methodDoc, Tags.STEP);
+        return hasTag(methodDoc, Tags.STEP) ||
+                isAnnotatedWith(methodDoc, MessageListener.class);
+    }
+
+    private boolean isAnnotatedWith(ExecutableElement methodDoc,
+            Class<MessageListener> annotationClass) {
+        return !getAnnotations(methodDoc, annotationClass).isEmpty();
+    }
+
+    private <A extends Annotation> List<AnnotationMirror> getAnnotations(ExecutableElement methodDoc,
+            Class<A> annotationClass) {
+        return AnnotationUtils.annotations(methodDoc, annotationClass);
     }
 
     public List<String> step(ExecutableElement methodDoc) {
-        return tags(methodDoc, Tags.STEP).stream()
-                .map(this::render)
-                .collect(toList());
+        List<String> customSteps = new ArrayList<>();
+        List<String> customStepsByTag = tags(methodDoc, Tags.STEP).stream()
+                                 .map(this::render)
+                                 .collect(toList());
+        if(!customStepsByTag.isEmpty()) {
+            Logger.warn("@step tag is deprecated, use @MessageListener annotation and set customStep instead");
+            customSteps.addAll(customStepsByTag);
+        }
+        customSteps.addAll(getAnnotations(methodDoc, MessageListener.class).stream()
+                .map(mirror -> AnnotationUtils.value(mirror, "customStep"))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(value -> (String) value.getValue())
+                .filter(customStep -> !customStep.isEmpty())
+                .collect(toList()));
+        return customSteps;
     }
 
     private String render(UnknownBlockTagTree tagTree) {

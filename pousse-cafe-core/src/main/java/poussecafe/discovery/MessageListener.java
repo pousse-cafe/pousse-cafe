@@ -18,4 +18,6 @@ public @interface MessageListener {
     String collisionSpace() default "";
 
     String shortId() default "";
+
+    String customStep() default "";
 }

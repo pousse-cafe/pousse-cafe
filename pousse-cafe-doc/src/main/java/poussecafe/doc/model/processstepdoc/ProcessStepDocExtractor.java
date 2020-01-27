@@ -6,16 +6,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.discovery.ProducesEvent;
+import poussecafe.discovery.ProducesEvents;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.Logger;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
@@ -78,17 +83,22 @@ public class ProcessStepDocExtractor implements Service {
             Logger.warn("@event tag is deprecated, use @ProducesEvent annotation instead");
             producedEvents.addAll(javadocTagEvents);
         }
-        producedEvents.addAll(producesEventAnnotations(methodDoc)
-                .stream()
-                .map(annotation -> annotation.value().getSimpleName())
-                .collect(toList()));
-        return producedEvents;
-    }
-
-    private List<ProducesEvent> producesEventAnnotations(ExecutableElement methodDoc) {
-        List<ProducesEvent> producedEvents = new ArrayList<>();
-        ProducesEvent[] annotations = methodDoc.getAnnotationsByType(ProducesEvent.class);
-        producedEvents.addAll(asList(annotations));
+        List<? extends AnnotationMirror> producesEventAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvent.class);
+        if(producesEventAnnotations.isEmpty()) {
+            List<? extends AnnotationMirror> producesEventsAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvents.class);
+            for(AnnotationMirror mirror : producesEventsAnnotations) {
+                Optional<AnnotationValue> value = AnnotationUtils.value(mirror, "value");
+                if(value.isPresent()) {
+                    producesEventAnnotations.addAll(AnnotationUtils.toList(value.get()));
+                }
+            }
+        }
+        List<AnnotationValue> producedEventsValues = AnnotationUtils.values(producesEventAnnotations, "value");
+        List<Element> valuesMirrors = producedEventsValues.stream()
+                .map(AnnotationValue::getValue)
+                .map(value -> docletAccess.getTypesUtils().asElement((TypeMirror) value))
+                .collect(toList());
+        producedEvents.addAll(valuesMirrors.stream().map(Element::getSimpleName).map(Name::toString).collect(toList()));
         return producedEvents;
     }
 
@@ -128,11 +138,13 @@ public class ProcessStepDocExtractor implements Service {
         Set<String> toExternals = new HashSet<>();
         List<String> javadocTagToExternals = annotationsResolver.toExternal(methodDoc);
         if(!javadocTagToExternals.isEmpty()) {
-            Logger.warn("@to_external tag is deprecated, use @ProducesEvent annotation and set consumedByExternal attribute instead");
+            Logger.warn("@to_external tag is deprecated, use @ProducesEvent annotation and set consumedByExternal element instead");
             toExternals.addAll(javadocTagToExternals);
         }
-        for(ProducesEvent annotation : producesEventAnnotations(methodDoc)) {
-            toExternals.addAll(asList(annotation.consumedByExternal()));
+        List<? extends AnnotationMirror> producesEventAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvent.class);
+        List<AnnotationValue> producedEventsValues = AnnotationUtils.values(producesEventAnnotations, "consumedByExternal");
+        for(AnnotationValue value : producedEventsValues) {
+            toExternals.addAll(AnnotationUtils.toList(value));
         }
         return toExternals;
     }

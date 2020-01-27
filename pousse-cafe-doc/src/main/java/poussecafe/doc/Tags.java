@@ -4,6 +4,7 @@ public interface Tags {
 
     String IGNORE = "ignore";
 
+    @Deprecated(since = "0.16")
     String STEP = "step";
 
     @Deprecated(since = "0.16")

@@ -12,6 +12,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Types;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.domain.Service;
 
@@ -29,6 +30,10 @@ public class DocletAccess implements Service {
 
     public PackageElement packageElement(TypeElement typeElement) {
         return docletEnvironment.getElementUtils().getPackageOf(typeElement);
+    }
+
+    public Types getTypesUtils() {
+        return docletEnvironment.getTypeUtils();
     }
 
     public List<VariableElement> fields(TypeElement typeElement) {
