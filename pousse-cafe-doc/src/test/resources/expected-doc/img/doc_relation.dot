@@ -1,9 +1,0 @@
-graph {
-splines=spline;
-overlap=false;
-"Relation" -- "RelationId" [style=solid];
-"ComponentType" -- "Relation" [style=solid];
-"Relation"[shape=box,style=bold];
-"ComponentType"[shape=ellipse];
-"RelationId"[shape=ellipse];
-}

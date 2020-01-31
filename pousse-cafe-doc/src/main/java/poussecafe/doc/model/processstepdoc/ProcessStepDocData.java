@@ -1,11 +1,15 @@
 package poussecafe.doc.model.processstepdoc;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
+import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
+import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ModuleComponentDocData;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
@@ -92,4 +96,15 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     }
 
     private String aggregateClassName;
+
+    @Override
+    public MapAttribute<String, List<String>> toExternalsByEvent() {
+        return AttributeBuilder.map(String.class, DataAdapters.parametrizedListClass(String.class))
+                .usingEntryDataAdapters(DataAdapters.identity(),
+                        DataAdapters.listWithAdapter(DataAdapters.identity()))
+                .withMap(toExternalsByEvent)
+                .build();
+    }
+
+    private HashMap<String, List<String>> toExternalsByEvent = new HashMap<>();
 }

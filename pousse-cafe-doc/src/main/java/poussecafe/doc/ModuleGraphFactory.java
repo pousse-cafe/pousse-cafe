@@ -2,6 +2,7 @@ package poussecafe.doc;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
@@ -69,7 +70,7 @@ public class ModuleGraphFactory {
 
     private void addSimpleAggregate(AggregateDoc aggregateDoc) {
         Node node = Node.box(aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        node.setStyle(NodeStyle.BOLD);
+        node.setStyle(Optional.of(NodeStyle.BOLD));
         graph.getNodesAndEdges().addNode(node);
     }
 

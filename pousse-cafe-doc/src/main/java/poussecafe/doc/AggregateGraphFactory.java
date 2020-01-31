@@ -2,6 +2,7 @@ package poussecafe.doc;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
@@ -82,7 +83,7 @@ public class AggregateGraphFactory {
         Logger.debug("Aggregate " + aggregateDoc.className());
         String nodeName = aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name();
         Node node = Node.box(nodeName);
-        node.setStyle(NodeStyle.BOLD);
+        node.setStyle(Optional.of(NodeStyle.BOLD));
         graph.getNodesAndEdges().addNode(node);
         return nodeName;
     }
@@ -170,7 +171,7 @@ public class AggregateGraphFactory {
             return Node.ellipse(name);
         } else if(component.type() == ComponentType.AGGREGATE) {
             Node node = Node.box(name);
-            node.setStyle(NodeStyle.BOLD);
+            node.setStyle(Optional.of(NodeStyle.BOLD));
             return node;
         } else {
             throw new IllegalArgumentException("Unsupported component type " + component.type());

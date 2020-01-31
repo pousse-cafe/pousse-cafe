@@ -1,22 +1,28 @@
 package poussecafe.doc.graph;
 
+import java.util.Objects;
+import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
+import static poussecafe.util.ReferenceEquals.referenceEquals;
+
 public class Node implements Comparable<Node> {
 
     private String name;
 
-    private Shape shape;
+    private Optional<Shape> shape = Optional.empty();
 
-    private NodeStyle style;
+    private Optional<NodeStyle> style = Optional.empty();
 
     public static Node box(String name) {
         Node node = new Node(name);
-        node.setShape(Shape.BOX);
+        node.setShape(Optional.of(Shape.BOX));
         return node;
     }
 
     public static Node ellipse(String name) {
         Node node = new Node(name);
-        node.setShape(Shape.ELLIPSE);
+        node.setShape(Optional.of(Shape.ELLIPSE));
         return node;
     }
 
@@ -29,15 +35,26 @@ public class Node implements Comparable<Node> {
     }
 
     public void setName(String name) {
+        Objects.requireNonNull(name);
         this.name = name;
     }
 
-    public Shape getShape() {
+    public Optional<Shape> getShape() {
         return shape;
     }
 
-    public void setShape(Shape shape) {
+    public void setShape(Optional<Shape> shape) {
+        Objects.requireNonNull(shape);
         this.shape = shape;
+    }
+
+    public Optional<NodeStyle> getStyle() {
+        return style;
+    }
+
+    public void setStyle(Optional<NodeStyle> style) {
+        Objects.requireNonNull(style);
+        this.style = style;
     }
 
     @Override
@@ -47,39 +64,13 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+        return name.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Node other = (Node) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public NodeStyle getStyle() {
-        return style;
-    }
-
-    public void setStyle(NodeStyle style) {
-        this.style = style;
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(name, other.name)
+                .build());
     }
 }

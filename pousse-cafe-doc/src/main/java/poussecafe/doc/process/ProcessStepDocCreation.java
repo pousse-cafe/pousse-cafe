@@ -35,6 +35,7 @@ public class ProcessStepDocCreation extends DomainProcess {
                 processStepDoc.attributes().producedEvents().addAll(doc.attributes().producedEvents().value());
                 processStepDoc.attributes().fromExternals().addAll(doc.attributes().fromExternals().value());
                 processStepDoc.attributes().toExternals().addAll(doc.attributes().toExternals().value());
+                processStepDoc.attributes().toExternalsByEvent().putAll(doc.attributes().toExternalsByEvent().value());
 
                 Optional<AggregateDocId> aggregate = doc.attributes().aggregate().value();
                 if(aggregate.isPresent()) {

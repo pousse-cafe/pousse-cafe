@@ -85,4 +85,9 @@ public class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
     public void clear() {
         wrappedMap.clear();
     }
+
+    @Override
+    public void putAll(Map<K, V> map) {
+        wrappedMap.putAll(map);
+    }
 }

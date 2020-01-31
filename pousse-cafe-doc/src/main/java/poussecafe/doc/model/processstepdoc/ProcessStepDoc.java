@@ -1,6 +1,8 @@
 package poussecafe.doc.model.processstepdoc;
 
+import java.util.List;
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.discovery.Aggregate;
@@ -26,6 +28,8 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
         SetAttribute<String> producedEvents();
 
         SetAttribute<String> toExternals();
+
+        MapAttribute<String, List<String>> toExternalsByEvent();
 
         SetAttribute<String> fromExternals();
 

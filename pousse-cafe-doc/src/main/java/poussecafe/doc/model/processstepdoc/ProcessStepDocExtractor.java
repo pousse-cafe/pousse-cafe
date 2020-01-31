@@ -2,8 +2,10 @@ package poussecafe.doc.model.processstepdoc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -83,16 +85,7 @@ public class ProcessStepDocExtractor implements Service {
             Logger.warn("@event tag is deprecated, use @ProducesEvent annotation instead");
             producedEvents.addAll(javadocTagEvents);
         }
-        List<? extends AnnotationMirror> producesEventAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvent.class);
-        if(producesEventAnnotations.isEmpty()) {
-            List<? extends AnnotationMirror> producesEventsAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvents.class);
-            for(AnnotationMirror mirror : producesEventsAnnotations) {
-                Optional<AnnotationValue> value = AnnotationUtils.value(mirror, "value");
-                if(value.isPresent()) {
-                    producesEventAnnotations.addAll(AnnotationUtils.toList(value.get()));
-                }
-            }
-        }
+        List<? extends AnnotationMirror> producesEventAnnotations = producesEventAnnotations(methodDoc);
         List<AnnotationValue> producedEventsValues = AnnotationUtils.values(producesEventAnnotations, "value");
         List<Element> valuesMirrors = producedEventsValues.stream()
                 .map(AnnotationValue::getValue)
@@ -102,6 +95,10 @@ public class ProcessStepDocExtractor implements Service {
         return producedEvents;
     }
 
+    private List<AnnotationMirror> producesEventAnnotations(ExecutableElement methodDoc) {
+        return AnnotationUtils.annotations(methodDoc, ProducesEvent.class, ProducesEvents.class);
+    }
+
     private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
@@ -109,6 +106,7 @@ public class ProcessStepDocExtractor implements Service {
         Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
         Set<String> toExternals = extractToExternals(methodDoc);
+        Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
@@ -129,6 +127,7 @@ public class ProcessStepDocExtractor implements Service {
             processStepDoc.attributes().producedEvents().value(producedEvents);
             processStepDoc.attributes().fromExternals().value(fromExternals);
             processStepDoc.attributes().toExternals().value(toExternals);
+            processStepDoc.attributes().toExternalsByEvent().value(toExternalsByEvent);
             stepDocs.add(processStepDoc);
         }
         return stepDocs;
@@ -141,10 +140,25 @@ public class ProcessStepDocExtractor implements Service {
             Logger.warn("@to_external tag is deprecated, use @ProducesEvent annotation and set consumedByExternal element instead");
             toExternals.addAll(javadocTagToExternals);
         }
-        List<? extends AnnotationMirror> producesEventAnnotations = AnnotationUtils.annotations(methodDoc, ProducesEvent.class);
-        List<AnnotationValue> producedEventsValues = AnnotationUtils.values(producesEventAnnotations, "consumedByExternal");
-        for(AnnotationValue value : producedEventsValues) {
-            toExternals.addAll(AnnotationUtils.toList(value));
+        return toExternals;
+    }
+
+    private static final String CONSUMED_BY_EXTERNAL_ELEMENT_NAME = "consumedByExternal";
+
+    @SuppressWarnings("unchecked")
+    private Map<String, List<String>> extractToExternalsByEvent(ExecutableElement methodDoc) {
+        Map<String, List<String>> toExternals = new HashMap<>();
+        List<? extends AnnotationMirror> producesEventAnnotations = producesEventAnnotations(methodDoc);
+        for(AnnotationMirror mirror : producesEventAnnotations) {
+            Map<String, AnnotationValue> values = AnnotationUtils.valuesMap(mirror, asSet("value", CONSUMED_BY_EXTERNAL_ELEMENT_NAME));
+            String eventName = docletAccess.getTypesUtils().asElement((TypeMirror) values.get("value").getValue()).getSimpleName().toString();
+            AnnotationValue consumedByExternal = values.get(CONSUMED_BY_EXTERNAL_ELEMENT_NAME);
+            if(consumedByExternal != null) {
+                List<AnnotationValue> externals = (List<AnnotationValue>) consumedByExternal.getValue();
+                toExternals.put(eventName, externals.stream()
+                        .map(annotationValue -> (String) annotationValue.getValue())
+                        .collect(toList()));
+            }
         }
         return toExternals;
     }
@@ -212,6 +226,7 @@ public class ProcessStepDocExtractor implements Service {
         Set<String> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
         Set<String> toExternals = extractToExternals(methodDoc);
+        Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
@@ -234,6 +249,7 @@ public class ProcessStepDocExtractor implements Service {
                 ExecutableElement presentOnAddMethod = onAddMethod.get();
                 producedEvents.addAll(extractProducedEvents(presentOnAddMethod));
                 toExternals.addAll(extractToExternals(presentOnAddMethod));
+                toExternalsByEvent.putAll(extractToExternalsByEvent(presentOnAddMethod));
             }
         }
 
@@ -252,6 +268,7 @@ public class ProcessStepDocExtractor implements Service {
         processStepDoc.attributes().producedEvents().value(producedEvents);
         processStepDoc.attributes().fromExternals().value(fromExternals);
         processStepDoc.attributes().toExternals().value(toExternals);
+        processStepDoc.attributes().toExternalsByEvent().value(toExternalsByEvent);
         processStepDoc.attributes().aggregate().value(Optional.of(aggregate));
 
         return processStepDoc;

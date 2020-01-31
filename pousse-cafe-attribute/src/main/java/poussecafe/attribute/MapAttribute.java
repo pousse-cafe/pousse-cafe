@@ -30,4 +30,6 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     int size();
 
     void clear();
+
+    void putAll(Map<K, V> map);
 }

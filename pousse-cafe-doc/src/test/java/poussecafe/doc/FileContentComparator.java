@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class FileContentComparator extends SimpleFileVisitor<Path> {
@@ -74,27 +74,31 @@ public class FileContentComparator extends SimpleFileVisitor<Path> {
 
     private void compareFiles(Path relativePath, boolean sortContent) {
         File generatedIndexFile = new File(targetDirectory.toFile(), relativePath.toString());
-        assertTrue(generatedIndexFile.exists());
+        assertTrue("File " + relativePath + " does not exist", generatedIndexFile.exists());
         String generatedIndexFileContent = readContent(generatedIndexFile, sortContent);
 
         File expectedIndexFile = new File(expectedDirectory.toFile(), relativePath.toString());
         String expectedIndexFileContent = readContent(expectedIndexFile, sortContent);
 
-        String message = message(generatedIndexFileContent, expectedIndexFileContent, sortContent);
+        String message = message(relativePath, generatedIndexFileContent, expectedIndexFileContent, sortContent);
         assertThat(message, generatedIndexFileContent, equalTo(expectedIndexFileContent));
     }
 
-    private String message(String generatedIndexFileContent, String expectedIndexFileContent, boolean sortContent) {
+    private String message(Path path, String generatedIndexFileContent, String expectedIndexFileContent, boolean sortContent) {
+        StringBuilder message = new StringBuilder();
+        message.append("File ");
+        message.append(path);
+        message.append(" does not match expected content");
         if(!sortContent) {
             try {
                 Patch<String> diff = DiffUtils.diffInline(expectedIndexFileContent, generatedIndexFileContent);
-                return diff.toString();
+                message.append(": ");
+                message.append(diff.toString());
             } catch (DiffException e) {
                 throw new IllegalArgumentException();
             }
-        } else {
-            return "Sorted content does not match";
         }
+        return message.toString();
     }
 
     private String readContent(File file, boolean sortContent) {

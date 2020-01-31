@@ -46,7 +46,7 @@ public class DomainProcessGraphFactory {
         for(Step step : steps.orderedSteps()) {
             if(step.external()) {
                 Node node = Node.box(step.componentDoc().name());
-                node.setStyle(NodeStyle.DASHED);
+                node.setStyle(Optional.of(NodeStyle.DASHED));
                 graph.getNodesAndEdges().addNode(node);
             } else {
                 graph.getNodesAndEdges().addNode(Node.ellipse(step.componentDoc().name()));

@@ -1,9 +1,11 @@
 package poussecafe.doc.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
@@ -55,7 +57,11 @@ public class DomainProcessStepsFactory implements Service {
             toSteps.addAll(toDirectSteps(tos));
 
             StepName currentStepName = new StepName(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-            List<StepName> toExternals = processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList());
+            Set<StepName> toExternals = new HashSet<>();
+            toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList()));
+            for(Entry<String, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
+                toExternals.addAll(entry.getValue().stream().map(StepName::new).collect(toList()));
+            }
             for(StepName toExternal : toExternals) {
                 Step toExternalStep = steps.get(toExternal);
                 if(toExternalStep == null) {
@@ -160,7 +166,7 @@ public class DomainProcessStepsFactory implements Service {
         return tos;
     }
 
-    private List<ToStep> toDirectSteps(List<StepName> tos) {
+    private List<ToStep> toDirectSteps(Collection<StepName> tos) {
         List<ToStep> toSteps = new ArrayList<>();
         for(StepName to : tos) {
             toSteps.add(directStep(to));

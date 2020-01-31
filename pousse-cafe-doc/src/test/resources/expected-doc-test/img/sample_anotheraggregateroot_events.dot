@@ -1,9 +1,9 @@
 digraph {
 splines=spline;
 "AnAggregateRoot" -> "Event2" [style=solid];
+"Event3" -> "To" [style=solid];
 "AnotherAggregateRoot" -> "Event3" [style=solid];
 "Event2" -> "AnotherAggregateRoot" [style=solid];
-"AnotherAggregateRoot" -> "To" [style=solid];
 "AnAggregateRoot"[shape=box];
 "Event2"[shape=ellipse];
 "Event3"[shape=ellipse];

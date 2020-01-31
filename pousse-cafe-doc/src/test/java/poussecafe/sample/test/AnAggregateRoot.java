@@ -1,6 +1,7 @@
 package poussecafe.sample.test;
 
 import poussecafe.discovery.MessageListener;
+import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
@@ -8,10 +9,10 @@ public class AnAggregateRoot extends AggregateRoot<AnAggregateRootId, AnAggregat
 
     /**
      * @process Test
-     * @event Event2
      * @from_external From
      */
     @MessageListener
+    @ProducesEvent(value = Event2.class)
     public void listener(Event1 event1) {
         Event2 event2 = newDomainEvent(Event2.class);
         emitDomainEvent(event2);

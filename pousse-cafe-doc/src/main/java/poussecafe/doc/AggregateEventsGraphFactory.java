@@ -1,6 +1,8 @@
 package poussecafe.doc;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.doc.graph.DirectedEdge;
@@ -29,7 +31,7 @@ public class AggregateEventsGraphFactory implements Service {
 
         String aggregateName = aggregateDoc.name();
         Node aggregateNode = Node.box(aggregateName);
-        aggregateNode.setStyle(NodeStyle.BOLD);
+        aggregateNode.setStyle(Optional.of(NodeStyle.BOLD));
         nodesAndEdges.addNode(aggregateNode);
 
         AggregateDocId aggregateDocId = aggregate.attributes().identifier().value();
@@ -60,7 +62,7 @@ public class AggregateEventsGraphFactory implements Service {
                 Set<String> fromExternals = stepDoc.attributes().fromExternals().value();
                 for(String fromExternal : fromExternals) {
                     Node fromExternalNode = Node.box(fromExternal);
-                    fromExternalNode.setStyle(NodeStyle.DASHED);
+                    fromExternalNode.setStyle(Optional.of(NodeStyle.DASHED));
                     nodesAndEdges.addNode(fromExternalNode);
                     nodesAndEdges.addEdge(DirectedEdge.solidEdge(fromExternal, consumedEvent));
                 }
@@ -86,9 +88,26 @@ public class AggregateEventsGraphFactory implements Service {
                 Set<String> toExternals = stepDoc.attributes().toExternals().value();
                 for(String toExternal : toExternals) {
                     Node toExternalNode = Node.box(toExternal);
-                    toExternalNode.setStyle(NodeStyle.DASHED);
+                    toExternalNode.setStyle(Optional.of(NodeStyle.DASHED));
                     nodesAndEdges.addNode(toExternalNode);
                     nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, toExternal));
+                }
+
+                Map<String, List<String>> toExternalsByEvent = stepDoc.attributes().toExternalsByEvent().value();
+                for(Entry<String, List<String>> toExternal : toExternalsByEvent.entrySet()) {
+                    String eventName = toExternal.getKey();
+                    List<String> externalNames = toExternal.getValue();
+
+                    Node toEventNode = Node.ellipse(eventName);
+                    nodesAndEdges.addNode(toEventNode);
+                    nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, eventName));
+
+                    for(String externalName : externalNames) {
+                        Node toExternalNode = Node.box(externalName);
+                        toExternalNode.setStyle(Optional.of(NodeStyle.DASHED));
+                        nodesAndEdges.addNode(toExternalNode);
+                        nodesAndEdges.addEdge(DirectedEdge.solidEdge(eventName, externalName));
+                    }
                 }
             }
         }

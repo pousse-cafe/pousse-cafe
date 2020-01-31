@@ -143,4 +143,9 @@ public abstract class ConvertingMapAttribute<L, U, K, V> implements MapAttribute
     public void clear() {
         map.clear();
     }
+
+    @Override
+    public void putAll(Map<K, V> value) {
+        map.putAll(value.entrySet().stream().collect(toConvertedToMap()));
+    }
 }

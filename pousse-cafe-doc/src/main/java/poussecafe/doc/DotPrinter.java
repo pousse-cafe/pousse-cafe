@@ -103,15 +103,15 @@ public class DotPrinter {
         stream.print("\"");
 
         List<String> attributes = new ArrayList<>();
-        if(node.getShape() != null) {
-            attributes.add("shape=" + node.getShape().name().toLowerCase());
+        if(node.getShape().isPresent()) {
+            attributes.add("shape=" + node.getShape().orElseThrow().name().toLowerCase());
         }
 
-        if (node.getStyle() != null) {
-            attributes.add("style=" + node.getStyle().name().toLowerCase());
+        if (node.getStyle().isPresent()) {
+            attributes.add("style=" + node.getStyle().orElseThrow().name().toLowerCase());
         }
 
-        if (attributes.size() > 0) {
+        if (!attributes.isEmpty()) {
             stream.print("[");
             stream.print(StringUtils.join(attributes, ','));
             stream.print("]");

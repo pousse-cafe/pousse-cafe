@@ -2,10 +2,12 @@ package poussecafe.doc.annotations;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.AnnotationMirror;
@@ -39,12 +41,25 @@ public class AnnotationUtils {
     public static Optional<AnnotationValue> value(AnnotationMirror annotationMirror, String elementName) {
         Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = annotationMirror.getElementValues();
         for(Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationValues.entrySet()) {
-            ExecutableElement attribute = entry.getKey();
-            if(attribute.getSimpleName().contentEquals(elementName)) {
+            ExecutableElement element = entry.getKey();
+            if(element.getSimpleName().contentEquals(elementName)) {
                 return Optional.of(entry.getValue());
             }
         }
         return Optional.empty();
+    }
+
+    public static Map<String, AnnotationValue> valuesMap(AnnotationMirror annotationMirror, Set<String> elementNames) {
+        Map<String, AnnotationValue> values = new HashMap<>();
+        Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = annotationMirror.getElementValues();
+        for(Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationValues.entrySet()) {
+            ExecutableElement element = entry.getKey();
+            String elementName = element.getSimpleName().toString();
+            if(elementNames.contains(elementName)) {
+                values.put(elementName, entry.getValue());
+            }
+        }
+        return values;
     }
 
     @SuppressWarnings("unchecked")
@@ -54,5 +69,19 @@ public class AnnotationUtils {
                 .map(AnnotationValue::getValue)
                 .map(value -> (T) value)
                 .collect(Collectors.toList());
+    }
+
+    public static List<AnnotationMirror> annotations(ExecutableElement methodDoc, Class<? extends Annotation> repeatableAnnotationClass, Class<? extends Annotation> containerAnnotationClass) {
+        List<AnnotationMirror> repeatableAnnotations = AnnotationUtils.annotations(methodDoc, repeatableAnnotationClass);
+        if(repeatableAnnotations.isEmpty()) {
+            List<? extends AnnotationMirror> containerAnnotations = AnnotationUtils.annotations(methodDoc, containerAnnotationClass);
+            for(AnnotationMirror mirror : containerAnnotations) {
+                Optional<AnnotationValue> value = AnnotationUtils.value(mirror, "value");
+                if(value.isPresent()) {
+                    repeatableAnnotations.addAll(AnnotationUtils.toList(value.get()));
+                }
+            }
+        }
+        return repeatableAnnotations;
     }
 }

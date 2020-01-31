@@ -1,4 +1,0 @@
-digraph {
-splines=spline;
-"AggregateDocFactory.newAggregateDoc(CreateAggregateDoc)"[shape=ellipse];
-}
