@@ -1,5 +1,7 @@
 package poussecafe.jackson;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -14,7 +16,10 @@ public class JacksonMessageAdapterTest {
     }
 
     private void givenInitialMessage() {
-        initialMessage = new SimpleMessage("data");
+        initialMessage = new SimpleMessage();
+        initialMessage.payload = "payload";
+        initialMessage.date = LocalDate.now();
+        initialMessage.bigDecimal = new BigDecimal("42.0000");
     }
 
     private SimpleMessage initialMessage;

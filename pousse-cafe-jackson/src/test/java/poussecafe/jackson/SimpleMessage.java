@@ -1,5 +1,7 @@
 package poussecafe.jackson;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.messaging.Message;
@@ -8,30 +10,24 @@ import static poussecafe.util.ReferenceEquals.referenceEquals;
 
 public class SimpleMessage implements Message {
 
-    SimpleMessage() {
+    public String payload;
 
-    }
+    public Object polymorphicPayload;
 
-    public SimpleMessage(String payload) {
-        this.payload = payload;
-    }
+    public LocalDate date;
 
-    public String getPayload() {
-        return payload;
-    }
+    public BigDecimal bigDecimal;
 
-    private String payload;
-
-    private Object polymorphicPayload;
-
-    public Object polymorphicPayload() {
-        return polymorphicPayload;
-    }
+    public int intPrimitive;
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(payload)
+                .append(polymorphicPayload)
+                .append(date)
+                .append(bigDecimal)
+                .append(intPrimitive)
                 .build();
     }
 
@@ -39,6 +35,10 @@ public class SimpleMessage implements Message {
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(payload, other.payload)
+                .append(polymorphicPayload, other.polymorphicPayload)
+                .append(date, other.date)
+                .append(bigDecimal, other.bigDecimal)
+                .append(intPrimitive, other.intPrimitive)
                 .build());
     }
 }
