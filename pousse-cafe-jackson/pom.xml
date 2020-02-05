@@ -9,12 +9,13 @@
 
     <artifactId>pousse-cafe-jackson</artifactId>
     <name>Pousse-Café - Jackson</name>
+    <version>0.16.1</version>
 
     <dependencies>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-core</artifactId>
-            <version>${project.version}</version>
+            <version>0.16.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
