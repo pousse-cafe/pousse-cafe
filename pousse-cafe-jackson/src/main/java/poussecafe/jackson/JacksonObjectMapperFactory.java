@@ -20,6 +20,7 @@ public class JacksonObjectMapperFactory implements Service {
     public static ObjectMapper staticBuildMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         mapper.setConfig(mapper.getSerializationConfig()
                 .without(SerializationFeature.FAIL_ON_EMPTY_BEANS));
