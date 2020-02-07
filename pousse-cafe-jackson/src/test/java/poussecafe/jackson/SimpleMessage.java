@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import poussecafe.messaging.Message;
 
 import static poussecafe.util.ReferenceEquals.referenceEquals;
@@ -40,5 +41,16 @@ public class SimpleMessage implements Message {
                 .append(bigDecimal, other.bigDecimal)
                 .append(intPrimitive, other.intPrimitive)
                 .build());
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append(payload)
+                .append(polymorphicPayload)
+                .append(date)
+                .append(bigDecimal)
+                .append(intPrimitive)
+                .build();
     }
 }
