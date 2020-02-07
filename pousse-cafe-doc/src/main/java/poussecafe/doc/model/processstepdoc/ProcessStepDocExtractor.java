@@ -18,6 +18,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.discovery.ProducesEvents;
 import poussecafe.doc.ClassDocPredicates;
@@ -38,6 +39,7 @@ import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static poussecafe.collection.Collections.asSet;
@@ -207,14 +209,34 @@ public class ProcessStepDocExtractor implements Service {
     private ProcessStepDocFactory messageListenerDocFactory;
 
     private Set<String> processNames(ExecutableElement methodDoc) {
-        TypeElement containingClass = (TypeElement) methodDoc.getEnclosingElement();
         Set<String> processNames = new HashSet<>(annotationsResolver.process(methodDoc));
+        processNames.addAll(namesFromMessageListenerAnnotation(methodDoc));
+        TypeElement containingClass = (TypeElement) methodDoc.getEnclosingElement();
         if(domainProcessDocFactory.isDomainProcessDoc(containingClass)) {
             return asSet(domainProcessDocFactory.name(containingClass));
         } else if(!processNames.isEmpty()) {
             return Collections.unmodifiableSet(processNames);
         } else {
             return emptySet();
+        }
+    }
+
+    private List<String> namesFromMessageListenerAnnotation(ExecutableElement methodDoc) {
+        Optional<AnnotationMirror> annotationMirror = AnnotationUtils.annotation(methodDoc, MessageListener.class);
+        if(annotationMirror.isPresent()) {
+            Optional<AnnotationValue> value = AnnotationUtils.value(annotationMirror.get(), "processes");
+            if(value.isPresent()) {
+                @SuppressWarnings("unchecked")
+                List<AnnotationValue> processes = (List<AnnotationValue>) value.get().getValue();
+                return processes.stream()
+                        .map(processValue -> docletAccess.getTypesUtils().asElement((TypeMirror) processValue.getValue()))
+                        .map(process -> process.getSimpleName().toString())
+                        .collect(toList());
+            } else {
+                return emptyList();
+            }
+        } else {
+            return emptyList();
         }
     }
 

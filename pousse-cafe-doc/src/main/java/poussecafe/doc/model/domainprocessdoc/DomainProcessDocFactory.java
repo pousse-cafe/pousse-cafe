@@ -9,12 +9,13 @@ import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.ProcessDescription;
 import poussecafe.doc.model.AnnotationsResolver;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
+import poussecafe.domain.Process;
 import poussecafe.process.DomainProcess;
 
 public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
@@ -36,7 +37,8 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
     }
 
     public boolean isDomainProcessDoc(TypeElement doc) {
-        return classDocPredicates.documentsWithSuperclass(doc, DomainProcess.class);
+        return classDocPredicates.documentsWithSuperclass(doc, DomainProcess.class)
+                || classDocPredicates.documentsWithSuperinterface(doc, Process.class);
     }
 
     private ClassDocPredicates classDocPredicates;

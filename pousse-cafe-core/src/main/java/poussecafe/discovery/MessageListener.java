@@ -2,6 +2,7 @@ package poussecafe.discovery;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import poussecafe.domain.Process;
 import poussecafe.environment.AggregateMessageListenerRunner;
 
 import static java.lang.annotation.ElementType.METHOD;
@@ -20,4 +21,6 @@ public @interface MessageListener {
     String shortId() default "";
 
     String customStep() default "";
+
+    Class<? extends Process>[] processes() default DefaultProcess.class;
 }

@@ -1,11 +1,14 @@
 digraph {
 splines=spline;
-"AnAggregateRoot" -> "Event2" [style=solid];
-"Event1" -> "AnAggregateRoot" [style=solid];
-"Event2" -> "AnotherAggregateRoot" [style=solid];
+"AnotherAggregateRoot" -> "Event3" [style=solid];
 "From" -> "Event1" [style=solid];
+"Event1" -> "AnAggregateRoot" [style=solid];
+"AnAggregateRoot" -> "Event2" [style=solid];
+"Event3" -> "AnAggregateRoot" [style=solid];
+"Event2" -> "AnotherAggregateRoot" [style=solid];
 "AnAggregateRoot"[shape=box,style=bold];
 "Event2"[shape=ellipse];
+"Event3"[shape=ellipse];
 "Event1"[shape=ellipse];
 "From"[shape=box,style=dashed];
 "AnotherAggregateRoot"[shape=box];

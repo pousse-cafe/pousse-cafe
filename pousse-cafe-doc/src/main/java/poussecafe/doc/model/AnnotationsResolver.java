@@ -156,12 +156,14 @@ public class AnnotationsResolver implements Service {
         return optionalTag(packageDoc, Tags.MODULE).orElseThrow(PousseCafeException::new);
     }
 
+    @Deprecated(since = "0.17")
     public List<String> process(ExecutableElement methodDoc) {
         return tags(methodDoc, Tags.PROCESS).stream()
                 .map(this::render)
                 .collect(toList());
     }
 
+    @Deprecated(since = "0.17")
     public List<ProcessDescription> processDescription(ExecutableElement doc) {
         return tags(doc, Tags.PROCESS_DESCRIPTION).stream()
                 .map(this::render)

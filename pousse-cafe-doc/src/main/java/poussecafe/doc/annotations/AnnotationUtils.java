@@ -27,6 +27,14 @@ public class AnnotationUtils {
                 .collect(Collectors.toList());
     }
 
+    public static Optional<AnnotationMirror> annotation(AnnotatedConstruct annotated, Class<? extends Annotation> annotationClass) {
+        return annotated.getAnnotationMirrors()
+                .stream()
+                .filter(mirror -> mirror.getAnnotationType().asElement().getSimpleName().contentEquals(annotationClass.getSimpleName()))
+                .findFirst()
+                .map(value -> (AnnotationMirror) value);
+    }
+
     public static List<AnnotationValue> values(List<? extends AnnotationMirror> mirrors, String elementName) {
         List<AnnotationValue> values = new ArrayList<>();
         for(AnnotationMirror annotationMirror : mirrors) {

@@ -21,7 +21,9 @@ public interface Tags {
 
     String MODULE = "module";
 
+    @Deprecated(since = "0.17")
     String PROCESS = "process";
 
+    @Deprecated(since = "0.17")
     String PROCESS_DESCRIPTION = "process_description";
 }
