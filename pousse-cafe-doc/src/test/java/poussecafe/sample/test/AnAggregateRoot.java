@@ -7,10 +7,7 @@ import poussecafe.domain.EntityAttributes;
 
 public class AnAggregateRoot extends AggregateRoot<AnAggregateRootId, AnAggregateRoot.Attributes> {
 
-    /**
-     * @from_external From
-     */
-    @MessageListener(processes = Test.class)
+    @MessageListener(processes = Test.class, consumesFromExternal = "From")
     @ProducesEvent(value = Event2.class)
     public void listener(Event1 event1) {
         Event2 event2 = newDomainEvent(Event2.class);

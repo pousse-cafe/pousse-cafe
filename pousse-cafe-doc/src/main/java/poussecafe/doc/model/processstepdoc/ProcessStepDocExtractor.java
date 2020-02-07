@@ -106,7 +106,7 @@ public class ProcessStepDocExtractor implements Service {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         Set<String> processNames = processNames(methodDoc);
         Set<String> producedEvents = extractProducedEvents(methodDoc);
-        Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
+        Set<String> fromExternals = extractFromExternals(methodDoc);
         Set<String> toExternals = extractToExternals(methodDoc);
         Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 
@@ -146,6 +146,29 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private static final String CONSUMED_BY_EXTERNAL_ELEMENT_NAME = "consumedByExternal";
+
+    @SuppressWarnings("unchecked")
+    private Set<String> extractFromExternals(ExecutableElement methodDoc) {
+        Set<String> fromExternals = new HashSet<>();
+        List<String> javadocTagToExternals = annotationsResolver.fromExternal(methodDoc);
+        if(!javadocTagToExternals.isEmpty()) {
+            Logger.warn("@from_external tag is deprecated, use @MessageListener annotation and set consumesFromExternal element instead");
+            fromExternals.addAll(javadocTagToExternals);
+        }
+
+        Optional<AnnotationMirror> annotationMirror = AnnotationUtils.annotation(methodDoc, MessageListener.class);
+        if(annotationMirror.isPresent()) {
+           Optional<AnnotationValue> optionalAnnotationValue = AnnotationUtils.value(annotationMirror.get(), "consumesFromExternal");
+           if(optionalAnnotationValue.isPresent()) {
+               List<AnnotationValue> annotationValue = (List<AnnotationValue>) optionalAnnotationValue.get().getValue();
+               fromExternals.addAll(annotationValue.stream()
+                       .map(external -> (String) external.getValue())
+                       .collect(toList()));
+           }
+        }
+
+        return fromExternals;
+    }
 
     @SuppressWarnings("unchecked")
     private Map<String, List<String>> extractToExternalsByEvent(ExecutableElement methodDoc) {
@@ -246,7 +269,7 @@ public class ProcessStepDocExtractor implements Service {
 
         Set<String> processNames = processNames(methodDoc);
         Set<String> producedEvents = extractProducedEvents(methodDoc);
-        Set<String> fromExternals = new HashSet<>(annotationsResolver.fromExternal(methodDoc));
+        Set<String> fromExternals = extractFromExternals(methodDoc);
         Set<String> toExternals = extractToExternals(methodDoc);
         Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 

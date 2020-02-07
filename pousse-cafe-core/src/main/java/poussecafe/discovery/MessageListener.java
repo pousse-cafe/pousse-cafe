@@ -23,4 +23,6 @@ public @interface MessageListener {
     String customStep() default "";
 
     Class<? extends Process>[] processes() default DefaultProcess.class;
+
+    String[] consumesFromExternal() default {};
 }

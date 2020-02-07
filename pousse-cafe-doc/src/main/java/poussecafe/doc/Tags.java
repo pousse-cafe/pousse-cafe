@@ -10,6 +10,7 @@ public interface Tags {
     @Deprecated(since = "0.16")
     String TO_EXTERNAL = "to_external";
 
+    @Deprecated(since = "0.17")
     String FROM_EXTERNAL = "from_external";
 
     String TRIVIAL = "trivial";
