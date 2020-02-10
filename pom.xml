@@ -196,7 +196,7 @@
     </repositories>
 
     <pluginRepositories>
-        <repository>
+        <pluginRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
             <releases>
@@ -205,7 +205,7 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
+        </pluginRepository>
     </pluginRepositories>
 
     <distributionManagement>
