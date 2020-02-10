@@ -5,11 +5,13 @@ import javax.lang.model.element.PackageElement;
 import poussecafe.doc.model.moduledoc.ModuleDocFactory;
 import poussecafe.doc.process.ModuleDocCreation;
 
-public class ModuleDocCreator implements Consumer<PackageElement> {
+@Deprecated(since = "0.17")
+public class PackageInfoModuleDocCreator implements Consumer<PackageElement> {
 
     @Override
     public void accept(PackageElement classDoc) {
         if (moduleDocFactory.isModuleDoc(classDoc)) {
+            Logger.warn("package-info based module definition is deprecated, use a module class instead for " + classDoc.getQualifiedName().toString());
             Logger.debug("Adding module from package " + classDoc.getQualifiedName().toString());
             moduleDocCreation.addModuleDoc(classDoc);
         }

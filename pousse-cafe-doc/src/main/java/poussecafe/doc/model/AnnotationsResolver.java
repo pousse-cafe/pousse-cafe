@@ -149,10 +149,12 @@ public class AnnotationsResolver implements Service {
                 .collect(toList());
     }
 
+    @Deprecated(since = "0.17")
     public boolean isModule(PackageElement packageDoc) {
         return hasTag(packageDoc, Tags.MODULE);
     }
 
+    @Deprecated(since = "0.17")
     public String module(PackageElement packageDoc) {
         return optionalTag(packageDoc, Tags.MODULE).orElseThrow(PousseCafeException::new);
     }

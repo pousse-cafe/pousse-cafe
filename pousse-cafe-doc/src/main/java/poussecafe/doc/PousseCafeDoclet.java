@@ -114,14 +114,23 @@ public class PousseCafeDoclet implements Doclet {
     }
 
     private void detectModules() {
-        ModuleDocCreator moduleDocCreator = new ModuleDocCreator();
-        runtime.injector().injectDependenciesInto(moduleDocCreator);
+        PackageInfoModuleDocCreator packageInfoModuleDocCreator = new PackageInfoModuleDocCreator();
+        runtime.injector().injectDependenciesInto(packageInfoModuleDocCreator);
 
         PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
-                .packageDocConsumer(moduleDocCreator)
+                .packageDocConsumer(packageInfoModuleDocCreator)
                 .build();
         runtime.injector().injectDependenciesInto(codeAnalyzer);
         codeAnalyzer.analyzeCode();
+
+        ClassModuleDocCreator moduleDocCreator = new ClassModuleDocCreator();
+        runtime.injector().injectDependenciesInto(moduleDocCreator);
+
+        ClassesAnalyzer classCodeAnalyzer = new ClassesAnalyzer.Builder()
+                .classDocConsumer(moduleDocCreator)
+                .build();
+        runtime.injector().injectDependenciesInto(classCodeAnalyzer);
+        classCodeAnalyzer.analyzeCode();
     }
 
     private void detectModulesComponents() {

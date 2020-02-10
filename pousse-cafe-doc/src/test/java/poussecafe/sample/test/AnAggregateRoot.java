@@ -1,10 +1,16 @@
 package poussecafe.sample.test;
 
+import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
+@Aggregate(
+    factory = AnAggregateRootFactory.class,
+    repository = AnAggregateRootRepository.class,
+    module = Sample.class
+)
 public class AnAggregateRoot extends AggregateRoot<AnAggregateRootId, AnAggregateRoot.Attributes> {
 
     @MessageListener(processes = Test.class, consumesFromExternal = "From")

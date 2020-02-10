@@ -1,8 +1,10 @@
 package poussecafe.environment;
 
 import java.util.Objects;
+import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.domain.Module;
 import poussecafe.util.ReferenceEquals;
 
 public class AggregateDefinition {
@@ -12,6 +14,12 @@ public class AggregateDefinition {
     }
 
     private Class<?> aggregateRootClass;
+
+    public Optional<Class<? extends Module>> moduleClass() {
+        return moduleClass;
+    }
+
+    private Optional<Class<? extends Module>> moduleClass = Optional.empty();
 
     public boolean hasFactory() {
         return factoryClass != null;
@@ -58,10 +66,16 @@ public class AggregateDefinition {
             return this;
         }
 
+        public Builder withModuleClass(Optional<Class<? extends Module>> moduleClass) {
+            definition.moduleClass = moduleClass;
+            return this;
+        }
+
         public AggregateDefinition build() {
             Objects.requireNonNull(definition.aggregateRootClass);
             Objects.requireNonNull(definition.factoryClass);
             Objects.requireNonNull(definition.repositoryClass);
+            Objects.requireNonNull(definition.moduleClass);
             return definition;
         }
     }
@@ -76,6 +90,7 @@ public class AggregateDefinition {
                 .append(aggregateRootClass, other.aggregateRootClass)
                 .append(factoryClass, other.factoryClass)
                 .append(repositoryClass, other.repositoryClass)
+                .append(moduleClass, other.moduleClass)
                 .build());
     }
 
@@ -85,6 +100,7 @@ public class AggregateDefinition {
                 .append(aggregateRootClass)
                 .append(factoryClass)
                 .append(repositoryClass)
+                .append(moduleClass)
                 .build();
     }
 }

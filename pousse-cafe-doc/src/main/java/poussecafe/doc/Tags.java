@@ -20,6 +20,7 @@ public interface Tags {
     @Deprecated(since = "0.16")
     String EVENT = "event";
 
+    @Deprecated(since = "0.17")
     String MODULE = "module";
 
     @Deprecated(since = "0.17")

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
@@ -19,6 +20,7 @@ import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.Factory;
+import poussecafe.domain.Module;
 import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.environment.AggregateDefinition;
@@ -69,10 +71,23 @@ class ClassPathExplorer {
             }
 
             Aggregate annotation = aggregateRootClass.getAnnotation(Aggregate.class);
+            Optional<Class<? extends Module>> moduleClass;
+            if(annotation.module() == DefaultModule.class) {
+                moduleClass = Optional.empty();
+            } else {
+                String aggregateRootPackage = aggregateRootClass.getPackageName();
+                String moduleClassPackage = annotation.module().getPackageName();
+                if(!aggregateRootPackage.startsWith(moduleClassPackage)) {
+                    throw new PousseCafeException("Aggregate root " + aggregateRootClass.getName() + " is not in a sub-package of its module class package " + moduleClassPackage);
+                }
+                moduleClass = Optional.of(annotation.module());
+            }
+
             definitions.add(new AggregateDefinition.Builder()
                     .withAggregateRoot(aggregateRootClass)
                     .withFactoryClass(annotation.factory())
                     .withRepositoryClass(annotation.repository())
+                    .withModuleClass(moduleClass)
                     .build());
         }
         return definitions;
