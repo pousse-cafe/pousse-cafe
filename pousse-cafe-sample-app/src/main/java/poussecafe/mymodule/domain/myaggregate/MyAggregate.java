@@ -10,8 +10,9 @@ import poussecafe.domain.EntityAttributes;
 import poussecafe.mymodule.ACommand;
 import poussecafe.mymodule.domain.AnotherDomainEvent;
 import poussecafe.mymodule.domain.MyDomainEvent;
+import poussecafe.mymodule.process.MyProcess;
 
-/*
+/**
  * A simple aggregate root
  */
 @Aggregate(
@@ -20,10 +21,10 @@ import poussecafe.mymodule.domain.MyDomainEvent;
 )
 public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attributes> {
 
-    /*
+    /**
      * Below action updates aggregate's state and triggers the emission of a Domain Event in case of success
      */
-    @MessageListener(runner = DoSomethingRunner.class)
+    @MessageListener(runner = DoSomethingRunner.class, processes = MyProcess.class)
     @ProducesEvent(MyDomainEvent.class)
     public void doSomething(ACommand command) {
         int x = command.x().value();
@@ -40,24 +41,24 @@ public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attrib
         emitDomainEvent(event);
     }
 
-    /*
+    /**
      * Below method is a listener to AnotherDomainEvent event. This does not require the definition of an explicit
      * DomainProcess. However, a runner service has to be provided. It is responsible for
      * - the extraction of aggregate ids out of the event.
      * - providing a context to the execution of the listener (none in this case).
      */
-    @MessageListener(runner = DoSomethingElseRunner.class)
+    @MessageListener(runner = DoSomethingElseRunner.class, processes = MyProcess.class)
     public void doSomething(AnotherDomainEvent event) {
         attributes().x().valueOf(event.x());
     }
 
-    /*
+    /**
      * This interface defines the data model in the form of a set of attributes without exposing implementation details
      * (JPA Entity, Mongo document, etc).
      */
     public interface Attributes extends EntityAttributes<MyAggregateId> {
 
-        /*
+        /**
          * An Attribute instance allows to read or update the value.
          */
         Attribute<Integer> x();
