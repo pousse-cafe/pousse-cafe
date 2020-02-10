@@ -8,7 +8,7 @@ import poussecafe.discovery.MessageListener;
 import poussecafe.runtime.Runtime.Builder;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PousseCafeTestTest extends PousseCafeTest {
 

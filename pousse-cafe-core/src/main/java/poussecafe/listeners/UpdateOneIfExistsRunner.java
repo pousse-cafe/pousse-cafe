@@ -6,10 +6,10 @@ import poussecafe.messaging.Message;
 
 import static java.util.Arrays.asList;
 
-public abstract class UpdateOrCreateOneRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
-extends UpdateOrCreateRunner<M, K, A> {
+public abstract class UpdateOneIfExistsRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+extends UpdateIfExistsRunner<M, K, A> {
 
-    public UpdateOrCreateOneRunner(Class<A> aggregateRootClass) {
+    public UpdateOneIfExistsRunner(Class<A> aggregateRootClass) {
         super(aggregateRootClass);
     }
 

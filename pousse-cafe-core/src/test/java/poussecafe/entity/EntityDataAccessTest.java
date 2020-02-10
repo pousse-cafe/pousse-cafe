@@ -5,7 +5,7 @@ import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class EntityDataAccessTest {
 

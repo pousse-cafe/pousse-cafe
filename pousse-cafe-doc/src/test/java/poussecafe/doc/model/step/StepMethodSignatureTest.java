@@ -6,7 +6,7 @@ import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StepMethodSignatureTest {
 

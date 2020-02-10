@@ -6,15 +6,15 @@ import poussecafe.domain.Repository;
 import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class UpdateOrCreateRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class UpdateIfExistsRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
 extends AggregateStateAwareRunner<M, K, A> {
 
-    public UpdateOrCreateRunner(Class<A> aggregateRootClass) {
+    public UpdateIfExistsRunner(Class<A> aggregateRootClass) {
         super(aggregateRootClass);
     }
 
     @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public TargetAggregates<K> targetAggregates(M message) {
         Collection<K> ids = aggregateIds(message);
         Repository aggregateRepository = aggregateRepository();
@@ -22,8 +22,6 @@ extends AggregateStateAwareRunner<M, K, A> {
         for(K id : ids) {
             if(aggregateRepository.existsById(id)) {
                 builder.toUpdate(id);
-            } else {
-                builder.toCreate(id);
             }
         }
         return builder.build();

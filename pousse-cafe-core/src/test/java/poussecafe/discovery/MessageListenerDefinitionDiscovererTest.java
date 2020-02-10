@@ -23,6 +23,7 @@ public class MessageListenerDefinitionDiscovererTest {
         containerClass = AggregateRootWithSingleListener.class;
     }
 
+    @SuppressWarnings("rawtypes")
     private Class containerClass;
 
     private void whenDiscoveringListenerDefinitions() {

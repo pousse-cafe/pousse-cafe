@@ -44,15 +44,18 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         return messageFactory;
     }
 
-    @Deprecated
+    /**
+     * @deprecated This feature was being used to prevent the persistence of changed applied to an Aggregate but still
+     * emit events. Instead, it is recommended to check first if the state of the Aggregate must be updated and emit
+     * events accordingly.
+     */
+    @Deprecated(forRemoval = true)
     protected void dontPersist(boolean value) {
         dontPersist = value;
     }
 
-    @Deprecated
     private boolean dontPersist;
 
-    @Deprecated
     public boolean dontPersist() {
         return dontPersist;
     }

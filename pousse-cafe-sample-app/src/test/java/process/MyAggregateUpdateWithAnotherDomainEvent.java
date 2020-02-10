@@ -6,7 +6,7 @@ import poussecafe.mymodule.domain.myaggregate.MyAggregate;
 import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /*
  * Verifies that aggregate message listener behaves as expected.
