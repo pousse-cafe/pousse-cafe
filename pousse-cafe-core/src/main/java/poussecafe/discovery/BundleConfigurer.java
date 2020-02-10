@@ -2,6 +2,7 @@ package poussecafe.discovery;
 
 import java.util.HashSet;
 import java.util.Set;
+import poussecafe.domain.Module;
 import poussecafe.environment.Bundle;
 import poussecafe.environment.BundleDefinition;
 import poussecafe.messaging.Messaging;
@@ -17,11 +18,20 @@ public class BundleConfigurer {
         private BundleConfigurer configurer = new BundleConfigurer();
 
         public Builder moduleBasePackage(String packageName) {
-            this.moduleBasePackages.add(packageName);
+            moduleBasePackages.add(packageName);
             return this;
         }
 
         private Set<String> moduleBasePackages = new HashSet<>();
+
+        public Builder module(Class<? extends Module> moduleClass) {
+            if(moduleClass == DefaultModule.class) {
+                moduleBasePackages.add("");
+            } else {
+                moduleBasePackages.add(moduleClass.getPackageName());
+            }
+            return this;
+        }
 
         public BundleConfigurer build() {
             configurer.classPathExplorer = new ClassPathExplorer(moduleBasePackages);

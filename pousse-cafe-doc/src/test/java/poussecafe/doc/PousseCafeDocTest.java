@@ -22,20 +22,20 @@ public class PousseCafeDocTest {
 
     @Test
     public void docletGeneratesExpectedDoc() {
-        givenDocletConfiguration();
+        givenDocletConfiguration("poussecafe.sample.test");
         givenEmptyOutputDirectory();
         whenExecutingDoclet();
         thenGeneratedDocContainsExpectedData();
     }
 
-    private void givenDocletConfiguration() {
+    private void givenDocletConfiguration(String basePackage) {
         configuration = new PousseCafeDocletConfiguration.Builder()
                 .domainName("Pousse-Café Doc")
                 .version("Test")
                 .sourcePath(asList(System.getProperty("user.dir") + "/src/test/java/"))
                 .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc-test/")
                 .pdfFileName("domain.pdf")
-                .basePackage("poussecafe.sample.test")
+                .basePackage(basePackage)
                 .includeGenerationDate(false)
                 .customDotExecutable(Optional.of("dot"))
                 .customFdpExecutable(Optional.of("fdp"))
@@ -80,5 +80,13 @@ public class PousseCafeDocTest {
             logger.info("Consider installing graphviz package to enable this test.");
             return false;
         }
+    }
+
+    @Test
+    public void docletGeneratesExpectedDocUsingDeprecated() {
+        givenDocletConfiguration("poussecafe.sample.test_deprecated");
+        givenEmptyOutputDirectory();
+        whenExecutingDoclet();
+        thenGeneratedDocContainsExpectedData();
     }
 }
