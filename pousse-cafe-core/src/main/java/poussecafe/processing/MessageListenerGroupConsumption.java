@@ -263,7 +263,7 @@ public class MessageListenerGroupConsumption {
                     .consumptionState(consumptionState)
                     .failFast(failFast)
                     .logger(logger)
-                    .toUpdate(Optional.of(aggregateId))
+                    .toUpdateId(Optional.of(aggregateId))
                     .build();
             MessageListenerConsumptionReport report = executeInApmTransaction(executor);
             updatesReports.add(report);

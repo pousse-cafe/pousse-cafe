@@ -1,7 +1,9 @@
 package poussecafe.processing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 import poussecafe.domain.DomainEvent;
 import poussecafe.environment.ExpectedEvent;
@@ -15,6 +17,7 @@ import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.runtime.TestDomainEvent;
 
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -82,7 +85,7 @@ public class MessageListenerExecutorTest {
     @Test
     public void eventsChecked() {
         givenExpectedEvent(expectedEventMatching(SampleEventData.class));
-        givenProducedEvent(new SampleEventData());
+        givenProducedEvent("id", new SampleEventData());
         givenConsumptionStateAndConsumptionHandler();
         givenListenerWithExpectedEvents();
         whenExecuting();
@@ -101,11 +104,12 @@ public class MessageListenerExecutorTest {
 
     private List<ExpectedEvent> expectedEvents = new ArrayList<>();
 
-    private <E extends DomainEvent> void givenProducedEvent(E producedEvent) {
+    private <E extends DomainEvent> void givenProducedEvent(Object aggregateId, E producedEvent) {
+        List<DomainEvent> producedEvents = producedEventsByAggregate.computeIfAbsent(aggregateId, key -> new ArrayList<>());
         producedEvents.add(producedEvent);
     }
 
-    private List<DomainEvent> producedEvents = new ArrayList<>();
+    private Map<Object, List<DomainEvent>> producedEventsByAggregate = new HashMap<>();
 
     private void givenListenerWithExpectedEvents() {
         listener = mock(MessageListener.class);
@@ -114,7 +118,7 @@ public class MessageListenerExecutorTest {
         when(listener.expectedEvents()).thenReturn(expectedEvents);
         MessageConsumer consumer = mock(MessageConsumer.class);
         MessageListenerConsumptionReport report = mock(MessageListenerConsumptionReport.class);
-        when(report.producedEvents()).thenReturn(producedEvents);
+        when(report.producedEventsByAggregate()).thenReturn(producedEventsByAggregate);
         when(report.isSuccess()).thenReturn(true);
         when(consumer.consume(consumptionState)).thenReturn(report);
         when(listener.consumer()).thenReturn(consumer);
@@ -130,6 +134,7 @@ public class MessageListenerExecutorTest {
     @Test
     public void expectedRequiredEventMissingFails() {
         givenExpectedEvent(requiredExpectedEventMatching(SampleEventData.class));
+        givenNoProducedEvent("id");
         givenConsumptionStateAndConsumptionHandler();
         givenListenerWithExpectedEvents();
         whenExecuting();
@@ -143,6 +148,10 @@ public class MessageListenerExecutorTest {
         return expectedEvent;
     }
 
+    private void givenNoProducedEvent(String aggregateId) {
+        producedEventsByAggregate.put(aggregateId, emptyList());
+    }
+
     private void thenExecutionFailed() {
         assertTrue(executor.messageConsumptionReport().isFailed());
     }
@@ -150,10 +159,20 @@ public class MessageListenerExecutorTest {
     @Test
     public void unexpectedEventFails() {
         givenExpectedEvent(expectedEventMatching(SampleEventData.class));
-        givenProducedEvent(new TestDomainEvent());
+        givenProducedEvent("id", new TestDomainEvent());
         givenConsumptionStateAndConsumptionHandler();
         givenListenerWithExpectedEvents();
         whenExecuting();
         thenExecutionFailed();
+    }
+
+    @Test
+    public void expectedRequiredEventPresentSucceeds() {
+        givenExpectedEvent(requiredExpectedEventMatching(SampleEventData.class));
+        givenProducedEvent("id", new SampleEventData());
+        givenConsumptionStateAndConsumptionHandler();
+        givenListenerWithExpectedEvents();
+        whenExecuting();
+        thenProducedEventsChecked();
     }
 }

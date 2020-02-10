@@ -84,11 +84,18 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
 
     private String listenerId;
 
-    private void updateAggregate(Message message, Repository repository, TransactionRunner transactionRunner, Object id) {
-        transactionRunner.runInTransaction(() -> updateInSpan(message, repository, id));
+    private AggregateRoot updateAggregate(Message message, Repository repository, TransactionRunner transactionRunner, Object id) {
+        AggregateReference reference = new AggregateReference();
+        transactionRunner.runInTransaction(() -> updateInSpan(message, repository, id, reference));
+        return reference.aggregate;
     }
 
-    private void updateInSpan(Message message, Repository repository, Object id) {
+    private class AggregateReference {
+
+        AggregateRoot aggregate;
+    }
+
+    private void updateInSpan(Message message, Repository repository, Object id, AggregateReference reference) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(method.getName());
         try {
@@ -101,6 +108,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .build();
             invoker.invoke(message);
             repository.update(targetAggregateRoot);
+            reference.aggregate = targetAggregateRoot;
         } catch(SameOperationException | OptimisticLockingException e) {
             throw e;
         } catch(MethodInvokerException e) {

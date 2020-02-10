@@ -1,6 +1,8 @@
 package poussecafe.processing;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -53,8 +55,8 @@ class MessageListenerExecutor {
             return this;
         }
 
-        public Builder toUpdate(Optional<Object> toUpdate) {
-            executor.toUpdate = toUpdate;
+        public Builder toUpdateId(Optional<Object> toUpdateId) {
+            executor.toUpdateId = toUpdateId;
             return this;
         }
 
@@ -63,7 +65,7 @@ class MessageListenerExecutor {
             Objects.requireNonNull(executor.listener);
             Objects.requireNonNull(executor.messageConsumptionHandler);
             Objects.requireNonNull(executor.logger);
-            Objects.requireNonNull(executor.toUpdate);
+            Objects.requireNonNull(executor.toUpdateId);
             return executor;
         }
     }
@@ -94,9 +96,9 @@ class MessageListenerExecutor {
         }
 
         try {
-            if(toUpdate.isPresent()) {
+            if(toUpdateId.isPresent()) {
                 AggregateUpdateMessageConsumer consumer = (AggregateUpdateMessageConsumer) listener.consumer();
-                messageConsumptionReport = consumer.consume(consumptionState, toUpdate.get());
+                messageConsumptionReport = consumer.consume(consumptionState, toUpdateId.get());
             } else {
                 messageConsumptionReport = listener.consumer().consume(consumptionState);
             }
@@ -114,24 +116,26 @@ class MessageListenerExecutor {
         }
     }
 
-    private Optional<Object> toUpdate = Optional.empty();
+    private Optional<Object> toUpdateId = Optional.empty();
 
     private void checkProducedEvents() {
         List<ExpectedEvent> expectedEvents = listener.expectedEvents();
-        Set<ExpectedEvent> requiredEvents = expectedEvents.stream()
-                .filter(ExpectedEvent::required)
-                .collect(toSet());
-        List<DomainEvent> producedEvents = messageConsumptionReport.producedEvents();
-        for(DomainEvent producedEvent : producedEvents) {
-            Optional<ExpectedEvent> match = expectedEvents.stream().filter(expectedEvent -> expectedEvent.matches(producedEvent)).findFirst();
-            if(match.isPresent()) {
-                requiredEvents.remove(match.get());
-            } else {
-                throw new IllegalStateException("Produced event " + producedEvent + " does not match any expected event of listener " + listener.shortId());
+        Map<Object, List<DomainEvent>> producedEventsByAggregate = messageConsumptionReport.producedEventsByAggregate();
+        for(Entry<Object, List<DomainEvent>> entry : producedEventsByAggregate.entrySet()) {
+            Set<ExpectedEvent> requiredEvents = expectedEvents.stream()
+                    .filter(ExpectedEvent::required)
+                    .collect(toSet());
+            for(DomainEvent producedEvent : entry.getValue()) {
+                Optional<ExpectedEvent> match = expectedEvents.stream().filter(expectedEvent -> expectedEvent.matches(producedEvent)).findFirst();
+                if(match.isPresent()) {
+                    requiredEvents.remove(match.get());
+                } else {
+                    throw new IllegalStateException("Produced event " + producedEvent + " does not match any expected event of listener " + listener.shortId() + " with aggregate " + entry.getKey());
+                }
             }
-        }
-        if(!requiredEvents.isEmpty()) {
-            throw new IllegalStateException("Some required events where not produced by listener " + listener.shortId());
+            if(!requiredEvents.isEmpty()) {
+                throw new IllegalStateException("Some required events where not produced by listener " + listener.shortId() + " with aggregate " + entry.getKey());
+            }
         }
     }
 
