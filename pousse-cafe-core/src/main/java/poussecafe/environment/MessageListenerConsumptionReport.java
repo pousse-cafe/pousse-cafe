@@ -272,5 +272,5 @@ public class MessageListenerConsumptionReport {
         return Collections.unmodifiableList(producedEvents);
     }
 
-    private List<DomainEvent> producedEvents;
+    private List<DomainEvent> producedEvents = new ArrayList<>();
 }
