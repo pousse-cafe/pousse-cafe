@@ -24,5 +24,10 @@ public interface AggregateMessageListenerRunner<M, K, A> {
                 .build();
     }
 
-    Object context(M message, A aggregate);
+    /**
+     * No context by default.
+     */
+    default Object context(M message, A aggregate) {
+        return null;
+    }
 }

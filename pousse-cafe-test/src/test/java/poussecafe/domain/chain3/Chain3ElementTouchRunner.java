@@ -1,12 +1,12 @@
 package poussecafe.domain.chain3;
 
 import poussecafe.domain.chain1.ChainElementTouchable;
+import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.TargetAggregates;
-import poussecafe.listeners.NoContextByDefaultRunner;
 import poussecafe.messaging.internal.NextChainElementId;
 
 public class Chain3ElementTouchRunner
-extends NoContextByDefaultRunner<ChainElementTouchable, Chain3ElementId, Chain3Element> {
+implements AggregateMessageListenerRunner<ChainElementTouchable, Chain3ElementId, Chain3Element> {
 
     @Override
     public TargetAggregates<Chain3ElementId> targetAggregates(ChainElementTouchable event) {

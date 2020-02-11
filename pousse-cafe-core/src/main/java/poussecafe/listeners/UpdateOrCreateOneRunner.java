@@ -1,21 +1,29 @@
 package poussecafe.listeners;
 
-import java.util.Collection;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.Repository;
+import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 
-import static java.util.Arrays.asList;
-
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class UpdateOrCreateOneRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
-extends UpdateOrCreateRunner<M, K, A> {
+extends AggregateStateAwareRunner<M, K, A> {
 
     public UpdateOrCreateOneRunner(Class<A> aggregateRootClass) {
         super(aggregateRootClass);
     }
 
     @Override
-    public Collection<K> aggregateIds(M message) {
-        return asList(aggregateId(message));
+    public TargetAggregates<K> targetAggregates(M message) {
+        Repository aggregateRepository = aggregateRepository();
+        TargetAggregates.Builder<K> builder = new TargetAggregates.Builder<>();
+        K id = aggregateId(message);
+        if(aggregateRepository.existsById(id)) {
+            builder.toUpdate(id);
+        } else {
+            builder.toCreate(id);
+        }
+        return builder.build();
     }
 
     protected abstract K aggregateId(M message);
