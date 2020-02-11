@@ -18,12 +18,16 @@ public class ModuleDocFactory extends Factory<ModuleDocId, ModuleDoc, ModuleDoc.
         }
 
         String name = annotationsResolver.module(packageDoc);
-        ModuleDoc moduleDoc = newAggregateWithId(ModuleDocId.ofPackageName(packageDoc.getQualifiedName().toString()));
+        ModuleDoc moduleDoc = newAggregateWithId(moduleDocId(packageDoc));
         moduleDoc.componentDoc(componentDocFactory.buildDoc(name, packageDoc));
         return moduleDoc;
     }
 
     private AnnotationsResolver annotationsResolver;
+
+    public ModuleDocId moduleDocId(PackageElement packageDoc) {
+        return ModuleDocId.ofPackageName(packageDoc.getQualifiedName().toString());
+    }
 
     private ComponentDocFactory componentDocFactory;
 
@@ -45,7 +49,7 @@ public class ModuleDocFactory extends Factory<ModuleDocId, ModuleDoc, ModuleDoc.
 
         String name = name(doc);
         PackageElement packageElement = (PackageElement) doc.getEnclosingElement();
-        ModuleDoc moduleDoc = newAggregateWithId(ModuleDocId.ofPackageName(packageElement.getQualifiedName().toString()));
+        ModuleDoc moduleDoc = newAggregateWithId(moduleDocId(packageElement));
         moduleDoc.componentDoc(componentDocFactory.buildDoc(name, doc));
         return moduleDoc;
     }

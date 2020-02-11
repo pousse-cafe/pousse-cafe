@@ -114,15 +114,11 @@ public class PousseCafeDoclet implements Doclet {
     }
 
     private void detectModules() {
-        PackageInfoModuleDocCreator packageInfoModuleDocCreator = new PackageInfoModuleDocCreator();
-        runtime.injector().injectDependenciesInto(packageInfoModuleDocCreator);
+        detectClassBasedModules();
+        detectPackageInfoModules();
+    }
 
-        PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
-                .packageDocConsumer(packageInfoModuleDocCreator)
-                .build();
-        runtime.injector().injectDependenciesInto(codeAnalyzer);
-        codeAnalyzer.analyzeCode();
-
+    private void detectClassBasedModules() {
         ClassModuleDocCreator moduleDocCreator = new ClassModuleDocCreator();
         runtime.injector().injectDependenciesInto(moduleDocCreator);
 
@@ -131,6 +127,17 @@ public class PousseCafeDoclet implements Doclet {
                 .build();
         runtime.injector().injectDependenciesInto(classCodeAnalyzer);
         classCodeAnalyzer.analyzeCode();
+    }
+
+    private void detectPackageInfoModules() {
+        PackageInfoModuleDocCreator packageInfoModuleDocCreator = new PackageInfoModuleDocCreator();
+        runtime.injector().injectDependenciesInto(packageInfoModuleDocCreator);
+
+        PackagesAnalyzer codeAnalyzer = new PackagesAnalyzer.Builder()
+                .packageDocConsumer(packageInfoModuleDocCreator)
+                .build();
+        runtime.injector().injectDependenciesInto(codeAnalyzer);
+        codeAnalyzer.analyzeCode();
     }
 
     private void detectModulesComponents() {
