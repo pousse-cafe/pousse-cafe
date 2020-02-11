@@ -7,7 +7,7 @@ import poussecafe.messaging.Message;
 /**
  * @deprecated directly implement AggregateMessageListenerRunner instead.
  * You may also turn yourself to more specific implementations like
- * UpdateSeveralRunner, AlwaysUpdateOneRunner, UpdateOneRunner, UpdateOrCreateRunner, UpdateOrCreateOneRunner,
+ * UpdateSeveralRunner, UpdateOneRunner, UpdateOneOrNoneRunner, UpdateOrCreateRunner, UpdateOrCreateOneRunner,
  * UpdateIfExistsRunner or UpdateOneIfExistsRunner.
  */
 @Deprecated(since = "0.16.0")

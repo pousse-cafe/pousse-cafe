@@ -1,10 +1,10 @@
 package poussecafe.domain;
 
-import poussecafe.listeners.AlwaysUpdateOneRunner;
+import poussecafe.listeners.UpdateOneRunner;
 import poussecafe.runtime.TestDomainEvent3;
 
 public class SimpleAggregateTouchRunner
-extends AlwaysUpdateOneRunner<TestDomainEvent3, SimpleAggregateId, SimpleAggregate> {
+extends UpdateOneRunner<TestDomainEvent3, SimpleAggregateId, SimpleAggregate> {
 
     @Override
     protected SimpleAggregateId aggregateId(TestDomainEvent3 message) {
