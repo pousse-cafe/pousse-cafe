@@ -21,7 +21,7 @@ public class UbiquitousLanguageFactory implements Service {
             ModuleDoc moduleDoc = module.documentation();
             language.add(new UbiquitousLanguageEntry.Builder()
                             .componentDoc(moduleDoc.attributes().componentDoc().value())
-                            .type("Bounded Context")
+                            .type("Module")
                             .build());
 
             String moduleName = moduleDoc.attributes().componentDoc().value().name();
