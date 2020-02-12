@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -23,147 +24,97 @@ import static java.util.stream.Collectors.toList;
 public class DomainProcessStepsFactory implements Service {
 
     public DomainProcessSteps buildDomainProcessSteps(DomainProcessDoc domainProcessDoc) {
-        HashMap<StepName, Step> steps = new HashMap<>();
+        DomainProcessSteps.Builder stepsBuilder = new DomainProcessSteps.Builder();
 
         ModuleComponentDoc moduleComponentDoc = domainProcessDoc.attributes().moduleComponentDoc().value();
         ModuleDocId moduleDocId = moduleComponentDoc.moduleDocId();
         String processName = moduleComponentDoc.componentDoc().name();
 
-        HashMap<String, List<String>> eventToStep = new HashMap<>();
         List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(moduleDocId, processName);
+        ConsumingStepsPerEvent eventToConsumingStepsMap = buildConsumingStepsPerEvent(processStepDocs);
+
+        Set<StepName> otherProcesses = new HashSet<>();
         for(ProcessStepDoc processStepDoc : processStepDocs) {
-            Optional<String> consumedEventName;
-            Optional<StepMethodSignature> optionalStepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
-            if(optionalStepMethodSignature.isPresent()) {
-                consumedEventName = optionalStepMethodSignature.get().consumedEventName();
-            } else {
-                consumedEventName = Optional.empty();
-            }
+            List<ToStep> currentStepToSteps = new ArrayList<>();
 
-            if(consumedEventName.isPresent()) {
-                String presentConsumedEventName = consumedEventName.get();
-                List<String> signatures = eventToStep.get(presentConsumedEventName);
-                if(signatures == null) {
-                    signatures = new ArrayList<>();
-                    eventToStep.put(presentConsumedEventName, signatures);
-                }
-                signatures.add(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-            }
-        }
+            List<StepName> toInternals = eventToConsumingStepsMap.locateToInternals(processStepDoc);
+            currentStepToSteps.addAll(toDirectSteps(toInternals));
 
-        for(ProcessStepDoc processStepDoc : processStepDocs) {
-            List<ToStep> toSteps = new ArrayList<>();
-            List<StepName> tos = locateTos(processStepDoc, eventToStep);
-            toSteps.addAll(toDirectSteps(tos));
+            Set<StepName> toExternals = locateToExternals(processStepDoc);
+            stepsBuilder.merge(toExternalStepsMap(toExternals));
+            currentStepToSteps.addAll(toDirectSteps(toExternals));
 
-            StepName currentStepName = new StepName(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-            Set<StepName> toExternals = new HashSet<>();
-            toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList()));
-            for(Entry<String, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
-                toExternals.addAll(entry.getValue().stream().map(StepName::new).collect(toList()));
-            }
-            for(StepName toExternal : toExternals) {
-                Step toExternalStep = steps.get(toExternal);
-                if(toExternalStep == null) {
-                    toExternalStep = new Step.Builder()
-                            .componentDoc(new ComponentDoc.Builder()
-                                    .name(toExternal.stringValue())
-                                    .description("")
-                                    .build())
-                            .external(true)
-                            .build();
-                    steps.put(toExternal, toExternalStep);
-                }
-            }
-            toSteps.addAll(toDirectSteps(toExternals));
-
-            String domainProcessName = domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name();
-            List<StepName> toDomainProcesses = otherDomainProcesses(moduleDocId, domainProcessName, processStepDoc.attributes().producedEvents().value());
-            for(StepName toDomainProcess : toDomainProcesses) {
-                Step toDomainProcessStep = steps.get(toDomainProcess);
-                if(toDomainProcessStep == null) {
-                    toDomainProcessStep = new Step.Builder()
-                            .componentDoc(new ComponentDoc.Builder()
-                                    .name(toDomainProcess.stringValue())
-                                    .description("")
-                                    .build())
-                            .external(true)
-                            .build();
-                    steps.put(toDomainProcess, toDomainProcessStep);
-                }
-            }
-            toSteps.addAll(toDirectSteps(toDomainProcesses));
+            List<StepName> toDomainProcesses = locateToDomainProcesses(domainProcessDoc, processStepDoc);
+            otherProcesses.addAll(toDomainProcesses);
+            stepsBuilder.merge(toExternalStepsMap(toDomainProcesses));
+            currentStepToSteps.addAll(toDirectSteps(toDomainProcesses));
 
             ComponentDoc processStepComponentDoc = processStepDoc.attributes().moduleComponentDoc().value().componentDoc();
-            steps.put(currentStepName, new Step.Builder()
+            StepName currentStepName = new StepName(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
+            Step currentStep = new Step.Builder()
                     .componentDoc(processStepComponentDoc)
-                    .tos(toSteps)
-                    .build());
+                    .tos(currentStepToSteps)
+                    .build();
+            stepsBuilder.add(currentStep);
 
-            List<StepName> fromExternals = processStepDoc.attributes().fromExternals().value().stream().map(StepName::new).collect(toList());
-            ToStep additionalToStep = directStep(currentStepName);
-            for(StepName fromExternal : fromExternals) {
-                Step fromExternalStep = steps.get(fromExternal);
-                if(fromExternalStep == null) {
-                    fromExternalStep = new Step.Builder()
-                            .componentDoc(new ComponentDoc.Builder()
-                                    .name(fromExternal.stringValue())
-                                    .description("")
-                                    .build())
-                            .external(true)
-                            .to(additionalToStep)
-                            .build();
-                } else {
-                    fromExternalStep = new Step.Builder()
-                            .step(fromExternalStep)
-                            .to(additionalToStep)
-                            .build();
-                }
-                steps.put(fromExternal, fromExternalStep);
-            }
+            ToStep toCurrentStep = directStep(currentStepName);
 
-            Optional<StepMethodSignature> stepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
-            Optional<String> consumedEvent = Optional.empty();
-            if(stepMethodSignature.isPresent()) {
-                consumedEvent = stepMethodSignature.get().consumedEventName();
-            }
-            List<StepName> fromDomainProcesses = fromDomainProcesses(moduleDocId, domainProcessName, consumedEvent);
-            for(StepName fromDomainProcess : fromDomainProcesses) {
-                Step fromDomainProcessStep = steps.get(fromDomainProcess);
-                if(fromDomainProcessStep == null) {
-                    fromDomainProcessStep = new Step.Builder()
-                            .componentDoc(new ComponentDoc.Builder()
-                                    .name(fromDomainProcess.stringValue())
-                                    .description("")
-                                    .build())
-                            .external(true)
-                            .to(additionalToStep)
-                            .build();
-                } else {
-                    fromDomainProcessStep = new Step.Builder()
-                            .step(fromDomainProcessStep)
-                            .to(additionalToStep)
-                            .build();
-                }
-                steps.put(fromDomainProcess, fromDomainProcessStep);
-            }
+            List<StepName> fromExternals = locateFromExternals(processStepDoc);
+            stepsBuilder.merge(fromExternalStepsMap(fromExternals, toCurrentStep));
+
+            List<StepName> fromDomainProcesses = fromDomainProcesses(domainProcessDoc, processStepDoc);
+            otherProcesses.addAll(fromDomainProcesses);
+            stepsBuilder.merge(fromExternalStepsMap(fromDomainProcesses, toCurrentStep));
         }
 
-        return new DomainProcessSteps(steps);
+        Map<StepName, Step> interprocessSteps = buildInterprocessSteps(moduleDocId, otherProcesses);
+        stepsBuilder.merge(interprocessSteps);
+
+        return stepsBuilder.build();
+    }
+
+    private List<StepName> locateFromExternals(ProcessStepDoc processStepDoc) {
+        return processStepDoc.attributes().fromExternals().value().stream().map(StepName::new).collect(toList());
+    }
+
+    private Map<StepName, Step> fromExternalStepsMap(List<StepName> fromExternals, ToStep toCurrentStep) {
+        Map<StepName, Step> fromExternalSteps = new HashMap<>();
+        for(StepName fromExternal : fromExternals) {
+            var fromExternalStep = new Step.Builder()
+                    .componentDoc(new ComponentDoc.Builder()
+                            .name(fromExternal.stringValue())
+                            .description("")
+                            .build())
+                    .external(true)
+                    .to(toCurrentStep)
+                    .build();
+            fromExternalSteps.put(fromExternalStep.stepName(), fromExternalStep);
+        }
+        return fromExternalSteps;
+    }
+
+    private Map<StepName, Step> toExternalStepsMap(Collection<StepName> externalStepsNames) {
+        Map<StepName, Step> steps = new HashMap<>();
+        for(StepName externalStepName : externalStepsNames) {
+            steps.computeIfAbsent(externalStepName, key -> new Step.Builder()
+                    .componentDoc(new ComponentDoc.Builder()
+                            .name(externalStepName.stringValue())
+                            .description("")
+                            .build())
+                    .external(true)
+                    .build());
+        }
+        return steps;
     }
 
     private ProcessStepDocRepository messageListenerDocRepository;
 
-    private List<StepName> locateTos(ProcessStepDoc stepDoc,
-            HashMap<String, List<String>> eventToStep) {
-        List<StepName> tos = new ArrayList<>();
-        for(String producedEvent : stepDoc.attributes().producedEvents()) {
-            List<String> signatures = eventToStep.get(producedEvent);
-            if(signatures != null) {
-                tos.addAll(signatures.stream().map(StepName::new).collect(toList()));
-            }
+    private ConsumingStepsPerEvent buildConsumingStepsPerEvent(List<ProcessStepDoc> processStepDocs) {
+        var builder = new ConsumingStepsPerEvent.Builder();
+        for(ProcessStepDoc processStepDoc : processStepDocs) {
+            builder.withProcessStepDoc(processStepDoc);
         }
-        return tos;
+        return builder.build();
     }
 
     private List<ToStep> toDirectSteps(Collection<StepName> tos) {
@@ -181,30 +132,47 @@ public class DomainProcessStepsFactory implements Service {
                 .build();
     }
 
-    private List<StepName> otherDomainProcesses(ModuleDocId moduleDocId,
-            String domainProcessName,
-            Set<String> producedEvents) {
-        Set<String> otherDomainProcesses = new HashSet<>();
+    private Set<StepName> locateToExternals(ProcessStepDoc processStepDoc) {
+        Set<StepName> toExternals = new HashSet<>();
+        toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList()));
+        for(Entry<String, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
+            toExternals.addAll(entry.getValue().stream().map(StepName::new).collect(toList()));
+        }
+        return toExternals;
+    }
+
+    private List<StepName> locateToDomainProcesses(DomainProcessDoc domainProcessDoc, ProcessStepDoc processStepDoc) {
+        Set<String> producedEvents = processStepDoc.attributes().producedEvents().value();
+        String domainProcessName = domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name();
+        ModuleComponentDoc moduleComponentDoc = domainProcessDoc.attributes().moduleComponentDoc().value();
+        ModuleDocId moduleDocId = moduleComponentDoc.moduleDocId();
+        Set<String> toDomainProcesses = new HashSet<>();
         for(String producedEvent : producedEvents) {
             for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(moduleDocId, producedEvent)) {
                 Set<String> processNames = stepDoc.attributes().processNames().value();
                 for(String processName : processNames) {
                     if(!processName.equals(domainProcessName)) {
-                        otherDomainProcesses.add(processName);
+                        toDomainProcesses.add(processName);
                     }
                 }
             }
         }
-        return otherDomainProcesses.stream()
+        return toDomainProcesses.stream()
                 .map(StepName::new)
                 .collect(toList());
     }
 
-    private List<StepName> fromDomainProcesses(ModuleDocId moduleDocId,
-            String domainProcessName,
-            Optional<String> consumedEvent) {
+    private List<StepName> fromDomainProcesses(DomainProcessDoc domainProcessDoc, ProcessStepDoc processStepDoc) {
+        Optional<StepMethodSignature> stepMethodSignature = processStepDoc.attributes().stepMethodSignature().value();
+        Optional<String> consumedEvent = Optional.empty();
+        if(stepMethodSignature.isPresent()) {
+            consumedEvent = stepMethodSignature.get().consumedEventName();
+        }
+        String domainProcessName = domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name();
         Set<String> otherDomainProcesses = new HashSet<>();
         if(consumedEvent.isPresent()) {
+            ModuleComponentDoc moduleComponentDoc = domainProcessDoc.attributes().moduleComponentDoc().value();
+            ModuleDocId moduleDocId = moduleComponentDoc.moduleDocId();
             List<ProcessStepDoc> stepsProducingEvent = messageListenerDocRepository.findProducing(moduleDocId, consumedEvent.get());
             for(ProcessStepDoc stepDoc : stepsProducingEvent) {
                 Set<String> processNames = stepDoc.attributes().processNames().value();
@@ -218,5 +186,75 @@ public class DomainProcessStepsFactory implements Service {
         return otherDomainProcesses.stream()
                 .map(StepName::new)
                 .collect(toList());
+    }
+
+    private Map<StepName, Step> buildInterprocessSteps(ModuleDocId moduleDocId, Set<StepName> otherProcesses) {
+        Map<StepName, Step> interprocessSteps = new HashMap<>();
+        List<StepName> otherProcessesList = new ArrayList<>(otherProcesses);
+        Map<StepName, Set<String>> producedEventsPerProcess = new HashMap<>();
+        Map<StepName, Set<String>> consumedEventsPerProcess = new HashMap<>();
+        for(int i = 0; i < otherProcessesList.size(); ++i) {
+            StepName processName1 = otherProcessesList.get(i);
+            Set<String> producedEventsOf1 = producedEventsPerProcess.computeIfAbsent(processName1, name -> producedEventsOfProcess(moduleDocId, name));
+            Set<String> consumedEventsOf1 = consumedEventsPerProcess.computeIfAbsent(processName1, name -> consumedEventsOfProcess(moduleDocId, name));
+            for(int j = i + 1; j < otherProcessesList.size(); ++j) {
+                StepName processName2 = otherProcessesList.get(j);
+                Set<String> producedEventsOf2 = producedEventsPerProcess.computeIfAbsent(processName2, name -> producedEventsOfProcess(moduleDocId, name));
+                Set<String> consumedEventsOf2 = consumedEventsPerProcess.computeIfAbsent(processName2, name -> consumedEventsOfProcess(moduleDocId, name));
+
+                Set<String> producedBy1AndConsumedBy2 = intersect(producedEventsOf1, consumedEventsOf2);
+                if(!producedBy1AndConsumedBy2.isEmpty()) {
+                    interprocessSteps.put(processName1, new Step.Builder()
+                            .componentDoc(new ComponentDoc.Builder()
+                                    .name(processName1.stringValue())
+                                    .description("")
+                                    .build())
+                            .to(directStep(processName2))
+                            .build());
+                }
+
+                Set<String> producedBy2AndConsumedBy1 = intersect(producedEventsOf2, consumedEventsOf1);
+                if(!producedBy2AndConsumedBy1.isEmpty()) {
+                    interprocessSteps.put(processName2, new Step.Builder()
+                            .componentDoc(new ComponentDoc.Builder()
+                                    .name(processName2.stringValue())
+                                    .description("")
+                                    .build())
+                            .to(directStep(processName1))
+                            .build());
+                }
+            }
+        }
+        return interprocessSteps;
+    }
+
+    private Set<String> producedEventsOfProcess(ModuleDocId moduleDocId, StepName processName) {
+        Set<String> producedEvents = new HashSet<>();
+        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(moduleDocId, processName.stringValue());
+        for(ProcessStepDoc stepDoc : processStepDocs) {
+            producedEvents.addAll(stepDoc.attributes().producedEvents().value());
+        }
+        return producedEvents;
+    }
+
+    private Set<String> consumedEventsOfProcess(ModuleDocId moduleDocId, StepName processName) {
+        Set<String> consumedEvents = new HashSet<>();
+        List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(moduleDocId, processName.stringValue());
+        for(ProcessStepDoc stepDoc : processStepDocs) {
+            Optional<StepMethodSignature> signature = stepDoc.attributes().stepMethodSignature().value();
+            if(signature.isPresent()) {
+                Optional<String> consumedEvent = signature.get().consumedEventName();
+                if(consumedEvent.isPresent()) {
+                    consumedEvents.add(consumedEvent.get());
+                }
+            }
+        }
+        return consumedEvents;
+    }
+
+    private Set<String> intersect(Set<String> set1, Set<String> set2) {
+        Set<String> intersection = new HashSet<>(set1);
+        intersection.retainAll(set2);
+        return intersection;
     }
 }

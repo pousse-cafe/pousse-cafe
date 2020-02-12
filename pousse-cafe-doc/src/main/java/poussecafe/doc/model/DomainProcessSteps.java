@@ -15,7 +15,40 @@ import static java.util.stream.Collectors.toList;
 
 public class DomainProcessSteps {
 
-    public DomainProcessSteps(Map<StepName, Step> steps) {
+    public static class Builder {
+
+        private Map<StepName, Step> steps = new HashMap<>();
+
+        public Builder merge(Map<StepName, Step> stepsToBeMerged) {
+            for(Entry<StepName, Step> entry : stepsToBeMerged.entrySet()) {
+                Step existingStep = steps.get(entry.getKey());
+                if(existingStep == null) {
+                    steps.put(entry.getKey(), entry.getValue());
+                } else {
+                    steps.put(entry.getKey(), new Step.Builder()
+                            .step(existingStep)
+                            .tos(entry.getValue().tos())
+                            .build());
+                }
+            }
+            return this;
+        }
+
+        public Builder add(Step step) {
+            steps.put(step.stepName(), step);
+            return this;
+        }
+
+        public Step getStep(StepName stepName) {
+            return steps.get(stepName);
+        }
+
+        public DomainProcessSteps build() {
+            return new DomainProcessSteps(steps);
+        }
+    }
+
+    private DomainProcessSteps(Map<StepName, Step> steps) {
         Objects.requireNonNull(steps);
         this.steps = steps;
     }
