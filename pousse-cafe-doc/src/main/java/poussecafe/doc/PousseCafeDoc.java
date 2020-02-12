@@ -1,16 +1,7 @@
 package poussecafe.doc;
 
-import poussecafe.discovery.BundleConfigurer;
+import poussecafe.domain.Module;
 
-public class PousseCafeDoc {
+public interface PousseCafeDoc extends Module {
 
-    private PousseCafeDoc() {
-
-    }
-
-    public static BundleConfigurer configure() {
-        return new BundleConfigurer.Builder()
-                .moduleBasePackage("poussecafe.doc")
-                .build();
-    }
 }
