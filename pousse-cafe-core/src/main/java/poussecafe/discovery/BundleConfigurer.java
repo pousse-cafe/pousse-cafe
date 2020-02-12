@@ -17,6 +17,10 @@ public class BundleConfigurer {
 
         private BundleConfigurer configurer = new BundleConfigurer();
 
+        /**
+         * @deprecated use module method instead.
+         */
+        @Deprecated(since = "0.17")
         public Builder moduleBasePackage(String packageName) {
             moduleBasePackages.add(packageName);
             return this;
