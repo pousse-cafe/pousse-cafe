@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import poussecafe.doc.model.domainprocessdoc.StepName;
+import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 
@@ -42,7 +43,7 @@ public class ConsumingStepsPerEvent {
 
     public List<StepName> locateToInternals(ProcessStepDoc stepDoc) {
         List<StepName> tos = new ArrayList<>();
-        for(String producedEvent : stepDoc.attributes().producedEvents()) {
+        for(NameRequired producedEvent : stepDoc.attributes().producedEvents()) {
             List<String> consumingSteps = eventToConsumingStepsMap.get(producedEvent);
             if(consumingSteps != null) {
                 tos.addAll(consumingSteps.stream().map(StepName::new).collect(toList()));

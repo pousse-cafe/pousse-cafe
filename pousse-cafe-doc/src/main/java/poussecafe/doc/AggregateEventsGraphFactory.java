@@ -15,6 +15,7 @@ import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
@@ -67,12 +68,16 @@ public class AggregateEventsGraphFactory implements Service {
                     nodesAndEdges.addEdge(DirectedEdge.solidEdge(fromExternal, consumedEvent));
                 }
 
-                for(String producedEvent : stepDoc.attributes().producedEvents().value()) {
-                    Node producedEventNode = Node.ellipse(producedEvent);
+                for(NameRequired producedEvent : stepDoc.attributes().producedEvents().value()) {
+                    Node producedEventNode = Node.ellipse(producedEvent.name());
                     nodesAndEdges.addNode(producedEventNode);
-                    nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, producedEvent));
+                    if(producedEvent.required()) {
+                        nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, producedEvent.name()));
+                    } else {
+                        nodesAndEdges.addEdge(DirectedEdge.dashedEdge(aggregateName, producedEvent.name()));
+                    }
 
-                    List<ProcessStepDoc> toSteps = processStepDocRepository.findConsuming(moduleDocId, producedEvent);
+                    List<ProcessStepDoc> toSteps = processStepDocRepository.findConsuming(moduleDocId, producedEvent.name());
                     for(ProcessStepDoc toStep : toSteps) {
                         Optional<AggregateDocId> optionalAggregateDocId = toStep.attributes().aggregate().value();
                         if(optionalAggregateDocId.isPresent()) {
@@ -80,7 +85,7 @@ public class AggregateEventsGraphFactory implements Service {
                             String toAggregateName = toAggregate.name();
                             Node fromExternalNode = Node.box(toAggregateName);
                             nodesAndEdges.addNode(fromExternalNode);
-                            nodesAndEdges.addEdge(DirectedEdge.solidEdge(producedEvent, toAggregateName));
+                            nodesAndEdges.addEdge(DirectedEdge.solidEdge(producedEvent.name(), toAggregateName));
                         }
                     }
                 }
@@ -93,20 +98,24 @@ public class AggregateEventsGraphFactory implements Service {
                     nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, toExternal));
                 }
 
-                Map<String, List<String>> toExternalsByEvent = stepDoc.attributes().toExternalsByEvent().value();
-                for(Entry<String, List<String>> toExternal : toExternalsByEvent.entrySet()) {
-                    String eventName = toExternal.getKey();
+                Map<NameRequired, List<String>> toExternalsByEvent = stepDoc.attributes().toExternalsByEvent().value();
+                for(Entry<NameRequired, List<String>> toExternal : toExternalsByEvent.entrySet()) {
+                    NameRequired eventName = toExternal.getKey();
                     List<String> externalNames = toExternal.getValue();
 
-                    Node toEventNode = Node.ellipse(eventName);
+                    Node toEventNode = Node.ellipse(eventName.name());
                     nodesAndEdges.addNode(toEventNode);
-                    nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, eventName));
+                    if(eventName.required()) {
+                        nodesAndEdges.addEdge(DirectedEdge.solidEdge(aggregateName, eventName.name()));
+                    } else {
+                        nodesAndEdges.addEdge(DirectedEdge.dashedEdge(aggregateName, eventName.name()));
+                    }
 
                     for(String externalName : externalNames) {
                         Node toExternalNode = Node.box(externalName);
                         toExternalNode.setStyle(Optional.of(NodeStyle.DASHED));
                         nodesAndEdges.addNode(toExternalNode);
-                        nodesAndEdges.addEdge(DirectedEdge.solidEdge(eventName, externalName));
+                        nodesAndEdges.addEdge(DirectedEdge.solidEdge(eventName.name(), externalName));
                     }
                 }
             }

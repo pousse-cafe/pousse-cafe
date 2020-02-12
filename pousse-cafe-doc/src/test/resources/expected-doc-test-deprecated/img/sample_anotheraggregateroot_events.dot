@@ -1,6 +1,6 @@
 digraph {
 splines=spline;
-"AnotherAggregateRoot" -> "Event3" [style=dotted];
+"AnotherAggregateRoot" -> "Event3" [style=solid];
 "Event2" -> "AnotherAggregateRoot" [style=solid];
 "Event3" -> "AnAggregateRoot" [style=solid];
 "Event3" -> "To" [style=solid];

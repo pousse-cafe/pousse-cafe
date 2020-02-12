@@ -1,0 +1,125 @@
+body {
+  text-align: justify;
+}
+
+@page {
+    size: A4;
+    margin: 2cm;
+
+    @top-center {
+        content: element(header);
+    }
+
+    @bottom-center {
+        content: element(footer);
+    }
+}
+
+.toc a::after {
+    content: leader('.') target-counter(attr(href), page);
+}
+
+.cover {
+    text-align: center;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.generatedDate, .version {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+div.header, div.footer {
+    display: none;
+}
+
+.footerPagePlaceholder:after {
+    content: counter(page);
+}
+
+ol.ubiquitousLanguage {
+    list-style: none;
+    list-style-position: outside;
+    padding-left: 0;
+}
+
+ol.ubiquitousLanguage li {
+    margin-bottom: 1mm;
+}
+
+.entryName {
+    font-weight: bold;
+}
+
+div.figure {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.figure img {
+  max-width: 100%;
+}
+
+body {counter-reset: h1}
+h1 {counter-reset: h2}
+h2 {counter-reset: h3}
+h3 {counter-reset: h4}
+h4 {counter-reset: h5}
+h5 {counter-reset: h6}
+
+h1:before {counter-increment: h1; content: counter(h1) ". "}
+h2:before {counter-increment: h2; content: counter(h2) ". "}
+h3:before {counter-increment: h3; content: counter(h2) "." counter(h3) ". "}
+h4:before {counter-increment: h4; content: counter(h2) "." counter(h3) "." counter(h4) ". "}
+h5:before {counter-increment: h5; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
+h6:before {counter-increment: h6; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
+
+h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before { content: ""; counter-increment: none } 
+
+@media print {
+    h1, h2 {
+        page-break-before: always;
+    }
+
+    div.header, div.footer {
+        display: block;
+        text-align: center;
+    }
+
+    div.header {
+        position: running(header);
+        border-bottom: solid;
+        padding-bottom: 2mm;
+    }
+
+    div.footer {
+        position: running(footer);
+        border-top: solid;
+        padding-top: 2mm;
+    }
+
+    div.footer {
+        position: running(footer);
+        border-top: solid;
+        content: counter(page);
+    }
+
+    div.figure {
+        page-break-before: auto;
+        page-break-after: auto;
+        page-break-inside: avoid;
+        padding-top: 2mm;
+        padding-bottom: 2mm;
+    }
+
+    div.figure img {
+      -fs-fit-images-to-width: 100%;
+    }
+
+    .cover {
+        padding-top: 10cm;
+        page-break-after: always;
+    }
+}

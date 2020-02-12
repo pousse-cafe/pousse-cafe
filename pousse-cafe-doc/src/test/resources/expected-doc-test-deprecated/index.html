@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="style.css"/>
+<title>Pousse-Café Doc Domain Model</title>
+<bookmarks>
+<bookmark name="Table of Contents" href="#toc"></bookmark>
+<bookmark name="Introduction" href="#intro"></bookmark>
+<bookmark name="Domain Pousse-Café Doc" href="#domain">
+    <bookmark name="Sample" href="#sample"></bookmark>
+</bookmark>
+<bookmark name="Ubiquitous Language" href="#ubiquitous_language"></bookmark>
+</bookmarks>
+</head>
+<body>
+
+<div class="cover">
+    <p>Pousse-Café Doc Domain Model</p>
+    <p class="version">Version Test</p>
+</div>
+
+<div class="header">
+Pousse-Café Doc Domain Model
+</div>
+
+<div class="footer">
+    <span class="footerPagePlaceholder"></span>
+</div>
+
+<h1 id="toc">Table of Contents</h1>
+<ol class="toc">
+    <li><a href="#toc">Table of Contents</a></li>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#domain">Pousse-Café Doc Domain</a></li>
+    <ol>
+        <li><a href="#sample">Sample</a></li>
+        <ol>
+          <li><a href="#sample_aggregates">Aggregates</a></li>
+          <ol>
+            <li><a href="#sample_anaggregateroot">AnAggregateRoot</a></li>
+            <li><a href="#sample_anotheraggregateroot">AnotherAggregateRoot</a></li>
+          </ol>
+          <li><a href="#sample_processes">Domain Processes</a></li>
+          <ol>
+            <li><a href="#sample_test">Test</a></li>
+          </ol>
+        </ol>
+    </ol>
+    <li><a href="#ubiquitous_language">Ubiquitous Language</a></li>
+</ol>
+
+<h1 id="intro">Introduction</h1>
+
+<p>This document describes Pousse-Café Doc domain using concepts defined by
+<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain-Driven Design (DDD)</a> methodology. It was generated
+directly from source code and can be considered as a close summary of what is actually implemented.</p>
+
+<p>The following DDD elements are described in the remainder and shortly defined below. For more precise and complete
+definitions, please refer to the litterature:</p>
+
+<ul>
+  <li>Value Object: an object fully described by its attributes and with no identity nor life-cycle,</li>
+  <li>Entity: an object with a life-cycle and an identity;</li>
+  <li>Aggregate: a group of related value objects and entities, one of which being called the root of the aggregate;</li>
+  <li>Service: an object representing an operation that is not naturally part of a value object or an entity;</li>
+  <li>Domain Event: an object representing an event and used to communicate information between aggregates potentially
+  located in different bounded contexts;</li>
+  <li>Modules: they describe boundaries inside of which each component has a unique name and a given definition.
+  Some concepts might appear in different modules with the same name but with a slightly or completely different
+  definition.</li>
+</ul>
+
+<p>The identity of an entity is generally represented by a special value object called the key. An aggregate is identified
+by its root's key.</p>
+
+<p>An additional non-DDD component is also described in next sections: the Domain Process. Domain processes are responsible
+for calling commands on aggregates (and therefore, starting transactions when necessary). Expect for some commands initiating
+a process, most of them are called when handling a Domain Event.</p>
+
+<p>The following conventions are being used:</p>
+<ul>
+  <li>As this document is generated directly from code, the domain is described by a set of modules.
+  Each module is composed of a set of aggregates, services and domain processes.</li>
+  <li>An undirected graph representing a module is composed of boxes representing the aggregates. Edges represent relations
+  between aggregates i.e. the fact that one aggregate makes reference to another one.</li>
+  <li>Value objects and entities are presented in the context of their aggregate. An undirected graph representing an aggregate
+  is composed of boxes (Entities) and ellipses (Value Objects). The aggregate root has thicker borders. Edges
+  represent relations between the different components. Dashed edges represent a reference made to another aggregate
+  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in module
+  graph.</li>
+  <li>Domain processes are represented using directed graphs, each node being a step of the process. Entering a step of
+  a domain process generally implies the creation of a new aggregate or the update of an existing one. External steps
+  (i.e. steps executed outside of the process) are represented as dashed boxes. Edges are labeled with the name of the
+  domain event which implies the transition from one node to another.</li>
+</ul>
+
+<p>The rest of the document is split in two parts:</p>
+<ol>
+  <li>the description of the different modules and their components,</li>
+  <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the module (if
+  relevant), the type of component and a short description.</li>
+</ol>
+
+<h1 id="domain">Pousse-Café Doc Domain</h1>
+
+<h2 id="sample">Sample</h2>
+Sample module.
+
+<div class="figure">
+  <img src="img/sample.png"/>
+</div>
+
+<h3 id="sample_aggregates">Aggregates</h3>
+
+<h4 id="sample_anaggregateroot">AnAggregateRoot</h4>
+
+
+
+
+<h5>Relations</h5>
+<div class="figure">
+  <img src="img/sample_anaggregateroot.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/sample_anaggregateroot_events.png"/>
+</div>
+
+<h4 id="sample_anotheraggregateroot">AnotherAggregateRoot</h4>
+
+
+
+
+<h5>Relations</h5>
+<div class="figure">
+  <img src="img/sample_anotheraggregateroot.png"/>
+</div>
+
+<h5>Events</h5>
+<div class="figure">
+  <img src="img/sample_anotheraggregateroot_events.png"/>
+</div>
+
+
+
+<h3 id="sample_processes">Domain Processes</h3>
+<h4 id="sample_test">Test</h4>
+This is the description of Test process.
+
+<div class="figure">
+  <img src="img/sample_test.png"/>
+</div>
+
+<ul>
+  <li><strong>AnAggregateRoot.listener(Event1):</strong> </li>
+  <li><strong>AnotherAggregateRoot.listener(Event2):</strong> </li>
+</ul>
+
+
+<h1 id="ubiquitous_language">Ubiquitous Language</h1>
+<ol class="ubiquitousLanguage">
+<li><span class="entryName">AnAggregateRoot (Sample)</span>, Aggregate, </li>
+<li><span class="entryName">AnotherAggregateRoot (Sample)</span>, Aggregate, </li>
+<li><span class="entryName">Sample</span>, Module, Sample module.</li>
+<li><span class="entryName">Test (Sample)</span>, Domain Process, This is the description of Test process.</li>
+</ol>
+
+</body>
+</html>

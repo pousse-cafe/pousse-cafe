@@ -12,7 +12,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -68,7 +67,7 @@ public class ProcessStepDocExtractor implements Service {
             return annotationsResolver.isStep(methodDoc);
         } else {
             Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
-            Set<String> producedEvents = extractProducedEvents(methodDoc);
+            Set<NameRequired> producedEvents = extractProducedEvents(methodDoc);
             return annotationsResolver.isStep(methodDoc) ||
                     (docletAccess.isPublic(methodDoc) && (consumedMessage.isPresent() || !producedEvents.isEmpty()));
         }
@@ -80,20 +79,18 @@ public class ProcessStepDocExtractor implements Service {
 
     private ConsumedMessageExtractor consumedMessageExtractor;
 
-    private Set<String> extractProducedEvents(ExecutableElement methodDoc) {
-        Set<String> producedEvents = new HashSet<>();
+    private Set<NameRequired> extractProducedEvents(ExecutableElement methodDoc) {
+        Set<NameRequired> producedEvents = new HashSet<>();
         List<String> javadocTagEvents = annotationsResolver.event(methodDoc);
         if(!javadocTagEvents.isEmpty()) {
             Logger.warn("@event tag is deprecated, use @ProducesEvent annotation instead");
-            producedEvents.addAll(javadocTagEvents);
+            producedEvents.addAll(javadocTagEvents.stream().map(NameRequired::required).collect(toList()));
         }
         List<? extends AnnotationMirror> producesEventAnnotations = producesEventAnnotations(methodDoc);
-        List<AnnotationValue> producedEventsValues = AnnotationUtils.values(producesEventAnnotations, "value");
-        List<Element> valuesMirrors = producedEventsValues.stream()
-                .map(AnnotationValue::getValue)
-                .map(value -> docletAccess.getTypesUtils().asElement((TypeMirror) value))
-                .collect(toList());
-        producedEvents.addAll(valuesMirrors.stream().map(Element::getSimpleName).map(Name::toString).collect(toList()));
+        for(AnnotationMirror mirror : producesEventAnnotations) {
+            NameRequired nameRequired = nameRequired(mirror);
+            producedEvents.add(nameRequired);
+        }
         return producedEvents;
     }
 
@@ -101,14 +98,42 @@ public class ProcessStepDocExtractor implements Service {
         return AnnotationUtils.annotations(methodDoc, ProducesEvent.class, ProducesEvents.class);
     }
 
+    private NameRequired nameRequired(AnnotationMirror producesEventMirror) {
+        Optional<AnnotationValue> producesEventValue = AnnotationUtils.value(producesEventMirror, "value");
+        Element valueElement = producesEventValue
+                .map(AnnotationValue::getValue)
+                .map(value -> docletAccess.getTypesUtils().asElement((TypeMirror) value))
+                .orElseThrow();
+
+        boolean required = required(producesEventMirror);
+        NameRequired nameRequired;
+        if(required) {
+            nameRequired = NameRequired.required(valueElement.getSimpleName().toString());
+        } else {
+            nameRequired = NameRequired.optional(valueElement.getSimpleName().toString());
+        }
+        return nameRequired;
+    }
+
+    private boolean required(AnnotationMirror producesEventMirror) {
+        Optional<AnnotationValue> producesEventRequired = AnnotationUtils.value(producesEventMirror, "required");
+        boolean required;
+        if(producesEventRequired.isPresent()) {
+            required = (Boolean) producesEventRequired.get().getValue();
+        } else {
+            required = true;
+        }
+        return required;
+    }
+
     private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         Set<String> processNames = processNames(methodDoc);
-        Set<String> producedEvents = extractProducedEvents(methodDoc);
+        Set<NameRequired> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = extractFromExternals(methodDoc);
         Set<String> toExternals = extractToExternals(methodDoc);
-        Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
+        Map<NameRequired, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 
         List<StepMethodSignature> methodSignatures = customStepsSignatures(methodDoc);
         for(StepMethodSignature signature : methodSignatures) {
@@ -171,16 +196,15 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, List<String>> extractToExternalsByEvent(ExecutableElement methodDoc) {
-        Map<String, List<String>> toExternals = new HashMap<>();
+    private Map<NameRequired, List<String>> extractToExternalsByEvent(ExecutableElement methodDoc) {
+        Map<NameRequired, List<String>> toExternals = new HashMap<>();
         List<? extends AnnotationMirror> producesEventAnnotations = producesEventAnnotations(methodDoc);
         for(AnnotationMirror mirror : producesEventAnnotations) {
-            Map<String, AnnotationValue> values = AnnotationUtils.valuesMap(mirror, asSet("value", CONSUMED_BY_EXTERNAL_ELEMENT_NAME));
-            String eventName = docletAccess.getTypesUtils().asElement((TypeMirror) values.get("value").getValue()).getSimpleName().toString();
-            AnnotationValue consumedByExternal = values.get(CONSUMED_BY_EXTERNAL_ELEMENT_NAME);
-            if(consumedByExternal != null) {
-                List<AnnotationValue> externals = (List<AnnotationValue>) consumedByExternal.getValue();
-                toExternals.put(eventName, externals.stream()
+            NameRequired nameRequired = nameRequired(mirror);
+            Optional<AnnotationValue> consumedByExternal = AnnotationUtils.value(mirror, CONSUMED_BY_EXTERNAL_ELEMENT_NAME);
+            if(consumedByExternal.isPresent()) {
+                List<AnnotationValue> externals = (List<AnnotationValue>) consumedByExternal.get().getValue();
+                toExternals.put(nameRequired, externals.stream()
                         .map(annotationValue -> (String) annotationValue.getValue())
                         .collect(toList()));
             }
@@ -268,10 +292,10 @@ public class ProcessStepDocExtractor implements Service {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
 
         Set<String> processNames = processNames(methodDoc);
-        Set<String> producedEvents = extractProducedEvents(methodDoc);
+        Set<NameRequired> producedEvents = extractProducedEvents(methodDoc);
         Set<String> fromExternals = extractFromExternals(methodDoc);
         Set<String> toExternals = extractToExternals(methodDoc);
-        Map<String, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
+        Map<NameRequired, List<String>> toExternalsByEvent = extractToExternalsByEvent(methodDoc);
 
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();

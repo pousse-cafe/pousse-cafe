@@ -14,6 +14,7 @@ import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
@@ -40,14 +41,14 @@ public class DomainProcessStepsFactory implements Service {
             List<StepName> toInternals = eventToConsumingStepsMap.locateToInternals(processStepDoc);
             currentStepToSteps.addAll(toDirectSteps(toInternals));
 
-            Set<StepName> toExternals = locateToExternals(processStepDoc);
+            Set<ToStep> toExternals = locateToExternals(processStepDoc);
             stepsBuilder.merge(toExternalStepsMap(toExternals));
-            currentStepToSteps.addAll(toDirectSteps(toExternals));
+            currentStepToSteps.addAll(toExternals);
 
-            List<StepName> toDomainProcesses = locateToDomainProcesses(domainProcessDoc, processStepDoc);
-            otherProcesses.addAll(toDomainProcesses);
+            List<ToStep> toDomainProcesses = locateToDomainProcesses(domainProcessDoc, processStepDoc);
+            otherProcesses.addAll(toDomainProcesses.stream().map(ToStep::name).collect(toList()));
             stepsBuilder.merge(toExternalStepsMap(toDomainProcesses));
-            currentStepToSteps.addAll(toDirectSteps(toDomainProcesses));
+            currentStepToSteps.addAll(toDomainProcesses);
 
             ComponentDoc processStepComponentDoc = processStepDoc.attributes().moduleComponentDoc().value().componentDoc();
             StepName currentStepName = new StepName(processStepDoc.attributes().moduleComponentDoc().value().componentDoc().name());
@@ -93,9 +94,10 @@ public class DomainProcessStepsFactory implements Service {
         return fromExternalSteps;
     }
 
-    private Map<StepName, Step> toExternalStepsMap(Collection<StepName> externalStepsNames) {
+    private Map<StepName, Step> toExternalStepsMap(Collection<ToStep> externalStepsNames) {
         Map<StepName, Step> steps = new HashMap<>();
-        for(StepName externalStepName : externalStepsNames) {
+        for(ToStep externalToStep : externalStepsNames) {
+            StepName externalStepName = externalToStep.name();
             steps.computeIfAbsent(externalStepName, key -> new Step.Builder()
                     .componentDoc(new ComponentDoc.Builder()
                             .name(externalStepName.stringValue())
@@ -132,34 +134,43 @@ public class DomainProcessStepsFactory implements Service {
                 .build();
     }
 
-    private Set<StepName> locateToExternals(ProcessStepDoc processStepDoc) {
-        Set<StepName> toExternals = new HashSet<>();
-        toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).collect(toList()));
-        for(Entry<String, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
-            toExternals.addAll(entry.getValue().stream().map(StepName::new).collect(toList()));
+    private Set<ToStep> locateToExternals(ProcessStepDoc processStepDoc) {
+        Set<ToStep> toExternals = new HashSet<>();
+        toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).map(this::directStep).collect(toList()));
+        for(Entry<NameRequired, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
+            boolean required = entry.getKey().required();
+            toExternals.addAll(entry.getValue().stream().map(name -> toStep(name, required)).collect(toList()));
         }
         return toExternals;
     }
 
-    private List<StepName> locateToDomainProcesses(DomainProcessDoc domainProcessDoc, ProcessStepDoc processStepDoc) {
-        Set<String> producedEvents = processStepDoc.attributes().producedEvents().value();
+    private ToStep toStep(String name, boolean required) {
+        return new ToStep.Builder()
+                .name(new StepName(name))
+                .directly(required)
+                .build();
+    }
+
+    private List<ToStep> locateToDomainProcesses(DomainProcessDoc domainProcessDoc, ProcessStepDoc processStepDoc) {
+        Set<NameRequired> producedEvents = processStepDoc.attributes().producedEvents().value();
         String domainProcessName = domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name();
         ModuleComponentDoc moduleComponentDoc = domainProcessDoc.attributes().moduleComponentDoc().value();
         ModuleDocId moduleDocId = moduleComponentDoc.moduleDocId();
-        Set<String> toDomainProcesses = new HashSet<>();
-        for(String producedEvent : producedEvents) {
-            for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(moduleDocId, producedEvent)) {
+        Set<ToStep> toDomainProcesses = new HashSet<>();
+        for(NameRequired producedEvent : producedEvents) {
+            for(ProcessStepDoc stepDoc : messageListenerDocRepository.findConsuming(moduleDocId, producedEvent.name())) {
                 Set<String> processNames = stepDoc.attributes().processNames().value();
                 for(String processName : processNames) {
                     if(!processName.equals(domainProcessName)) {
-                        toDomainProcesses.add(processName);
+                        toDomainProcesses.add(new ToStep.Builder()
+                                .name(new StepName(processName))
+                                .directly(producedEvent.required())
+                                .build());
                     }
                 }
             }
         }
-        return toDomainProcesses.stream()
-                .map(StepName::new)
-                .collect(toList());
+        return toDomainProcesses.stream().collect(toList());
     }
 
     private List<StepName> fromDomainProcesses(DomainProcessDoc domainProcessDoc, ProcessStepDoc processStepDoc) {
@@ -232,7 +243,7 @@ public class DomainProcessStepsFactory implements Service {
         Set<String> producedEvents = new HashSet<>();
         List<ProcessStepDoc> processStepDocs = messageListenerDocRepository.findByDomainProcess(moduleDocId, processName.stringValue());
         for(ProcessStepDoc stepDoc : processStepDocs) {
-            producedEvents.addAll(stepDoc.attributes().producedEvents().value());
+            producedEvents.addAll(stepDoc.attributes().producedEvents().value().stream().map(NameRequired::name).collect(toList()));
         }
         return producedEvents;
     }

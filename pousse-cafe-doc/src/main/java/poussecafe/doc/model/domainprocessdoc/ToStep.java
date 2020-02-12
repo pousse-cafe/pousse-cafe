@@ -1,5 +1,9 @@
 package poussecafe.doc.model.domainprocessdoc;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.util.ReferenceEquals;
+
 public class ToStep {
 
     public static class Builder {
@@ -35,5 +39,21 @@ public class ToStep {
 
     public boolean directly() {
         return directly;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(name, other.name)
+                .append(directly, other.directly)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(name)
+                .append(directly)
+                .build();
     }
 }

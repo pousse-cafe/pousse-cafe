@@ -1,6 +1,6 @@
 digraph {
 splines=spline;
-"AnotherAggregateRoot.listener(Event2)" -> "To" [style=dotted];
+"AnotherAggregateRoot.listener(Event2)" -> "To" [style=solid];
 "From" -> "AnAggregateRoot.listener(Event1)" [style=solid];
 "AnotherAggregateRoot.listener(Event2)"[shape=ellipse];
 "From"[shape=box,style=dashed];

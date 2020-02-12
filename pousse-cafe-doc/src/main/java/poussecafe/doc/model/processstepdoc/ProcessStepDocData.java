@@ -40,13 +40,14 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     private ModuleComponentDocData moduleComponentDoc;
 
     @Override
-    public SetAttribute<String> producedEvents() {
-        return AttributeBuilder.set(String.class)
+    public SetAttribute<NameRequired> producedEvents() {
+        return AttributeBuilder.set(NameRequired.class)
+                .usingItemAutoAdapter(NameRequiredData.class)
                 .withSet(producedEvents)
                 .build();
     }
 
-    private HashSet<String> producedEvents = new HashSet<>();
+    private HashSet<NameRequiredData> producedEvents = new HashSet<>();
 
     @Override
     public SetAttribute<String> processNames() {
@@ -98,13 +99,13 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     private String aggregateClassName;
 
     @Override
-    public MapAttribute<String, List<String>> toExternalsByEvent() {
-        return AttributeBuilder.map(String.class, DataAdapters.parametrizedListClass(String.class))
-                .usingEntryDataAdapters(DataAdapters.identity(),
+    public MapAttribute<NameRequired, List<String>> toExternalsByEvent() {
+        return AttributeBuilder.map(NameRequired.class, DataAdapters.parametrizedListClass(String.class))
+                .usingEntryDataAdapters(DataAdapters.auto(NameRequired.class, NameRequiredData.class),
                         DataAdapters.listWithAdapter(DataAdapters.identity()))
                 .withMap(toExternalsByEvent)
                 .build();
     }
 
-    private HashMap<String, List<String>> toExternalsByEvent = new HashMap<>();
+    private HashMap<NameRequiredData, List<String>> toExternalsByEvent = new HashMap<>();
 }

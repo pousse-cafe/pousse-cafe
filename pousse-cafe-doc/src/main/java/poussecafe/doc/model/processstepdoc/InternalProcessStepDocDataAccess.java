@@ -41,7 +41,7 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
             String eventName) {
         return findAll().stream()
                 .filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(moduleDocId))
-                .filter(data -> data.producedEvents().contains(eventName))
+                .filter(data -> data.producedEvents().stream().map(NameRequired::name).anyMatch(eventName::equals))
                 .collect(toList());
     }
 

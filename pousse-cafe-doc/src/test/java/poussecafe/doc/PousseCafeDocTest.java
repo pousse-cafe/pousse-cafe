@@ -25,7 +25,7 @@ public class PousseCafeDocTest {
         givenDocletConfiguration("poussecafe.sample.test");
         givenEmptyOutputDirectory();
         whenExecutingDoclet();
-        thenGeneratedDocContainsExpectedData();
+        thenGeneratedDocContainsExpectedData("expected-doc-test");
     }
 
     private void givenDocletConfiguration(String basePackage) {
@@ -55,8 +55,8 @@ public class PousseCafeDocTest {
         new PousseCafeDocletExecutor(configuration).execute();
     }
 
-    private void thenGeneratedDocContainsExpectedData() {
-        Path expectedDocDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "expected-doc-test");
+    private void thenGeneratedDocContainsExpectedData(String expectedDocFolder) {
+        Path expectedDocDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", expectedDocFolder);
         Path targetDirectory = Paths.get(configuration.outputDirectory());
         try {
             Files.walkFileTree(expectedDocDirectory, new FileContentComparator.Builder()
@@ -87,6 +87,6 @@ public class PousseCafeDocTest {
         givenDocletConfiguration("poussecafe.sample.test_deprecated");
         givenEmptyOutputDirectory();
         whenExecutingDoclet();
-        thenGeneratedDocContainsExpectedData();
+        thenGeneratedDocContainsExpectedData("expected-doc-test-deprecated");
     }
 }

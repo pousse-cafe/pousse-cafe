@@ -25,11 +25,11 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
 
         OptionalAttribute<StepMethodSignature> stepMethodSignature();
 
-        SetAttribute<String> producedEvents();
+        SetAttribute<NameRequired> producedEvents();
 
         SetAttribute<String> toExternals();
 
-        MapAttribute<String, List<String>> toExternalsByEvent();
+        MapAttribute<NameRequired, List<String>> toExternalsByEvent();
 
         SetAttribute<String> fromExternals();
 
