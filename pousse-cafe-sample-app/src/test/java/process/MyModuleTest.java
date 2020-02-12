@@ -1,6 +1,6 @@
 package process;
 
-import poussecafe.mymodule.MyModule;
+import poussecafe.mymodule.MyModuleBundle;
 import poussecafe.runtime.Runtime.Builder;
 import poussecafe.test.PousseCafeTest;
 
@@ -12,6 +12,6 @@ public abstract class MyModuleTest extends PousseCafeTest {
     @Override
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
-                .withBundle(MyModule.configure().defineAndImplementDefault().build());
+                .withBundle(MyModuleBundle.configure().defineAndImplementDefault().build());
     }
 }

@@ -1,12 +1,16 @@
-package poussecafe.domain.chain1;
+package poussecafe.mymodule;
 
 import poussecafe.discovery.BundleConfigurer;
 
-public class Chain1Bundle {
+public class MyModuleBundle {
+
+    private MyModuleBundle() {
+
+    }
 
     public static BundleConfigurer configure() {
         return new BundleConfigurer.Builder()
-                .module(Chain1.class)
+                .module(MyModule.class)
                 .build();
     }
 }

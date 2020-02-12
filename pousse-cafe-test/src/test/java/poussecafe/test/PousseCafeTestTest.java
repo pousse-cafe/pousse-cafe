@@ -16,7 +16,7 @@ public class PousseCafeTestTest extends PousseCafeTest {
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
                 .withBundle(new BundleConfigurer.Builder()
-                .moduleBasePackage("poussecafe.test")
+                .module(poussecafe.test.Test.class)
                 .build()
                 .defineAndImplementDefault()
                 .build());
