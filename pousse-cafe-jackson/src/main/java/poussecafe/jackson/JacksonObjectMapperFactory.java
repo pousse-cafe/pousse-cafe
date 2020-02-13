@@ -25,6 +25,10 @@ public class JacksonObjectMapperFactory implements Service {
     }
 
     public static ObjectMapper staticBuildMapper() {
+        return staticBuildMapper(DefaultTyping.NON_FINAL);
+    }
+
+    public static ObjectMapper staticBuildMapper(DefaultTyping defaultTyping) {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
@@ -47,7 +51,7 @@ public class JacksonObjectMapperFactory implements Service {
         mapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
         mapper.configOverride(BigDecimal.class).setFormat(Value.forShape(Shape.STRING));
 
-        mapper.activateDefaultTyping(DEFAULT_VALIDATOR, DefaultTyping.EVERYTHING, As.PROPERTY);
+        mapper.activateDefaultTyping(DEFAULT_VALIDATOR, defaultTyping, As.PROPERTY);
         return mapper;
     }
 
