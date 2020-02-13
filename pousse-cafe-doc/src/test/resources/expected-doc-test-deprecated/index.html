@@ -54,53 +54,59 @@ Pousse-Café Doc Domain Model
 
 <p>This document describes Pousse-Café Doc domain using concepts defined by
 <a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain-Driven Design (DDD)</a> methodology. It was generated
-directly from source code and can be considered as a close summary of what is actually implemented.</p>
+directly from source code and can be considered as a close summary of what is actually implemented.
+A description of followed conventions is given below.</p>
 
-<p>The following DDD elements are described in the remainder and shortly defined below. For more precise and complete
-definitions, please refer to the litterature:</p>
-
-<ul>
-  <li>Value Object: an object fully described by its attributes and with no identity nor life-cycle,</li>
-  <li>Entity: an object with a life-cycle and an identity;</li>
-  <li>Aggregate: a group of related value objects and entities, one of which being called the root of the aggregate;</li>
-  <li>Service: an object representing an operation that is not naturally part of a value object or an entity;</li>
-  <li>Domain Event: an object representing an event and used to communicate information between aggregates potentially
-  located in different bounded contexts;</li>
-  <li>Modules: they describe boundaries inside of which each component has a unique name and a given definition.
-  Some concepts might appear in different modules with the same name but with a slightly or completely different
-  definition.</li>
-</ul>
-
-<p>The identity of an entity is generally represented by a special value object called the key. An aggregate is identified
-by its root's key.</p>
-
-<p>An additional non-DDD component is also described in next sections: the Domain Process. Domain processes are responsible
-for calling commands on aggregates (and therefore, starting transactions when necessary). Expect for some commands initiating
-a process, most of them are called when handling a Domain Event.</p>
-
-<p>The following conventions are being used:</p>
-<ul>
-  <li>As this document is generated directly from code, the domain is described by a set of modules.
-  Each module is composed of a set of aggregates, services and domain processes.</li>
-  <li>An undirected graph representing a module is composed of boxes representing the aggregates. Edges represent relations
-  between aggregates i.e. the fact that one aggregate makes reference to another one.</li>
-  <li>Value objects and entities are presented in the context of their aggregate. An undirected graph representing an aggregate
-  is composed of boxes (Entities) and ellipses (Value Objects). The aggregate root has thicker borders. Edges
-  represent relations between the different components. Dashed edges represent a reference made to another aggregate
-  via a Value Object (the key of the aggregate root). Dashed edges represent the relations shown in module
-  graph.</li>
-  <li>Domain processes are represented using directed graphs, each node being a step of the process. Entering a step of
-  a domain process generally implies the creation of a new aggregate or the update of an existing one. External steps
-  (i.e. steps executed outside of the process) are represented as dashed boxes. Edges are labeled with the name of the
-  domain event which implies the transition from one node to another.</li>
-</ul>
-
-<p>The rest of the document is split in two parts:</p>
+<p>The document is split in two parts:</p>
 <ol>
   <li>the description of the different modules and their components,</li>
   <li>the ubiquitous language, presented in the form of a glossary. Each entry is composed of a name, the module (if
   relevant), the type of component and a short description.</li>
 </ol>
+
+<h2 class="intro">Modules</h2>
+
+<p>Each module has its own section, each containing sub-sections for each aggregate, service and domain
+process in the module.</p>
+
+<p>Each module section starts with the description of the module and an undirected graph.
+The nodes represent the aggregates of the module and the edges represent the links between those aggregates.
+A link between two aggregates means that one aggregates holds a reference to the other in its attributes.</p>
+
+<h2 class="intro">Aggregates</h2>
+
+<p>Each aggregate section starts with the description of the aggregate and an undirected graph. Each node
+of the graph represents a component (an entity or a value object) part of the aggregate. The edges represent links
+between the components of the aggregate.</p>
+
+<p>Follows the description of the Value Objects and Entities part of the aggregate and represented in the aggregate
+graph.</p>
+
+<p>The aggregate section ends with a directed graph showing how current aggregate is connected to other aggregates,
+modules or external systems in terms of consumption and transmission of events.</p>
+
+<p>Current aggregate is represented by a
+box with bold borders, other aggregates are represented by boxes with a thin border. Dashed boxes represent other modules
+or external
+systems transmitting or consuming events. Elliptic nodes represent the events.</p>
+
+<p>An edge going from a box to an ellipse
+means that the component represented by the box transmits the event represented by the ellipse. An edge going from 
+an ellipse to a box means that the component represented by the box consumes the event represented by the ellipse.</p>
+
+<h2 class="intro">Domain Processes</h2>
+
+<p>Each domain process section starts with the description of the process and a directed graph.</p>
+
+<p>Each node of the graph represents a message listener (ellipses) or other modules or external systems (boxes)
+producing and/or transmitting messages.</p>
+
+<p>Each directed edge represents a message being produced by source node and consumed by destination node.</p>
+
+<p>The section ends with the list of message listeners involved in the process and their description. The naming
+convention for the message listeners is <pre>Component.listenerName(Event)</pre> where <pre>Component</pre> is the
+name of the enclosing component (an Aggregate Root, a Factory, etc.), <pre>listenerName</pre> is the name of the
+listener inside of the component and <pre>Event</pre> is the name of the consumed event.</p>
 
 <h1 id="domain">Pousse-Café Doc Domain</h1>
 
@@ -116,12 +122,11 @@ Sample module.
 <h4 id="sample_anaggregateroot">AnAggregateRoot</h4>
 
 
-
-
-<h5>Relations</h5>
 <div class="figure">
   <img src="img/sample_anaggregateroot.png"/>
 </div>
+
+
 
 <h5>Events</h5>
 <div class="figure">
@@ -131,12 +136,11 @@ Sample module.
 <h4 id="sample_anotheraggregateroot">AnotherAggregateRoot</h4>
 
 
-
-
-<h5>Relations</h5>
 <div class="figure">
   <img src="img/sample_anotheraggregateroot.png"/>
 </div>
+
+
 
 <h5>Events</h5>
 <div class="figure">

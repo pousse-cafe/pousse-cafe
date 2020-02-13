@@ -69,7 +69,6 @@ h3 {counter-reset: h4}
 h4 {counter-reset: h5}
 h5 {counter-reset: h6}
 
-h1:before {counter-increment: h1; content: counter(h1) ". "}
 h2:before {counter-increment: h2; content: counter(h2) ". "}
 h3:before {counter-increment: h3; content: counter(h2) "." counter(h3) ". "}
 h4:before {counter-increment: h4; content: counter(h2) "." counter(h3) "." counter(h4) ". "}
@@ -81,6 +80,10 @@ h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.n
 @media print {
     h1, h2 {
         page-break-before: always;
+    }
+
+    h2.intro {
+        page-break-before: auto;
     }
 
     div.header, div.footer {

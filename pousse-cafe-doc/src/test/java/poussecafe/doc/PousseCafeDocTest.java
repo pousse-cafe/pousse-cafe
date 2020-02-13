@@ -33,7 +33,7 @@ public class PousseCafeDocTest {
                 .domainName("Pousse-Café Doc")
                 .version("Test")
                 .sourcePath(asList(System.getProperty("user.dir") + "/src/test/java/"))
-                .outputDirectory(System.getProperty("java.io.tmpdir") + "/ddd-doc-test/")
+                .outputDirectory(System.getProperty("java.io.tmpdir") + "/" + basePackage)
                 .pdfFileName("domain.pdf")
                 .basePackage(basePackage)
                 .includeGenerationDate(false)
