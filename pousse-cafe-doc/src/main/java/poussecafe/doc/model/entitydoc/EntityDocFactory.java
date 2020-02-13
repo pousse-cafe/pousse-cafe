@@ -4,8 +4,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.doc.model.ModuleAnnotationChecker;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
@@ -17,6 +18,7 @@ public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.
         if(!isEntityDoc(entityClassDoc)) {
             throw new DomainException("Class " + entityClassDoc.getQualifiedName() + " is not an entity");
         }
+        moduleAnnotationChecker.packageMatchOrThrow(entityClassDoc, moduleDocId);
 
         String name = name(entityClassDoc);
         EntityDocId id = EntityDocId.ofClassName(entityClassDoc.getQualifiedName().toString());
@@ -30,6 +32,8 @@ public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.
 
         return entityDoc;
     }
+
+    private ModuleAnnotationChecker moduleAnnotationChecker;
 
     private ComponentDocFactory componentDocFactory;
 

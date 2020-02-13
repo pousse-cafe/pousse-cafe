@@ -3,23 +3,15 @@ package poussecafe.doc.model.domainprocessdoc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import poussecafe.discovery.Module;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.ProcessDescription;
-import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.DocletAccess;
+import poussecafe.doc.model.ModuleAnnotationChecker;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
@@ -33,7 +25,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
         if(!isDomainProcessDoc(doc)) {
             throw new DomainException("Class " + doc.getQualifiedName() + " is not a domain process");
         }
-        checkDomainProcessPackage(doc, moduleDocId);
+        moduleAnnotationChecker.packageMatchOrThrow(doc, moduleDocId);
 
         String name = name(doc);
         DomainProcessDocId id = new DomainProcessDocId(doc.getQualifiedName().toString());
@@ -53,26 +45,7 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
 
     private ClassDocPredicates classDocPredicates;
 
-    private void checkDomainProcessPackage(TypeElement processDoc, ModuleDocId moduleDocId) {
-        Optional<AnnotationMirror> moduleAnnotation = AnnotationUtils.annotation(processDoc, Module.class);
-        if(moduleAnnotation.isPresent()) {
-            Optional<AnnotationValue> value = AnnotationUtils.value(moduleAnnotation.get(), "value");
-            if(value.isPresent()) {
-                Element moduleClass = docletAccess.getTypesUtils().asElement((TypeMirror) value.get().getValue());
-                PackageElement moduleClassPackage = (PackageElement) moduleClass.getEnclosingElement();
-                PackageElement aggregateRootPackage = (PackageElement) processDoc.getEnclosingElement();
-                if(!aggregateRootPackage.getQualifiedName().toString().startsWith(moduleClassPackage.getQualifiedName().toString())) {
-                    throw new DomainException("Class " + processDoc.getQualifiedName() + " is in the wrong package");
-                }
-                if(!moduleClassPackage.getQualifiedName().toString().equals(moduleDocId.stringValue())) {
-                    throw new DomainException(processDoc.getQualifiedName() + " is in 2 different modules, mixing package-info and class based module definition? "
-                            + moduleClassPackage.getSimpleName().toString() + " <> " + moduleDocId.stringValue());
-                }
-            }
-        }
-    }
-
-    private DocletAccess docletAccess;
+    private ModuleAnnotationChecker moduleAnnotationChecker;
 
     public String name(TypeElement doc) {
         return doc.getSimpleName().toString();

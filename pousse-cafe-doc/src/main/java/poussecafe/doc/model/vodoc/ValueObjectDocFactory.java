@@ -2,8 +2,9 @@ package poussecafe.doc.model.vodoc;
 
 import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.doc.model.ModuleAnnotationChecker;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Factory;
@@ -15,6 +16,7 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocId, ValueObject
         if(!isValueObjectDoc(doc)) {
             throw new DomainException("Class " + doc.getQualifiedName() + " is not an entity");
         }
+        moduleAnnotationChecker.packageMatchOrThrow(doc, moduleDocId);
 
         String name = name(doc);
         ValueObjectDocId id = ValueObjectDocId.ofClassName(doc.getQualifiedName().toString());
@@ -25,6 +27,8 @@ public class ValueObjectDocFactory extends Factory<ValueObjectDocId, ValueObject
                 .build());
         return valueObjectDoc;
     }
+
+    private ModuleAnnotationChecker moduleAnnotationChecker;
 
     private ComponentDocFactory componentDocFactory;
 
