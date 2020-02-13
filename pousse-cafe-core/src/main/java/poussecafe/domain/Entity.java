@@ -46,7 +46,7 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
 
     /**
      * @deprecated This feature was being used to prevent the persistence of changed applied to an Aggregate but still
-     * emit events. Instead, it is recommended to check first if the state of the Aggregate must be updated and emit
+     * issue events. Instead, it is recommended to check first if the state of the Aggregate must be updated and issue
      * events accordingly.
      */
     @Deprecated(forRemoval = true)
@@ -80,7 +80,15 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         this.storage = storage;
     }
 
+    /**
+     * @deprecated use issue(DomainEvent) instead.
+     */
+    @Deprecated(since = "0.17")
     public void emitDomainEvent(DomainEvent event) {
+        issue(event);
+    }
+
+    public void issue(DomainEvent event) {
         messageCollection().addMessage(event);
     }
 

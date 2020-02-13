@@ -11,13 +11,13 @@ public class AggregateRootWithSingleListener extends AggregateRoot<String, Entit
     @Override
     @ProducesEvent(TestDomainEvent3.class)
     public void onAdd() {
-        emitDomainEvent(new TestDomainEvent3());
+        issue(new TestDomainEvent3());
     }
 
     @MessageListener
     @ProducesEvent(value = TestDomainEvent2.class, required = false)
     @ProducesEvent(TestDomainEvent3.class)
     public void listener(TestDomainEvent event) {
-        emitDomainEvent(new TestDomainEvent3());
+        issue(new TestDomainEvent3());
     }
 }

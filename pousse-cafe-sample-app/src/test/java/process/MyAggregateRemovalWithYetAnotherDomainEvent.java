@@ -33,7 +33,7 @@ public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyModuleTest {
     private YetAnotherDomainEvent event;
 
     private void whenEventEmitted() {
-        emitDomainEvent(event);
+        issue(event);
     }
 
     private void thenAggregateRemoved() {

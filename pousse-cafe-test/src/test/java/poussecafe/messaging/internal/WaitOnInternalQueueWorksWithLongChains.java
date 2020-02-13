@@ -94,7 +94,7 @@ public class WaitOnInternalQueueWorksWithLongChains extends PousseCafeTest {
 
     private void whenTouchingFirstsOfChains() {
         List<ChainElementTouchable> elements = firstIdsChain.stream().map(this::map).collect(toList());
-        emitDomainEvents(elements);
+        issue(elements);
     }
 
     private ChainElementTouchable map(NextChainElementId elementId) {

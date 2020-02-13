@@ -25,7 +25,7 @@ public class PousseCafeTestTest extends PousseCafeTest {
     @Test
     public void waitUntilEmptyOrInterruptedReturnsTrueWhenAllMessagesIssued() {
         givenMessages();
-        whenEmitted();
+        whenEvents(messages);
         thenAllRecordedAfterWait();
     }
 
@@ -36,12 +36,6 @@ public class PousseCafeTestTest extends PousseCafeTest {
     }
 
     private List<SampleMessage> messages = new ArrayList<>();
-
-    private void whenEmitted() {
-        for(SampleMessage message : messages) {
-            emitDomainEvent(message);
-        }
-    }
 
     @MessageListener
     public void recordMessage(SampleMessage message) {

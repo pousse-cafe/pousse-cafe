@@ -59,12 +59,28 @@ public abstract class PousseCafeTest {
         return wrapper.runtime().environment().messageFactory().newMessage(eventClass);
     }
 
+    /**
+     * @deprecated use issue(DomainEvent) instead.
+     */
+    @Deprecated(since = "0.17")
     public void emitDomainEvent(DomainEvent event) {
-        wrapper.emitDomainEvent(event);
+        issue(event);
     }
 
+    public void issue(DomainEvent event) {
+        wrapper.issue(event);
+    }
+
+    /**
+     * @deprecated use issue(List<? extends DomainEvent>) instead.
+     */
+    @Deprecated(since = "0.17")
     public void emitDomainEvents(List<? extends DomainEvent> event) {
-        wrapper.emitDomainEvents(event);
+        issue(event);
+    }
+
+    public void issue(List<? extends DomainEvent> events) {
+        wrapper.issue(events);
     }
 
     public void loadDataFile(String path) {
@@ -111,6 +127,14 @@ public abstract class PousseCafeTest {
     }
 
     public void when(DomainEvent event) {
-        emitDomainEvent(event);
+        issue(event);
+    }
+
+    public void whenCommands(List<? extends Command> commands) {
+        wrapper.submitCommands(commands);
+    }
+
+    public void whenEvents(List<? extends DomainEvent> events) {
+        issue(events);
     }
 }

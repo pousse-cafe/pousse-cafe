@@ -10,7 +10,7 @@ import poussecafe.mymodule.domain.YetAnotherDomainEvent;
 public class MyAggregateRepository extends Repository<MyAggregate, MyAggregateId, MyAggregate.Attributes> {
 
     /*
-     * This message listener deletes an aggregate when a YetAnotherDomainEvent event is emitted.
+     * This message listener deletes an aggregate when a YetAnotherDomainEvent event is consumed.
      */
     @MessageListener
     public void remove(YetAnotherDomainEvent event) {

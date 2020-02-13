@@ -38,7 +38,7 @@ public class MyAggregate extends AggregateRoot<MyAggregateId, MyAggregate.Attrib
         // Emit a domain event telling the attribute has been updated in the context of doSomething.
         MyDomainEvent event = newDomainEvent(MyDomainEvent.class);
         event.identifier().valueOf(attributes().identifier());
-        emitDomainEvent(event);
+        issue(event);
     }
 
     /**

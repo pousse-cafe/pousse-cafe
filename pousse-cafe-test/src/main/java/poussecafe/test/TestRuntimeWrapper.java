@@ -82,12 +82,12 @@ public class TestRuntimeWrapper {
         }
     }
 
-    public void emitDomainEvent(DomainEvent event) {
+    public void issue(DomainEvent event) {
         runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
         waitUntilEndOfMessageProcessing();
     }
 
-    public void emitDomainEvents(List<? extends DomainEvent> events) {
+    public void issue(List<? extends DomainEvent> events) {
         for(DomainEvent event : events) {
             runtimeFriend.messageSenderLocator().locate(event.getClass()).sendMessage(event);
         }
@@ -141,6 +141,17 @@ public class TestRuntimeWrapper {
     public void submitCommand(Command command) {
         try {
             runtime.submitCommand(command).get();
+            waitUntilEndOfMessageProcessing();
+        } catch (Exception e) {
+            throw new PousseCafeException("Error while submitting command", e);
+        }
+    }
+
+    public void submitCommands(List<? extends Command> commands) {
+        try {
+            for(Command command : commands) {
+                runtime.submitCommand(command).get();
+            }
             waitUntilEndOfMessageProcessing();
         } catch (Exception e) {
             throw new PousseCafeException("Error while submitting command", e);

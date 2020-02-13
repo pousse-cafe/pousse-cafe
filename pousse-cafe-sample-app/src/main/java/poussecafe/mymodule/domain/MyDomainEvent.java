@@ -4,7 +4,7 @@ import poussecafe.domain.DomainEvent;
 import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
 
 /*
- * This Domain Event is emitted by a MyAggregate instance.
+ * This Domain Event is issued by a MyAggregate instance.
  */
 public interface MyDomainEvent extends DomainEvent {
 

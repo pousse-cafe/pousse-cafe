@@ -17,7 +17,7 @@ public class AnAggregateRoot extends AggregateRoot<AnAggregateRootId, AnAggregat
     @ProducesEvent(value = Event2.class)
     public void listener(Event1 event1) {
         Event2 event2 = newDomainEvent(Event2.class);
-        emitDomainEvent(event2);
+        issue(event2);
     }
 
     @MessageListener

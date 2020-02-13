@@ -28,7 +28,7 @@ public class MyAggregateCreationWithADomainEvent extends MyModuleTest {
     private ADomainEvent event;
 
     private void whenEventEmitted() {
-        emitDomainEvent(event);
+        issue(event);
     }
 
     private void thenAggregateCreated() {

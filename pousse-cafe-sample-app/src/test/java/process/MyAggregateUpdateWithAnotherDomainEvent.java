@@ -34,7 +34,7 @@ public class MyAggregateUpdateWithAnotherDomainEvent extends MyModuleTest {
     private AnotherDomainEvent event;
 
     private void whenEventEmitted() {
-        emitDomainEvent(event);
+        issue(event);
     }
 
     private void thenAggregateUpdated() {

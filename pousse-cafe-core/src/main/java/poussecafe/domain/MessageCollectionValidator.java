@@ -12,7 +12,7 @@ public class MessageCollectionValidator {
         List<Message> messages = messageCollection.getMessages();
         Set<Message> messagesSet = new HashSet<>(messages);
         if(messages.size() != messagesSet.size()) {
-            throw new IllegalArgumentException("The same message has been emitted more than once");
+            throw new IllegalArgumentException("The same message has been sent more than once");
         }
     }
 }

@@ -321,7 +321,15 @@ public class Runtime {
         return environment.messageFactory().newMessage(eventClass);
     }
 
+    /**
+     * @deprecated use issue(DomainEvent) instead.
+     */
+    @Deprecated(since = "0.17")
     public void emitDomainEvent(DomainEvent event) {
+        issue(event);
+    }
+
+    public void issue(DomainEvent event) {
         messageSenderLocator.locate(event.getClass()).sendMessage(event);
     }
 

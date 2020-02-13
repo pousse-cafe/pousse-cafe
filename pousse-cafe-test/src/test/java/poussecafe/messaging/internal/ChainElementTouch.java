@@ -28,7 +28,7 @@ public class ChainElementTouch<I, D extends ChainElementAttributes<I>> {
             NextChainElementId next = optionalNext.get();
             ChainElementTouchable newEvent = chainElement.newDomainEvent(ChainElementTouchable.class);
             newEvent.next().value(next);
-            chainElement.emitDomainEvent(newEvent);
+            chainElement.issue(newEvent);
         }
     }
 
