@@ -130,9 +130,17 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
 
         private EntityAttribute<E> attribute;
 
+        /**
+         * @deprecated use withId instead.
+         */
+        @Deprecated(since = "0.18.0")
         public E withKey(K key) {
+            return withId(key);
+        }
+
+        public E withId(K id) {
             E newEntity = attribute.newInContextOf(Entity.this);
-            newEntity.attributes().identifier().value(key);
+            newEntity.attributes().identifier().value(id);
             attribute.inContextOf(Entity.this).value(newEntity);
             return newEntity;
         }
