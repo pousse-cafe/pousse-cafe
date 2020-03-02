@@ -23,16 +23,6 @@ public class MessageListenersGroupsFactory {
 
         private MessageListenersGroupsFactory factory = new MessageListenersGroupsFactory();
 
-        public Builder consumptionId(String consumptionId) {
-            factory.consumptionId = consumptionId;
-            return this;
-        }
-
-        public Builder failFast(boolean failFast) {
-            factory.failFast = failFast;
-            return this;
-        }
-
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             factory.messageConsumptionHandler = messageConsumptionHandler;
             return this;
@@ -54,7 +44,6 @@ public class MessageListenersGroupsFactory {
         }
 
         public MessageListenersGroupsFactory build() {
-            Objects.requireNonNull(factory.consumptionId);
             Objects.requireNonNull(factory.message);
             Objects.requireNonNull(factory.messageConsumptionHandler);
             Objects.requireNonNull(factory.applicationPerformanceMonitoring);
@@ -90,7 +79,6 @@ public class MessageListenersGroupsFactory {
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
-                    .failFast(failFast)
                     .logger(logger)
                     .build();
             groups.add(group);
@@ -104,7 +92,6 @@ public class MessageListenersGroupsFactory {
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                     .message(message)
                     .messageConsumptionHandler(messageConsumptionHandler)
-                    .failFast(failFast)
                     .logger(logger)
                     .build();
             groups.add(group);
@@ -113,13 +100,9 @@ public class MessageListenersGroupsFactory {
         return groups;
     }
 
-    private String consumptionId;
-
     private OriginalAndMarshaledMessage message;
 
     private MessageConsumptionHandler messageConsumptionHandler;
-
-    private boolean failFast;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

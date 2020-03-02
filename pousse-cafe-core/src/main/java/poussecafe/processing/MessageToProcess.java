@@ -55,13 +55,7 @@ class MessageToProcess {
     public static interface Callback {
 
         void signalProcessed(int threadId, MessageToProcess processedMessage);
-
-        void failFast(MessageToProcess processedMessage);
     }
 
     private Callback callback;
-
-    public void failFast() {
-        callback.failFast(this);
-    }
 }

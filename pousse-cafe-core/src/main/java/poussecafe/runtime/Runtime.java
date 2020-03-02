@@ -65,11 +65,6 @@ public class Runtime {
             return this;
         }
 
-        public Builder failFast(boolean failFast) {
-            runtime.failFast = failFast;
-            return this;
-        }
-
         public Builder failOnDeserializationError(boolean failOnDeserializationError) {
             runtime.failOnDeserializationError = failOnDeserializationError;
             return this;
@@ -181,8 +176,6 @@ public class Runtime {
 
     private TransactionRunnerLocator transactionRunnerLocator = new TransactionRunnerLocator();
 
-    private boolean failFast;
-
     private MessageConsumptionHandler messageConsumptionHandler = new DefaultConsumptionHandler();
 
     private MessageBroker messageBroker;
@@ -218,7 +211,6 @@ public class Runtime {
     private MessageProcessingThreadPool newMessageProcessingThreadPool() {
         return new MessageProcessingThreadPool.Builder()
                 .messageListenersPoolSplitStrategy(messageListenersPoolSplitStrategy)
-                .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                 .messageConsumptionConfiguration(messageConsumptionConfiguration)

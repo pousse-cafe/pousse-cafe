@@ -26,13 +26,6 @@ public class MessageProcessingThreadPool {
 
         private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy;
 
-        public Builder failFast(boolean failFast) {
-            this.failFast = failFast;
-            return this;
-        }
-
-        private boolean failFast;
-
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             this.messageConsumptionHandler = messageConsumptionHandler;
             return this;
@@ -68,7 +61,6 @@ public class MessageProcessingThreadPool {
                 ListenersSetPartition listenersPartition = partitions[i];
                 MessageProcessor processor = new MessageProcessor.Builder()
                         .id(Integer.toString(i))
-                        .failFast(failFast)
                         .messageConsumptionHandler(messageConsumptionHandler)
                         .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                         .messageConsumptionConfiguration(messageConsumptionConfiguration)

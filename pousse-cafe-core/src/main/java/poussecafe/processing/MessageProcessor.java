@@ -24,11 +24,6 @@ class MessageProcessor {
             return this;
         }
 
-        public Builder failFast(boolean failFast) {
-            processor.failFast = failFast;
-            return this;
-        }
-
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             processor.messageConsumptionHandler = messageConsumptionHandler;
             return this;
@@ -59,8 +54,6 @@ class MessageProcessor {
 
     }
 
-    private boolean failFast;
-
     private MessageConsumptionHandler messageConsumptionHandler;
 
     public void processMessage(OriginalAndMarshaledMessage message) {
@@ -72,7 +65,6 @@ class MessageProcessor {
                 .listenersPartition(listenersPartition)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .messageConsumptionConfiguration(messageConsumptionConfiguration)
-                .failFast(failFast)
                 .processorLogger(logger)
                 .build();
         consumption.execute();

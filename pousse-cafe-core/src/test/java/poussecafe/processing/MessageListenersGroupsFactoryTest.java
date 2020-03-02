@@ -91,8 +91,6 @@ public class MessageListenersGroupsFactoryTest {
         MessageConsumptionHandler messageConsumptionHandler = mock(MessageConsumptionHandler.class);
         groups = new MessageListenersGroupsFactory.Builder()
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .consumptionId("consumtionId")
-                .failFast(false)
                 .message(new OriginalAndMarshaledMessage.Builder()
                         .marshaled(message)
                         .original(message)

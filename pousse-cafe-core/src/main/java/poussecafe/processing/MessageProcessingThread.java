@@ -7,7 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.runtime.FailFastException;
 
 class MessageProcessingThread {
 
@@ -102,12 +101,9 @@ class MessageProcessingThread {
     private void processAndSignal(UnitOfWork unitOfWork) {
         try {
             messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
-            unitOfWork.message.signalProcessed(threadId);
-        } catch (FailFastException e) {
-            unitOfWork.message.failFast();
-            stop();
         } catch (Exception e) {
             logger.error("Unhandled exception while processing unit of work", e);
+        } finally {
             unitOfWork.message.signalProcessed(threadId);
         }
     }

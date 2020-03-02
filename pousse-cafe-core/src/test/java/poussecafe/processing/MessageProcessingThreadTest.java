@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.processing.MessageToProcess.Callback;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.junit.Assert.assertTrue;
@@ -86,32 +85,6 @@ public class MessageProcessingThreadTest implements Callback {
             throw new IllegalArgumentException("Previous message is not yet processed");
         }
         messageProcessed.set(index, true);
-    }
-
-    @Override
-    public void failFast(MessageToProcess processedMessage) {
-        failFast = true;
-    }
-
-    private boolean failFast;
-
-    @Test
-    public void failFastExceptionThrownByProcessorCallsFailfastAndStopsThread() {
-        givenFailinFastProcessor();
-        givenStartedThread();
-        givenMessagesToProcess();
-        whenSubmittingMessages();
-        thenFailFastCalled();
-    }
-
-    private void givenFailinFastProcessor() {
-        messageProcessor = mock(MessageProcessor.class);
-        doThrow(FailFastException.class).when(messageProcessor).processMessage(any(OriginalAndMarshaledMessage.class));
-    }
-
-    private void thenFailFastCalled() {
-        thread.join(Duration.ofSeconds(3));
-        assertTrue(failFast);
     }
 
     @Test

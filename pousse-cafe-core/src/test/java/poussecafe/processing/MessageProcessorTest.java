@@ -9,7 +9,6 @@ import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerType;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.DefaultConsumptionHandler;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -85,33 +84,5 @@ public class MessageProcessorTest {
         for(MessageListener listener : listeners) {
             verify(listener.consumer()).consume(any());
         }
-    }
-
-    @Test(expected = FailFastException.class)
-    public void consumerThrowingAndFailfastThrows() {
-        givenThrowingListener();
-        givenFailfastMessageProcessor();
-        whenProcessingMessage();
-    }
-
-    private void givenThrowingListener() {
-        listeners.add(new MessageListener.Builder()
-                .consumer(message -> {throw new RuntimeException();})
-                .id("id")
-                .shortId("shortId")
-                .consumedMessageClass(Message.class)
-                .priority(MessageListenerType.CUSTOM)
-                .build());
-    }
-
-    private void givenFailfastMessageProcessor() {
-        messageProcessor = messageProcessorBuilder()
-                .failFast(true)
-                .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
-                        .backOffCeiling(10)
-                        .backOffSlotTime(1.0)
-                        .maxConsumptionRetries(10)
-                        .build())
-                .build();
     }
 }

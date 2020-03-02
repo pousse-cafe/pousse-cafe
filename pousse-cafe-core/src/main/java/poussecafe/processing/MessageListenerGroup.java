@@ -41,11 +41,6 @@ public class MessageListenerGroup {
             return this;
         }
 
-        public Builder failFast(boolean failFast) {
-            group.failFast = failFast;
-            return this;
-        }
-
         @SuppressWarnings("rawtypes")
         public Builder aggregateRootClass(Optional<Class> aggregateRootClass) {
             group.aggregateRootClass = aggregateRootClass;
@@ -101,7 +96,6 @@ public class MessageListenerGroup {
                 .consumptionState(consumptionState)
                 .factoryListeners(factoryListeners)
                 .repositoryListeners(repositoryListeners)
-                .failFast(failFast)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .otherListeners(otherListeners)
                 .aggregateRootClass(aggregateRootClass)
@@ -111,8 +105,6 @@ public class MessageListenerGroup {
     }
 
     private MessageConsumptionHandler messageConsumptionHandler;
-
-    private boolean failFast;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

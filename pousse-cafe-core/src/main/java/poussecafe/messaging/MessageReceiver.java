@@ -4,7 +4,6 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.processing.ReceivedMessage;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 /**
@@ -55,11 +54,7 @@ public abstract class MessageReceiver<E> {
 
     private void onMessage(ReceivedMessage receivedMessage) {
         Objects.requireNonNull(receivedMessage);
-        try {
-            configuration.messageBroker().dispatch(receivedMessage);
-        } catch (FailFastException e) {
-            interruptReception();
-        }
+        configuration.messageBroker().dispatch(receivedMessage);
     }
 
     protected abstract Runnable buildAcker(E envelope);

@@ -15,7 +15,6 @@ import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.exception.SameOperationException;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.OptimisticLockingExceptionHandlingResult;
@@ -42,11 +41,6 @@ class MessageListenerExecutor {
 
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             executor.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder failFast(boolean failFast) {
-            executor.failFast = failFast;
             return this;
         }
 
@@ -83,8 +77,6 @@ class MessageListenerExecutor {
     }
 
     private MessageConsumptionHandler messageConsumptionHandler;
-
-    private boolean failFast;
 
     public void executeListener() {
         OriginalAndMarshaledMessage receivedMessage = consumptionState.message();
@@ -175,13 +167,8 @@ class MessageListenerExecutor {
 
         OriginalAndMarshaledMessage receivedMessage = consumptionState.message();
         String messageClassName = receivedMessage.original().getClass().getName();
-        if(failFast) {
-            logger.error("      Failing fast on exception from listener {}", listener, e);
-            throw new FailFastException("Failing fast on exception from listener {}", e);
-        } else {
-            logger.error("      Failure of {} with {}", listener, messageClassName, e);
-            messageConsumptionHandler.handleFailure(consumptionState.consumptionId(), receivedMessage, listener, e);
-        }
+        logger.error("      Failure of {} with {}", listener, messageClassName, e);
+        messageConsumptionHandler.handleFailure(consumptionState.consumptionId(), receivedMessage, listener, e);
     }
 
     private MessageListenerConsumptionReport messageConsumptionReport;

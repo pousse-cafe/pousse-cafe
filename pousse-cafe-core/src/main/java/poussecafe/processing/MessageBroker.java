@@ -6,7 +6,6 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.processing.MessageToProcess.Callback;
-import poussecafe.runtime.FailFastException;
 
 public class MessageBroker {
 
@@ -25,27 +24,21 @@ public class MessageBroker {
     private MessageProcessingThreadPool messageProcessingThreadsPool;
 
     public synchronized void dispatch(ReceivedMessage receivedMessage) {
-        if(failFast) {
-            throw new FailFastException();
-        } else {
-            var receivedMessageId = nextReceivedMessageId++;
-            ReceivedMessageProcessingState processingState = new ReceivedMessageProcessingState.Builder()
-                    .numberOfThreads(messageProcessingThreadsPool.size())
-                    .receivedMessage(receivedMessage)
-                    .build();
-            inProgressProcessingStates.put(receivedMessageId, processingState);
-            MessageToProcess messageToProcess = new MessageToProcess.Builder()
-                    .receivedMessageId(receivedMessageId)
-                    .receivedMessagePayload(receivedMessage.message())
-                    .callback(callback)
-                    .build();
-            messageProcessingThreadsPool.submit(messageToProcess);
-        }
+        var receivedMessageId = nextReceivedMessageId++;
+        ReceivedMessageProcessingState processingState = new ReceivedMessageProcessingState.Builder()
+                .numberOfThreads(messageProcessingThreadsPool.size())
+                .receivedMessage(receivedMessage)
+                .build();
+        inProgressProcessingStates.put(receivedMessageId, processingState);
+        MessageToProcess messageToProcess = new MessageToProcess.Builder()
+                .receivedMessageId(receivedMessageId)
+                .receivedMessagePayload(receivedMessage.message())
+                .callback(callback)
+                .build();
+        messageProcessingThreadsPool.submit(messageToProcess);
     }
 
     private MessageBrokerCallback callback = new MessageBrokerCallback();
-
-    private boolean failFast;
 
     private long nextReceivedMessageId = 0;
 
@@ -73,27 +66,11 @@ public class MessageBroker {
 
     private Map<Long, ReceivedMessageProcessingState> inProgressProcessingStates = new HashMap<>();
 
-    private synchronized void failFast(MessageToProcess processedMessage) { // NOSONAR - synchronized
-        failFast = true;
-        var processingProgress = inProgressProcessingStates.get(processedMessage.receivedMessageId());
-        if(processingProgress == null) {
-            throw new IllegalArgumentException("No processing state available");
-        } else {
-            messageProcessingThreadsPool.stop();
-            processingProgress.receivedMessage().interrupt();
-        }
-    }
-
     private class MessageBrokerCallback implements Callback {
 
         @Override
         public void signalProcessed(int threadId, MessageToProcess processedMessage) {
             MessageBroker.this.signalProcessed(threadId, processedMessage);
-        }
-
-        @Override
-        public void failFast(MessageToProcess processedMessage) {
-            MessageBroker.this.failFast(processedMessage);
         }
     }
 }

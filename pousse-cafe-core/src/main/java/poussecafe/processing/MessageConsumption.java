@@ -34,11 +34,6 @@ public class MessageConsumption {
             return this;
         }
 
-        public Builder failFast(boolean failFast) {
-            consumption.failFast = failFast;
-            return this;
-        }
-
         public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
             consumption.messageConsumptionHandler = messageConsumptionHandler;
             return this;
@@ -116,8 +111,6 @@ public class MessageConsumption {
                 .messageListenersOf(message.original().getClass());
         return new MessageListenersGroupsFactory.Builder()
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .consumptionId(consumptionId)
-                .failFast(failFast)
                 .message(message)
                 .messageConsumptionHandler(messageConsumptionHandler)
                 .logger(processorLogger)
@@ -185,8 +178,6 @@ public class MessageConsumption {
     private MessageConsumptionState messageConsumptionState;
 
     private MessageConsumptionHandler messageConsumptionHandler;
-
-    private boolean failFast;
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 }

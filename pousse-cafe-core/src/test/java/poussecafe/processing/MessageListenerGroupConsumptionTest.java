@@ -110,7 +110,6 @@ public class MessageListenerGroupConsumptionTest {
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring())
                 .consumptionState(groupConsumptionState)
                 .factoryListeners(factoryListeners)
-                .failFast(false)
                 .messageConsumptionHandler(messageConsumptionHandler())
                 .otherListeners(otherListeners)
                 .repositoryListeners(repositoryListeners)

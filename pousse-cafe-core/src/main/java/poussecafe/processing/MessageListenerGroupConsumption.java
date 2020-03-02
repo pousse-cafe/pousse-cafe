@@ -25,7 +25,6 @@ import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
-import poussecafe.runtime.FailFastException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.util.MethodInvokerException;
 
@@ -72,11 +71,6 @@ public class MessageListenerGroupConsumption {
             return this;
         }
 
-        public Builder failFast(boolean failFast) {
-            consumption.failFast = failFast;
-            return this;
-        }
-
         @SuppressWarnings("rawtypes")
         public Builder aggregateRootClass(Optional<Class> aggregateRootClass) {
             consumption.aggregateRootClass = aggregateRootClass;
@@ -111,8 +105,6 @@ public class MessageListenerGroupConsumption {
 
     private MessageConsumptionHandler messageConsumptionHandler;
 
-    private boolean failFast;
-
     public void execute() {
         executeRepositoryListeners();
         executeUpdates();
@@ -131,7 +123,6 @@ public class MessageListenerGroupConsumption {
                     .listener(listener)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .consumptionState(consumptionState)
-                    .failFast(failFast)
                     .logger(logger)
                     .build();
             reports.add(executeInApmTransaction(executor));
@@ -153,10 +144,6 @@ public class MessageListenerGroupConsumption {
             executor.executeListener();
             configureApmTransaction(executor, apmTransaction);
             return executor.messageConsumptionReport();
-        } catch (FailFastException e) {
-            apmTransaction.setResult(ApmTransactionResults.FAILURE);
-            apmTransaction.captureException(e);
-            throw e;
         } catch (Exception e) {
             logger.error("Listener failed", e);
             apmTransaction.setResult(ApmTransactionResults.FAILURE);
@@ -261,7 +248,6 @@ public class MessageListenerGroupConsumption {
                     .listener(entry.getValue())
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .consumptionState(consumptionState)
-                    .failFast(failFast)
                     .logger(logger)
                     .toUpdateId(Optional.of(aggregateId))
                     .build();
@@ -279,7 +265,6 @@ public class MessageListenerGroupConsumption {
                     .listener(listener)
                     .messageConsumptionHandler(messageConsumptionHandler)
                     .consumptionState(consumptionState)
-                    .failFast(failFast)
                     .logger(logger)
                     .build();
             MessageListenerConsumptionReport report = executeInApmTransaction(executor);
