@@ -86,7 +86,7 @@ public class MessageBrokerTest {
         ArgumentCaptor<MessageToProcess> captor = ArgumentCaptor.forClass(MessageToProcess.class);
         verify(threadPool).submit(threadIdCaptor.capture(), captor.capture());
         MessageToProcess messageToProcess = captor.getValue();
-        assertThat(messageToProcess.receivedMessagePayload().message(), is(payload));
+        assertThat(messageToProcess.messageListenerGroup().message(), is(payload));
     }
 
     @Test

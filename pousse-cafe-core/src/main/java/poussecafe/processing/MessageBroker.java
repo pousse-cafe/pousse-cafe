@@ -82,7 +82,7 @@ public class MessageBroker {
                 inProgressProcessingStates.put(receivedMessageId, receivedMessageProcessingState);
                 MessageToProcess messageToProcess = new MessageToProcess.Builder()
                         .receivedMessageId(receivedMessageId)
-                        .receivedMessagePayload(group)
+                        .messageListenerGroup(group)
                         .callback(callback)
                         .build();
 
@@ -128,6 +128,7 @@ public class MessageBroker {
         if(processingProgress == null) {
             throw new IllegalArgumentException("No processing state available");
         } else {
+            processingThreadSelector.unselect(threadId, processedMessage.messageListenerGroup());
             processingProgress.ackReceivedMessageId(processedMessage.receivedMessageId());
             if(processingProgress.isCompleted()) {
                 logger.debug("Processing of message {} completed, acking...", receivedMessageId);

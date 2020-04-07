@@ -100,7 +100,7 @@ class MessageProcessingThread {
 
     private void processAndSignal(UnitOfWork unitOfWork) {
         try {
-            messageProcessor.processMessage(unitOfWork.message.receivedMessagePayload());
+            messageProcessor.processMessage(unitOfWork.message.messageListenerGroup());
         } catch (Exception e) {
             logger.error("Unhandled exception while processing unit of work", e);
         } finally {

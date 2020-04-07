@@ -47,7 +47,7 @@ public class MessageProcessingThreadTest implements Callback {
             MessageListenersGroup receivedMessage = mock(MessageListenersGroup.class);
             MessageToProcess message = new MessageToProcess.Builder()
                     .receivedMessageId(index)
-                    .receivedMessagePayload(receivedMessage)
+                    .messageListenerGroup(receivedMessage)
                     .callback(this)
                     .build();
             messages.add(message);
@@ -70,7 +70,7 @@ public class MessageProcessingThreadTest implements Callback {
 
     private void thenMessagesHandled() {
         for(int index = 0; index < messages.size(); ++index) {
-            verify(messageProcessor).processMessage(messages.get(index).receivedMessagePayload());
+            verify(messageProcessor).processMessage(messages.get(index).messageListenerGroup());
             assertTrue(messageProcessed.get(index));
         }
     }

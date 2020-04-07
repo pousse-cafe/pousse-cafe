@@ -13,8 +13,8 @@ class MessageToProcess {
             return this;
         }
 
-        public Builder receivedMessagePayload(MessageListenersGroup receivedMessagePayload) {
-            message.receivedMessagePayload = receivedMessagePayload;
+        public Builder messageListenerGroup(MessageListenersGroup messageListenerGroup) {
+            message.messageListenerGroup = messageListenerGroup;
             return this;
         }
 
@@ -25,7 +25,7 @@ class MessageToProcess {
 
         public MessageToProcess build() {
             Objects.requireNonNull(message.receivedMessageId);
-            Objects.requireNonNull(message.receivedMessagePayload);
+            Objects.requireNonNull(message.messageListenerGroup);
             Objects.requireNonNull(message.callback);
             return message;
         }
@@ -41,10 +41,10 @@ class MessageToProcess {
         return receivedMessageId;
     }
 
-    private MessageListenersGroup receivedMessagePayload;
+    private MessageListenersGroup messageListenerGroup;
 
-    public MessageListenersGroup receivedMessagePayload() {
-        return receivedMessagePayload;
+    public MessageListenersGroup messageListenerGroup() {
+        return messageListenerGroup;
     }
 
     public void signalProcessed(int threadId) {

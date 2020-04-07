@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@SuppressWarnings("rawtypes")
 public class DefaultProcessingThreadSelector implements ProcessingThreadSelector {
 
     public DefaultProcessingThreadSelector(int poolSize) {
@@ -11,23 +12,35 @@ public class DefaultProcessingThreadSelector implements ProcessingThreadSelector
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public int selectFor(MessageListenersGroup group) {
         Optional<Class> aggregateRootClass = group.aggregateRootClass();
+        int threadId;
         if(aggregateRootClass.isPresent()) {
-            Integer threadId = aggregateToThreadId.get(aggregateRootClass.get());
-            if(threadId == null) {
-                threadId = leastLoaded();
-                ++threadLoad[threadId];
-            }
-            return threadId;
+            threadId = queueGroupInAssignment(aggregateRootClass.get());
         } else {
-            return leastLoaded();
+            threadId = leastLoaded();
         }
+
+        threadLoad[threadId] = threadLoad[threadId] + group.listeners().size();
+        return threadId;
     }
 
-    @SuppressWarnings("rawtypes")
-    private Map<Class, Integer> aggregateToThreadId = new HashMap<>();
+    private int queueGroupInAssignment(Class aggregateRootClass) {
+        int threadId;
+        ThreadAssignment assignment = aggregateToAssignment.get(aggregateRootClass);
+        if(assignment == null) {
+            threadId = leastLoaded();
+            assignment = new ThreadAssignment(threadId);
+            aggregateToAssignment.put(aggregateRootClass, assignment);
+        } else {
+            threadId = assignment.threadId();
+        }
+
+        assignment.queueGroup();
+        return threadId;
+    }
+
+    private Map<Class, ThreadAssignment> aggregateToAssignment = new HashMap<>();
 
     private int[] threadLoad;
 
@@ -42,5 +55,38 @@ public class DefaultProcessingThreadSelector implements ProcessingThreadSelector
             }
         }
         return leastLoadedThreadId;
+    }
+
+    @Override
+    public void unselect(int threadId, MessageListenersGroup messageListenerGroup) {
+        Optional<Class> aggregateRootClass = messageListenerGroup.aggregateRootClass();
+        if(aggregateRootClass.isPresent()) {
+            unqueueGroupInAssignment(threadId, aggregateRootClass.get());
+        }
+
+        threadLoad[threadId] = threadLoad[threadId] - messageListenerGroup.listeners().size();
+    }
+
+    private void unqueueGroupInAssignment(int threadId, Class aggregateRootClass) {
+        ThreadAssignment assignment = aggregateToAssignment.get(aggregateRootClass);
+        if(assignment == null) {
+            throw new IllegalArgumentException("No assignment found for aggregate " + aggregateRootClass
+                    + " and threadId " + threadId);
+        }
+        if(assignment.threadId() != threadId) {
+            throw new IllegalArgumentException("Unexpected assignment");
+        }
+        assignment.unqueueGroup();
+        if(assignment.noGroupsQueued()) {
+            aggregateToAssignment.remove(aggregateRootClass);
+        }
+    }
+
+    public Optional<Integer> queuedGroupsFor(Class aggregateRootClass) {
+        return Optional.ofNullable(aggregateToAssignment.get(aggregateRootClass)).map(ThreadAssignment::queuedGroups);
+    }
+
+    public int loadOf(int threadId) {
+        return threadLoad[threadId];
     }
 }
