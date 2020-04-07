@@ -29,8 +29,12 @@ public abstract class PousseCafeTest {
         return new Runtime.Builder();
     }
 
+    /**
+     * @deprecated The new message brokerage implementation does not expect a MessageListenersPoolSplitStrategy anymore
+     */
+    @Deprecated
     public MessageListenersPoolSplitStrategy replicationStrategy(int numberOfPools) {
-        return new ReplicationStrategy(numberOfPools);
+        return null;
     }
 
     public Runtime testRuntime() {

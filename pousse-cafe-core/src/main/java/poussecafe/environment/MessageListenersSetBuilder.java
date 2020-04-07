@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.messaging.Message;
+import poussecafe.processing.ListenersSet;
 
 import static java.util.Collections.emptySet;
 
-public class MessageListenersPool {
+public class MessageListenersSetBuilder implements ListenersSet {
 
     public void registerListenerForMessageClass(MessageListener listener, Class<? extends Message> messageClass) {
         Set<MessageListener> messageClassListeners = listenersByMessageClass.computeIfAbsent(messageClass, key -> new HashSet<>());
@@ -27,7 +28,8 @@ public class MessageListenersPool {
 
     private Map<Class<? extends Message>, Set<MessageListener>> listenersByMessageClass = new HashMap<>();
 
-    public Set<MessageListener> getListeners(Class<? extends Message> messageClass) {
+    @Override
+    public Set<MessageListener> messageListenersOf(Class<? extends Message> messageClass) {
         return getListenersForMessageClass(messageClass);
     }
 
@@ -35,16 +37,14 @@ public class MessageListenersPool {
         return Optional.ofNullable(listenersByMessageClass.get(key)).map(Collections::unmodifiableSet).orElse(emptySet());
     }
 
-    public Collection<MessageListener> allListeners() {
+    @Override
+    public Collection<MessageListener> messageListeners() {
         return Collections.unmodifiableSet(messageClassesByListener.keySet());
-    }
-
-    public MessageListenersPool[] split(MessageListenersPoolSplitStrategy strategy) {
-        return strategy.split(this);
     }
 
     private Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener = new HashMap<>();
 
+    @Override
     public boolean contains(MessageListener listener) {
         return messageClassesByListener.keySet().contains(listener);
     }

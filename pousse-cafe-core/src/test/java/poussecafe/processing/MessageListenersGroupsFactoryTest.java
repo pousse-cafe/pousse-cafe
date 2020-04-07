@@ -100,7 +100,7 @@ public class MessageListenersGroupsFactoryTest {
                 .buildMessageListenerGroups(listeners);
     }
 
-    private List<MessageListenerGroup> groups;
+    private List<MessageListenersGroup> groups;
 
     private void thenExpectedGroupsAreBuilt() {
         assertThat(groups.get(0).aggregateRootClass().orElseThrow(), is(SimpleAggregate.class));

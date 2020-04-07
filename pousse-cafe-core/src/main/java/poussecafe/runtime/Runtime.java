@@ -3,7 +3,6 @@ package poussecafe.runtime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
@@ -11,7 +10,6 @@ import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.domain.DomainEvent;
 import poussecafe.environment.Bundle;
-import poussecafe.environment.CollisionPreventionStrategy;
 import poussecafe.environment.Environment;
 import poussecafe.environment.EnvironmentBuilder;
 import poussecafe.environment.MessageListenersPoolSplitStrategy;
@@ -90,15 +88,17 @@ public class Runtime {
             return this;
         }
 
+        /**
+         * @deprecated The new message brokerage implementation does not expect a MessageListenersPoolSplitStrategy
+         * anymore
+         */
+        @Deprecated(since = "0.18")
         public Builder messageListenersPoolSplitStrategy(MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy) {
-            runtime.messageListenersPoolSplitStrategy = messageListenersPoolSplitStrategy;
             return this;
         }
 
         public Builder processingThreads(int processingThreads) {
-            runtime.messageListenersPoolSplitStrategy = new CollisionPreventionStrategy.Builder()
-                    .expectedNumberOfPools(processingThreads)
-                    .build();
+            runtime.processingThreads = processingThreads;
             return this;
         }
 
@@ -114,7 +114,6 @@ public class Runtime {
         }
 
         public Runtime build() {
-            Objects.requireNonNull(runtime.messageListenersPoolSplitStrategy);
             environmentBuilder.applicationPerformanceMonitoring(runtime.applicationPerformanceMonitoring);
             runtime.environment = environmentBuilder.build();
             runtime.transactionRunnerLocator.setEnvironment(runtime.environment);
@@ -205,22 +204,26 @@ public class Runtime {
     private void configureMessageProcessing() {
         messageProcessingThreadPool = newMessageProcessingThreadPool();
         logger.info("Created {} processing threads...", messageProcessingThreadPool.size());
-        messageBroker = new MessageBroker(messageProcessingThreadPool);
+        createMessageBroker();
     }
 
-    private MessageProcessingThreadPool newMessageProcessingThreadPool() {
-        return new MessageProcessingThreadPool.Builder()
-                .messageListenersPoolSplitStrategy(messageListenersPoolSplitStrategy)
-                .messageConsumptionHandler(messageConsumptionHandler)
+    private void createMessageBroker() {
+        messageBroker = new MessageBroker.Builder()
+                .messageProcessingThreadsPool(messageProcessingThreadPool)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .messageConsumptionConfiguration(messageConsumptionConfiguration)
+                .messageConsumptionHandler(messageConsumptionHandler)
                 .listenersSet(environment.messageListenersSet())
                 .build();
     }
 
-    private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy = new CollisionPreventionStrategy.Builder()
-            .expectedNumberOfPools(1)
-            .build();
+    private MessageProcessingThreadPool newMessageProcessingThreadPool() {
+        return new MessageProcessingThreadPool.Builder()
+                .poolSize(processingThreads)
+                .messageConsumptionConfiguration(messageConsumptionConfiguration)
+                .build();
+    }
+
+    private int processingThreads = 1;
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration = new MessageConsumptionConfiguration.Builder()
             .backOffCeiling(10)
@@ -273,10 +276,7 @@ public class Runtime {
         explorer.discoverListeners().stream()
             .forEach(environment::registerMessageListener);
         if(started) {
-            logger.warn("New listeners registered, creating new processing thread pool. Consider registering all listeners before starting runtime to prevent this.");
-            var newThreadPool = newMessageProcessingThreadPool();
-            messageBroker.replaceThreadPool(newThreadPool);
-            newThreadPool.start();
+            logger.warn("New listeners registered, race conditions might occur. Consider registering all listeners before starting runtime to prevent this.");
         }
     }
 

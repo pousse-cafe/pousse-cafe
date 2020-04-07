@@ -15,11 +15,11 @@ import poussecafe.environment.MessageListenerType;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
-public class MessageListenerGroup {
+public class MessageListenersGroup {
 
     public static class Builder {
 
-        private MessageListenerGroup group = new MessageListenerGroup();
+        private MessageListenersGroup group = new MessageListenersGroup();
 
         public Builder message(OriginalAndMarshaledMessage message) {
             group.message = message;
@@ -52,7 +52,7 @@ public class MessageListenerGroup {
             return this;
         }
 
-        public MessageListenerGroup build() {
+        public MessageListenersGroup build() {
             Objects.requireNonNull(group.message);
             Objects.requireNonNull(group.messageConsumptionHandler);
             Objects.requireNonNull(group.applicationPerformanceMonitoring);
@@ -78,6 +78,10 @@ public class MessageListenerGroup {
     }
 
     private OriginalAndMarshaledMessage message;
+
+    public OriginalAndMarshaledMessage message() {
+        return message;
+    }
 
     private List<MessageListener> aggregateListeners = new ArrayList<>();
 

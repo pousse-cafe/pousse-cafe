@@ -54,7 +54,7 @@ public class MessageConsumptionState {
 
     private boolean isFirstConsumption = true;
 
-    public MessageListenerGroupConsumptionState buildMessageListenerGroupState(MessageListenerGroup group) {
+    public MessageListenerGroupConsumptionState buildMessageListenerGroupState(MessageListenersGroup group) {
         return new MessageListenerGroupConsumptionState.Builder()
             .message(message)
             .isFirstConsumption(isFirstConsumption)
@@ -67,7 +67,7 @@ public class MessageConsumptionState {
 
     private Logger processorLogger;
 
-    public void update(MessageListenerGroup group, List<MessageListenerConsumptionReport> reports) {
+    public void update(MessageListenersGroup group, List<MessageListenerConsumptionReport> reports) {
         Set<Object> ids = new HashSet<>();
         for(MessageListenerConsumptionReport report : reports) {
             ids.addAll(report.aggregateIdsToRetry());
@@ -75,7 +75,7 @@ public class MessageConsumptionState {
         idsToRetry.put(group, ids);
     }
 
-    private Map<MessageListenerGroup, Set<Object>> idsToRetry = new HashMap<>();
+    private Map<MessageListenersGroup, Set<Object>> idsToRetry = new HashMap<>();
 
     private String consumptionId;
 

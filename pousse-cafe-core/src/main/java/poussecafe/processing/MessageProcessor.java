@@ -3,10 +3,7 @@ package poussecafe.processing;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.runtime.ConsumptionIdGenerator;
-import poussecafe.runtime.MessageConsumptionHandler;
-import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 class MessageProcessor {
 
@@ -19,21 +16,6 @@ class MessageProcessor {
             return this;
         }
 
-        public Builder listenersPartition(ListenersSetPartition listenersPartition) {
-            processor.listenersPartition = listenersPartition;
-            return this;
-        }
-
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            processor.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            processor.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
-            return this;
-        }
-
         public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
             processor.messageConsumptionConfiguration = messageConsumptionConfiguration;
             return this;
@@ -41,9 +23,6 @@ class MessageProcessor {
 
         public MessageProcessor build() {
             Objects.requireNonNull(processor.consumptionIdGenerator);
-            Objects.requireNonNull(processor.listenersPartition);
-            Objects.requireNonNull(processor.messageConsumptionHandler);
-            Objects.requireNonNull(processor.applicationPerformanceMonitoring);
             Objects.requireNonNull(processor.messageConsumptionConfiguration);
             processor.logger = LoggerFactory.getLogger(MessageProcessor.class.getName() + "_" + processor.consumptionIdGenerator.prefix());
             return processor;
@@ -54,16 +33,11 @@ class MessageProcessor {
 
     }
 
-    private MessageConsumptionHandler messageConsumptionHandler;
-
-    public void processMessage(OriginalAndMarshaledMessage message) {
+    public void processMessage(MessageListenersGroup message) {
         String consumptionId = consumptionIdGenerator.next();
         MessageConsumption consumption = new MessageConsumption.Builder()
                 .consumptionId(consumptionId)
-                .message(message)
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .listenersPartition(listenersPartition)
-                .messageConsumptionHandler(messageConsumptionHandler)
+                .messageListenerGroup(message)
                 .messageConsumptionConfiguration(messageConsumptionConfiguration)
                 .processorLogger(logger)
                 .build();
@@ -72,11 +46,7 @@ class MessageProcessor {
 
     private ConsumptionIdGenerator consumptionIdGenerator;
 
-    private ListenersSetPartition listenersPartition;
-
     protected Logger logger;
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration;
 }

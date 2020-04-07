@@ -8,21 +8,26 @@ class ReceivedMessageProcessingState {
 
         private ReceivedMessageProcessingState state = new ReceivedMessageProcessingState();
 
-        public Builder numberOfThreads(int numberOfThreads) {
-            this.numberOfThreads = numberOfThreads;
-            return this;
-        }
-
-        private int numberOfThreads = -1;
-
         public Builder receivedMessage(ReceivedMessage receivedMessage) {
             state.receivedMessage = receivedMessage;
             return this;
         }
 
+        public Builder firstId(long firstId) {
+            state.firstId = firstId;
+            return this;
+        }
+
+        public Builder sequenceLength(int sequenceLength) {
+            this.sequenceLength = sequenceLength;
+            return this;
+        }
+
+        private int sequenceLength;
+
         public ReceivedMessageProcessingState build() {
             Objects.requireNonNull(state.receivedMessage);
-            state.processed = new boolean[numberOfThreads];
+            state.processed = new boolean[sequenceLength];
             return state;
         }
     }
@@ -31,13 +36,16 @@ class ReceivedMessageProcessingState {
 
     }
 
+    private long firstId;
+
     private boolean[] processed;
 
-    public void ackThreadProcessed(int threadIndex) {
-        if(processed[threadIndex]) {
-            throw new IllegalArgumentException("Processing already acked for thread " + threadIndex);
+    public void ackReceivedMessageId(long receivedMessageId) {
+        int index = (int) (receivedMessageId - firstId);
+        if(processed[index]) {
+            throw new IllegalArgumentException("Processing already acked for ID " + index);
         }
-        processed[threadIndex] = true;
+        processed[index] = true;
     }
 
     public boolean isCompleted() {

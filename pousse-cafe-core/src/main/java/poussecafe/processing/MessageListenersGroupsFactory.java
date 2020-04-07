@@ -57,7 +57,7 @@ public class MessageListenersGroupsFactory {
     }
 
     @SuppressWarnings("rawtypes")
-    public List<MessageListenerGroup> buildMessageListenerGroups(Collection<MessageListener> listeners) {
+    public List<MessageListenersGroup> buildMessageListenerGroups(Collection<MessageListener> listeners) {
         List<MessageListener> customListeners = new ArrayList<>();
         Map<Class, List<MessageListener>> listenersPerAggregateRootClass = new HashMap<>();
         for(MessageListener listener : listeners) {
@@ -71,9 +71,9 @@ public class MessageListenersGroupsFactory {
             groupList.add(listener);
         }
 
-        List<MessageListenerGroup> groups = new ArrayList<>();
+        List<MessageListenersGroup> groups = new ArrayList<>();
         for(Entry<Class, List<MessageListener>> entry : listenersPerAggregateRootClass.entrySet()) {
-            MessageListenerGroup group = new MessageListenerGroup.Builder()
+            MessageListenersGroup group = new MessageListenersGroup.Builder()
                     .listeners(entry.getValue())
                     .aggregateRootClass(Optional.of(entry.getKey()))
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
@@ -86,7 +86,7 @@ public class MessageListenersGroupsFactory {
 
         customListeners.sort(null);
         for(MessageListener customListener : customListeners) {
-            MessageListenerGroup group = new MessageListenerGroup.Builder()
+            MessageListenersGroup group = new MessageListenersGroup.Builder()
                     .listeners(asList(customListener))
                     .aggregateRootClass(Optional.empty())
                     .applicationPerformanceMonitoring(applicationPerformanceMonitoring)

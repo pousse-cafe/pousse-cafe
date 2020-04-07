@@ -1,44 +1,17 @@
 package poussecafe.processing;
 
-import java.util.ArrayList;
-import java.util.List;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.environment.MessageListenersPoolSplitStrategy;
-import poussecafe.runtime.MessageConsumptionHandler;
-
 public class MessageProcessingThreadPool {
 
     public static class Builder {
 
         private MessageProcessingThreadPool pool = new MessageProcessingThreadPool();
 
-        public Builder listenersSet(ListenersSet listenersSet) {
-            this.listenersSet = listenersSet;
+        public Builder poolSize(int poolSize) {
+            this.poolSize = poolSize;
             return this;
         }
 
-        private ListenersSet listenersSet;
-
-        public Builder messageListenersPoolSplitStrategy(MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy) {
-            this.messageListenersPoolSplitStrategy = messageListenersPoolSplitStrategy;
-            return this;
-        }
-
-        private MessageListenersPoolSplitStrategy messageListenersPoolSplitStrategy;
-
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            this.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        private MessageConsumptionHandler messageConsumptionHandler;
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
-            return this;
-        }
-
-        private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+        private int poolSize;
 
         public Builder messageConsumptionConfiguration(MessageConsumptionConfiguration messageConsumptionConfiguration) {
             this.messageConsumptionConfiguration = messageConsumptionConfiguration;
@@ -48,29 +21,25 @@ public class MessageProcessingThreadPool {
         private MessageConsumptionConfiguration messageConsumptionConfiguration;
 
         public MessageProcessingThreadPool build() {
-            createThreads();
-            if(pool.messageProcessingThreads.isEmpty()) {
-                throw new IllegalStateException("Cannot create empty pool");
+            if(poolSize <= 0) {
+                throw new IllegalStateException("Message processing thread pool size must be greater than zero");
             }
+            pool.messageProcessingThreads = new MessageProcessingThread[poolSize];
+            createThreads();
             return pool;
         }
 
         private void createThreads() {
-            ListenersSetPartition[] partitions = listenersSet.split(messageListenersPoolSplitStrategy);
-            for(int i = 0; i < partitions.length; ++i) {
-                ListenersSetPartition listenersPartition = partitions[i];
+            for(int i = 0; i < pool.messageProcessingThreads.length; ++i) {
                 MessageProcessor processor = new MessageProcessor.Builder()
                         .id(Integer.toString(i))
-                        .messageConsumptionHandler(messageConsumptionHandler)
-                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                         .messageConsumptionConfiguration(messageConsumptionConfiguration)
-                        .listenersPartition(listenersPartition)
                         .build();
                 MessageProcessingThread thread = new MessageProcessingThread.Builder()
                         .threadId(i)
                         .messageProcessor(processor)
                         .build();
-                pool.messageProcessingThreads.add(thread);
+                pool.messageProcessingThreads[i] = thread;
             }
         }
     }
@@ -79,28 +48,29 @@ public class MessageProcessingThreadPool {
 
     }
 
-    private List<MessageProcessingThread> messageProcessingThreads = new ArrayList<>();
+    private MessageProcessingThread[] messageProcessingThreads;
 
     public void start() {
-        messageProcessingThreads.forEach(MessageProcessingThread::start);
+        for(int i = 0; i < messageProcessingThreads.length; ++i) {
+            messageProcessingThreads[i].start();
+        }
     }
 
     public void stop() {
-        messageProcessingThreads.forEach(MessageProcessingThread::stop);
+        for(int i = 0; i < messageProcessingThreads.length; ++i) {
+            messageProcessingThreads[i].stop();
+        }
     }
 
     public int size() {
-        return messageProcessingThreads.size();
+        return messageProcessingThreads.length;
     }
 
-    public boolean isEmpty() {
-        return messageProcessingThreads.isEmpty();
-    }
-
-    public void submit(MessageToProcess messageToProcess) {
-        for(int index = 0; index < messageProcessingThreads.size(); ++index) {
-            MessageProcessingThread thread = messageProcessingThreads.get(index);
-            thread.submit(messageToProcess);
+    public void submit(int threadId, MessageToProcess messageToProcess) {
+        if(threadId < 0 || threadId >= messageProcessingThreads.length) {
+            throw new IllegalArgumentException("Thread ID must be between 0 and (pool size - 1) inclusive");
         }
+        MessageProcessingThread thread = messageProcessingThreads[threadId];
+        thread.submit(messageToProcess);
     }
 }

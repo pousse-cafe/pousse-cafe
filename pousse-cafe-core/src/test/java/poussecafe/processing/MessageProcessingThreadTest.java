@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.processing.MessageToProcess.Callback;
-import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +44,7 @@ public class MessageProcessingThreadTest implements Callback {
         messageProcessed = new ArrayList<>();
 
         for(int index = 0; index < 42; ++index) {
-            OriginalAndMarshaledMessage receivedMessage = mock(OriginalAndMarshaledMessage.class);
+            MessageListenersGroup receivedMessage = mock(MessageListenersGroup.class);
             MessageToProcess message = new MessageToProcess.Builder()
                     .receivedMessageId(index)
                     .receivedMessagePayload(receivedMessage)
@@ -98,6 +97,6 @@ public class MessageProcessingThreadTest implements Callback {
 
     private void givenFailinProcessor() {
         messageProcessor = mock(MessageProcessor.class);
-        doThrow(RuntimeException.class).when(messageProcessor).processMessage(any(OriginalAndMarshaledMessage.class));
+        doThrow(RuntimeException.class).when(messageProcessor).processMessage(any(MessageListenersGroup.class));
     }
 }

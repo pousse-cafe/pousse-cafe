@@ -1,14 +1,7 @@
 package poussecafe.processing;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.junit.Test;
-import poussecafe.apm.DefaultApplicationPerformanceMonitoring;
-import poussecafe.environment.MessageConsumer;
-import poussecafe.environment.MessageListener;
-import poussecafe.environment.MessageListenerType;
 import poussecafe.messaging.Message;
-import poussecafe.runtime.DefaultConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -19,35 +12,16 @@ import static org.mockito.Mockito.when;
 public class MessageProcessorTest {
 
     @Test
-    public void messageProcessorForwardsMessageToListenersConsumers() {
-        givenListeners();
+    public void messageProcessorMakesGroupConsumeMessage() {
         givenMessageProcessor();
+        givenMessageListenersGroup();
         whenProcessingMessage();
         thenMessageForwardedToListenersConsumers();
     }
 
-    private void givenListeners() {
-        listeners.add(buildListener("id1"));
-        listeners.add(buildListener("id2"));
-        listeners.add(buildListener("id3"));
-        listeners.add(buildListener("id4"));
-    }
-
-    private Set<MessageListener> listeners = new HashSet<>();
-
-    private MessageListener buildListener(String id) {
-        MessageConsumer consumer = mock(MessageConsumer.class);
-        return new MessageListener.Builder()
-                .consumer(consumer)
-                .id("id")
-                .shortId("shortId")
-                .consumedMessageClass(Message.class)
-                .priority(MessageListenerType.CUSTOM)
-                .build();
-    }
-
     private void givenMessageProcessor() {
-        messageProcessor = messageProcessorBuilder()
+        messageProcessor = new MessageProcessor.Builder()
+                .id("id")
                 .messageConsumptionConfiguration(new MessageConsumptionConfiguration.Builder()
                         .backOffCeiling(10)
                         .backOffSlotTime(1.0)
@@ -56,33 +30,23 @@ public class MessageProcessorTest {
                 .build();
     }
 
-    @SuppressWarnings("unchecked")
-    private MessageProcessor.Builder messageProcessorBuilder() {
-        ListenersSetPartition listenersPartition = mock(ListenersSetPartition.class);
-        ListenersSet partitionListenersSet = mock(ListenersSet.class);
-        when(partitionListenersSet.messageListenersOf(any(Class.class))).thenReturn(listeners);
-        when(listenersPartition.partitionListenersSet()).thenReturn(partitionListenersSet);
-        return new MessageProcessor.Builder()
-                .id("id")
-                .listenersPartition(listenersPartition)
-                .messageConsumptionHandler(new DefaultConsumptionHandler())
-                .applicationPerformanceMonitoring(new DefaultApplicationPerformanceMonitoring());
+    private void givenMessageListenersGroup() {
+        group = mock(MessageListenersGroup.class);
+        OriginalAndMarshaledMessage originalAndMarshaled = mock(OriginalAndMarshaledMessage.class);
+        Message original = mock(Message.class);
+        when(originalAndMarshaled.original()).thenReturn(original);
+        when(group.message()).thenReturn(originalAndMarshaled);
     }
+
+    private MessageListenersGroup group;
 
     private MessageProcessor messageProcessor;
 
     private void whenProcessingMessage() {
-        message = mock(OriginalAndMarshaledMessage.class);
-        Message original = mock(Message.class);
-        when(message.original()).thenReturn(original);
-        messageProcessor.processMessage(message);
+        messageProcessor.processMessage(group);
     }
 
-    private OriginalAndMarshaledMessage message;
-
     private void thenMessageForwardedToListenersConsumers() {
-        for(MessageListener listener : listeners) {
-            verify(listener.consumer()).consume(any());
-        }
+        verify(group).consumeMessageOrRetry(any());
     }
 }

@@ -1,7 +1,6 @@
 package poussecafe.processing;
 
 import java.util.Objects;
-import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 class MessageToProcess {
 
@@ -14,7 +13,7 @@ class MessageToProcess {
             return this;
         }
 
-        public Builder receivedMessagePayload(OriginalAndMarshaledMessage receivedMessagePayload) {
+        public Builder receivedMessagePayload(MessageListenersGroup receivedMessagePayload) {
             message.receivedMessagePayload = receivedMessagePayload;
             return this;
         }
@@ -42,9 +41,9 @@ class MessageToProcess {
         return receivedMessageId;
     }
 
-    private OriginalAndMarshaledMessage receivedMessagePayload;
+    private MessageListenersGroup receivedMessagePayload;
 
-    public OriginalAndMarshaledMessage receivedMessagePayload() {
+    public MessageListenersGroup receivedMessagePayload() {
         return receivedMessagePayload;
     }
 

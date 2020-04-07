@@ -31,17 +31,17 @@ public class MessageListenerRegistrar {
         this.environment = environment;
     }
 
-    private MessageListenersPool messageListenersPool = new MessageListenersPool();
+    private MessageListenersSetBuilder messageListenersPool = new MessageListenersSetBuilder();
 
     public Set<MessageListener> getListeners(Class<? extends Message> messageClass) {
-        return messageListenersPool.getListeners(messageClass);
+        return messageListenersPool.messageListenersOf(messageClass);
     }
 
     public Collection<MessageListener> allListeners() {
-        return messageListenersPool.allListeners();
+        return messageListenersPool.messageListeners();
     }
 
-    public MessageListenersPool messageListenersPool() {
+    public MessageListenersSetBuilder messageListenersPool() {
         return messageListenersPool;
     }
 }
