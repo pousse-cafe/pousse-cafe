@@ -2,7 +2,7 @@ package poussecafe.environment;
 
 import org.junit.Test;
 import poussecafe.domain.DomainEvent;
-import poussecafe.runtime.TestDomainEvent;
+import poussecafe.testmodule.TestDomainEvent;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

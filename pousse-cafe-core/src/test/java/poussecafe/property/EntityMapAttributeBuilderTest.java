@@ -6,8 +6,8 @@ import org.junit.Test;
 import poussecafe.attribute.entity.EntityAttributeBuilder;
 import poussecafe.attribute.entity.EntityMapAttribute;
 import poussecafe.domain.Entity;
-import poussecafe.domain.SimpleEntityData;
 import poussecafe.entity.SimpleEntity;
+import poussecafe.testmodule.SimpleEntityData;
 import poussecafe.util.ReflectionUtils;
 import poussecafe.util.StringId;
 

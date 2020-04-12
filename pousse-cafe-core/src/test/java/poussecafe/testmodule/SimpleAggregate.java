@@ -1,13 +1,15 @@
-package poussecafe.domain;
+package poussecafe.testmodule;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
-import poussecafe.runtime.TestDomainEvent3;
+import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
-  factory = SimpleAggregateFactory.class,
-  repository = SimpleAggregateRepository.class
+    factory = SimpleAggregateFactory.class,
+    repository = SimpleAggregateRepository.class,
+    module = TestModule.class
 )
 public class SimpleAggregate extends AggregateRoot<SimpleAggregateId, SimpleAggregate.Attributes> {
 
@@ -20,5 +22,4 @@ public class SimpleAggregate extends AggregateRoot<SimpleAggregateId, SimpleAggr
 
         Attribute<String> data();
     }
-
 }

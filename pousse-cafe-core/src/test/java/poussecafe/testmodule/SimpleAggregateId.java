@@ -1,4 +1,4 @@
-package poussecafe.domain;
+package poussecafe.testmodule;
 
 import java.util.UUID;
 import poussecafe.util.StringId;

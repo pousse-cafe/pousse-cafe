@@ -1,13 +1,15 @@
-package poussecafe.domain;
+package poussecafe.testmodule;
 
+import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 
-public class SimpleAggregateData implements SimpleAggregate.Attributes {
+@SuppressWarnings("serial")
+public class SimpleAggregateData implements SimpleAggregate.Attributes, Serializable {
 
     @Override
     public Attribute<SimpleAggregateId> identifier() {
-        return new Attribute<SimpleAggregateId>() {
+        return new Attribute<>() {
             @Override
             public SimpleAggregateId value() {
                 return new SimpleAggregateId(id);

@@ -2,9 +2,9 @@ package poussecafe.discovery;
 
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Repository;
-import poussecafe.runtime.TestDomainEvent;
-import poussecafe.runtime.TestDomainEvent2;
-import poussecafe.runtime.TestDomainEvent3;
+import poussecafe.testmodule.TestDomainEvent;
+import poussecafe.testmodule.TestDomainEvent2;
+import poussecafe.testmodule.TestDomainEvent3;
 
 public class RepositoryWithSingleListener extends Repository<AggregateRootWithSingleListener, String, EntityAttributes<String>> {
 

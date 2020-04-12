@@ -2,8 +2,8 @@ package poussecafe.discovery;
 
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
-import poussecafe.runtime.TestDomainEvent;
-import poussecafe.runtime.TestDomainEvent2;
+import poussecafe.testmodule.TestDomainEvent;
+import poussecafe.testmodule.TestDomainEvent2;
 
 public class FactoryWithSingleListener extends Factory<String, AggregateRootWithSingleListener, EntityAttributes<String>> {
 

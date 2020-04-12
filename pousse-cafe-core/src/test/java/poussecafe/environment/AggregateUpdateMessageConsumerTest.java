@@ -9,12 +9,12 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
-import poussecafe.domain.SimpleMessage;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.NoTransactionRunner;
+import poussecafe.testmodule.SimpleMessage;
 
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.assertTrue;

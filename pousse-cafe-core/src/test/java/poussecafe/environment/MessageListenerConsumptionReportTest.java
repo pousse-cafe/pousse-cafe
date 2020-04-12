@@ -1,8 +1,8 @@
 package poussecafe.environment;
 
 import org.junit.Test;
-import poussecafe.domain.SimpleAggregate;
-import poussecafe.domain.SimpleAggregateId;
+import poussecafe.testmodule.SimpleAggregate;
+import poussecafe.testmodule.SimpleAggregateId;
 
 import static org.junit.Assert.assertTrue;
 

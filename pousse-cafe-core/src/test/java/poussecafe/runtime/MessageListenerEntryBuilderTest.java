@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import org.junit.Test;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.messaging.Message;
+import poussecafe.testmodule.TestDomainEvent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

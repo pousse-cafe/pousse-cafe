@@ -1,9 +1,9 @@
 package poussecafe.attribute.entity;
 
 import org.junit.Test;
-import poussecafe.domain.SimpleAggregate;
-import poussecafe.domain.SimpleAggregateData;
 import poussecafe.environment.EntityFactory;
+import poussecafe.testmodule.SimpleAggregate;
+import poussecafe.testmodule.SimpleAggregateData;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;

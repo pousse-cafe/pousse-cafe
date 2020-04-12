@@ -1,11 +1,14 @@
-package poussecafe.runtime;
+package poussecafe.testmodule;
 
+import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
+import poussecafe.discovery.MessageImplementation;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.SimpleAggregateId;
 
-public class TestDomainEvent4 implements DomainEvent {
+@SuppressWarnings("serial")
+@MessageImplementation(message = TestDomainEvent3.class)
+public class TestDomainEvent3 implements DomainEvent, Serializable {
 
     public Attribute<SimpleAggregateId> identifier() {
         return AttributeBuilder.stringId(SimpleAggregateId.class)

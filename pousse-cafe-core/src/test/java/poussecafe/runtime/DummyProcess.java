@@ -2,6 +2,7 @@ package poussecafe.runtime;
 
 import poussecafe.discovery.MessageListener;
 import poussecafe.process.DomainProcess;
+import poussecafe.testmodule.TestDomainEvent;
 
 public class DummyProcess extends DomainProcess {
 

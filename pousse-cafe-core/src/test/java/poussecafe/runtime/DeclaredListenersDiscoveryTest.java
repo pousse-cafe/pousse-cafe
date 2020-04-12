@@ -6,6 +6,7 @@ import org.junit.Test;
 import poussecafe.discovery.CustomMessageListenerDiscoverer;
 import poussecafe.environment.DeclaredMessageListenerIdBuilder;
 import poussecafe.environment.MessageListener;
+import poussecafe.testmodule.TestDomainEvent;
 
 import static org.junit.Assert.assertTrue;
 

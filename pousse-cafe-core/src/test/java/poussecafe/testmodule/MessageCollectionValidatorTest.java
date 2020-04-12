@@ -1,6 +1,7 @@
-package poussecafe.domain;
+package poussecafe.testmodule;
 
 import org.junit.Test;
+import poussecafe.domain.MessageCollectionValidator;
 import poussecafe.messaging.Message;
 import poussecafe.storage.DefaultMessageCollection;
 import poussecafe.storage.MessageCollection;

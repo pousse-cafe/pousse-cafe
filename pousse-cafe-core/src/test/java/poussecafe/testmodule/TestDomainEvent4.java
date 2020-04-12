@@ -1,11 +1,12 @@
-package poussecafe.runtime;
+package poussecafe.testmodule;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
+import poussecafe.discovery.MessageImplementation;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.SimpleAggregateId;
 
-public class TestDomainEvent3 implements DomainEvent {
+@MessageImplementation(message = TestDomainEvent4.class)
+public class TestDomainEvent4 implements DomainEvent {
 
     public Attribute<SimpleAggregateId> identifier() {
         return AttributeBuilder.stringId(SimpleAggregateId.class)

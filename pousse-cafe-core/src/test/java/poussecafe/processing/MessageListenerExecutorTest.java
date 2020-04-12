@@ -15,7 +15,7 @@ import poussecafe.environment.SampleEventData;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
-import poussecafe.runtime.TestDomainEvent;
+import poussecafe.testmodule.TestDomainEvent;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertTrue;

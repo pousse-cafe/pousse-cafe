@@ -1,6 +1,9 @@
 package poussecafe.messaging.internal;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import poussecafe.exception.RuntimeInterruptedException;
@@ -118,9 +121,19 @@ public class InternalMessagingQueue {
     }
 
     public void waitUntilEmptyOrInterrupted() {
+        waitUntilEmptyOrInterrupted(Duration.ofMillis(1), Optional.empty());
+    }
+
+    public void waitUntilEmptyOrInterrupted(Duration period, Optional<Duration> maxWaitTime) {
+        Instant now = Instant.now();
         while(!state.emptyOrInterrupted()) {
+            if(maxWaitTime.isPresent()
+                    && Duration.between(now, Instant.now()).compareTo(maxWaitTime.get()) > 0) {
+                throw new IllegalStateException("Max wait time elapsed");
+            }
+
             try {
-                Thread.sleep(1);
+                Thread.sleep(period.toMillis());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;

@@ -232,10 +232,11 @@ public class MessageListenerGroupConsumption {
     private Set<Object> toCreate = new HashSet<>();
 
     private void logMissingUpdates() {
-        if(!updates.keySet().containsAll(consumptionState.toUpdate())
+        Set<Object> missingAggregates = new HashSet<>(consumptionState.toUpdate());
+        missingAggregates.removeAll(updates.keySet());
+        missingAggregates.removeAll(toCreate);
+        if(!missingAggregates.isEmpty()
                 && logger.isErrorEnabled()) {
-            Set<Object> missingAggregates = new HashSet<>(consumptionState.toUpdate());
-            missingAggregates.removeAll(updates.keySet());
             List<String> stringIds = missingAggregates.stream().map(Object::toString).collect(toList());
             logger.error("Missing expected aggregates to update: {}", String.join(", ", stringIds));
         }
@@ -268,7 +269,11 @@ public class MessageListenerGroupConsumption {
                     .logger(logger)
                     .build();
             MessageListenerConsumptionReport report = executeInApmTransaction(executor);
+            if(report.failure() != null) {
+                unidentifiedCreationFailures.add(report.failure());
+            }
             created.addAll(report.successfulAggregatesIds());
+            failedCreations.addAll(report.failures().keySet());
             toUpdateFollowingCreation.addAll(report.aggregateIdsToRetry());
             reports.add(report);
         }
@@ -276,25 +281,34 @@ public class MessageListenerGroupConsumption {
 
     private Set<Object> created = new HashSet<>();
 
+    private Set<Object> failedCreations = new HashSet<>();
+
+    private List<Throwable> unidentifiedCreationFailures = new ArrayList<>();
+
     private Set<Object> toUpdateFollowingCreation = new HashSet<>();
 
     private void planUpdatesRetryFromMissingCreations() {
-        Set<Object> missingCreations = new HashSet<>();
-        missingCreations.addAll(toCreate);
-        missingCreations.removeAll(created);
-        missingCreations.removeAll(toUpdateFollowingCreation);
-        for(MessageListenerConsumptionReport report : updatesReports) {
-            missingCreations.removeAll(report.aggregateIdsToRetry());
-        }
-        if(!missingCreations.isEmpty()) {
-            MessageListenerConsumptionReport.Builder missingCreationsReport = new MessageListenerConsumptionReport
-                    .Builder("groupMissingCreations");
-            missingCreationsReport.aggregateType(aggregateRootClass.orElseThrow());
-            for(Object id : missingCreations) {
-                missingCreationsReport.aggregateId(id);
-                missingCreationsReport.aggregateIdToRetry(id);
+        if(unidentifiedCreationFailures.isEmpty()) {
+            Set<Object> missingCreations = new HashSet<>();
+            missingCreations.addAll(toCreate);
+            missingCreations.removeAll(created);
+            missingCreations.removeAll(failedCreations);
+            missingCreations.removeAll(toUpdateFollowingCreation);
+            for(MessageListenerConsumptionReport report : updatesReports) {
+                missingCreations.removeAll(report.aggregateIdsToRetry());
             }
-            reports.add(missingCreationsReport.build());
+            if(!missingCreations.isEmpty()) {
+                MessageListenerConsumptionReport.Builder missingCreationsReport = new MessageListenerConsumptionReport
+                        .Builder("groupMissingCreations");
+                missingCreationsReport.aggregateType(aggregateRootClass.orElseThrow());
+                for(Object id : missingCreations) {
+                    missingCreationsReport.aggregateId(id);
+                    missingCreationsReport.aggregateIdToRetry(id);
+                }
+                reports.add(missingCreationsReport.build());
+            }
+        } else {
+            logger.error("{} unidentified creation failure(s), skipping group retry for missing creations", unidentifiedCreationFailures.size());
         }
     }
 

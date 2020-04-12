@@ -5,8 +5,8 @@ import java.util.List;
 import org.junit.Test;
 import poussecafe.environment.ExpectedEvent;
 import poussecafe.environment.MessageListenerDefinition;
-import poussecafe.runtime.TestDomainEvent2;
-import poussecafe.runtime.TestDomainEvent3;
+import poussecafe.testmodule.TestDomainEvent2;
+import poussecafe.testmodule.TestDomainEvent3;
 
 import static org.junit.Assert.assertTrue;
 

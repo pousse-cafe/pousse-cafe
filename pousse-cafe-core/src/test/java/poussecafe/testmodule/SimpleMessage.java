@@ -1,4 +1,4 @@
-package poussecafe.domain;
+package poussecafe.testmodule;
 
 import poussecafe.messaging.Message;
 

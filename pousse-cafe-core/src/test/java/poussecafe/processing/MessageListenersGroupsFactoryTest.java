@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.domain.SimpleAggregate;
-import poussecafe.domain.SimpleMessage;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerType;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
+import poussecafe.testmodule.SimpleAggregate;
+import poussecafe.testmodule.SimpleMessage;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

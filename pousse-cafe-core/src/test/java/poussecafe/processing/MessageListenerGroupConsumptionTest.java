@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.junit.Test;
 import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.domain.SimpleAggregate;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.AggregateUpdateMessageConsumer;
 import poussecafe.environment.MessageConsumer;
@@ -17,6 +16,7 @@ import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
+import poussecafe.testmodule.SimpleAggregate;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;

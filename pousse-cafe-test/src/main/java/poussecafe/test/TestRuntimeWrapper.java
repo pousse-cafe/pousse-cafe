@@ -60,7 +60,11 @@ public class TestRuntimeWrapper {
         return (T) repository.find(id);
     }
 
+    /**
+     * @deprecated inject repository directly in test case class
+     */
     @SuppressWarnings("unchecked")
+    @Deprecated(since = "0.18.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
             K id) {
         waitUntilEndOfMessageProcessing();

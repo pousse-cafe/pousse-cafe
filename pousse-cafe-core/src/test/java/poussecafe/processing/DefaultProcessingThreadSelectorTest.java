@@ -2,7 +2,7 @@ package poussecafe.processing;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.domain.SimpleAggregate;
+import poussecafe.testmodule.SimpleAggregate;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;

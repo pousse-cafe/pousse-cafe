@@ -2,9 +2,9 @@ package poussecafe.discovery;
 
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.runtime.TestDomainEvent;
-import poussecafe.runtime.TestDomainEvent2;
-import poussecafe.runtime.TestDomainEvent3;
+import poussecafe.testmodule.TestDomainEvent;
+import poussecafe.testmodule.TestDomainEvent2;
+import poussecafe.testmodule.TestDomainEvent3;
 
 public class AggregateRootWithSingleListener extends AggregateRoot<String, EntityAttributes<String>> {
 
