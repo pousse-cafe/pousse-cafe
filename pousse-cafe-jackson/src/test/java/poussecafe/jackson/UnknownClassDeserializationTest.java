@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import org.junit.Test;
 import poussecafe.messaging.MessageAdapterException;
+import poussecafe.messaging.UnknownMessageTypeException;
 
 public class UnknownClassDeserializationTest {
 
@@ -48,7 +49,7 @@ public class UnknownClassDeserializationTest {
 
     private JacksonMessageAdapter adapter = new JacksonMessageAdapter();
 
-    @Test(expected = MessageAdapterException.class)
+    @Test(expected = UnknownMessageTypeException.class)
     public void deserializationWithUnknownClassFails() throws IOException {
         givenJsonWithUnknownClass();
         whenDeserializing();

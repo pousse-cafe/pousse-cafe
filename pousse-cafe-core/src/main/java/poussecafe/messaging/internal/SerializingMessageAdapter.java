@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageAdapter;
 import poussecafe.messaging.MessageAdapterException;
+import poussecafe.messaging.UnknownMessageTypeException;
 
 public class SerializingMessageAdapter implements MessageAdapter {
 
@@ -20,7 +21,9 @@ public class SerializingMessageAdapter implements MessageAdapter {
             Message message = (Message) stream.readObject();
             stream.close();
             return message;
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException e) {
+            throw new UnknownMessageTypeException(e);
+        } catch (IOException e) {
             throw new MessageAdapterException("Unable to deserialize message " + serializedMessage, e);
         }
     }

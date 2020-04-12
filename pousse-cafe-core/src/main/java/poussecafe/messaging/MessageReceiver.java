@@ -30,7 +30,11 @@ public abstract class MessageReceiver<E> {
             if(configuration.failOnDeserializationError()) {
                 throw e;
             } else {
-                logger.debug("Could not deserialize payload", e);
+                if(isUnknownMessageType(e)) {
+                    logger.debug("Could not deserialize payload", e);
+                } else {
+                    logger.error("Could not deserialize payload", e);
+                }
                 acker.run();
                 return;
             }
@@ -44,6 +48,10 @@ public abstract class MessageReceiver<E> {
                 .acker(acker)
                 .interrupter(this::interruptReception)
                 .build());
+    }
+
+    private boolean isUnknownMessageType(Exception e) {
+        return e instanceof UnknownMessageTypeException;
     }
 
     protected abstract Object extractPayload(E envelope);
