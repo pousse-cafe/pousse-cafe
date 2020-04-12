@@ -7,6 +7,10 @@ import poussecafe.attribute.OptionalAttribute;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Use pousse-cafe-test-mockito's PousseCafeMockito instead
+ */
+@Deprecated(since = "0.18", forRemoval = true)
 public class MockAttribute {
 
     private MockAttribute() {

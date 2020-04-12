@@ -32,7 +32,7 @@ public abstract class PousseCafeTest {
     /**
      * @deprecated The new message brokerage implementation does not expect a MessageListenersPoolSplitStrategy anymore
      */
-    @Deprecated
+    @Deprecated(since = "0.18", forRemoval = true)
     public MessageListenersPoolSplitStrategy replicationStrategy(int numberOfPools) {
         return null;
     }
@@ -50,6 +50,10 @@ public abstract class PousseCafeTest {
         return wrapper.find(entityClass, id);
     }
 
+    /**
+     * @deprecated inject repository directly in test case class
+     */
+    @Deprecated(since = "0.18.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
             K id) {
         return wrapper.getOptional(entityClass, id);
