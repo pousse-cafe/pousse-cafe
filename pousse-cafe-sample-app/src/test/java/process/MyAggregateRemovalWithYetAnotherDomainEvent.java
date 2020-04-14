@@ -5,6 +5,7 @@ import org.junit.Test;
 import poussecafe.mymodule.domain.YetAnotherDomainEvent;
 import poussecafe.mymodule.domain.myaggregate.MyAggregate;
 import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateRepository;
 
 import static org.junit.Assert.assertTrue;
 
@@ -37,7 +38,9 @@ public class MyAggregateRemovalWithYetAnotherDomainEvent extends MyModuleTest {
     }
 
     private void thenAggregateRemoved() {
-        Optional<MyAggregate> aggregate = getOptional(MyAggregate.class, event.identifier().value());
+        Optional<MyAggregate> aggregate = repository.getOptional(event.identifier().value());
         assertTrue(aggregate.isEmpty());
     }
+
+    private MyAggregateRepository repository;
 }

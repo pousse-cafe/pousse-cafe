@@ -4,6 +4,7 @@ import org.junit.Test;
 import poussecafe.mymodule.ACommand;
 import poussecafe.mymodule.domain.myaggregate.MyAggregate;
 import poussecafe.mymodule.domain.myaggregate.MyAggregateId;
+import poussecafe.mymodule.domain.myaggregate.MyAggregateRepository;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,7 +42,9 @@ public class MyProcessTest extends MyModuleTest {
     }
 
     private void thenAggregateUpdated() {
-        MyAggregate aggregate = getOptional(MyAggregate.class, command.id().value()).orElseThrow();
+        MyAggregate aggregate = repository.getOptional(command.id().value()).orElseThrow();
         assertThat(aggregate.attributes().x().value(), equalTo(command.x().value()));
     }
+
+    private MyAggregateRepository repository;
 }
