@@ -223,6 +223,6 @@ public class Environment {
     }
 
     public ListenersSet messageListenersSet() {
-        return messageListenerRegistrar.messageListenersPool();
+        return messageListenerRegistrar.listenersSet();
     }
 }

@@ -14,7 +14,7 @@ import static java.util.Collections.emptySet;
 
 public class MessageListenersSetBuilder implements ListenersSet {
 
-    public void registerListenerForMessageClass(MessageListener listener, Class<? extends Message> messageClass) {
+    public synchronized void registerListenerForMessageClass(MessageListener listener, Class<? extends Message> messageClass) {
         Set<MessageListener> messageClassListeners = listenersByMessageClass.computeIfAbsent(messageClass, key -> new HashSet<>());
         if(!messageClassListeners.add(listener)) {
             throw new IllegalArgumentException("Listener could not be registered for message " + messageClass.getName() + ", would hide another one: " + listener);
@@ -29,7 +29,7 @@ public class MessageListenersSetBuilder implements ListenersSet {
     private Map<Class<? extends Message>, Set<MessageListener>> listenersByMessageClass = new HashMap<>();
 
     @Override
-    public Set<MessageListener> messageListenersOf(Class<? extends Message> messageClass) {
+    public synchronized Set<MessageListener> messageListenersOf(Class<? extends Message> messageClass) {
         return getListenersForMessageClass(messageClass);
     }
 
@@ -38,22 +38,22 @@ public class MessageListenersSetBuilder implements ListenersSet {
     }
 
     @Override
-    public Collection<MessageListener> messageListeners() {
+    public synchronized Collection<MessageListener> messageListeners() {
         return Collections.unmodifiableSet(messageClassesByListener.keySet());
     }
 
     private Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener = new HashMap<>();
 
     @Override
-    public boolean contains(MessageListener listener) {
+    public synchronized boolean contains(MessageListener listener) {
         return messageClassesByListener.keySet().contains(listener);
     }
 
-    public int countListeners() {
+    public synchronized int countListeners() {
         return messageClassesByListener.size();
     }
 
-    public Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener() {
+    public synchronized Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener() {
         return Collections.unmodifiableMap(messageClassesByListener);
     }
 }

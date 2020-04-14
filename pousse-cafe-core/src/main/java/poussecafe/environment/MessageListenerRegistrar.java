@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.messaging.Message;
+import poussecafe.processing.ListenersSet;
 import poussecafe.util.ReflectionUtils;
 
 public class MessageListenerRegistrar {
@@ -14,11 +15,11 @@ public class MessageListenerRegistrar {
         logger.debug("Registering listener {}", listener);
 
         Class<? extends Message> messageClass = listener.consumedMessageClass();
-        messageListenersPool.registerListenerForMessageClass(listener, messageClass);
+        messageListenersSetBuilder.registerListenerForMessageClass(listener, messageClass);
 
         if(ReflectionUtils.isAbstract(messageClass)) {
             Class<? extends Message> messageImplementationClass = environment.messageImplementationClass(messageClass);
-            messageListenersPool.registerListenerForMessageClass(listener, messageImplementationClass);
+            messageListenersSetBuilder.registerListenerForMessageClass(listener, messageImplementationClass);
         }
     }
 
@@ -31,17 +32,17 @@ public class MessageListenerRegistrar {
         this.environment = environment;
     }
 
-    private MessageListenersSetBuilder messageListenersPool = new MessageListenersSetBuilder();
+    private MessageListenersSetBuilder messageListenersSetBuilder = new MessageListenersSetBuilder();
 
     public Set<MessageListener> getListeners(Class<? extends Message> messageClass) {
-        return messageListenersPool.messageListenersOf(messageClass);
+        return messageListenersSetBuilder.messageListenersOf(messageClass);
     }
 
     public Collection<MessageListener> allListeners() {
-        return messageListenersPool.messageListeners();
+        return messageListenersSetBuilder.messageListeners();
     }
 
-    public MessageListenersSetBuilder messageListenersPool() {
-        return messageListenersPool;
+    public ListenersSet listenersSet() {
+        return messageListenersSetBuilder;
     }
 }
