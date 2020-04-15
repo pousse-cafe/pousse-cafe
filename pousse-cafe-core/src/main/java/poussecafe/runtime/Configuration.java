@@ -24,4 +24,10 @@ public class Configuration {
     public <T> Optional<T> value(String key) {
         return Optional.ofNullable((T) values.get(key));
     }
+
+    public void addAll(Map<String, Object> configuration) {
+        for(var entry : configuration.entrySet()) {
+            add(entry.getKey(), entry.getValue());
+        }
+    }
 }

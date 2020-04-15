@@ -3,6 +3,7 @@ package poussecafe.runtime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
@@ -60,6 +61,11 @@ public class Runtime {
 
         public Builder withConfiguration(String key, Object value) {
             runtime.configuration.add(key, value);
+            return this;
+        }
+
+        public Builder withConfiguration(Map<String, Object> configuration) {
+            runtime.configuration.addAll(configuration);
             return this;
         }
 
