@@ -30,19 +30,25 @@ public class MessageConsumptionConfiguration {
 
     }
 
-    private double backOffSlotTime = 1.0;
+    private double backOffSlotTime = DEFAULT_CONSUMPTION_BACK_OFF_SLOT_TIME;
+
+    public static final double DEFAULT_CONSUMPTION_BACK_OFF_SLOT_TIME = 3.0;
 
     public double backOffSlotTime() {
         return backOffSlotTime;
     }
 
-    private int backOffCeiling = 10;
+    private int backOffCeiling = DEFAULT_CONSUMPTION_BACK_OFF_CEILING;
+
+    public static final int DEFAULT_CONSUMPTION_BACK_OFF_CEILING = 10;
 
     public int backOffCeiling() {
         return backOffCeiling;
     }
 
-    private int maxConsumptionRetries = 50;
+    private int maxConsumptionRetries = DEFAULT_CONSUMPTION_MAX_RETRIES;
+
+    public static final int DEFAULT_CONSUMPTION_MAX_RETRIES = 50;
 
     public int maxConsumptionRetries() {
         return maxConsumptionRetries;
