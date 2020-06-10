@@ -6,10 +6,10 @@ import poussecafe.attribute.MapAttributeBuilder.Complete;
 import poussecafe.attribute.MapAttributeBuilder.ExpectingMap;
 import poussecafe.attribute.adapters.DataAdapter;
 
-public class DataAdapterBasedMapAttributeBuilder<J, U, K, V>
+class KeyValueAdaptersBasedMapAttributeBuilder<J, U, K, V>
 implements ExpectingMap<J, U, K, V>, Complete<K, V> {
 
-    DataAdapterBasedMapAttributeBuilder() {
+    KeyValueAdaptersBasedMapAttributeBuilder() {
 
     }
 

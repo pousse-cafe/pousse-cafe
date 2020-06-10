@@ -3,7 +3,7 @@ package poussecafe.attribute;
 import java.util.Map;
 import poussecafe.attribute.MapAttributeBuilder.Complete;
 
-public class NoAdaptingMapAttributeBuilder<K, V>
+class NoAdaptingMapAttributeBuilder<K, V>
 implements Complete<K, V> {
 
     NoAdaptingMapAttributeBuilder(Map<K, V> map) {
