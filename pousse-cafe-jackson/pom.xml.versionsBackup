@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.pousse-cafe-framework</groupId>
         <artifactId>pousse-cafe</artifactId>
-        <version>0.19.0-SNAPSHOT</version>
+        <version>0.18.0</version>
     </parent>
 
-    <artifactId>pousse-cafe-test</artifactId>
-    <name>Pousse-Café - Test</name>
+    <artifactId>pousse-cafe-jackson</artifactId>
+    <name>Pousse-Café - Jackson</name>
 
     <dependencies>
         <dependency>
@@ -18,30 +18,26 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.pousse-cafe-framework</groupId>
-            <artifactId>pousse-cafe-jackson</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.10.2</version>
         </dependency>
-
         <dependency>
-            <!-- To remove or switch to test scope once deprecated MockAttribute is removed -->
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>provided</scope>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.10.2</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
