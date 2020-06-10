@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public class MapAttributeBuilderTest {
 
@@ -74,14 +75,14 @@ public class MapAttributeBuilderTest {
     }
 
     @Test
-    public void readWriteWithConversion() {
-        givenReadWriteAttributeWithConversion();
+    public void readWriteWithFunctionAdapters() {
+        givenReadWriteAttributeWithFunctionAdapters();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(valueWithConversion);
         thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
     }
 
-    private void givenReadWriteAttributeWithConversion() {
+    private void givenReadWriteAttributeWithFunctionAdapters() {
         attributeWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
                 .entriesStoredAs(String.class, String.class)
                 .adaptOnRead(StringId::new, BigDecimal::new)
@@ -98,5 +99,20 @@ public class MapAttributeBuilderTest {
                 .stream()
                 .collect(toMap(entry -> new StringId(entry.getKey()), entry -> new BigDecimal(entry.getValue()))));
         valueWithConversion = attributeWithConversion.value();
+    }
+
+    @Test
+    public void readWriteWithDataAdapters() {
+        givenReadWriteAttributeWithDataAdapters();
+        whenWritingValueWithConversion();
+        thenValueWithConvertionIs(valueWithConversion);
+        thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
+    }
+
+    private void givenReadWriteAttributeWithDataAdapters() {
+        attributeWithConversion = AttributeBuilder.map(StringId.class, BigDecimal.class)
+                .usingEntryDataAdapters(DataAdapters.stringId(StringId.class), DataAdapters.stringBigDecimal())
+                .withMap(value)
+                .build();
     }
 }
