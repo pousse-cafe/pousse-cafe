@@ -7,6 +7,7 @@ import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Repository;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
@@ -55,6 +56,7 @@ public class RepositoryMessageListenerFactory {
                 .method(method)
                 .target(repository)
                 .rethrow(SameOperationException.class)
+                .rethrow(RetryOperationException.class)
                 .rethrow(OptimisticLockingException.class)
                 .build();
         Optional<String> collisionSpace = definition.collisionSpace();

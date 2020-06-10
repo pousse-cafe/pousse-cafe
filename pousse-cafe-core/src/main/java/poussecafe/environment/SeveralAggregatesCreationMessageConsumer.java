@@ -5,6 +5,7 @@ import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.TransactionRunnerLocator;
@@ -85,7 +86,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
                     return aggregate;
                 });
             }
-        } catch(SameOperationException e) {
+        } catch(SameOperationException | RetryOperationException e) {
             throw e;
         } catch(MethodInvokerException e) {
             span.captureException(e.getCause());

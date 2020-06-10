@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
@@ -153,6 +154,9 @@ public class MessageListenerConsumptionReport {
             } catch (SameOperationException e) {
                 logger.info("Report {} skip for ID {}", report.listenerId, id, e);
                 skippedAggregateId(id);
+            } catch (RetryOperationException e) {
+                logWillRetry(e, "execution", id);
+                aggregateIdToRetry(id);
             } catch (OptimisticLockingException e) {
                 logWillRetry(e, "update", id);
                 aggregateIdToRetry(id);

@@ -14,6 +14,7 @@ import poussecafe.environment.ExpectedEvent;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OptimisticLockingException;
@@ -99,6 +100,8 @@ class MessageListenerExecutor {
             }
         } catch (SameOperationException e) {
             ignore(e);
+        } catch (RetryOperationException e) {
+            retry(e);
         } catch (OptimisticLockingException e) {
             handleOptimisticLockingException(e);
         } catch (MethodInvokerException e) {

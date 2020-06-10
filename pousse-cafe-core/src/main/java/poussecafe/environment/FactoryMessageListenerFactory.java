@@ -6,6 +6,7 @@ import java.util.Optional;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.Factory;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
@@ -65,6 +66,7 @@ public class FactoryMessageListenerFactory {
                 .method(method)
                 .target(factory)
                 .rethrow(SameOperationException.class)
+                .rethrow(RetryOperationException.class)
                 .rethrow(OptimisticLockingException.class)
                 .build();
         Class<?> returnType = method.getReturnType();

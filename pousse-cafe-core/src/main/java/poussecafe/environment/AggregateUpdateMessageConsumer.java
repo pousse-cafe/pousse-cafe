@@ -6,9 +6,9 @@ import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
-import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
@@ -105,11 +105,12 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .method(method)
                     .target(targetAggregateRoot)
                     .rethrow(SameOperationException.class)
+                    .rethrow(RetryOperationException.class)
                     .build();
             invoker.invoke(message);
             repository.update(targetAggregateRoot);
             reference.aggregate = targetAggregateRoot;
-        } catch(SameOperationException | OptimisticLockingException e) {
+        } catch(SameOperationException | RetryOperationException e) {
             throw e;
         } catch(MethodInvokerException e) {
             span.captureException(e.getCause());

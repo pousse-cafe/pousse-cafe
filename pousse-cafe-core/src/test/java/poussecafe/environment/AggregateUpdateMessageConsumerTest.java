@@ -9,6 +9,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
+import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -45,6 +46,10 @@ public class AggregateUpdateMessageConsumerTest {
 
         public void skip(Message message) {
             throw new SameOperationException();
+        }
+
+        public void retry(Message message) {
+            throw new RetryOperationException();
         }
     }
 
@@ -134,5 +139,17 @@ public class AggregateUpdateMessageConsumerTest {
 
     private void thenNewSpanEnded() {
         verify(newSpan).end();
+    }
+
+    @Test
+    public void retryImpliesReportRetry() {
+        givenAggregate();
+        givenAggregateUpdateMessageConsumerForMethod("retry");
+        whenConsume();
+        thenReportRetry();
+    }
+
+    private void thenReportRetry() {
+        assertTrue(report.mustRetry());
     }
 }
