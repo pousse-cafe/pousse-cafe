@@ -1,7 +1,6 @@
 package poussecafe.doc;
 
 import com.github.difflib.DiffUtils;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import java.io.File;
 import java.io.IOException;
@@ -90,13 +89,9 @@ public class FileContentComparator extends SimpleFileVisitor<Path> {
         message.append(path);
         message.append(" does not match expected content");
         if(!sortContent) {
-            try {
-                Patch<String> diff = DiffUtils.diffInline(expectedIndexFileContent, generatedIndexFileContent);
-                message.append(": ");
-                message.append(diff.toString());
-            } catch (DiffException e) {
-                throw new IllegalArgumentException();
-            }
+            Patch<String> diff = DiffUtils.diffInline(expectedIndexFileContent, generatedIndexFileContent);
+            message.append(": ");
+            message.append(diff.toString());
         }
         return message.toString();
     }

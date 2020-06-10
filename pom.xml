@@ -41,9 +41,9 @@
 
         <slf4j.version>1.7.30</slf4j.version>
         <junit.version>4.13</junit.version>
-        <mockito.version>3.2.4</mockito.version>
+        <mockito.version>3.3.3</mockito.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <commons.lang.version>3.9</commons.lang.version>
+        <commons.lang.version>3.10</commons.lang.version>
     </properties>
 
     <build>
