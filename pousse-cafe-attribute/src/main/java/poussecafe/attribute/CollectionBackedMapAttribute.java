@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, V> {
 
@@ -22,13 +21,20 @@ abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, 
 
     Collection<U> collection;
 
+    private Map<K, V> view;
+
     @Override
     public Map<K, V> value() {
-        return Collections.unmodifiableMap(mutableMap());
+        return Collections.unmodifiableMap(computeViewIfAbsent());
     }
 
-    private Map<K, V> mutableMap() {
-        return collection.stream().collect(toConvertedFromMap());
+    private Map<K, V> computeViewIfAbsent() {
+        if(view == null) {
+            view = collection.stream().collect(toConvertedFromMap());
+            return view;
+        } else {
+            return view;
+        }
     }
 
     private Collector<U, ?, Map<K, V>> toConvertedFromMap() {
@@ -39,42 +45,50 @@ abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, 
 
     @Override
     public void value(Map<K, V> value) {
+        value(value, true);
+    }
+
+    private void value(Map<K, V> value, boolean clearView) {
         Objects.requireNonNull(value);
         collection.clear();
         collection.addAll(value.entrySet().stream().map(this::convertToValue).collect(toList()));
+        if(clearView) {
+            view = null;
+        }
     }
 
     protected abstract U convertToValue(Entry<K, V> from);
 
     @Override
     public Optional<V> get(K key) {
-        return findItem(key).map(this::convertFromValue).map(Entry::getValue);
-    }
-
-    private Optional<U> findItem(K key) {
-        return collection.stream()
-                .filter(item -> convertFromValue(item).getKey().equals(key))
-                .findFirst();
+        computeViewIfAbsent();
+        return Optional.ofNullable(view.get(key));
     }
 
     @Override
     public V put(K key, V value) {
-        var mutableMap = mutableMap();
-        var oldValue = mutableMap.put(key, value);
-        value(mutableMap);
+        computeViewIfAbsent();
+        var oldValue = view.put(key, value);
+        if(oldValue == null) {
+            collection.add(convertToValue(new ReadOnlyEntry<>(key, value)));
+        } else {
+            value(view, false);
+        }
         return oldValue;
     }
 
     @Override
     public Collection<V> values() {
-        return collection.stream().map(this::convertFromValue).map(Entry::getValue).collect(toList());
+        return computeViewIfAbsent().values().stream().collect(toList());
     }
 
     @Override
     public V remove(K key) {
-        var mutableMap = mutableMap();
-        var oldValue = mutableMap.remove(key);
-        value(mutableMap);
+        computeViewIfAbsent();
+        var oldValue = view.remove(key);
+        if(oldValue != null) {
+            value(view, false);
+        }
         return oldValue;
     }
 
@@ -85,12 +99,13 @@ abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, 
 
     @Override
     public boolean containsKey(K key) {
-        return findItem(key).isPresent();
+        computeViewIfAbsent();
+        return view.containsKey(key);
     }
 
     @Override
     public Set<K> keySet() {
-        return collection.stream().map(this::convertFromValue).map(Entry::getKey).collect(toSet());
+        return Collections.unmodifiableSet(computeViewIfAbsent().keySet());
     }
 
     @Override
@@ -100,11 +115,7 @@ abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, 
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return collection.stream().map(this::convertEntry).collect(toSet());
-    }
-
-    private Entry<K, V> convertEntry(U item) {
-        return new ReadOnlyEntry<>(convertFromValue(item).getKey(), convertFromValue(item).getValue());
+        return Collections.unmodifiableSet(computeViewIfAbsent().entrySet());
     }
 
     @Override
@@ -115,6 +126,7 @@ abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, 
     @Override
     public void clear() {
         collection.clear();
+        view.clear();
     }
 
     @Override

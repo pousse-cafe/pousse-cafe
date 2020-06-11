@@ -1,6 +1,7 @@
 package poussecafe.collection;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Collections {
@@ -12,5 +13,9 @@ public class Collections {
             result.add(item);
         }
         return result;
+    }
+
+    public static <V> ListEditor<V> edit(List<V> list) {
+        return new ListEditor<>(list);
     }
 }
