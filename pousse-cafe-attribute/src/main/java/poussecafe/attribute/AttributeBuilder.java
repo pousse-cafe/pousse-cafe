@@ -10,6 +10,8 @@ import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.util.StringId;
 
+import static java.util.Objects.requireNonNull;
+
 public class AttributeBuilder {
 
     private AttributeBuilder() {
@@ -39,7 +41,8 @@ public class AttributeBuilder {
         return new OptionalAttributeBuilder<>(valueClass);
     }
 
-    public static <T extends Number> NumberAttributeBuilder<T> number(Class<T> valueClass) { // NOSONAR
+    public static <T extends Number> NumberAttributeBuilder<T> number(Class<T> valueClass) {
+        requireNonNull(valueClass);
         return new NumberAttributeBuilder<>();
     }
 

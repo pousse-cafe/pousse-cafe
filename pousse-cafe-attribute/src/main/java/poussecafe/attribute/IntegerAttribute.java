@@ -1,9 +1,25 @@
 package poussecafe.attribute;
 
-public abstract class IntegerAttribute implements NumberAttribute<Integer> {
+public class IntegerAttribute implements NumberAttribute<Integer> {
+
+    IntegerAttribute(GenericNumberAttribute<Integer> attribute) {
+        this.attribute = attribute;
+    }
+
+    private GenericNumberAttribute<Integer> attribute;
 
     @Override
     public void add(Integer term) {
-        value(value() + term);
+        attribute.add(term);
+    }
+
+    @Override
+    public Integer value() {
+        return attribute.value();
+    }
+
+    @Override
+    public void value(Integer value) {
+        attribute.value(value);
     }
 }
