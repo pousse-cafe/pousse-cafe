@@ -20,11 +20,8 @@ public class AttributeBuilder {
         return new SingleAttributeBuilder<>(valueClass);
     }
 
-    public static <T> ListAttributeBuilder<T> list(Class<T> elementClass) { // NOSONAR
-        Objects.requireNonNull(elementClass);
-        ListAttributeBuilder<T> builder = new ListAttributeBuilder<>();
-        builder.elementClass = elementClass;
-        return builder;
+    public static <T> ListAttributeBuilder<T> list(Class<T> elementClass) {
+        return new ListAttributeBuilder<>(elementClass);
     }
 
     public static <T> SetAttributeBuilder<T> set(Class<T> elementClass) { // NOSONAR
