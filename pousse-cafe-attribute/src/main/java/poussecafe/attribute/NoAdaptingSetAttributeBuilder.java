@@ -1,15 +1,18 @@
 package poussecafe.attribute;
 
 import java.util.Set;
+import poussecafe.attribute.SetAttributeBuilder.Complete;
 
-public class ReadWriteSetAttributeBuilder<T> {
+class NoAdaptingSetAttributeBuilder<T>
+implements Complete<T> {
 
-    ReadWriteSetAttributeBuilder(Set<T> set) {
+    NoAdaptingSetAttributeBuilder(Set<T> set) {
         this.set = set;
     }
 
     private Set<T> set;
 
+    @Override
     public SetAttribute<T> build() {
         return new BaseSetAttribute<>(set);
     }

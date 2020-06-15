@@ -24,11 +24,8 @@ public class AttributeBuilder {
         return new ListAttributeBuilder<>(elementClass);
     }
 
-    public static <T> SetAttributeBuilder<T> set(Class<T> elementClass) { // NOSONAR
-        Objects.requireNonNull(elementClass);
-        SetAttributeBuilder<T> builder = new SetAttributeBuilder<>();
-        builder.elementClass = elementClass;
-        return builder;
+    public static <T> SetAttributeBuilder<T> set(Class<T> elementClass) {
+        return new SetAttributeBuilder<>(elementClass);
     }
 
     public static <K, V> MapAttributeBuilder<K, V> map(Class<K> idClass, Class<V> valueClass) {
