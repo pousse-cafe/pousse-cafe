@@ -1,9 +1,6 @@
 package poussecafe.attribute;
 
 import org.junit.Test;
-import poussecafe.attribute.AddOperator;
-import poussecafe.attribute.NumberAttribute;
-import poussecafe.attribute.NumberAttributeBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,7 +22,7 @@ public abstract class NumberAttributeBuilderTest<N extends Number> {
 
     private void givenReadWriteAttribute() {
         property = builder()
-                .get(() -> value)
+                .read(() -> value)
                 .write(newValue -> value = newValue)
                 .addOperator(addOperator())
                 .build();

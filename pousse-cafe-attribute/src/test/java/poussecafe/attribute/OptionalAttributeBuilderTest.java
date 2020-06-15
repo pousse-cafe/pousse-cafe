@@ -2,8 +2,6 @@ package poussecafe.attribute;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.attribute.OptionalAttribute;
-import poussecafe.attribute.AttributeBuilder;
 import poussecafe.util.StringId;
 
 import static org.hamcrest.CoreMatchers.is;

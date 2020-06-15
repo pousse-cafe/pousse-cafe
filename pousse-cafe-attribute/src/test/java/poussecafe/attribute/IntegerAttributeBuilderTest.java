@@ -1,10 +1,5 @@
 package poussecafe.attribute;
 
-import poussecafe.attribute.AddOperator;
-import poussecafe.attribute.AddOperators;
-import poussecafe.attribute.NumberAttributeBuilder;
-import poussecafe.attribute.AttributeBuilder;
-
 public class IntegerAttributeBuilderTest extends NumberAttributeBuilderTest<Integer> {
 
     @Override

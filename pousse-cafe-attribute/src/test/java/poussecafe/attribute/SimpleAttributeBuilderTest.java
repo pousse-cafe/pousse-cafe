@@ -1,8 +1,6 @@
 package poussecafe.attribute;
 
 import org.junit.Test;
-import poussecafe.attribute.Attribute;
-import poussecafe.attribute.AttributeBuilder;
 import poussecafe.util.StringId;
 
 import static org.hamcrest.CoreMatchers.is;

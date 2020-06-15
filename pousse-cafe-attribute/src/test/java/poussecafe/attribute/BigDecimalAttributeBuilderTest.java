@@ -1,10 +1,6 @@
 package poussecafe.attribute;
 
 import java.math.BigDecimal;
-import poussecafe.attribute.AddOperator;
-import poussecafe.attribute.AddOperators;
-import poussecafe.attribute.NumberAttributeBuilder;
-import poussecafe.attribute.AttributeBuilder;
 
 public class BigDecimalAttributeBuilderTest extends NumberAttributeBuilderTest<BigDecimal> {
 

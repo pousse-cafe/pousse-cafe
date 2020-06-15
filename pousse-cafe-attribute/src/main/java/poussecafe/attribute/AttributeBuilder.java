@@ -35,10 +35,8 @@ public class AttributeBuilder {
         return new MapAttributeBuilder<>();
     }
 
-    public static <T> OptionalAttributeBuilder<T> optional(Class<T> valueClass) { // NOSONAR
-        OptionalAttributeBuilder<T> builder = new OptionalAttributeBuilder<>();
-        builder.propertyTypeClass = valueClass;
-        return builder;
+    public static <T> OptionalAttributeBuilder<T> optional(Class<T> valueClass) {
+        return new OptionalAttributeBuilder<>(valueClass);
     }
 
     public static <T extends Number> NumberAttributeBuilder<T> number(Class<T> valueClass) { // NOSONAR
