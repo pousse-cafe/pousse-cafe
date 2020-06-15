@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import poussecafe.attribute.SingleAttributeBuilder.ExpectingAdaptedReader;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.util.StringId;
@@ -48,31 +49,31 @@ public class AttributeBuilder {
         return new IntegerAttributeBuilder();
     }
 
-    public static <T extends StringId> SingleAdaptingAttributeBuilder<String, T> stringId(Class<T> stringIdClass) {
+    public static <T extends StringId> ExpectingAdaptedReader<String, T> stringId(Class<T> stringIdClass) {
         return singleUsingDataAdapter(DataAdapters.stringId(stringIdClass));
     }
 
-    public static <U, T> SingleAdaptingAttributeBuilder<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
-        return new SingleAdaptingAttributeBuilder<>(dataAdapter);
+    public static <U, T> ExpectingAdaptedReader<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
+        return new DataAdapterBasedSingleAttributeBuilder<>(dataAdapter);
     }
 
-    public static SingleAdaptingAttributeBuilder<String, OffsetDateTime> offsetDateTime() {
+    public static ExpectingAdaptedReader<String, OffsetDateTime> offsetDateTime() {
         return singleUsingDataAdapter(DataAdapters.stringOffsetDateTime());
     }
 
-    public static SingleAdaptingAttributeBuilder<String, LocalDateTime> localDateTime() {
+    public static ExpectingAdaptedReader<String, LocalDateTime> localDateTime() {
         return singleUsingDataAdapter(DataAdapters.stringLocalDateTime());
     }
 
-    public static SingleAdaptingAttributeBuilder<String, LocalDate> localDate() {
+    public static ExpectingAdaptedReader<String, LocalDate> localDate() {
         return singleUsingDataAdapter(DataAdapters.stringLocalDate());
     }
 
-    public static SingleAdaptingAttributeBuilder<String, BigDecimal> bigDecimal() {
+    public static ExpectingAdaptedReader<String, BigDecimal> bigDecimal() {
         return singleUsingDataAdapter(DataAdapters.stringBigDecimal());
     }
 
-    public static <E extends Enum<E>> SingleAdaptingAttributeBuilder<String, E> enumAttribute(Class<E> enumClass) {
+    public static <E extends Enum<E>> ExpectingAdaptedReader<String, E> enumAttribute(Class<E> enumClass) {
         return singleUsingDataAdapter(DataAdapters.stringEnum(enumClass));
     }
 
