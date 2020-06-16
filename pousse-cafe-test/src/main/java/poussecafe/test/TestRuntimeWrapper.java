@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,7 +53,6 @@ public class TestRuntimeWrapper {
     @Deprecated(since = "0.8.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
             K id) {
-        waitUntilEndOfMessageProcessing();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
@@ -67,7 +67,6 @@ public class TestRuntimeWrapper {
     @Deprecated(since = "0.18.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
             K id) {
-        waitUntilEndOfMessageProcessing();
         Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
@@ -76,12 +75,18 @@ public class TestRuntimeWrapper {
     }
 
     public void waitUntilEndOfMessageProcessing() {
+        waitUntilEndOfMessageProcessing(MAX_WAIT_TIME);
+    }
+
+    public static final Optional<Duration> MAX_WAIT_TIME = Optional.of(Duration.ofSeconds(5));
+
+    public void waitUntilEndOfMessageProcessing(Optional<Duration> maxWaitTime) {
         for(MessagingConnection connection : runtime.messagingConnections()) {
             @SuppressWarnings("rawtypes")
             MessageReceiver receiver = connection.messageReceiver();
             if(receiver instanceof InternalMessageReceiver) {
                 InternalMessageReceiver internalMessageReceiver = (InternalMessageReceiver) receiver;
-                internalMessageReceiver.queue().waitUntilEmptyOrInterrupted();
+                internalMessageReceiver.queue().waitUntilEmptyOrInterrupted(Duration.ofMillis(100), maxWaitTime);
             }
         }
     }
