@@ -2,8 +2,8 @@ package poussecafe.attribute.entity;
 
 import java.util.Map;
 import java.util.Objects;
-import poussecafe.attribute.ConvertingMapAttribute;
 import poussecafe.attribute.MapAttribute;
+import poussecafe.attribute.map.ConvertingMapAttribute;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 

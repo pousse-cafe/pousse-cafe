@@ -5,9 +5,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import poussecafe.attribute.SingleAttributeBuilder.ExpectingAdaptedReader;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
+import poussecafe.attribute.list.ListAttributeBuilder;
+import poussecafe.attribute.map.MapAttributeBuilder;
+import poussecafe.attribute.number.IntegerAttributeBuilder;
+import poussecafe.attribute.number.NumberAttributeBuilder;
+import poussecafe.attribute.optional.OptionalAttributeBuilder;
+import poussecafe.attribute.set.SetAttributeBuilder;
+import poussecafe.attribute.single.SingleAttributeBuilder;
+import poussecafe.attribute.single.SingleAttributeBuilder.ExpectingAdaptedReader;
 import poussecafe.util.StringId;
 
 import static java.util.Objects.requireNonNull;
@@ -18,9 +25,8 @@ public class AttributeBuilder {
 
     }
 
-    public static <T> SingleAttributeBuilder<T> single(Class<T> valueClass) {
-        Objects.requireNonNull(valueClass);
-        return new SingleAttributeBuilder<>(valueClass);
+    public static <T> SingleAttributeBuilder.ExpectingReaderOrAdapter<T> single(Class<T> valueClass) {
+        return new SingleAttributeBuilder<T>().usingValue(valueClass);
     }
 
     public static <T> ListAttributeBuilder<T> list(Class<T> elementClass) {
@@ -31,8 +37,8 @@ public class AttributeBuilder {
         return new SetAttributeBuilder<>(elementClass);
     }
 
-    public static <K, V> MapAttributeBuilder<K, V> map(Class<K> idClass, Class<V> valueClass) {
-        Objects.requireNonNull(idClass);
+    public static <K, V> MapAttributeBuilder<K, V> map(Class<K> keyClass, Class<V> valueClass) {
+        Objects.requireNonNull(keyClass);
         Objects.requireNonNull(valueClass);
         return new MapAttributeBuilder<>();
     }
@@ -55,7 +61,7 @@ public class AttributeBuilder {
     }
 
     public static <U, T> ExpectingAdaptedReader<U, T> singleUsingDataAdapter(DataAdapter<U, T> dataAdapter) {
-        return new DataAdapterBasedSingleAttributeBuilder<>(dataAdapter);
+        return new SingleAttributeBuilder<T>().usingDataAdapter(dataAdapter);
     }
 
     public static ExpectingAdaptedReader<String, OffsetDateTime> offsetDateTime() {

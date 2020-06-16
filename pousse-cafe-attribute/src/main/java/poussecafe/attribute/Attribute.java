@@ -10,10 +10,12 @@ public interface Attribute<T> {
         value(property.value());
     }
 
+    @Deprecated(since = "0.19")
     default boolean valueEqualsValueOf(Attribute<T> property) {
         return valueEquals(property.value());
     }
 
+    @Deprecated(since = "0.19")
     default boolean valueEquals(T value) {
         return value().equals(value);
     }

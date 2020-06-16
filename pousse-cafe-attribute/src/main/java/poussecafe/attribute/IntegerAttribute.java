@@ -2,11 +2,11 @@ package poussecafe.attribute;
 
 public class IntegerAttribute implements NumberAttribute<Integer> {
 
-    IntegerAttribute(GenericNumberAttribute<Integer> attribute) {
+    public IntegerAttribute(NumberAttribute<Integer> attribute) {
         this.attribute = attribute;
     }
 
-    private GenericNumberAttribute<Integer> attribute;
+    private NumberAttribute<Integer> attribute;
 
     @Override
     public void add(Integer term) {

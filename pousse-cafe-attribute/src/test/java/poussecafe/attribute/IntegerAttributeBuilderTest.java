@@ -1,5 +1,7 @@
 package poussecafe.attribute;
 
+import poussecafe.attribute.number.NumberAttributeBuilder;
+
 public class IntegerAttributeBuilderTest extends NumberAttributeBuilderTest<Integer> {
 
     @Override

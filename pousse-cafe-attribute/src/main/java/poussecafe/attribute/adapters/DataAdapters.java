@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
-import poussecafe.attribute.AutoAdaptingDataAdapter;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.util.StringId;
 

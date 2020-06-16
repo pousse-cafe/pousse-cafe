@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
+import poussecafe.attribute.map.ReadOnlyEntry;
 import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;

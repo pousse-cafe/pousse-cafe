@@ -3,29 +3,39 @@ package poussecafe.attribute;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class OptionalAttribute<T> implements Attribute<Optional<T>> {
+public interface OptionalAttribute<T> extends Attribute<Optional<T>> {
 
+    /**
+     * The default implementation will be dropped as soon as deprecated methods are removed.
+     */
     @Override
-    public Optional<T> value() {
+    default Optional<T> value() {
         T nullableValue = nullableValue();
         return Optional.ofNullable(nullableValue);
     }
 
-    public abstract T nullableValue();
+    @Deprecated(since = "0.19", forRemoval = true)
+    T nullableValue();
 
+    /**
+     * The default implementation will be dropped as soon as deprecated methods are removed.
+     */
     @Override
-    public void value(Optional<T> value) {
+    default void value(Optional<T> value) {
         Objects.requireNonNull(value);
         optionalValue(value.orElse(null));
     }
 
-    public abstract void optionalValue(T nullableValue);
+    @Deprecated(since = "0.19", forRemoval = true)
+    void optionalValue(T nullableValue);
 
-    public void nonOptionalValueOf(Attribute<T> property) {
+    @Deprecated(since = "0.19", forRemoval = true)
+    default void nonOptionalValueOf(Attribute<T> property) {
         nonOptionalValue(property.value());
     }
 
-    public void nonOptionalValue(T value) {
+    @Deprecated(since = "0.19", forRemoval = true)
+    default void nonOptionalValue(T value) {
         value(Optional.of(value));
     }
 }

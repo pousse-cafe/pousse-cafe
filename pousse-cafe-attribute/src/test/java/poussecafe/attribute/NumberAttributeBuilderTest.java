@@ -1,6 +1,7 @@
 package poussecafe.attribute;
 
 import org.junit.Test;
+import poussecafe.attribute.number.NumberAttributeBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
