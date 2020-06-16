@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
@@ -149,7 +150,7 @@ public class TestRuntimeWrapper {
 
     public void submitCommand(Command command) {
         try {
-            runtime.submitCommand(command).get();
+            runtime.submitCommand(command).get(5, TimeUnit.SECONDS);
             waitUntilEndOfMessageProcessing();
         } catch (Exception e) {
             throw new PousseCafeException("Error while submitting command", e);
@@ -159,7 +160,7 @@ public class TestRuntimeWrapper {
     public void submitCommands(List<? extends Command> commands) {
         try {
             for(Command command : commands) {
-                runtime.submitCommand(command).get();
+                runtime.submitCommand(command).get(5, TimeUnit.SECONDS);
             }
             waitUntilEndOfMessageProcessing();
         } catch (Exception e) {
