@@ -91,6 +91,9 @@ class MessageProcessingThread {
                 throw new PousseCafeException("Unable to process message, current thread was interrupted");
             } catch (Exception e) {
                 logger.error("Unhandled exception in processing thread", e);
+            } catch (Error e) { // NOSONAR - this must be logged properly
+                logger.error("Fatal error in processing thread {}", threadId, e);
+                throw e;
             }
         }
         logger.info("Processing thread {} stops.", threadId);
