@@ -57,7 +57,7 @@ implements ExpectingReadAdapters<J, U, K, V>, ExpectingWriteAdapters<J, U, K, V>
 
     @Override
     public MapAttribute<K, V> build() {
-        return new ConvertingMapAttribute<>(map) {
+        return new AdaptingMapAttribute<>(map) {
             @Override
             protected K convertFromKey(J from) {
                 return readKeyAdapter.apply(from);

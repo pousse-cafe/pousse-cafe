@@ -3,7 +3,7 @@ package poussecafe.attribute.entity;
 import java.util.Map;
 import java.util.Objects;
 import poussecafe.attribute.MapAttribute;
-import poussecafe.attribute.map.ConvertingMapAttribute;
+import poussecafe.attribute.map.AdaptingMapAttribute;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 
@@ -26,7 +26,7 @@ public abstract class ConvertingEntityMapAttribute<L, F extends EntityAttributes
     public MapAttribute<K, E> inContextOf(Entity<?, ?> primitive) {
         Objects.requireNonNull(primitive);
 
-        return new ConvertingMapAttribute<L, F, K, E>(data) {
+        return new AdaptingMapAttribute<L, F, K, E>(data) {
             @Override
             protected K convertFromKey(L from) {
                 return ConvertingEntityMapAttribute.this.convertFromKey(from);

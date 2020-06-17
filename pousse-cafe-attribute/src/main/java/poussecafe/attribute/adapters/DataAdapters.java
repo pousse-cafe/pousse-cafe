@@ -6,11 +6,14 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Function;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.util.StringId;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 public class DataAdapters {
@@ -19,60 +22,34 @@ public class DataAdapters {
 
     }
 
-    public static DataAdapter<String, LocalDate> stringLocalDate() {
+    public static <U, T> DataAdapter<U, T> adapter(Function<U, T> adaptGet, Function<T, U> adaptSet) {
         return new DataAdapter<>() {
             @Override
-            public LocalDate adaptGet(String storedValue) {
-                return LocalDate.parse(storedValue);
+            public T adaptGet(U storedValue) {
+                return adaptGet.apply(storedValue);
             }
 
             @Override
-            public String adaptSet(LocalDate valueToStore) {
-                return valueToStore.toString();
+            public U adaptSet(T valueToStore) {
+                return adaptSet.apply(valueToStore);
             }
         };
+    }
+
+    public static DataAdapter<String, LocalDate> stringLocalDate() {
+        return adapter(LocalDate::parse, LocalDate::toString);
     }
 
     public static DataAdapter<String, LocalDateTime> stringLocalDateTime() {
-        return new DataAdapter<>() {
-            @Override
-            public LocalDateTime adaptGet(String storedValue) {
-                return LocalDateTime.parse(storedValue);
-            }
-
-            @Override
-            public String adaptSet(LocalDateTime valueToStore) {
-                return valueToStore.toString();
-            }
-        };
+        return adapter(LocalDateTime::parse, LocalDateTime::toString);
     }
 
     public static DataAdapter<String, OffsetDateTime> stringOffsetDateTime() {
-        return new DataAdapter<>() {
-            @Override
-            public OffsetDateTime adaptGet(String storedValue) {
-                return OffsetDateTime.parse(storedValue);
-            }
-
-            @Override
-            public String adaptSet(OffsetDateTime valueToStore) {
-                return valueToStore.toString();
-            }
-        };
+        return adapter(OffsetDateTime::parse, OffsetDateTime::toString);
     }
 
     public static DataAdapter<String, BigDecimal> stringBigDecimal() {
-        return new DataAdapter<>() {
-            @Override
-            public BigDecimal adaptGet(String storedValue) {
-                return new BigDecimal(storedValue);
-            }
-
-            @Override
-            public String adaptSet(BigDecimal valueToStore) {
-                return valueToStore.toString();
-            }
-        };
+        return adapter(BigDecimal::new, BigDecimal::toString);
     }
 
     public static <T extends StringId> DataAdapter<String, T> stringId(Class<T> stringIdClass) {
@@ -114,17 +91,7 @@ public class DataAdapters {
     }
 
     public static <T> DataAdapter<T, T>  identity() {
-        return new DataAdapter<>() {
-            @Override
-            public T adaptGet(T storedValue) {
-                return storedValue;
-            }
-
-            @Override
-            public T adaptSet(T valueToStore) {
-                return valueToStore;
-            }
-        };
+        return adapter(value -> value, value -> value);
     }
 
     public static <U, T> DataAdapter<List<U>, List<T>> listWithAdapter(DataAdapter<U, T> adapter) {
@@ -143,6 +110,7 @@ public class DataAdapters {
 
     @SuppressWarnings("unchecked")
     public static <T> Class<List<T>> parametrizedListClass(Class<T> elementType) {
+        requireNonNull(elementType);
         return (Class<List<T>>) emptyList().getClass();
     }
 
@@ -158,6 +126,30 @@ public class DataAdapters {
                 return Base64.getEncoder().encodeToString(valueToStore);
             }
 
+        };
+    }
+
+    public static <L, U, K, V> DataAdapter<Entry<L, U>, Entry<K, V>> mutableEntry(
+            DataAdapter<L, K> keyAdapter, DataAdapter<U, V> valueAdapter) {
+        return new DataAdapter<>() {
+            @Override
+            public Entry<K, V> adaptGet(Entry<L, U> storedValue) {
+                return new AdaptingMapEntry.Builder<L, U, K, V>()
+                        .entry(storedValue)
+                        .keyAdapter(keyAdapter)
+                        .valueAdapter(valueAdapter)
+                        .build();
+            }
+
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            public Entry<L, U> adaptSet(Entry<K, V> valueToStore) {
+                if(valueToStore instanceof AdaptingMapEntry) {
+                    AdaptingMapEntry adaptingEntry = (AdaptingMapEntry) valueToStore;
+                    return adaptingEntry.underlyingEntry();
+                }
+                return null;
+            }
         };
     }
 }

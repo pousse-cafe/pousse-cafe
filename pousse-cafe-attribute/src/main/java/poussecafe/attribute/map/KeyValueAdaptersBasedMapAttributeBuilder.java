@@ -29,7 +29,7 @@ implements ExpectingMap<J, U, K, V>, Complete<K, V> {
 
     @Override
     public MapAttribute<K, V> build() {
-        return new ConvertingMapAttribute<>(storageMap) {
+        return new AdaptingMapAttribute<>(storageMap) {
             @Override
             protected K convertFromKey(J from) {
                 return keyAdapter.adaptGet(from);

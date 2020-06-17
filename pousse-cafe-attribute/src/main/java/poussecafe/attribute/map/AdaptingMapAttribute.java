@@ -10,14 +10,17 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import poussecafe.attribute.MapAttribute;
+import poussecafe.attribute.adapters.AdaptingMutableMap;
+import poussecafe.attribute.adapters.DataAdapters;
+import poussecafe.attribute.adapters.EditableMap;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-public abstract class ConvertingMapAttribute<L, U, K, V> implements MapAttribute<K, V> {
+public abstract class AdaptingMapAttribute<L, U, K, V> implements MapAttribute<K, V> {
 
-    public ConvertingMapAttribute(Map<L, U> map) {
+    public AdaptingMapAttribute(Map<L, U> map) {
         Objects.requireNonNull(map);
         this.map = map;
     }
@@ -148,5 +151,14 @@ public abstract class ConvertingMapAttribute<L, U, K, V> implements MapAttribute
     @Override
     public void putAll(Map<K, V> value) {
         map.putAll(value.entrySet().stream().collect(toConvertedToMap()));
+    }
+
+    @Override
+    public EditableMap<K, V> mutableValue() {
+        return new AdaptingMutableMap.Builder<L, U, K, V>()
+                .mutableMap(map)
+                .keyAdapter(DataAdapters.adapter(this::convertFromKey, this::convertToKey))
+                .valueAdapter(DataAdapters.adapter(this::convertFromValue, this::convertToValue))
+                .build();
     }
 }

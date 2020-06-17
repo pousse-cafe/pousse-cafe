@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import poussecafe.attribute.adapters.EditableMap;
 
 public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
 
@@ -32,4 +33,6 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     void clear();
 
     void putAll(Map<K, V> map);
+
+    EditableMap<K, V> mutableValue();
 }

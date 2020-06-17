@@ -28,60 +28,43 @@ public class CollectionBackedMapAttributeTest {
         allItems().stream().forEach(collection::add);
     }
 
-    private List<Item> allItems() {
-        var expectedItems = new ArrayList<Item>();
+    private List<MapBackingCollectionItem> allItems() {
+        var expectedItems = new ArrayList<MapBackingCollectionItem>();
         expectedItems.add(item("key1", "value1"));
         expectedItems.add(item("key2", "value2"));
         expectedItems.add(item("key3", "value3"));
         return expectedItems;
     }
 
-    private static class Item {
-
-        String key;
-
-        String value;
-
-        @Override
-        public boolean equals(Object obj) {
-            Item other = (Item) obj;
-            return key.equals(other.key)
-                    && value.equals(other.value);
-        }
+    private MapBackingCollectionItem item(String key, String value) {
+        return new MapBackingCollectionItem(key, value);
     }
 
-    private Item item(String key, String value) {
-        var item = new Item();
-        item.key = key;
-        item.value = value;
-        return item;
-    }
-
-    private List<Item> collection = new ArrayList<>();
+    private List<MapBackingCollectionItem> collection = new ArrayList<>();
 
     private void givenCollectedBackedMapAttribute() {
-        attribute = AttributeBuilder.map(String.class, Item.class)
+        attribute = AttributeBuilder.map(String.class, MapBackingCollectionItem.class)
                 .usingItemDataAdapter(DataAdapters.identity())
                 .withKeyExtractor(item -> item.key)
                 .withCollection(collection)
                 .build();
     }
 
-    private MapAttribute<String, Item> attribute;
+    private MapAttribute<String, MapBackingCollectionItem> attribute;
 
     private void whenResetting() {
         attribute.value(allItemsMap());
     }
 
-    private Map<String, Item> allItemsMap() {
-        var map = new HashMap<String, Item>();
+    private Map<String, MapBackingCollectionItem> allItemsMap() {
+        var map = new HashMap<String, MapBackingCollectionItem>();
         allItems().stream().forEach(item -> map.put(item.key, item));
         return map;
     }
 
-    private void thenCollectionEquals(List<Item> allItems) {
+    private void thenCollectionEquals(List<MapBackingCollectionItem> allItems) {
         assertThat(collection.size(), is(allItems.size()));
-        for(Item item : allItems) {
+        for(MapBackingCollectionItem item : allItems) {
             assertTrue(collection.stream().anyMatch(collectionItem -> collectionItem.key.equals(item.key) && collectionItem.value.equals(item.value)));
         }
     }
@@ -98,7 +81,7 @@ public class CollectionBackedMapAttributeTest {
         value = attribute.get(key);
     }
 
-    private Optional<Item> value;
+    private Optional<MapBackingCollectionItem> value;
 
     private void thenValueIs(String expectedValue) {
         assertTrue(value.isPresent());
@@ -109,12 +92,12 @@ public class CollectionBackedMapAttributeTest {
     public void add() {
         givenCollection();
         givenCollectedBackedMapAttribute();
-        Item newItem = item("key4", "value4");
+        MapBackingCollectionItem newItem = item("key4", "value4");
         whenPutting(newItem);
         thenCollectionEquals(edit(allItems()).add(newItem).finish());
     }
 
-    private void whenPutting(Item newItem) {
+    private void whenPutting(MapBackingCollectionItem newItem) {
         attribute.put(newItem.key, newItem);
     }
 
@@ -130,9 +113,9 @@ public class CollectionBackedMapAttributeTest {
         map = attribute.value();
     }
 
-    private Map<String, Item> map;
+    private Map<String, MapBackingCollectionItem> map;
 
-    private void thenValueIs(Map<String, Item> expectedValue) {
+    private void thenValueIs(Map<String, MapBackingCollectionItem> expectedValue) {
         assertThat(map, equalTo(expectedValue));
     }
 
@@ -152,7 +135,7 @@ public class CollectionBackedMapAttributeTest {
     public void update() {
         givenCollection();
         givenCollectedBackedMapAttribute();
-        Item newItem = item("key1", "value4");
+        MapBackingCollectionItem newItem = item("key1", "value4");
         whenPutting(newItem);
         thenCollectionEquals(edit(allItems()).remove(item("key1", "value1")).add(item("key1", "value4")).finish());
     }

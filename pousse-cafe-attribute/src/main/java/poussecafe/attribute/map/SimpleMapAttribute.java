@@ -9,10 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import poussecafe.attribute.MapAttribute;
+import poussecafe.attribute.adapters.EditableMap;
 
-public class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
+class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
 
-    public SimpleMapAttribute(Map<K, V> wrappedMap) {
+    SimpleMapAttribute(Map<K, V> wrappedMap) {
         Objects.requireNonNull(wrappedMap);
         this.wrappedMap = wrappedMap;
     }
@@ -90,5 +91,10 @@ public class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
     @Override
     public void putAll(Map<K, V> map) {
         wrappedMap.putAll(map);
+    }
+
+    @Override
+    public EditableMap<K, V> mutableValue() {
+        return new SimpleEditableMap<>(wrappedMap);
     }
 }
