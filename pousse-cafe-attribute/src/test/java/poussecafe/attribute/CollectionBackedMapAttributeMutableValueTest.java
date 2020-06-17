@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.junit.Test;
 import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.attribute.map.ReadOnlyEntry;
@@ -33,7 +34,7 @@ public class CollectionBackedMapAttributeMutableValueTest {
 
     private void givenMapAttribute() {
         attribute = AttributeBuilder.map(String.class, String.class)
-                .usingEntryDataAdapter(DataAdapters.adapter(
+                .usingEntryDataAdapter(DataAdapters.<MapBackingCollectionItem, Entry<String, String>> adapter(
                         item -> new ReadOnlyEntry<>(item.key, item.value),
                         entry -> new MapBackingCollectionItem(entry.getKey(), entry.getValue())))
                 .withCollection(storage)
