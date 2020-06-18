@@ -4,14 +4,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import poussecafe.attribute.MapAttribute;
-import poussecafe.attribute.adapters.AdaptingMutableMap;
+import poussecafe.attribute.adapters.AdaptingMap;
 import poussecafe.attribute.adapters.DataAdapters;
 
 public abstract class AdaptingMapAttribute<L, U, K, V> implements MapAttribute<K, V> {
 
     public AdaptingMapAttribute(Map<L, U> map) {
         Objects.requireNonNull(map);
-        this.map = new AdaptingMutableMap.Builder<L, U, K, V>()
+        this.map = new AdaptingMap.Builder<L, U, K, V>()
                 .mutableMap(map)
                 .keyAdapter(DataAdapters.adapter(this::convertFromKey, this::convertToKey))
                 .valueAdapter(DataAdapters.adapter(this::convertFromValue, this::convertToValue))
@@ -26,7 +26,7 @@ public abstract class AdaptingMapAttribute<L, U, K, V> implements MapAttribute<K
 
     protected abstract U convertToValue(V from);
 
-    private AdaptingMutableMap<L, U, K, V> map;
+    private AdaptingMap<L, U, K, V> map;
 
     @Override
     public Optional<V> get(K key) {

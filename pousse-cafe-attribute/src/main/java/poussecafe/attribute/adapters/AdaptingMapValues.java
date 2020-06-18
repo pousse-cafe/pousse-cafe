@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
-public class AdaptingMutableMapValues<L, U, K, V>
+public class AdaptingMapValues<L, U, K, V>
 implements Collection<V> {
 
     @Override
@@ -39,7 +39,7 @@ implements Collection<V> {
 
     @Override
     public Iterator<V> iterator() {
-        return new AdaptingMutableMapValuesIterator.Builder<L, U, K, V>()
+        return new AdaptingMapValuesIterator.Builder<L, U, K, V>()
                 .entrySetIterator(mutableMap.entrySet().iterator())
                 .valueAdapter(valueAdapter)
                 .build();
@@ -115,9 +115,9 @@ implements Collection<V> {
 
     public static class Builder<L, U, K, V> {
 
-        private AdaptingMutableMapValues<L, U, K, V> values = new AdaptingMutableMapValues<>();
+        private AdaptingMapValues<L, U, K, V> values = new AdaptingMapValues<>();
 
-        public AdaptingMutableMapValues<L, U, K, V> build() {
+        public AdaptingMapValues<L, U, K, V> build() {
             requireNonNull(values.mutableMap);
             requireNonNull(values.keyAdapter);
             requireNonNull(values.valueAdapter);

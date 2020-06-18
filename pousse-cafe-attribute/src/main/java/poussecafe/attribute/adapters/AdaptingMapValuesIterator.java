@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import static java.util.Objects.requireNonNull;
 
-public class AdaptingMutableMapValuesIterator<L, U, K, V>
+public class AdaptingMapValuesIterator<L, U, K, V>
 implements Iterator<V> {
 
     @Override
@@ -30,9 +30,9 @@ implements Iterator<V> {
 
     public static class Builder<L, U, K, V> {
 
-        private AdaptingMutableMapValuesIterator<L, U, K, V> iterator = new AdaptingMutableMapValuesIterator<>();
+        private AdaptingMapValuesIterator<L, U, K, V> iterator = new AdaptingMapValuesIterator<>();
 
-        public AdaptingMutableMapValuesIterator<L, U, K, V> build() {
+        public AdaptingMapValuesIterator<L, U, K, V> build() {
             requireNonNull(iterator.entrySetIterator);
             requireNonNull(iterator.valueAdapter);
             return iterator;
@@ -49,7 +49,7 @@ implements Iterator<V> {
         }
     }
 
-    private AdaptingMutableMapValuesIterator() {
+    private AdaptingMapValuesIterator() {
 
     }
 }

@@ -8,7 +8,7 @@ import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;
 
-public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
+public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
 
     @Override
     public int size() {
@@ -90,7 +90,7 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
 
     @Override
     public Set<K> keySet() {
-        return new AdaptingMutableSet.Builder<L, K>()
+        return new AdaptingSet.Builder<L, K>()
                 .mutableSet(mutableMap.keySet())
                 .adapter(keyAdapter)
                 .build();
@@ -98,7 +98,7 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
 
     @Override
     public Collection<V> values() {
-        return new AdaptingMutableMapValues.Builder<L, U, K, V>()
+        return new AdaptingMapValues.Builder<L, U, K, V>()
                 .mutableMap(mutableMap)
                 .keyAdapter(keyAdapter)
                 .valueAdapter(valueAdapter)
@@ -107,7 +107,7 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new AdaptingMutableSet.Builder<Entry<L, U>, Entry<K, V>>()
+        return new AdaptingSet.Builder<Entry<L, U>, Entry<K, V>>()
                 .mutableSet(mutableMap.entrySet())
                 .adapter(DataAdapters.mutableEntry(keyAdapter, valueAdapter, this))
                 .build();
@@ -120,9 +120,9 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
 
     public static class Builder<L, U, K, V> {
 
-        private AdaptingMutableMap<L, U, K, V> map = new AdaptingMutableMap<>();
+        private AdaptingMap<L, U, K, V> map = new AdaptingMap<>();
 
-        public AdaptingMutableMap<L, U, K, V> build() {
+        public AdaptingMap<L, U, K, V> build() {
             requireNonNull(map.mutableMap);
             requireNonNull(map.keyAdapter);
             requireNonNull(map.valueAdapter);
@@ -145,7 +145,7 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
         }
     }
 
-    private AdaptingMutableMap() {
+    private AdaptingMap() {
 
     }
 

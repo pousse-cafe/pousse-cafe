@@ -5,15 +5,15 @@ import java.util.Set;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
-public class AdaptingMutableSet<U, T>
+public class AdaptingSet<U, T>
 extends AdaptingCollection<U, T>
 implements Set<T> {
 
     public static class Builder<U, T> {
 
-        private AdaptingMutableSet<U, T> set = new AdaptingMutableSet<>();
+        private AdaptingSet<U, T> set = new AdaptingSet<>();
 
-        public AdaptingMutableSet<U, T> build() {
+        public AdaptingSet<U, T> build() {
             requireNonNull(set.mutableCollection());
             requireNonNull(set.adapter());
             return set;
@@ -30,7 +30,7 @@ implements Set<T> {
         }
     }
 
-    private AdaptingMutableSet() {
+    private AdaptingSet() {
 
     }
 

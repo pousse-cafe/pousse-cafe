@@ -10,7 +10,7 @@ import poussecafe.collection.ListEditor;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
-public class AdaptingMutableList<U, T>
+public class AdaptingList<U, T>
 extends AdaptingCollection<U, T>
 implements EditableList<T> {
 
@@ -94,7 +94,7 @@ implements EditableList<T> {
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return new AdaptingMutableList.Builder<U, T>()
+        return new AdaptingList.Builder<U, T>()
                 .mutableList(mutableList.subList(fromIndex, toIndex))
                 .adapter(adapter())
                 .build();
@@ -107,9 +107,9 @@ implements EditableList<T> {
 
     public static class Builder<U, T> {
 
-        private AdaptingMutableList<U, T> set = new AdaptingMutableList<>();
+        private AdaptingList<U, T> set = new AdaptingList<>();
 
-        public AdaptingMutableList<U, T> build() {
+        public AdaptingList<U, T> build() {
             requireNonNull(set.mutableList);
             requireNonNull(set.adapter());
             return set;
@@ -127,7 +127,7 @@ implements EditableList<T> {
         }
     }
 
-    private AdaptingMutableList() {
+    private AdaptingList() {
 
     }
 
