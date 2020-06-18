@@ -17,7 +17,7 @@ abstract class AdaptingListAttribute<F, T> implements ListAttribute<T> {
     private AdaptingList<F, T> listAttribute;
 
     @Override
-    public EditableList<T> mutableValue() {
+    public EditableList<T> value() {
         return listAttribute;
     }
 

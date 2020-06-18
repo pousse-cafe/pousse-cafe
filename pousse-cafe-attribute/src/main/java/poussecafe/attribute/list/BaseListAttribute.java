@@ -14,7 +14,7 @@ public class BaseListAttribute<T> implements ListAttribute<T> {
     private List<T> list;
 
     @Override
-    public EditableList<T> mutableValue() {
+    public EditableList<T> value() {
         return new SimpleEditableList<>(list);
     }
 }

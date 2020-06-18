@@ -45,4 +45,12 @@ public class Equality {
             }
         }
     }
+
+    public static boolean bothNullOrEqual(Object thisObject, Object thatObject) {
+        if(thisObject != null) {
+            return thisObject.equals(thatObject);
+        } else {
+            return thisObject == thatObject;
+        }
+    }
 }

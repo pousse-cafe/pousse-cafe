@@ -52,7 +52,7 @@ public class CollectionBackedMapAttributeMutableValueTest {
     private MapAttribute<StringId, BigDecimal> attribute;
 
     private void whenEditing() {
-        attribute.mutableValue().edit()
+        attribute.value().edit()
             .remove(new StringId("key1"))
             .put(new StringId("key5"), new BigDecimal("5"))
             .put(new StringId("key3"), new BigDecimal("3.1"))

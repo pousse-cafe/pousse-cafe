@@ -34,7 +34,7 @@ public abstract class AdaptingMapAttribute<L, U, K, V> implements MapAttribute<K
     }
 
     @Override
-    public EditableMap<K, V> mutableValue() {
+    public EditableMap<K, V> value() {
         return map;
     }
 }

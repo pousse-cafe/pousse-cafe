@@ -1,7 +1,6 @@
 package poussecafe.attribute;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -15,26 +14,22 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
 
     Optional<V> get(K key);
 
-    EditableMap<K, V> mutableValue();
-
     @Override
-    default Map<K, V> value() {
-        return Collections.unmodifiableMap(mutableValue());
-    }
+    EditableMap<K, V> value();
 
     @Override
     default void value(Map<K, V> value) {
         requireNonNull(value);
-        mutableValue().clear();
-        mutableValue().putAll(value);
+        value().clear();
+        value().putAll(value);
     }
 
     /**
-     * @deprecated use mutableValue().put(key, Value)
+     * @deprecated use value().put(key, Value)
      */
     @Deprecated(since = "0.19")
     default V put(K key, V value) {
-        return mutableValue().put(key, value);
+        return value().put(key, value);
     }
 
     /**
@@ -46,11 +41,11 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     }
 
     /**
-     * @deprecated use mutableValue().remove(key)
+     * @deprecated use value().remove(key)
      */
     @Deprecated(since = "0.19")
     default V remove(K key) {
-        return mutableValue().remove(key);
+        return value().remove(key);
     }
 
     /**
@@ -78,11 +73,11 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     }
 
     /**
-     * @deprecated use values().stream()
+     * @deprecated use value().values().stream()
      */
     @Deprecated(since = "0.19")
     default Stream<V> valuesStream() {
-        return values().stream();
+        return value().values().stream();
     }
 
     /**
@@ -102,18 +97,18 @@ public interface MapAttribute<K, V> extends Attribute<Map<K, V>> {
     }
 
     /**
-     * @deprecated use mutableValue().clear()
+     * @deprecated use value().clear()
      */
     @Deprecated(since = "0.19")
     default void clear() {
-        mutableValue().clear();
+        value().clear();
     }
 
     /**
-     * @deprecated use mutableValue().putAll(map)
+     * @deprecated use value().putAll(map)
      */
     @Deprecated(since = "0.19")
     default void putAll(Map<K, V> map) {
-        mutableValue().putAll(map);
+        value().putAll(map);
     }
 }

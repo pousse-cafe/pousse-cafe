@@ -12,6 +12,11 @@ public class SimpleEntity extends Entity<StringId, SimpleEntity.Attributes> {
         return attributes().identifier().value().equals(other.attributes().identifier().value());
     }
 
+    @Override
+    public int hashCode() {
+        return attributes().identifier().value().hashCode();
+    }
+
     public static interface Attributes extends EntityAttributes<StringId> {
 
     }

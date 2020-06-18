@@ -1,8 +1,9 @@
 package poussecafe.attribute.map;
 
+import java.util.Map.Entry;
 import java.util.Objects;
 
-import static poussecafe.util.Equality.referenceEquals;
+import static poussecafe.util.Equality.bothNullOrEqual;
 
 public class ImmutableEntry<T, S> implements java.util.Map.Entry<T, S> {
 
@@ -40,14 +41,24 @@ public class ImmutableEntry<T, S> implements java.util.Map.Entry<T, S> {
         return result;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
-        return referenceEquals(this, obj).orElse(this::safeEquals);
+        if(obj instanceof Entry) {
+            Entry e = (Entry) obj;
+            return bothNullOrEqual(key, e.getKey()) && bothNullOrEqual(value, e.getValue());
+        } else {
+            return false;
+        }
     }
 
-    public boolean safeEquals(ImmutableEntry<T, S> entry) {
-        return key.equals(entry.key)
-                && ((value == null && entry.value == null)
-                        || (value != null && value.equals(entry.value)));
+    @Override
+    public String toString() {
+        var builder = new StringBuilder();
+        builder.append("{key=");
+        builder.append(key);
+        builder.append(", value=");
+        builder.append("}");
+        return builder.toString();
     }
 }

@@ -16,7 +16,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 
 public class MapAttributeBuilderTest {
 
@@ -25,7 +24,6 @@ public class MapAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
-        thenValueIsImmutable(valueWithoutConversion, "test", "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
@@ -63,25 +61,11 @@ public class MapAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private <K, V> void thenValueIsImmutable(Map<K, V> value, K newKey, V newValue) {
-        boolean modificationSuccessful;
-        try {
-            value.put(newKey, newValue);
-            modificationSuccessful = true;
-        } catch (Exception e) {
-            modificationSuccessful = false;
-        }
-        assertFalse(modificationSuccessful);
-    }
-
-    private Map<StringId, BigDecimal> valueWithConversion;
-
     @Test
     public void readWriteWithFunctionAdapters() {
         givenReadWriteAttributeWithFunctionAdapters();
         whenWritingValueWithConversion();
         thenValueIs(attributeWithConversion, new StringId("test"), new BigDecimal("42.00"));
-        thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
     }
 
     private void givenReadWriteAttributeWithFunctionAdapters() {
@@ -100,7 +84,6 @@ public class MapAttributeBuilderTest {
                 .entrySet()
                 .stream()
                 .collect(toMap(entry -> new StringId(entry.getKey()), entry -> new BigDecimal(entry.getValue()))));
-        valueWithConversion = attributeWithConversion.value();
     }
 
     @Test
@@ -108,7 +91,6 @@ public class MapAttributeBuilderTest {
         givenReadWriteAttributeWithDataAdapters();
         whenWritingValueWithConversion();
         thenValueIs(attributeWithConversion, new StringId("test"), new BigDecimal("42.00"));
-        thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
     }
 
     private void givenReadWriteAttributeWithDataAdapters() {
@@ -123,7 +105,6 @@ public class MapAttributeBuilderTest {
         givenReadWriteCollectionAttributeWithDataAdapters();
         whenWritingValueWithConversion();
         thenValueIs(attributeWithConversion, new StringId("test"), new BigDecimal("42.00"));
-        thenValueIsImmutable(valueWithConversion, new StringId("test"), new BigDecimal("42.00"));
     }
 
     private void givenReadWriteCollectionAttributeWithDataAdapters() {
@@ -154,7 +135,6 @@ public class MapAttributeBuilderTest {
         Item value = new Item(new StringId("test"), new BigDecimal("42.00"));
         otherAttributeWithConversion.put(value.key, value);
         thenValueIs(otherAttributeWithConversion, new StringId("test"), value);
-        thenValueIsImmutable(otherAttributeWithConversion.value(), value.key, new Item());
     }
 
     private void givenReadWriteOtherCollectionAttributeWithDataAdapters() {

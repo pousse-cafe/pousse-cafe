@@ -45,7 +45,7 @@ public class ListAttributeMutableValueTest {
     private ListAttribute<BigDecimal> attribute;
 
     private void whenEditing() {
-        attribute.mutableValue().edit()
+        attribute.value().edit()
             .remove(new BigDecimal("1"))
             .add(new BigDecimal("5"))
             .set(1, new BigDecimal("3.1"))

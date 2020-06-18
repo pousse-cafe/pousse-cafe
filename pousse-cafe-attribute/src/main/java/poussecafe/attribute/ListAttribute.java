@@ -1,7 +1,6 @@
 package poussecafe.attribute;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -16,25 +15,21 @@ import static java.util.stream.Collectors.toList;
 public interface ListAttribute<T> extends Attribute<List<T>>, Iterable<T> {
 
     @Override
-    default List<T> value() {
-        return Collections.unmodifiableList(mutableValue());
-    }
-
-    EditableList<T> mutableValue();
+    EditableList<T> value();
 
     @Override
     default void value(List<T> value) {
         requireNonNull(value);
-        mutableValue().clear();
-        mutableValue().addAll(value);
+        value().clear();
+        value().addAll(value);
     }
 
     /**
-     * @deprecated Use mutableValue().add(item)
+     * @deprecated Use value().add(item)
      */
     @Deprecated(since = "0.19")
     default void add(T item) {
-        mutableValue().add(item);
+        value().add(item);
     }
 
     /**
@@ -54,11 +49,11 @@ public interface ListAttribute<T> extends Attribute<List<T>>, Iterable<T> {
     }
 
     /**
-     * @deprecated Use mutableValue().addAll(values)
+     * @deprecated Use value().addAll(values)
      */
     @Deprecated(since = "0.19")
     default void addAll(Collection<T> values) {
-        mutableValue().addAll(values);
+        value().addAll(values);
     }
 
     /**
@@ -78,19 +73,19 @@ public interface ListAttribute<T> extends Attribute<List<T>>, Iterable<T> {
     }
 
     /**
-     * @deprecated Use mutableValue().clear()
+     * @deprecated Use value().clear()
      */
     @Deprecated(since = "0.19")
     default void clear() {
-        mutableValue().clear();
+        value().clear();
     }
 
     /**
-     * @deprecated Use mutableValue().set(index, item)
+     * @deprecated Use value().set(index, item)
      */
     @Deprecated(since = "0.19")
     default void set(int index, T item) {
-        mutableValue().set(index, item);
+        value().set(index, item);
     }
 
     /**

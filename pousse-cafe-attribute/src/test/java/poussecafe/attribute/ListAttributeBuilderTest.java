@@ -8,7 +8,6 @@ import poussecafe.util.StringId;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ListAttributeBuilderTest {
@@ -18,7 +17,6 @@ public class ListAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
-        thenValueIsImmutable(valueWithoutConversion, "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
@@ -44,17 +42,6 @@ public class ListAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private <T> void thenValueIsImmutable(List<T> value, T newElement) {
-        boolean modificationSuccessful;
-        try {
-            value.add(newElement);
-            modificationSuccessful = true;
-        } catch (Exception e) {
-            modificationSuccessful = false;
-        }
-        assertFalse(modificationSuccessful);
-    }
-
     private ListAttribute<StringId> attributeWithConversion;
 
     private List<StringId> valueWithConversion;
@@ -68,7 +55,6 @@ public class ListAttributeBuilderTest {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(valueWithConversion);
-        thenValueIsImmutable(valueWithConversion, new StringId("test"));
     }
 
     private void givenReadWriteAttributeWithConversion() {

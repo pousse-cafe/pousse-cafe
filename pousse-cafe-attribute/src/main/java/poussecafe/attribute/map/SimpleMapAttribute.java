@@ -20,7 +20,7 @@ class SimpleMapAttribute<K, V> implements MapAttribute<K, V> {
     }
 
     @Override
-    public EditableMap<K, V> mutableValue() {
+    public EditableMap<K, V> value() {
         return new SimpleEditableMap<>(wrappedMap);
     }
 }

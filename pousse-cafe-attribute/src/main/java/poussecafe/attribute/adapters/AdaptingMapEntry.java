@@ -2,6 +2,7 @@ package poussecafe.attribute.adapters;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import poussecafe.attribute.map.ImmutableEntry;
 
 import static java.util.Objects.requireNonNull;
 
@@ -76,5 +77,24 @@ public class AdaptingMapEntry<L, U, K, V> implements Entry<K, V> {
 
     private AdaptingMapEntry() {
 
+    }
+
+    @Override
+    public int hashCode() {
+        return adaptedEntry().hashCode();
+    }
+
+    private ImmutableEntry<K, V> adaptedEntry() {
+        return new ImmutableEntry<>(getKey(), getValue());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return adaptedEntry().equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return adaptedEntry().toString();
     }
 }
