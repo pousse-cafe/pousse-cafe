@@ -3,7 +3,7 @@ package poussecafe.doc.model.processstepdoc;
 import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.util.ReferenceEquals;
+import poussecafe.util.Equality;
 
 public class NameRequired {
 
@@ -38,7 +38,7 @@ public class NameRequired {
 
     @Override
     public boolean equals(Object obj) {
-        return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+        return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(name, other.name)
                 .append(required, other.required)
                 .build());

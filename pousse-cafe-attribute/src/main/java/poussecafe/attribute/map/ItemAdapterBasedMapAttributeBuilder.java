@@ -36,7 +36,7 @@ implements ExpectingCollection<U, K, V>, ExpectingKeyExtractor<U, K, V>, Complet
             @Override
             protected Entry<K, V> convertFromValue(U from) {
                 V value = itemAdapter.adaptGet(from);
-                return new ReadOnlyEntry<>(keyExtractor.apply(value), value);
+                return new ImmutableEntry<>(keyExtractor.apply(value), value);
             }
 
             @Override

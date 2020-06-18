@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.domain.Module;
-import poussecafe.util.ReferenceEquals;
+import poussecafe.util.Equality;
 
 public class AggregateDefinition {
 
@@ -86,7 +86,7 @@ public class AggregateDefinition {
 
     @Override
     public boolean equals(Object obj) {
-        return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+        return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(aggregateRootClass, other.aggregateRootClass)
                 .append(factoryClass, other.factoryClass)
                 .append(repositoryClass, other.repositoryClass)

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.domain.DomainEvent;
 
-import static poussecafe.util.ReferenceEquals.referenceEquals;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class ExpectedEvent {
 

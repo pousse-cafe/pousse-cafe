@@ -1,15 +1,11 @@
 package poussecafe.util;
 
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
-/**
- * @deprecated Use poussecafe.util.Equality
- */
-@Deprecated(since = "0.19")
-public class ReferenceEquals {
+public class Equality {
 
-    private ReferenceEquals() {
+    private Equality() {
 
     }
 
@@ -41,11 +37,11 @@ public class ReferenceEquals {
 
         private T other;
 
-        public Boolean orElse(Function<T, Boolean> equalsFunction) {
+        public Boolean orElse(Predicate<T> equalsFunction) {
             if(simpleEqualsResult.isPresent()) {
                 return simpleEqualsResult.get();
             } else {
-                return equalsFunction.apply(other);
+                return equalsFunction.test(other);
             }
         }
     }

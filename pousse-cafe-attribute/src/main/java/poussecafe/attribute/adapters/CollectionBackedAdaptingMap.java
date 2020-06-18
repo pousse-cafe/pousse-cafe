@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collector;
-import poussecafe.attribute.map.ReadOnlyEntry;
+import poussecafe.attribute.map.ImmutableEntry;
 import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;
@@ -13,27 +13,28 @@ import static java.util.stream.Collectors.toMap;
 public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
 
     private void computeViews() {
-        map = collection.stream().collect(toConvertedFromMap());
+        mapView = collection.stream().collect(toConvertedFromMap());
 
         values = new CollectionBackedAdaptingMapValues<>();
         values.collection = collection;
         values.adapter = adapter;
-        values.map = map;
+        values.mapView = mapView;
 
         keys = new CollectionBackedAdaptingMapKeys<>();
         keys.collection = collection;
         keys.adapter = adapter;
-        keys.map = map;
+        keys.mapView = mapView;
 
         entries = new CollectionBackedAdaptingMapEntries<>();
         entries.collection = collection;
         entries.adapter = adapter;
-        entries.map = map;
+        entries.mapView = mapView;
+        entries.mutableMap = this;
     }
 
     private Collection<U> collection;
 
-    private Map<K, V> map;
+    private Map<K, V> mapView;
 
     private CollectionBackedAdaptingMapValues<U, K, V> values;
 
@@ -50,14 +51,14 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
 
     @Override
     public V get(Object key) {
-        return map.get(key);
+        return mapView.get(key);
     }
 
     @Override
     public V put(K key, V value) {
         var oldValue = remove(key);
-        map.put(key, value);
-        collection.add(adapter.adaptSet(new ReadOnlyEntry<>(key, value)));
+        mapView.put(key, value);
+        collection.add(adapter.adaptSet(new ImmutableEntry<>(key, value)));
         return oldValue;
     }
 
@@ -68,7 +69,7 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
 
     @Override
     public V remove(Object key) {
-        var oldValue = map.get(key);
+        var oldValue = mapView.get(key);
         keys.remove(key);
         return oldValue;
     }
@@ -80,7 +81,7 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        return map.containsKey(key);
+        return mapView.containsKey(key);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
     @Override
     public void clear() {
         collection.clear();
-        map.clear();
+        mapView.clear();
     }
 
     @Override
@@ -148,7 +149,7 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Map) {
-            return map.equals(obj);
+            return mapView.equals(obj);
         } else {
             return false;
         }
@@ -156,11 +157,11 @@ public class CollectionBackedAdaptingMap<U, K, V> implements EditableMap<K, V> {
 
     @Override
     public int hashCode() {
-        return map.hashCode();
+        return mapView.hashCode();
     }
 
     @Override
     public String toString() {
-        return map.toString();
+        return mapView.toString();
     }
 }

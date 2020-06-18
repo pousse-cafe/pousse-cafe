@@ -4,7 +4,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.messaging.Message;
-import poussecafe.util.ReferenceEquals;
+import poussecafe.util.Equality;
 
 public class OriginalAndMarshaledMessage {
 
@@ -47,7 +47,7 @@ public class OriginalAndMarshaledMessage {
 
     @Override
     public boolean equals(Object obj) {
-        return ReferenceEquals.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+        return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(original, other.original)
                 .append(marshaled, other.marshaled)
                 .build());

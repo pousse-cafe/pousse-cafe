@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import static poussecafe.util.ReferenceEquals.referenceEquals;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class Node implements Comparable<Node> {
 

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import static poussecafe.util.ReferenceEquals.referenceEquals;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class UbiquitousLanguageEntry
         implements Comparable<UbiquitousLanguageEntry> {

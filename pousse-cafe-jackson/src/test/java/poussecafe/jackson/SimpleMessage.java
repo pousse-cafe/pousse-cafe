@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import poussecafe.messaging.Message;
 
-import static poussecafe.util.ReferenceEquals.referenceEquals;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class SimpleMessage implements Message {
 

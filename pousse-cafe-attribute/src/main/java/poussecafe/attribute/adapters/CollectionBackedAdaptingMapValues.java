@@ -12,7 +12,7 @@ extends CollectionBackedAdaptingMapView<U, K, V, V> {
 
     @Override
     public boolean contains(Object o) {
-        return map.containsValue(o);
+        return mapView.containsValue(o);
     }
 
     @Override
@@ -36,6 +36,6 @@ extends CollectionBackedAdaptingMapView<U, K, V, V> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return map.values().containsAll(c);
+        return mapView.values().containsAll(c);
     }
 }

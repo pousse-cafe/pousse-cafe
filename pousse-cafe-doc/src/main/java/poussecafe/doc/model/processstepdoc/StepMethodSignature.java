@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.domain.DomainException;
 
-import static poussecafe.util.ReferenceEquals.referenceEquals;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class StepMethodSignature {
 

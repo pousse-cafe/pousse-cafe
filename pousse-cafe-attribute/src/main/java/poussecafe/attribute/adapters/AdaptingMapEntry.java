@@ -1,5 +1,6 @@
 package poussecafe.attribute.adapters;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import static java.util.Objects.requireNonNull;
@@ -34,9 +35,12 @@ public class AdaptingMapEntry<L, U, K, V> implements Entry<K, V> {
     @Override
     public V setValue(V value) {
         U previousValue = entry.getValue();
-        entry.setValue(valueAdapter.adaptSet(value));
+        K key = keyAdapter.adaptGet(entry.getKey());
+        mutableMap.put(key, value);
         return valueAdapter.adaptGet(previousValue);
     }
+
+    private Map<K, V> mutableMap;
 
     public static class Builder<L, U, K, V> {
 
@@ -61,6 +65,11 @@ public class AdaptingMapEntry<L, U, K, V> implements Entry<K, V> {
 
         public Builder<L, U, K, V> valueAdapter(DataAdapter<U, V> valueAdapter) {
             entry.valueAdapter = valueAdapter;
+            return this;
+        }
+
+        public Builder<L, U, K, V> mutableMap(Map<K, V> mutableMap) {
+            entry.mutableMap = mutableMap;
             return this;
         }
     }

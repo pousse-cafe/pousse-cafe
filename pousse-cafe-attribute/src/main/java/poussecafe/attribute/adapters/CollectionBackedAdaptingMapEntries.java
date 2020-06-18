@@ -1,6 +1,7 @@
 package poussecafe.attribute.adapters;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -14,13 +15,22 @@ implements Set<Entry<K, V>> {
 
     @Override
     public boolean contains(Object o) {
-        return map.entrySet().contains(o);
+        return mapView.entrySet().contains(o);
     }
 
     @Override
     protected Entry<K, V> applyProjection(Entry<K, V> item) {
-        return item;
+        return wrapWithMutableEntry(item);
     }
+
+    private Entry<K, V> wrapWithMutableEntry(Entry<K, V> item) {
+        return DataAdapters.mutableEntry(
+                DataAdapters.adapter(key -> key, key -> key),
+                DataAdapters.adapter(value -> value, value -> value),
+                mutableMap).adaptGet(item);
+    }
+
+    Map<K, V> mutableMap;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -31,7 +41,7 @@ implements Set<Entry<K, V>> {
         } catch (ClassCastException e) {
             return false;
         }
-        var entryRemoved = map.remove(entry.getKey(), entry.getValue());
+        var entryRemoved = mapView.remove(entry.getKey(), entry.getValue());
         if(entryRemoved) {
             flushViewToCollection();
         }
@@ -40,6 +50,6 @@ implements Set<Entry<K, V>> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return map.entrySet().containsAll(c);
+        return mapView.entrySet().containsAll(c);
     }
 }

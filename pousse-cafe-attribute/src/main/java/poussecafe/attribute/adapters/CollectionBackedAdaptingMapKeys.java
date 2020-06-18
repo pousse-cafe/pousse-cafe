@@ -14,7 +14,7 @@ implements Set<K> {
 
     @Override
     public boolean contains(Object o) {
-        return map.containsKey(o);
+        return mapView.containsKey(o);
     }
 
     @Override
@@ -24,7 +24,7 @@ implements Set<K> {
 
     @Override
     public boolean remove(Object o) {
-        var oldValue = map.remove(o);
+        var oldValue = mapView.remove(o);
         if(oldValue != null) {
             flushViewToCollection();
         }
@@ -33,6 +33,6 @@ implements Set<K> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return map.keySet().containsAll(c);
+        return mapView.keySet().containsAll(c);
     }
 }

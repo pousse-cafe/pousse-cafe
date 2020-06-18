@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
-import poussecafe.attribute.map.ReadOnlyEntry;
+import poussecafe.attribute.map.ImmutableEntry;
 import poussecafe.util.StringId;
 
 import static java.util.stream.Collectors.toMap;
@@ -138,7 +138,7 @@ public class MapAttributeBuilderTest {
     private DataAdapter<String, Entry<StringId, BigDecimal>> itemAdapter = new DataAdapter<>() {
         @Override
         public Entry<StringId, BigDecimal> adaptGet(String storedValue) {
-            return new ReadOnlyEntry<>(new StringId(storedValue.split(" ")[0]),
+            return new ImmutableEntry<>(new StringId(storedValue.split(" ")[0]),
                     new BigDecimal(storedValue.split(" ")[1]));
         }
 

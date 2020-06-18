@@ -108,7 +108,7 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
     public Set<Entry<K, V>> entrySet() {
         return new AdaptingMutableSet.Builder<Entry<L, U>, Entry<K, V>>()
                 .mutableSet(mutableMap.entrySet())
-                .adapter(DataAdapters.mutableEntry(keyAdapter, valueAdapter))
+                .adapter(DataAdapters.mutableEntry(keyAdapter, valueAdapter, this))
                 .build();
     }
 
@@ -146,5 +146,25 @@ public class AdaptingMutableMap<L, U, K, V> implements EditableMap<K, V> {
 
     private AdaptingMutableMap() {
 
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Map) {
+            return entrySet().equals(((Map) obj).entrySet());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return entrySet().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return entrySet().toString();
     }
 }

@@ -12,7 +12,7 @@ implements Collection<X> {
 
     protected Collection<U> collection;
 
-    protected Map<K, V> map;
+    protected Map<K, V> mapView;
 
     @Override
     public int size() {
@@ -31,7 +31,7 @@ implements Collection<X> {
         return new AdaptingIterator.Builder<U, X>()
                 .iterator(collection.iterator())
                 .adapter(item -> applyProjection(adapter.adaptGet(item)))
-                .onRemove(item -> map.remove(adapter.adaptGet(item).getKey()))
+                .onRemove(item -> mapView.remove(adapter.adaptGet(item).getKey()))
                 .build();
     }
 
@@ -82,11 +82,11 @@ implements Collection<X> {
     @Override
     public void clear() {
         collection.clear();
-        map.clear();
+        mapView.clear();
     }
 
     void flushViewToCollection() {
         collection.clear();
-        collection.addAll(map.entrySet().stream().map(adapter::adaptSet).collect(toList()));
+        collection.addAll(mapView.entrySet().stream().map(adapter::adaptSet).collect(toList()));
     }
 }

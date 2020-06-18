@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
@@ -130,7 +131,9 @@ public class DataAdapters {
     }
 
     public static <L, U, K, V> DataAdapter<Entry<L, U>, Entry<K, V>> mutableEntry(
-            DataAdapter<L, K> keyAdapter, DataAdapter<U, V> valueAdapter) {
+            DataAdapter<L, K> keyAdapter,
+            DataAdapter<U, V> valueAdapter,
+            Map<K, V> mutableMap) {
         return new DataAdapter<>() {
             @Override
             public Entry<K, V> adaptGet(Entry<L, U> storedValue) {
@@ -138,6 +141,7 @@ public class DataAdapters {
                         .entry(storedValue)
                         .keyAdapter(keyAdapter)
                         .valueAdapter(valueAdapter)
+                        .mutableMap(mutableMap)
                         .build();
             }
 

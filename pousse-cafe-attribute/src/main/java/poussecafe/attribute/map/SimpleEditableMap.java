@@ -81,4 +81,23 @@ class SimpleEditableMap<K, V> implements EditableMap<K, V> {
     public MapEditor<K, V> edit() {
         return new MapEditor<>(map);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Map) {
+            return map.equals(obj);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return map.toString();
+    }
 }
