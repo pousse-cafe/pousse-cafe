@@ -24,7 +24,7 @@ implements Set<Entry<K, V>> {
     }
 
     private Entry<K, V> wrapWithMutableEntry(Entry<K, V> item) {
-        return DataAdapters.mutableEntry(
+        return DataAdapters.<K, V, K, V>mutableEntry(
                 DataAdapters.adapter(key -> key, key -> key),
                 DataAdapters.adapter(value -> value, value -> value),
                 mutableMap).adaptGet(item);

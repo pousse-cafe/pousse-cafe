@@ -28,7 +28,7 @@ implements ExpectingList<U, T>, Complete<T> {
 
     @Override
     public ListAttribute<T> build() {
-        return new ConvertingListAttribute<>(storageList) {
+        return new AdaptingListAttribute<>(storageList) {
             @Override
             protected T convertFrom(U from) {
                 return adapter.adaptGet(from);

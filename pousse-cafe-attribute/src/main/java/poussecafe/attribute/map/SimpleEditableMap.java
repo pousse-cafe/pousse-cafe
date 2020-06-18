@@ -3,7 +3,6 @@ package poussecafe.attribute.map;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import poussecafe.attribute.adapters.EditableMap;
 import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;

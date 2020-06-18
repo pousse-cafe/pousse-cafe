@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collector;
+import poussecafe.attribute.map.EditableMap;
 import poussecafe.attribute.map.ImmutableEntry;
 import poussecafe.collection.MapEditor;
 

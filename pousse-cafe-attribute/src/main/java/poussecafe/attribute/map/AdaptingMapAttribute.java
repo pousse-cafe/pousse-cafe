@@ -6,7 +6,6 @@ import java.util.Optional;
 import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.adapters.AdaptingMutableMap;
 import poussecafe.attribute.adapters.DataAdapters;
-import poussecafe.attribute.adapters.EditableMap;
 
 public abstract class AdaptingMapAttribute<L, U, K, V> implements MapAttribute<K, V> {
 

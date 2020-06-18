@@ -26,4 +26,9 @@ public class ListEditor<T> {
     public List<T> finish() {
         return list;
     }
+
+    public ListEditor<T> set(int index, T element) {
+        list.set(index, element);
+        return this;
+    }
 }

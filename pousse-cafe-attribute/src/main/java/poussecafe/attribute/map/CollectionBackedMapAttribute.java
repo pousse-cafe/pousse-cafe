@@ -6,7 +6,6 @@ import java.util.Optional;
 import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.adapters.CollectionBackedAdaptingMap;
 import poussecafe.attribute.adapters.DataAdapters;
-import poussecafe.attribute.adapters.EditableMap;
 
 abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, V> {
 

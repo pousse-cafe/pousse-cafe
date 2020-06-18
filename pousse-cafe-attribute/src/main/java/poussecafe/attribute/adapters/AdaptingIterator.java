@@ -17,7 +17,7 @@ public class AdaptingIterator<U, T> implements Iterator<T> {
 
     @Override
     public T next() {
-        U next = iterator.next();
+        next = iterator.next();
         if(next == null) {
             return null;
         } else {
@@ -63,5 +63,32 @@ public class AdaptingIterator<U, T> implements Iterator<T> {
             iterator.onRemove = onRemove;
             return this;
         }
+    }
+
+    protected AdaptingIterator() {
+
+    }
+
+    protected void onRemove(Consumer<U> onRemove) {
+        requireNonNull(onRemove);
+        this.onRemove = onRemove;
+    }
+
+    protected void adapter(Function<U, T> adapter) {
+        requireNonNull(adapter);
+        this.adapter = adapter;
+    }
+
+    protected void iterator(Iterator<U> iterator) {
+        requireNonNull(iterator);
+        this.iterator = iterator;
+    }
+
+    protected Function<U, T> adapter() {
+        return adapter;
+    }
+
+    protected Iterator<U> iterator() {
+        return iterator;
     }
 }

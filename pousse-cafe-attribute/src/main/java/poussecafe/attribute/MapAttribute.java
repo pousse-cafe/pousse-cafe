@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import poussecafe.attribute.adapters.EditableMap;
+import poussecafe.attribute.map.EditableMap;
 
 import static java.util.Objects.requireNonNull;
 

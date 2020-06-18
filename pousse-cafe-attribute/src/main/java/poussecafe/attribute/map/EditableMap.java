@@ -1,4 +1,4 @@
-package poussecafe.attribute.adapters;
+package poussecafe.attribute.map;
 
 import java.util.Map;
 import poussecafe.collection.MapEditor;

@@ -45,7 +45,7 @@ implements ExpectingReadAdapters<U, T>, ExpectingWriteAdapters<U, T>, ExpectingL
 
     @Override
     public ListAttribute<T> build() {
-        return new ConvertingListAttribute<>(list) {
+        return new AdaptingListAttribute<>(list) {
             @Override
             protected T convertFrom(U from) {
                 return readAdapter.apply(from);
