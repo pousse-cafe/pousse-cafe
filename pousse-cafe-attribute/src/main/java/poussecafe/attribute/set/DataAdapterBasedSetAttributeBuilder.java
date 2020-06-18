@@ -29,7 +29,7 @@ implements ExpectingSet<U, T>, Complete<T> {
 
     @Override
     public SetAttribute<T> build() {
-        return new ConvertingSetAttribute<>(storageSet) {
+        return new AdaptingSetAttribute<>(storageSet) {
             @Override
             protected T convertFrom(U from) {
                 return adapter.adaptGet(from);

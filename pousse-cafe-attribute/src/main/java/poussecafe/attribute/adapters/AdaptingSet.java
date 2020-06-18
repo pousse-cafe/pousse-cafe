@@ -1,13 +1,15 @@
 package poussecafe.attribute.adapters;
 
 import java.util.Set;
+import poussecafe.attribute.set.EditableSet;
+import poussecafe.collection.SetEditor;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
 public class AdaptingSet<U, T>
 extends AdaptingCollection<U, T>
-implements Set<T> {
+implements EditableSet<T> {
 
     public static class Builder<U, T> {
 
@@ -28,6 +30,11 @@ implements Set<T> {
             set.adapter(adapter);
             return this;
         }
+    }
+
+    @Override
+    public SetEditor<T> edit() {
+        return new SetEditor<>(this);
     }
 
     private AdaptingSet() {

@@ -8,7 +8,6 @@ import poussecafe.util.StringId;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static poussecafe.collection.Collections.asSet;
 
@@ -19,7 +18,6 @@ public class SetAttributeBuilderTest {
         givenReadWriteAttributeWithoutConversion();
         whenWritingValueWithoutConversion();
         thenValueWithoutConvertionIs(newValue);
-        thenValueIsImmutable(valueWithoutConversion, "test");
     }
 
     private void givenReadWriteAttributeWithoutConversion() {
@@ -45,23 +43,11 @@ public class SetAttributeBuilderTest {
         assertThat(valueWithoutConversion, is(value));
     }
 
-    private <T> void thenValueIsImmutable(Set<T> value, T newElement) {
-        boolean modificationSuccessful;
-        try {
-            value.add(newElement);
-            modificationSuccessful = true;
-        } catch (Exception e) {
-            modificationSuccessful = false;
-        }
-        assertFalse(modificationSuccessful);
-    }
-
     @Test
     public void readWriteWithConversion() {
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(value.stream().map(StringId::new).collect(toSet()));
-        thenValueIsImmutable(valueWithConversion, new StringId("test"));
     }
 
     private void givenReadWriteAttributeWithConversion() {

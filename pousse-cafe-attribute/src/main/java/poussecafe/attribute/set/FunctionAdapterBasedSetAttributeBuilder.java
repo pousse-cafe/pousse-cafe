@@ -45,7 +45,7 @@ implements ExpectingReadAdapters<U, T>, ExpectingWriteAdapters<U, T>, ExpectingS
 
     @Override
     public SetAttribute<T> build() {
-        return new ConvertingSetAttribute<>(set) {
+        return new AdaptingSetAttribute<>(set) {
             @Override
             protected T convertFrom(U from) {
                 return readAdapter.apply(from);
