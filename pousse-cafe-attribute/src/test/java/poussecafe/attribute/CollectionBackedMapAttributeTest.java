@@ -98,7 +98,7 @@ public class CollectionBackedMapAttributeTest {
     }
 
     private void whenPutting(MapBackingCollectionItem newItem) {
-        attribute.put(newItem.key, newItem);
+        attribute.value().put(newItem.key, newItem);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class CollectionBackedMapAttributeTest {
     }
 
     private void whenRemoving(String key) {
-        attribute.remove(key);
+        attribute.value().remove(key);
     }
 
     @Test

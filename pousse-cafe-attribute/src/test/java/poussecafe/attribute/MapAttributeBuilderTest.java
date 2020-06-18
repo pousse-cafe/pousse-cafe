@@ -133,7 +133,7 @@ public class MapAttributeBuilderTest {
     public void readWriteOtherCollectionWithDataAdapters() {
         givenReadWriteOtherCollectionAttributeWithDataAdapters();
         Item value = new Item(new StringId("test"), new BigDecimal("42.00"));
-        otherAttributeWithConversion.put(value.key, value);
+        otherAttributeWithConversion.value().put(value.key, value);
         thenValueIs(otherAttributeWithConversion, new StringId("test"), value);
     }
 

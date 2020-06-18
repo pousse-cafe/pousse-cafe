@@ -44,7 +44,7 @@ public class ConsumingStepsPerEvent {
     public List<StepName> locateToInternals(ProcessStepDoc stepDoc) {
         List<StepName> tos = new ArrayList<>();
         for(NameRequired producedEvent : stepDoc.attributes().producedEvents()) {
-            List<String> consumingSteps = eventToConsumingStepsMap.get(producedEvent);
+            List<String> consumingSteps = eventToConsumingStepsMap.get(producedEvent.name());
             if(consumingSteps != null) {
                 tos.addAll(consumingSteps.stream().map(StepName::new).collect(toList()));
             }

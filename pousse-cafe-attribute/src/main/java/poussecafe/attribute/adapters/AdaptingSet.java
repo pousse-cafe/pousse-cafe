@@ -11,6 +11,11 @@ public class AdaptingSet<U, T>
 extends AdaptingCollection<U, T>
 implements EditableSet<T> {
 
+    @Override
+    public SetEditor<T> edit() {
+        return new SetEditor<>(this);
+    }
+
     public static class Builder<U, T> {
 
         private AdaptingSet<U, T> set = new AdaptingSet<>();
@@ -30,11 +35,6 @@ implements EditableSet<T> {
             set.adapter(adapter);
             return this;
         }
-    }
-
-    @Override
-    public SetEditor<T> edit() {
-        return new SetEditor<>(this);
     }
 
     private AdaptingSet() {

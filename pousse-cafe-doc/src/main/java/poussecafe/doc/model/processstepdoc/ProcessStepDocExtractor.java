@@ -150,7 +150,7 @@ public class ProcessStepDocExtractor implements Service {
             ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(messageListenerDocId,
                     moduleComponentDoc);
             processStepDoc.attributes().processNames().value(processNames);
-            processStepDoc.attributes().stepMethodSignature().nonOptionalValue(signature);
+            processStepDoc.attributes().stepMethodSignature().value(Optional.of(signature));
             processStepDoc.attributes().producedEvents().value(producedEvents);
             processStepDoc.attributes().fromExternals().value(fromExternals);
             processStepDoc.attributes().toExternals().value(toExternals);
@@ -333,7 +333,7 @@ public class ProcessStepDocExtractor implements Service {
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
                 moduleComponentDoc);
         processStepDoc.attributes().processNames().value(processNames);
-        processStepDoc.attributes().stepMethodSignature().nonOptionalValue(stepMethodSignature);
+        processStepDoc.attributes().stepMethodSignature().value(Optional.of(stepMethodSignature));
         processStepDoc.attributes().producedEvents().value(producedEvents);
         processStepDoc.attributes().fromExternals().value(fromExternals);
         processStepDoc.attributes().toExternals().value(toExternals);

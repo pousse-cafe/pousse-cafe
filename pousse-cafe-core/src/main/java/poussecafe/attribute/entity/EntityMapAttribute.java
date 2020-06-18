@@ -28,12 +28,12 @@ public interface EntityMapAttribute<K, E extends Entity<K, ?>> {
 
         public E inContextOf(Entity<?, ?> primitive) {
             MapAttribute<K, E> map = attribute.inContextOf(primitive);
-            if(map.containsKey(key)) {
+            if(map.value().containsKey(key)) {
                 throw new IllegalArgumentException("Map alreay contains an entity with ID " + key);
             } else {
                 E newEntity = attribute.newInContextOf(primitive);
                 newEntity.attributes().identifier().value(key);
-                map.put(key, newEntity);
+                map.value().put(key, newEntity);
                 return newEntity;
             }
         }

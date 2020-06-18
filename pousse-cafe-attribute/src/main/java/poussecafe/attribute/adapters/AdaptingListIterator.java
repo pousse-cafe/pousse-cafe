@@ -4,6 +4,7 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.attribute.adapters.DataAdapters.nullOrAdapted;
 
 public class AdaptingListIterator<U, T> extends AdaptingIterator<U, T> implements ListIterator<T> {
 
@@ -31,14 +32,18 @@ public class AdaptingListIterator<U, T> extends AdaptingIterator<U, T> implement
 
     @Override
     public void set(T e) {
-        listIterator.set(adapter.adaptSet(e));
+        listIterator.set(adaptToStore(e));
+    }
+
+    private U adaptToStore(T e) {
+        return nullOrAdapted(e, value -> adapter.adaptSet(value));
     }
 
     private DataAdapter<U, T> adapter;
 
     @Override
     public void add(T e) {
-        listIterator.add(adapter.adaptSet(e));
+        listIterator.add(adaptToStore(e));
     }
 
     public static class Builder<U, T> {

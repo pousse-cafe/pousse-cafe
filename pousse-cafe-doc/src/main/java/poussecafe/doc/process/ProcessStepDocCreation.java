@@ -31,11 +31,11 @@ public class ProcessStepDocCreation extends DomainProcess {
             runInTransaction(ModuleDoc.class, () -> {
                 ProcessStepDoc processStepDoc = processStepRepository.get(id);
 
-                processStepDoc.attributes().processNames().addAll(doc.attributes().processNames().value());
-                processStepDoc.attributes().producedEvents().addAll(doc.attributes().producedEvents().value());
-                processStepDoc.attributes().fromExternals().addAll(doc.attributes().fromExternals().value());
-                processStepDoc.attributes().toExternals().addAll(doc.attributes().toExternals().value());
-                processStepDoc.attributes().toExternalsByEvent().putAll(doc.attributes().toExternalsByEvent().value());
+                processStepDoc.attributes().processNames().value().addAll(doc.attributes().processNames().value());
+                processStepDoc.attributes().producedEvents().value().addAll(doc.attributes().producedEvents().value());
+                processStepDoc.attributes().fromExternals().value().addAll(doc.attributes().fromExternals().value());
+                processStepDoc.attributes().toExternals().value().addAll(doc.attributes().toExternals().value());
+                processStepDoc.attributes().toExternalsByEvent().value().putAll(doc.attributes().toExternalsByEvent().value());
 
                 Optional<AggregateDocId> aggregate = doc.attributes().aggregate().value();
                 if(aggregate.isPresent()) {

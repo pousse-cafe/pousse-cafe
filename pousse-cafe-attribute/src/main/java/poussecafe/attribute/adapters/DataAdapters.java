@@ -19,10 +19,6 @@ import static java.util.stream.Collectors.toList;
 
 public class DataAdapters {
 
-    private DataAdapters() {
-
-    }
-
     public static <U, T> DataAdapter<U, T> adapter(Function<U, T> adaptGet, Function<T, U> adaptSet) {
         return new DataAdapter<>() {
             @Override
@@ -155,5 +151,17 @@ public class DataAdapters {
                 return null;
             }
         };
+    }
+
+    public static <F, T> T nullOrAdapted(F from, Function<F, T> adapter) {
+        if(from == null) {
+            return null;
+        } else {
+            return adapter.apply(from);
+        }
+    }
+
+    private DataAdapters() {
+
     }
 }

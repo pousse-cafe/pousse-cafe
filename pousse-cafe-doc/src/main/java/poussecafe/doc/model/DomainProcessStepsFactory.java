@@ -137,7 +137,7 @@ public class DomainProcessStepsFactory implements Service {
     private Set<ToStep> locateToExternals(ProcessStepDoc processStepDoc) {
         Set<ToStep> toExternals = new HashSet<>();
         toExternals.addAll(processStepDoc.attributes().toExternals().value().stream().map(StepName::new).map(this::directStep).collect(toList()));
-        for(Entry<NameRequired, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().entrySet()) {
+        for(Entry<NameRequired, List<String>> entry : processStepDoc.attributes().toExternalsByEvent().value().entrySet()) {
             boolean required = entry.getKey().required();
             toExternals.addAll(entry.getValue().stream().map(name -> toStep(name, required)).collect(toList()));
         }

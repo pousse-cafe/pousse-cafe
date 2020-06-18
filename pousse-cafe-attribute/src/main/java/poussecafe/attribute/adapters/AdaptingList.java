@@ -9,6 +9,7 @@ import poussecafe.collection.ListEditor;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static poussecafe.attribute.adapters.DataAdapters.nullOrAdapted;
 
 public class AdaptingList<U, T>
 extends AdaptingCollection<U, T>
@@ -20,28 +21,20 @@ implements EditableList<T> {
     }
 
     private Collection<? extends U> adaptFromTToU(Collection<? extends T> c) {
-        return c.stream().map(item -> adapter().adaptSet(item)).collect(toList());
+        return c.stream().map(item -> nullOrAdapted(item, value -> adapter().adaptSet(value))).collect(toList());
     }
 
     private List<U> mutableList;
 
     @Override
     public T get(int index) {
-        return adapter().adaptGet(mutableList.get(index));
+        return nullOrAdapted(mutableList.get(index), value -> adapter().adaptGet(value));
     }
 
     @Override
     public T set(int index, T element) {
         U previousValue = mutableList.set(index, adapter().adaptSet(element));
-        return nullOrAdapted(previousValue);
-    }
-
-    private T nullOrAdapted(U previousValue) {
-        if(previousValue == null) {
-            return null;
-        } else {
-            return adapter().adaptGet(previousValue);
-        }
+        return nullOrAdapted(previousValue, value -> adapter().adaptGet(value));
     }
 
     @Override
@@ -52,7 +45,7 @@ implements EditableList<T> {
     @Override
     public T remove(int index) {
         U previousValue = mutableList.remove(index);
-        return nullOrAdapted(previousValue);
+        return nullOrAdapted(previousValue, value -> adapter().adaptGet(value));
     }
 
     @Override

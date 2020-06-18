@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.attribute.adapters.DataAdapters.nullOrAdapted;
 
 public class AdaptingIterator<U, T> implements Iterator<T> {
 
@@ -18,11 +19,7 @@ public class AdaptingIterator<U, T> implements Iterator<T> {
     @Override
     public T next() {
         next = iterator.next();
-        if(next == null) {
-            return null;
-        } else {
-            return adapter.apply(next);
-        }
+        return nullOrAdapted(next, adapter::apply);
     }
 
     private U next;

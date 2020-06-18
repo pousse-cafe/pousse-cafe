@@ -94,7 +94,7 @@ public class CollectionBackedMapAttributeMutableValueTest {
 
     private void thenContainsExpectedKeys(Set<StringId> expected) {
         for(StringId expectedKey : expected) {
-            assertTrue(attribute.containsKey(expectedKey));
+            assertTrue(attribute.value().containsKey(expectedKey));
         }
     }
 }

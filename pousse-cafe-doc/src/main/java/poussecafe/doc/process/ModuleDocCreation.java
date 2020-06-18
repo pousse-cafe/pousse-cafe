@@ -9,6 +9,7 @@ import poussecafe.process.DomainProcess;
 
 public class ModuleDocCreation extends DomainProcess {
 
+    @Deprecated(since = "0.17")
     public void addModuleDoc(PackageElement classDoc) {
         ModuleDoc moduleDoc = moduleDocFactory.newModuleDoc(classDoc);
         runInTransaction(ModuleDoc.class, () -> moduleDocRepository.add(moduleDoc));

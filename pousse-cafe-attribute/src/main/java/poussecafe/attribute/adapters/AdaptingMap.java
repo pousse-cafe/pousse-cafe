@@ -7,6 +7,7 @@ import poussecafe.attribute.map.EditableMap;
 import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.attribute.adapters.DataAdapters.nullOrAdapted;
 
 public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
 
@@ -22,33 +23,53 @@ public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
         return mutableMap.isEmpty();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(Object key) {
-        return mutableMap.containsKey(adaptKToL(key));
+        L adaptedKey;
+        try {
+            adaptedKey = adaptKToL((K) key);
+        } catch (ClassCastException e) {
+            return false;
+        }
+        return mutableMap.containsKey(adaptedKey);
     }
 
     @SuppressWarnings("unchecked")
-    private L adaptKToL(Object key) {
-        return keyAdapter.adaptSet((K) key);
+    private L adaptKToL(K key) {
+        return nullOrAdapted(key, keyAdapter::adaptSet);
     }
 
     private DataAdapter<L, K> keyAdapter;
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean containsValue(Object value) {
-        return mutableMap.containsValue(adaptVToU(value));
+        U adaptedValue;
+        try {
+            adaptedValue = adaptVToU((V) value);
+        } catch (ClassCastException e) {
+            return false;
+        }
+        return mutableMap.containsValue(adaptedValue);
     }
 
-    @SuppressWarnings("unchecked")
-    private U adaptVToU(Object value) {
-        return valueAdapter.adaptSet((V) value);
+    private U adaptVToU(V value) {
+        return nullOrAdapted(value, valueAdapter::adaptSet);
     }
 
     private DataAdapter<U, V> valueAdapter;
 
+    @SuppressWarnings("unchecked")
     @Override
     public V get(Object key) {
-        U value = mutableMap.get(adaptKToL(key));
+        L adaptedKey;
+        try {
+            adaptedKey = adaptKToL((K) key);
+        } catch (ClassCastException e) {
+            return null;
+        }
+        U value = mutableMap.get(adaptedKey);
         if(value == null) {
             return null;
         } else {
@@ -56,9 +77,8 @@ public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private V adaptUToV(Object value) {
-        return valueAdapter.adaptGet((U) value);
+    private V adaptUToV(U value) {
+        return nullOrAdapted(value, valueAdapter::adaptGet);
     }
 
     @Override
@@ -72,9 +92,16 @@ public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public V remove(Object key) {
-        U removedValue = mutableMap.remove(adaptKToL(key));
+        L adaptedKey;
+        try {
+            adaptedKey = adaptKToL((K) key);
+        } catch (ClassCastException e) {
+            return null;
+        }
+        U removedValue = mutableMap.remove(adaptedKey);
         return adaptUToV(removedValue);
     }
 
