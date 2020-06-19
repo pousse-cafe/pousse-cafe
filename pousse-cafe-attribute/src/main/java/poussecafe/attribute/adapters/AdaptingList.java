@@ -1,5 +1,6 @@
 package poussecafe.attribute.adapters;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -99,6 +100,10 @@ implements EditableList<T> {
     }
 
     public static class Builder<U, T> {
+
+        public Builder() {
+            set.collectionFactory(ArrayList::new);
+        }
 
         private AdaptingList<U, T> set = new AdaptingList<>();
 

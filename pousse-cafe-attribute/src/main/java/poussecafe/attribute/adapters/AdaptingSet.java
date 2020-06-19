@@ -1,5 +1,6 @@
 package poussecafe.attribute.adapters;
 
+import java.util.HashSet;
 import java.util.Set;
 import poussecafe.attribute.set.EditableSet;
 import poussecafe.collection.SetEditor;
@@ -17,6 +18,10 @@ implements EditableSet<T> {
     }
 
     public static class Builder<U, T> {
+
+        public Builder() {
+            set.collectionFactory(HashSet::new);
+        }
 
         private AdaptingSet<U, T> set = new AdaptingSet<>();
 

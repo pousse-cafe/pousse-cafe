@@ -2,6 +2,7 @@ package poussecafe.attribute.adapters;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,19 +29,29 @@ public abstract class AdaptingCollection<U, T> implements Collection<T> {
         return mutableCollection.isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o) {
-        U element;
-        try {
-            element = adapter.adaptSet((T) o);
-        } catch (ClassCastException e) {
-            return false;
-        }
-        return mutableCollection.contains(element);
+        return adaptedCollection().contains(o);
     }
 
     private DataAdapter<U, T> adapter;
+
+    protected Collection<T> adaptedCollection() {
+        Collection<T> adaptedCollection = collectionFactory.get();
+        iterator().forEachRemaining(adaptedCollection::add);
+        return adaptedCollection;
+    }
+
+    protected void collectionFactory(Supplier<Collection<T>> collectionFactory) {
+        requireNonNull(collectionFactory);
+        this.collectionFactory = collectionFactory;
+    }
+
+    private Supplier<Collection<T>> collectionFactory;
+
+    protected Supplier<Collection<T>> collectionFactory() {
+        return collectionFactory;
+    }
 
     protected void adapter(DataAdapter<U, T> adapter) {
         requireNonNull(adapter);
