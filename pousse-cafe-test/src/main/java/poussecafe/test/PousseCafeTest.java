@@ -1,5 +1,6 @@
 package poussecafe.test;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import org.junit.After;
@@ -60,7 +61,11 @@ public abstract class PousseCafeTest {
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {
-        wrapper.waitUntilEndOfMessageProcessing();
+        wrapper.waitUntilEndOfMessageProcessing(maxWaitTime());
+    }
+
+    protected Optional<Duration> maxWaitTime() {
+        return Optional.of(Duration.ofSeconds(5));
     }
 
     public <D extends DomainEvent> D newDomainEvent(Class<D> eventClass) {

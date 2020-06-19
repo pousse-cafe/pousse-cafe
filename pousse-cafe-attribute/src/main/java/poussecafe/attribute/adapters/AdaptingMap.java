@@ -7,6 +7,7 @@ import poussecafe.attribute.map.EditableMap;
 import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
 import static poussecafe.attribute.adapters.DataAdapters.nullOrAdapted;
 
 public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
@@ -176,23 +177,26 @@ public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
 
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Map) {
-            return entrySet().equals(((Map) obj).entrySet());
+            return adaptedMap().equals(obj);
         } else {
             return false;
         }
     }
 
+    private Map<K, V> adaptedMap() {
+        return entrySet().stream().collect(toMap(Entry::getKey, Entry::getValue));
+    }
+
     @Override
     public int hashCode() {
-        return entrySet().hashCode();
+        return adaptedMap().hashCode();
     }
 
     @Override
     public String toString() {
-        return entrySet().toString();
+        return adaptedMap().toString();
     }
 }
