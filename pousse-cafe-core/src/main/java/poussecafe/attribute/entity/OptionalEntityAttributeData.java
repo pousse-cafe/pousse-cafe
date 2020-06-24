@@ -4,8 +4,10 @@ import java.util.Objects;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.runtime.ActiveAggregate;
 
-public abstract class OptionalEntityAttributeData<D extends EntityAttributes<?>, E extends Entity<?, D>> implements OptionalEntityAttribute<E> {
+public abstract class OptionalEntityAttributeData<D extends EntityAttributes<?>, E extends Entity<?, D>>
+implements OptionalEntityAttribute<E> {
 
     public OptionalEntityAttributeData(Class<E> primitiveClass) {
         Objects.requireNonNull(primitiveClass);
@@ -16,28 +18,28 @@ public abstract class OptionalEntityAttributeData<D extends EntityAttributes<?>,
 
     @Override
     public OptionalAttribute<E> inContextOf(Entity<?, ?> primitive) {
-        return new OptionalAttribute<>() {
-            @Override
-            public E nullableValue() {
-                D nullableData = OptionalEntityAttributeData.this.getData();
-                if(nullableData == null) {
-                    return null;
-                } else {
-                    E entity = primitive.newEntity(primitiveClass);
-                    entity.attributes();
-                    return entity;
-                }
-            }
+        return this;
+    }
 
-            @Override
-            public void optionalValue(E value) {
-                if(value == null) {
-                    OptionalEntityAttributeData.this.setData(null);
-                } else {
-                    OptionalEntityAttributeData.this.setData(value.attributes());
-                }
-            }
-        };
+    @Override
+    public E nullableValue() {
+        D nullableData = OptionalEntityAttributeData.this.getData();
+        if(nullableData == null) {
+            return null;
+        } else {
+            E entity = newEntity();
+            entity.attributes(nullableData);
+            return entity;
+        }
+    }
+
+    @Override
+    public void optionalValue(E value) {
+        if(value == null) {
+            setData(null);
+        } else {
+            setData(value.attributes());
+        }
     }
 
     protected abstract D getData();
@@ -46,6 +48,11 @@ public abstract class OptionalEntityAttributeData<D extends EntityAttributes<?>,
 
     @Override
     public E newInContextOf(Entity<?, ?> primitive) {
-        return primitive.newEntity(primitiveClass);
+        return newEntity();
+    }
+
+    @SuppressWarnings("unchecked")
+    private E newEntity() {
+        return (E) ActiveAggregate.instance().get().newEntity(primitiveClass);
     }
 }

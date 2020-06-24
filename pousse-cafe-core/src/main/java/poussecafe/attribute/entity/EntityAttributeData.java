@@ -1,35 +1,29 @@
 package poussecafe.attribute.entity;
 
+import java.util.Objects;
 import poussecafe.attribute.Attribute;
+import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
-
-import java.util.Objects;
+import poussecafe.runtime.ActiveAggregate;
 
 public abstract class EntityAttributeData<D extends EntityAttributes<?>, E extends Entity<?, D>> implements EntityAttribute<E> {
 
     public EntityAttributeData(Class<E> primitiveClass) {
         Objects.requireNonNull(primitiveClass);
         this.primitiveClass = primitiveClass;
+
+        root = ActiveAggregate.instance().get();
     }
 
     private Class<E> primitiveClass;
 
+    @SuppressWarnings("rawtypes")
+    private AggregateRoot root;
+
     @Override
     public Attribute<E> inContextOf(Entity<?, ?> primitive) {
-        return new Attribute<E>() {
-            @Override
-            public E value() {
-                E entity = primitive.newEntity(primitiveClass);
-                entity.attributes(EntityAttributeData.this.getData());
-                return entity;
-            }
-
-            @Override
-            public void value(E value) {
-                EntityAttributeData.this.setData(value.attributes());
-            }
-        };
+        return this;
     }
 
     protected abstract D getData();
@@ -38,6 +32,23 @@ public abstract class EntityAttributeData<D extends EntityAttributes<?>, E exten
 
     @Override
     public E newInContextOf(Entity<?, ?> primitive) {
-        return primitive.newEntity(primitiveClass);
+        return newEntity();
+    }
+
+    @SuppressWarnings("unchecked")
+    private E newEntity() {
+        return (E) root.newEntity(primitiveClass);
+    }
+
+    @Override
+    public E value() {
+        E entity = newEntity();
+        entity.attributes(getData());
+        return entity;
+    }
+
+    @Override
+    public void value(E value) {
+        setData(value.attributes());
     }
 }

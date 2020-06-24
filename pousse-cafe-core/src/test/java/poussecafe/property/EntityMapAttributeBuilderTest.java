@@ -5,8 +5,10 @@ import java.util.Map;
 import org.junit.Test;
 import poussecafe.attribute.entity.EntityAttributeBuilder;
 import poussecafe.attribute.entity.EntityMapAttribute;
+import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Entity;
 import poussecafe.entity.SimpleEntity;
+import poussecafe.runtime.ActiveAggregate;
 import poussecafe.testmodule.SimpleEntityData;
 import poussecafe.util.ReflectionUtils;
 import poussecafe.util.StringId;
@@ -20,8 +22,8 @@ public class EntityMapAttributeBuilderTest {
     private EntityMapAttribute<StringId, SimpleEntity> propertyWithConversion;
 
     @SuppressWarnings("rawtypes")
-    private Entity<?, ?> primitive() {
-        return new Entity() {
+    private AggregateRoot<?, ?> primitive() {
+        return new AggregateRoot() {
             @Override
             public Entity newEntity(Class entityClass) {
                 return new SimpleEntity();
@@ -37,9 +39,14 @@ public class EntityMapAttributeBuilderTest {
 
     @Test
     public void readWriteWithConversion() {
+        givenRegisteredAggregate();
         givenReadWriteAttributeWithConversion();
         whenWritingValueWithConversion();
         thenValueWithConvertionIs(valueWithConversion);
+    }
+
+    private void givenRegisteredAggregate() {
+        ActiveAggregate.instance().set(primitive());
     }
 
     private void givenReadWriteAttributeWithConversion() {
@@ -64,11 +71,11 @@ public class EntityMapAttributeBuilderTest {
     }
 
     private void whenWritingValueWithConversion() {
-        propertyWithConversion.inContextOf(primitive()).value(newValue
+        propertyWithConversion.value(newValue
                 .entrySet()
                 .stream()
                 .collect(toMap(entry -> new StringId(entry.getKey()), entry -> entity(entry.getValue()))));
-        valueWithConversion = propertyWithConversion.inContextOf(primitive()).value();
+        valueWithConversion = propertyWithConversion.value();
     }
 
     private Map<String, SimpleEntityData> newValue = initNewValue();

@@ -1,9 +1,11 @@
 package poussecafe.attribute.entity;
 
 import org.junit.Test;
+import poussecafe.entity.SimpleEntity;
 import poussecafe.environment.EntityFactory;
+import poussecafe.runtime.ActiveAggregate;
 import poussecafe.testmodule.SimpleAggregate;
-import poussecafe.testmodule.SimpleAggregateData;
+import poussecafe.testmodule.SimpleEntityData;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,50 +17,56 @@ public class EntityAttributeTest {
 
     @Test(expected = NullPointerException.class)
     public void cannotSetEmptyEntity() {
+        givenAggregate();
         givenAttribute();
         whenSettingEntity(null);
     }
 
     private void givenAttribute() {
-        attribute = EntityAttributeBuilder.entity(SimpleAggregate.class, SimpleAggregateData.class)
+        attribute = EntityAttributeBuilder.entity(SimpleEntity.class, SimpleEntityData.class)
             .read(this::getter)
             .write(this::setter)
             .build();
+    }
 
+    private void givenAggregate() {
         aggregate = new SimpleAggregate();
         EntityFactory entityFactory = mock(EntityFactory.class);
         when(entityFactory.newEntity(any())).thenReturn(new SimpleAggregate());
         aggregate.entityFactory(entityFactory);
+
+        ActiveAggregate.instance().set(aggregate);
     }
 
-    private void whenSettingEntity(SimpleAggregate value) {
-        attribute.inContextOf(aggregate).value(value);
+    private void whenSettingEntity(SimpleEntity value) {
+        attribute.value(value);
     }
 
     private SimpleAggregate aggregate;
 
-    private EntityAttribute<SimpleAggregate> attribute;
+    private EntityAttribute<SimpleEntity> attribute;
 
-    private SimpleAggregateData getter() {
+    private SimpleEntityData getter() {
         return data;
     }
 
-    private SimpleAggregateData data;
+    private SimpleEntityData data;
 
-    private void setter(SimpleAggregateData data) {
+    private void setter(SimpleEntityData data) {
         this.data = data;
     }
 
     @Test
     public void canSetPresentEntity() {
+        givenAggregate();
         givenAttribute();
         whenSettingEntity(presentEntity());
         thenEntityPresent();
     }
 
-    private SimpleAggregate presentEntity() {
-        SimpleAggregate entity = new SimpleAggregate();
-        entity.attributes(new SimpleAggregateData());
+    private SimpleEntity presentEntity() {
+        SimpleEntity entity = new SimpleEntity();
+        entity.attributes(new SimpleEntityData());
         return entity;
     }
 

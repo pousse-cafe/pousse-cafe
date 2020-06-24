@@ -118,6 +118,7 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         return entity;
     }
 
+    @Deprecated(since = "0.20.0")
     public <K, E extends Entity<K, ?>> Setter<K, E> setNew(EntityAttribute<E> attribute) {
         return new Setter<>(attribute);
     }

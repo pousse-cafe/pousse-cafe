@@ -2,9 +2,11 @@ package poussecafe.attribute.entity;
 
 import java.util.Optional;
 import org.junit.Test;
+import poussecafe.entity.SimpleEntity;
 import poussecafe.environment.EntityFactory;
+import poussecafe.runtime.ActiveAggregate;
 import poussecafe.testmodule.SimpleAggregate;
-import poussecafe.testmodule.SimpleAggregateData;
+import poussecafe.testmodule.SimpleEntityData;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -18,61 +20,70 @@ public class OptionalEntityAttributeTest {
 
     @Test
     public void canSetEmptyEntity() {
+        givenAggregate();
         givenAttribute();
         whenSettingEntity(Optional.empty());
         thenNoEntityPresent();
     }
 
     private void givenAttribute() {
-        attribute = EntityAttributeBuilder.optional(SimpleAggregate.class, SimpleAggregateData.class)
+        attribute = EntityAttributeBuilder.optional(SimpleEntity.class, SimpleEntityData.class)
             .read(this::getter)
             .write(this::setter)
             .build();
+    }
 
+    private void givenAggregate() {
         aggregate = new SimpleAggregate();
         EntityFactory entityFactory = mock(EntityFactory.class);
         when(entityFactory.newEntity(any())).thenReturn(new SimpleAggregate());
         aggregate.entityFactory(entityFactory);
     }
 
-    private void whenSettingEntity(Optional<SimpleAggregate> value) {
-        attribute.inContextOf(aggregate).value(value);
+    private void whenSettingEntity(Optional<SimpleEntity> value) {
+        attribute.value(value);
     }
 
     private SimpleAggregate aggregate;
 
-    private OptionalEntityAttribute<SimpleAggregate> attribute;
+    private OptionalEntityAttribute<SimpleEntity> attribute;
 
-    private SimpleAggregateData getter() {
+    private SimpleEntityData getter() {
         return data;
     }
 
-    private SimpleAggregateData data;
+    private SimpleEntityData data;
 
-    private void setter(SimpleAggregateData data) {
+    private void setter(SimpleEntityData data) {
         this.data = data;
     }
 
     private void thenNoEntityPresent() {
         assertThat(data, nullValue());
-        assertTrue(attribute.inContextOf(aggregate).value().isEmpty());
+        assertTrue(attribute.value().isEmpty());
     }
 
     @Test
     public void canSetPresentEntity() {
+        givenAggregate();
+        givenRegisteredAggregate();
         givenAttribute();
         whenSettingEntity(Optional.of(presentEntity()));
         thenEntityPresent();
     }
 
-    private SimpleAggregate presentEntity() {
-        SimpleAggregate entity = new SimpleAggregate();
-        entity.attributes(new SimpleAggregateData());
+    private void givenRegisteredAggregate() {
+        ActiveAggregate.instance().set(aggregate);
+    }
+
+    private SimpleEntity presentEntity() {
+        SimpleEntity entity = new SimpleEntity();
+        entity.attributes(new SimpleEntityData());
         return entity;
     }
 
     private void thenEntityPresent() {
         assertThat(data, notNullValue());
-        assertTrue(attribute.inContextOf(aggregate).value().isPresent());
+        assertTrue(attribute.value().isPresent());
     }
 }
