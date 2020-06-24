@@ -4,7 +4,11 @@ import java.util.Objects;
 import poussecafe.attribute.MapAttribute;
 import poussecafe.domain.Entity;
 
-public interface EntityMapAttribute<K, E extends Entity<K, ?>> extends MapAttribute<K, E> {
+public interface EntityMapAttribute<K, E extends Entity<K, ?>>
+extends MapAttribute<K, E> {
+
+    @Override
+    EditableEntityMap<K, E> value();
 
     @Deprecated(since = "0.20")
     MapAttribute<K, E> inContextOf(Entity<?, ?> primitive);

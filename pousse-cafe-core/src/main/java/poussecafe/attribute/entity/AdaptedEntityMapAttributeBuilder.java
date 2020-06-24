@@ -10,7 +10,7 @@ import poussecafe.domain.EntityAttributes;
  * @param <K> Attribute id type
  * @param <E> Attribute value type
  */
-public class AdaptedEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, ?>> {
+public class AdaptedEntityMapAttributeBuilder<J, U extends EntityAttributes<K>, K, E extends Entity<K, U>> {
 
     AdaptedEntityMapAttributeBuilder(Class<E> entityClass, Function<J, K> idAdapter) {
         this.entityClass = entityClass;

@@ -28,6 +28,7 @@ public class AdaptedReadWriteEntityMapAttributeBuilder<J, U extends EntityAttrib
 
     private Map<J, U> map;
 
+    @SuppressWarnings("unchecked")
     public EntityMapAttribute<K, E> build() {
         return new ConvertingEntityMapAttribute<>(map, entityClass) {
             @Override

@@ -108,6 +108,10 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         return (C) context;
     }
 
+    /**
+     * @deprecated use newEntityBuilder()
+     */
+    @Deprecated(since = "0.20")
     public <E extends Entity<?, ?>> E newEntity(Class<E> entityClass) {
         E entity = entityFactory.newEntity(new NewEntityInstanceSpecification.Builder<E>()
                 .entityClass(entityClass)
@@ -118,7 +122,10 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
         return entity;
     }
 
-    @Deprecated(since = "0.20.0")
+    /**
+     * @deprecated use newEntityBuilder() and set directly attribute's value
+     */
+    @Deprecated(since = "0.20")
     public <K, E extends Entity<K, ?>> Setter<K, E> setNew(EntityAttribute<E> attribute) {
         return new Setter<>(attribute);
     }
@@ -145,5 +152,10 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
             attribute.inContextOf(Entity.this).value(newEntity);
             return newEntity;
         }
+    }
+
+    public <J, F extends EntityAttributes<J>, E extends Entity<J, F>>
+    EntityBuilder<J, F, E> newEntityBuilder(Class<E> entityClass) {
+        return new EntityBuilder<J, F, E>(entityFactory).withType(entityClass);
     }
 }

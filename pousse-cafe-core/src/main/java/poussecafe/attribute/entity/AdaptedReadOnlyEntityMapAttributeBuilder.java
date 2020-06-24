@@ -24,8 +24,9 @@ public class AdaptedReadOnlyEntityMapAttributeBuilder<J, U extends EntityAttribu
 
     private Function<J, K> readAdapter;
 
-    public EntityMapAttribute<K, E> build(Map<J, U> map) {
-        return new ConvertingEntityMapAttribute<>(map, entityClass) {
+    @SuppressWarnings("unchecked")
+    public <G extends Entity<K, U>> EntityMapAttribute<K, G> build(Map<J, U> map) {
+        return new ConvertingEntityMapAttribute<>(map, (Class<G>) entityClass) {
 
             @Override
             protected J convertToKey(K from) {

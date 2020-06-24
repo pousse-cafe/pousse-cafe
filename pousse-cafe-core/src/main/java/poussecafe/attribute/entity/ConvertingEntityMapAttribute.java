@@ -33,7 +33,7 @@ implements EntityMapAttribute<K, E> {
 
     @SuppressWarnings("unchecked")
     private E newEntity() {
-        return (E) aggregateRoot.newEntity(primitiveClass);
+        return (E) aggregateRoot.newEntityBuilder(primitiveClass).buildWithoutId();
     }
 
     @SuppressWarnings("rawtypes")
@@ -59,5 +59,10 @@ implements EntityMapAttribute<K, E> {
     @Override
     public E newInContextOf(Entity<?, ?> primitive) {
         return newEntity();
+    }
+
+    @Override
+    public EditableEntityMap<K, E> value() {
+        return new EntityMap<>(super.value());
     }
 }

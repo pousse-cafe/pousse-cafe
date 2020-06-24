@@ -17,7 +17,7 @@ public class EntityAttributeBuilder {
         return new EntityMapAttributeBuilder<>(entityClass);
     }
 
-    public static <D extends EntityAttributes<?>, E extends Entity<?, D>, F extends D>
+    public static <K, D extends EntityAttributes<K>, E extends Entity<K, D>, F extends D>
     SingleEntityAttributeBuilder<D, E, F> entity(Class<E> entityClass, Class<F> dataClass) {
         Objects.requireNonNull(entityClass);
         SingleEntityAttributeBuilder<D, E, F> builder = new SingleEntityAttributeBuilder<>();
