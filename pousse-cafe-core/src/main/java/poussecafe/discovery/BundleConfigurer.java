@@ -22,23 +22,33 @@ public class BundleConfigurer {
          */
         @Deprecated(since = "0.17")
         public Builder moduleBasePackage(String packageName) {
-            moduleBasePackages.add(packageName);
+            basePackages.add(packageName);
             return this;
         }
 
-        private Set<String> moduleBasePackages = new HashSet<>();
+        private Set<String> basePackages = new HashSet<>();
 
         public Builder module(Class<? extends Module> moduleClass) {
             if(moduleClass == DefaultModule.class) {
-                moduleBasePackages.add("");
+                basePackages.add("");
             } else {
-                moduleBasePackages.add(moduleClass.getPackageName());
+                basePackages.add(moduleClass.getPackageName());
             }
             return this;
         }
 
+        public Builder basePackage(String basePackage) {
+            basePackages.add(basePackage);
+            return this;
+        }
+
+        public Builder basePackageClass(Class<?> basePackageClass) {
+            basePackage(basePackageClass.getPackageName());
+            return this;
+        }
+
         public BundleConfigurer build() {
-            configurer.classPathExplorer = new ClassPathExplorer(moduleBasePackages);
+            configurer.classPathExplorer = new ClassPathExplorer(basePackages);
             return configurer;
         }
     }
