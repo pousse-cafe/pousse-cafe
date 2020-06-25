@@ -19,14 +19,10 @@ public class MyProcessTest extends MyModuleTest {
      */
     @Test
     public void myCommandUpdatesAggregate() {
-        givenAvailableAggregate(); // Let's create an aggregate to execute a command against
+        given("existingMyAggregate"); // Let's create an aggregate to execute a command against
         givenCommand(); // Let's create a command with the purpose of modifying the existing aggregate
         whenProcessingCommand(); // Now, let's to the actual execution of the command
         thenAggregateUpdated(); // Finally, let's check that the aggregate was properly updated
-    }
-
-    private void givenAvailableAggregate() {
-        loadDataFile("/existingMyAggregate.json");
     }
 
     private void givenCommand() {

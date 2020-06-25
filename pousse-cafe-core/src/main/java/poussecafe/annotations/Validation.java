@@ -11,4 +11,6 @@ import poussecafe.runtime.ValidationType;
 public @interface Validation {
 
     ValidationType value();
+
+    String field() default "";
 }

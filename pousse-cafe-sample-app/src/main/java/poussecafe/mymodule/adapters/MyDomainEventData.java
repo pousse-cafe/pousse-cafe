@@ -14,10 +14,10 @@ public class MyDomainEventData implements Serializable, MyDomainEvent {
     @Override
     public Attribute<MyAggregateId> identifier() {
         return AttributeBuilder.stringId(MyAggregateId.class)
-                .read(() -> id)
-                .write(value -> id = value)
+                .read(() -> identifier)
+                .write(value -> identifier = value)
                 .build();
     }
 
-    private String id;
+    private String identifier;
 }

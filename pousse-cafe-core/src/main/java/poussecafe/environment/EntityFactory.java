@@ -3,28 +3,35 @@ package poussecafe.environment;
 import java.util.Objects;
 import java.util.function.Supplier;
 import poussecafe.domain.Entity;
+import poussecafe.runtime.MessageValidator;
 import poussecafe.storage.Storage;
 import poussecafe.util.ReflectionUtils;
 
 public class EntityFactory {
 
-    public static class Builder {
+    static class Builder {
 
         private EntityFactory entityFactory = new EntityFactory();
 
-        public Builder environment(Environment environment) {
+        Builder environment(Environment environment) {
             entityFactory.environment = environment;
             return this;
         }
 
-        public Builder messageFactory(MessageFactory messageFactory) {
+        Builder messageFactory(MessageFactory messageFactory) {
             entityFactory.messageFactory = messageFactory;
             return this;
         }
 
-        public EntityFactory build() {
+        Builder messageValidator(MessageValidator messageValidator) {
+            entityFactory.messageValidator = messageValidator;
+            return this;
+        }
+
+        EntityFactory build() {
             Objects.requireNonNull(entityFactory.environment);
             Objects.requireNonNull(entityFactory.messageFactory);
+            Objects.requireNonNull(entityFactory.messageValidator);
             return entityFactory;
         }
     }
@@ -41,6 +48,7 @@ public class EntityFactory {
 
         entity.entityFactory(this);
         entity.messageFactory(messageFactory);
+        entity.messageValidator(messageValidator);
 
         if(specification.existingData() != null) {
             entity.attributes(specification.existingData());
@@ -64,6 +72,8 @@ public class EntityFactory {
     }
 
     private MessageFactory messageFactory;
+
+    private MessageValidator messageValidator;
 
     private Object supplyEntityDataImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.entityDataFactory(entityClass);

@@ -5,6 +5,7 @@ import poussecafe.attribute.entity.EntityAttribute;
 import poussecafe.environment.EntityFactory;
 import poussecafe.environment.MessageFactory;
 import poussecafe.environment.NewEntityInstanceSpecification;
+import poussecafe.runtime.MessageValidator;
 import poussecafe.storage.MessageCollection;
 import poussecafe.storage.Storage;
 
@@ -89,7 +90,14 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
     }
 
     public void issue(DomainEvent event) {
+        messageValidator.validOrThrow(event);
         messageCollection().addMessage(event);
+    }
+
+    private MessageValidator messageValidator;
+
+    public void messageValidator(MessageValidator messageValidator) {
+        this.messageValidator = messageValidator;
     }
 
     public <E extends DomainEvent> E newDomainEvent(Class<E> eventClass) {

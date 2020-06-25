@@ -27,7 +27,8 @@ public abstract class PousseCafeTest {
     }
 
     protected Runtime.Builder runtimeBuilder() {
-        return new Runtime.Builder();
+        return new Runtime.Builder()
+                .messageValidation(true);
     }
 
     /**

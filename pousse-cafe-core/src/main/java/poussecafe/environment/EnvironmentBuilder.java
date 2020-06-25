@@ -155,12 +155,20 @@ public class EnvironmentBuilder {
         return this;
     }
 
+    public EnvironmentBuilder messageValidation(boolean messageValidation) {
+        this.messageValidation = messageValidation;
+        return this;
+    }
+
+    private boolean messageValidation;
+
     public Environment build() {
         Objects.requireNonNull(transactionRunnerLocator);
         Objects.requireNonNull(injector);
         Objects.requireNonNull(applicationPerformanceMonitoring);
 
         checkEnvironment();
+        environment.initEntityFactory(messageValidation);
 
         injector.registerInjectableService(environment);
         injector.registerInjectableService(environment.entityFactory());

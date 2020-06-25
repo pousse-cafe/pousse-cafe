@@ -22,11 +22,12 @@ public class AttributesValidator {
                     .attributeName(attributeName)
                     .build();
             Optional<ValidationType> overridingValidationType = attributeMethod.validationType();
+            Optional<String> fieldName = attributeMethod.fieldName();
             if(overridingValidationType.isPresent()) {
                 validationType = overridingValidationType.get();
             }
 
-            var field = accessor.instanceField(attributeName);
+            var field = accessor.instanceField(fieldName.orElse(attributeName));
             if(validationType == ValidationType.NONE) {
                 // NoOp
             } else if(validationType == ValidationType.NOT_NULL) {

@@ -7,15 +7,23 @@ import poussecafe.annotations.Validation;
 public class AttributeMethod {
 
     public Optional<ValidationType> validationType() {
-        Validation annotation = method.getAnnotation(Validation.class);
-        return Optional.ofNullable(annotation).map(Validation::value);
+        return validationAnnotation.map(Validation::value);
     }
 
-    private Method method;
+    private Optional<Validation> validationAnnotation;
+
+    public Optional<String> fieldName() {
+        String annotationField = validationAnnotation.map(Validation::field).orElse("");
+        if(annotationField.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(annotationField);
+        }
+    }
 
     public static class Builder {
 
-        private AttributeMethod method = new AttributeMethod();
+        private AttributeMethod attributeMethod = new AttributeMethod();
 
         public Builder containerClass(Class<?> containerClass) {
             this.containerClass = containerClass;
@@ -33,11 +41,13 @@ public class AttributeMethod {
 
         public AttributeMethod build() {
             try {
-                method.method = containerClass.getMethod(attributeName);
+                Method method = containerClass.getMethod(attributeName);
+                Validation annotation = method.getAnnotation(Validation.class);
+                attributeMethod.validationAnnotation = Optional.ofNullable(annotation);
             } catch (NoSuchMethodException | SecurityException e) {
                 throw new IllegalArgumentException("Attribute method " + attributeName + " not found");
             }
-            return method;
+            return attributeMethod;
         }
     }
 }

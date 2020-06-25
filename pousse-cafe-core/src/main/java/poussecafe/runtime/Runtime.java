@@ -113,6 +113,11 @@ public class Runtime {
             return this;
         }
 
+        public Builder messageValidation(boolean enabled) {
+            environmentBuilder.messageValidation(enabled);
+            return this;
+        }
+
         public Runtime buildAndStart() {
             Runtime builtRuntime = build();
             builtRuntime.start();

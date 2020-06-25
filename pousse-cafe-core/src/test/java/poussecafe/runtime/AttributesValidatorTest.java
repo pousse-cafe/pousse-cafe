@@ -59,7 +59,7 @@ public class AttributesValidatorTest {
     private Exception validationException;
 
     @Test
-    public void invvalidMessageFailsWithAttributes() {
+    public void invalidMessageFailsWithAttributes() {
         givenAttributesWhenIgnoringDontCare(true);
         givenContainer(invalidMessage());
         whenValidating();
@@ -97,7 +97,7 @@ public class AttributesValidatorTest {
     }
 
     @Test
-    public void invvalidMessageFailsWithDefinition() {
+    public void invalidMessageFailsWithDefinition() {
         givenDefinitionWhenIgnoringDontCare();
         givenContainer(invalidMessageWithAnnotation());
         whenValidating();
@@ -106,5 +106,19 @@ public class AttributesValidatorTest {
 
     private Object invalidMessageWithAnnotation() {
         return new AttributesContainerWithValidationAnnotation();
+    }
+
+    @Test
+    public void validMessageWithOverriddenFieldPassesWithDefinition() {
+        givenDefinitionWhenIgnoringDontCare();
+        givenContainer(validWithOverriddenField());
+        whenValidating();
+        thenValidationPassed(true);
+    }
+
+    private Object validWithOverriddenField() {
+        var validMessage = new AttributesContainerWithOverriddenField();
+        validMessage.string().value("test");
+        return validMessage;
     }
 }

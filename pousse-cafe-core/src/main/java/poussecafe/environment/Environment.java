@@ -18,6 +18,8 @@ import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
 import poussecafe.process.DomainProcess;
 import poussecafe.processing.ListenersSet;
+import poussecafe.runtime.NoOpMessageValidator;
+import poussecafe.runtime.MessageValidator;
 import poussecafe.storage.Storage;
 
 import static java.util.Collections.unmodifiableCollection;
@@ -26,17 +28,27 @@ import static java.util.stream.Collectors.toList;
 
 public class Environment {
 
-    public Environment() {
+    Environment() {
         messageFactory = new MessageFactory(this);
-        entityFactory = new EntityFactory.Builder()
-                .environment(this)
-                .messageFactory(messageFactory)
-                .build();
         messageListenerRegistrar = new MessageListenerRegistrar();
         messageListenerRegistrar.setEnvironment(this);
     }
 
     MessageListenerRegistrar messageListenerRegistrar;
+
+    void initEntityFactory(boolean messageValidation) {
+        MessageValidator messageValidator;
+        if(messageValidation) {
+            messageValidator = new EnvironmentMessageValidator(this);
+        } else {
+            messageValidator = NoOpMessageValidator.instance();
+        }
+        entityFactory = new EntityFactory.Builder()
+                .environment(this)
+                .messageFactory(messageFactory)
+                .messageValidator(messageValidator)
+                .build();
+    }
 
     private EntityFactory entityFactory;
 
