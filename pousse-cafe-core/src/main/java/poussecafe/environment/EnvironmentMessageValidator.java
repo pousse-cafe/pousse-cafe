@@ -18,10 +18,10 @@ public class EnvironmentMessageValidator implements MessageValidator {
     private Environment environment;
 
     @Override
-    public void validOrThrow(Message message) {
+    public void validOrElseThrow(Message message) {
         Class<?> messageClass = environment.definedMessageClass(message.getClass());
         var validator = validator(messageClass);
-        validator.validOrThrow(message);
+        validator.validOrElseThrow(message);
     }
 
     private AttributesValidator validator(Class<?> messageClass) {

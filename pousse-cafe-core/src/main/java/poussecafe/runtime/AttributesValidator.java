@@ -11,7 +11,7 @@ import static poussecafe.util.ReflectionUtils.access;
 
 public class AttributesValidator {
 
-    public void validOrThrow(Object container) {
+    public void validOrElseThrow(Object container) {
         var accessor = access(container);
         for(Entry<String, ValidationType> attribute : attributes.entrySet()) {
             var attributeName = attribute.getKey();

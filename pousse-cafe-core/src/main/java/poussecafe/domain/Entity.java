@@ -90,7 +90,7 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
     }
 
     public void issue(DomainEvent event) {
-        messageValidator.validOrThrow(event);
+        messageValidator.validOrElseThrow(event);
         messageCollection().addMessage(event);
     }
 

@@ -42,7 +42,7 @@ public class AttributesValidatorTest {
 
     private void whenValidating() {
         try {
-            validatorBuilder.build().validOrThrow(containerToValidate);
+            validatorBuilder.build().validOrElseThrow(containerToValidate);
         } catch(IllegalArgumentException e) {
             validationException = e;
         }

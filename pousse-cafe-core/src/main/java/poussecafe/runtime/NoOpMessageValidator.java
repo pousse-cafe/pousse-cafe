@@ -5,7 +5,7 @@ import poussecafe.messaging.Message;
 public class NoOpMessageValidator implements MessageValidator {
 
     @Override
-    public void validOrThrow(Message message) {
+    public void validOrElseThrow(Message message) {
         // No validation
     }
 
