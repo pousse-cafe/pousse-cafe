@@ -100,6 +100,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         span.setName(method.getName());
         try {
             AggregateRoot targetAggregateRoot = repository.get(id);
+            runner.validChronologyOrElseThrow(message, targetAggregateRoot);
             targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
             MethodInvoker invoker = new MethodInvoker.Builder()
                     .method(method)
