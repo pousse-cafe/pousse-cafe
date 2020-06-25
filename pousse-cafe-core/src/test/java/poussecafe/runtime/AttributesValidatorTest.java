@@ -1,6 +1,5 @@
 package poussecafe.runtime;
 
-import java.util.Map;
 import org.junit.Test;
 import poussecafe.collection.MapEditor;
 
@@ -11,22 +10,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class AttributesValidatorTest {
 
     @Test
-    public void validMessagePasses() {
-        givenDefinitionWhenIgnoringDontCare(true);
+    public void validMessagePassesWithAttributes() {
+        givenAttributesWhenIgnoringDontCare(true);
         givenContainer(validContainer());
         whenValidating();
         thenValidationPassed(true);
     }
 
-    private void givenDefinitionWhenIgnoringDontCare(boolean ignore) {
-        attributes = new MapEditor<String, ValidationType>()
+    private void givenAttributesWhenIgnoringDontCare(boolean ignore) {
+        var attributes = new MapEditor<String, ValidationType>()
                 .put("string", ValidationType.NOT_NULL)
                 .put("optionalString", ValidationType.PRESENT)
                 .put("dontCare", ignore ? ValidationType.NONE : ValidationType.NOT_NULL)
                 .finish();
+        validatorBuilder.attributes(attributes);
     }
 
-    private Map<String, ValidationType> attributes;
+    private AttributesValidator.Builder validatorBuilder = new AttributesValidator.Builder();
 
     private void givenContainer(Object validContainer) {
         containerToValidate = validContainer;
@@ -42,10 +42,7 @@ public class AttributesValidatorTest {
 
     private void whenValidating() {
         try {
-            new AttributesValidator.Builder()
-                .attributes(attributes)
-                .build()
-                .validOrThrow(containerToValidate);
+            validatorBuilder.build().validOrThrow(containerToValidate);
         } catch(IllegalArgumentException e) {
             validationException = e;
         }
@@ -62,8 +59,8 @@ public class AttributesValidatorTest {
     private Exception validationException;
 
     @Test
-    public void invvalidMessageFails() {
-        givenDefinitionWhenIgnoringDontCare(true);
+    public void invvalidMessageFailsWithAttributes() {
+        givenAttributesWhenIgnoringDontCare(true);
         givenContainer(invalidMessage());
         whenValidating();
         thenValidationPassed(false);
@@ -74,10 +71,40 @@ public class AttributesValidatorTest {
     }
 
     @Test
-    public void messageWithMissingFieldFails() {
-        givenDefinitionWhenIgnoringDontCare(false);
+    public void messageWithMissingFieldFailsWithAttributes() {
+        givenAttributesWhenIgnoringDontCare(false);
         givenContainer(validContainer());
         whenValidating();
         thenValidationPassed(false);
+    }
+
+    @Test
+    public void validMessagePassesWithDefinition() {
+        givenDefinitionWhenIgnoringDontCare();
+        givenContainer(validContainerWithAnnotation());
+        whenValidating();
+        thenValidationPassed(true);
+    }
+
+    private Object validContainerWithAnnotation() {
+        var validMessage = new AttributesContainerWithValidationAnnotation();
+        validMessage.string().value("test");
+        return validMessage;
+    }
+
+    private void givenDefinitionWhenIgnoringDontCare() {
+        validatorBuilder.definition(AttributesDefinition.class);
+    }
+
+    @Test
+    public void invvalidMessageFailsWithDefinition() {
+        givenDefinitionWhenIgnoringDontCare();
+        givenContainer(invalidMessageWithAnnotation());
+        whenValidating();
+        thenValidationPassed(false);
+    }
+
+    private Object invalidMessageWithAnnotation() {
+        return new AttributesContainerWithValidationAnnotation();
     }
 }

@@ -3,6 +3,7 @@ package poussecafe.runtime;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import poussecafe.util.InstanceField;
 
@@ -15,6 +16,15 @@ public class AttributesValidator {
         for(Entry<String, ValidationType> attribute : attributes.entrySet()) {
             var attributeName = attribute.getKey();
             var validationType = attribute.getValue();
+
+            AttributeMethod attributeMethod = new AttributeMethod.Builder()
+                    .containerClass(container.getClass())
+                    .attributeName(attributeName)
+                    .build();
+            Optional<ValidationType> overridingValidationType = attributeMethod.validationType();
+            if(overridingValidationType.isPresent()) {
+                validationType = overridingValidationType.get();
+            }
 
             var field = accessor.instanceField(attributeName);
             if(validationType == ValidationType.NONE) {
@@ -56,6 +66,11 @@ public class AttributesValidator {
 
         public Builder attributes(Map<String, ValidationType> attributes) {
             validator.attributes = attributes;
+            return this;
+        }
+
+        public Builder definition(Class<?> attributesDefinition) {
+            validator.attributes = AttributesValidatorAttributesFactory.build(attributesDefinition);
             return this;
         }
     }
