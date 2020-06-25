@@ -1,10 +1,15 @@
 package poussecafe.collection;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
 public class SetEditor<T> {
+
+    public SetEditor() {
+        this(new HashSet<>());
+    }
 
     public SetEditor(Set<T> set) {
         requireNonNull(set);

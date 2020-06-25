@@ -1,10 +1,15 @@
 package poussecafe.collection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
 public class ListEditor<T> {
+
+    public ListEditor() {
+        this(new ArrayList<>());
+    }
 
     public ListEditor(List<T> list) {
         requireNonNull(list);

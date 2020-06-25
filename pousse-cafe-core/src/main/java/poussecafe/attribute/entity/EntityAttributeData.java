@@ -37,7 +37,7 @@ public abstract class EntityAttributeData<D extends EntityAttributes<?>, E exten
 
     @SuppressWarnings("unchecked")
     private E newEntity() {
-        return (E) root.newEntity(primitiveClass);
+        return (E) root.newEntityBuilder(primitiveClass).buildWithoutId();
     }
 
     @Override

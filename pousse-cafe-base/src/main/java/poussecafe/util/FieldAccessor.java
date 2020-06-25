@@ -1,69 +1,71 @@
 package poussecafe.util;
 
-import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class FieldAccessor {
 
-    private Object target;
-
     public FieldAccessor(Object target) {
-        setTarget(target);
-    }
-
-    public static Object getFieldValue(Object target,
-            String fieldName) {
-        return new FieldAccessor(target).get(fieldName);
-    }
-
-    public static void setFieldValue(Object target,
-            String fieldName,
-            Object value) {
-        new FieldAccessor(target).set(fieldName, value);
-    }
-
-    private void setTarget(Object target) {
         Objects.requireNonNull(target);
         this.target = target;
     }
 
+    private Object target;
+
+    /**
+     * @deprecated use new FieldAccessor(target).instanceField(fieldName).get()
+     */
+    @Deprecated(since = "0.20")
+    public static Object getFieldValue(Object target,
+            String fieldName) {
+        return instanceField(target, fieldName).get();
+    }
+
+    private static InstanceField instanceField(Object instance, String fieldName) {
+        return new InstanceField.Builder()
+                .instance(instance)
+                .fieldName(fieldName)
+                .build();
+    }
+
+    /**
+     * @deprecated use new FieldAccessor(target).instanceField(fieldName).set(value)
+     */
+    @Deprecated(since = "0.20")
+    public static void setFieldValue(Object target,
+            String fieldName,
+            Object value) {
+        instanceField(target, fieldName).set(value);
+    }
+
+    /**
+     * @deprecated use instanceField(fieldName).get()
+     */
+    @Deprecated(since = "0.20")
     public Object get(String fieldName) {
-        try {
-            return getUnprotectedField(fieldName).get(target);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new ReflectionException("Unable to get value from field", e);
-        }
+        return instanceField(fieldName).get();
     }
 
-    private Field getUnprotectedField(String fieldName) {
-        Class<?> targetClass = target.getClass();
-        try {
-            Field field = searchField(targetClass, fieldName);
-            field.setAccessible(true);
-            return field;
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException e) {
-            throw new ReflectionException("Unable to get field", e);
-        }
+    public InstanceField instanceField(String fieldName) {
+        return new InstanceField.Builder()
+                .instance(target)
+                .fieldName(fieldName)
+                .build();
     }
 
-    private Field searchField(Class<?> targetClass, String fieldName) throws NoSuchFieldException {
-        Class<?> currentClass = targetClass;
-        while(currentClass != null) {
-            try {
-                return currentClass.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                currentClass = currentClass.getSuperclass();
-            }
-        }
-        throw new NoSuchFieldException();
-    }
-
+    /**
+     * @deprecated use instanceField(fieldName).set(value)
+     */
+    @Deprecated(since = "0.20")
     public void set(String fieldName,
             Object value) {
-        try {
-            getUnprotectedField(fieldName).set(target, value);
-        } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new ReflectionException("Unable to set field value", e);
-        }
+        instanceField(fieldName).set(value);
+    }
+
+    /**
+     * @deprecated use instanceField(fieldName).isPresent()
+     */
+    @Deprecated(since = "0.20")
+    public boolean isPresent(String fieldName) {
+        return instanceField(fieldName).isPresent();
     }
 }

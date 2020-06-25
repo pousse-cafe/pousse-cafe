@@ -10,4 +10,7 @@ public interface EntityAttribute<E extends Entity<?, ?>> extends Attribute<E> {
 
     @Deprecated(since = "0.20")
     E newInContextOf(Entity<?, ?> primitive);
+
+    @Deprecated(since = "0.20")
+    Class entityClass();
 }

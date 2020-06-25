@@ -53,6 +53,6 @@ implements OptionalEntityAttribute<E> {
 
     @SuppressWarnings("unchecked")
     private E newEntity() {
-        return (E) ActiveAggregate.instance().get().newEntity(primitiveClass);
+        return (E) ActiveAggregate.instance().get().newEntityBuilder(primitiveClass).buildWithoutId();
     }
 }

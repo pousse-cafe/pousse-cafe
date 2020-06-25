@@ -1,10 +1,8 @@
-package poussecafe.property;
+package poussecafe.attribute.entity;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
-import poussecafe.attribute.entity.EntityAttributeBuilder;
-import poussecafe.attribute.entity.EntityMapAttribute;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Entity;
 import poussecafe.entity.SimpleEntity;
@@ -92,7 +90,7 @@ public class EntityMapAttributeBuilderTest {
 
     private SimpleEntity entity(SimpleEntityData data) {
         SimpleEntity entity = new SimpleEntity();
-        ReflectionUtils.access(entity).set("attributes", data);
+        ReflectionUtils.access(entity).instanceField("attributes").set(data);
         return entity;
     }
 }

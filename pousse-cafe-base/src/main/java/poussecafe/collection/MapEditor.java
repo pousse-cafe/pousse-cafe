@@ -1,10 +1,15 @@
 package poussecafe.collection;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
 public class MapEditor<K, V> {
+
+    public MapEditor() {
+        this(new HashMap<>());
+    }
 
     public MapEditor(Map<K, V> map) {
         requireNonNull(map);

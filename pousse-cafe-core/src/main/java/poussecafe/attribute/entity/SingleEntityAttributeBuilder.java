@@ -60,6 +60,11 @@ public class SingleEntityAttributeBuilder<D extends EntityAttributes<?>, E exten
                     Objects.requireNonNull(data, "Cannot set null Entity data");
                     setter.accept((F) data);
                 }
+
+                @Override
+                public Class entityClass() {
+                    return entityClass;
+                }
             };
         }
     }

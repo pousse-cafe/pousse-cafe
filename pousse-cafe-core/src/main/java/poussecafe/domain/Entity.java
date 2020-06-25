@@ -146,10 +146,11 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
             return withId(key);
         }
 
+        @SuppressWarnings("unchecked")
         public E withId(K id) {
-            E newEntity = attribute.newInContextOf(Entity.this);
+            E newEntity = (E) newEntityBuilder(attribute.entityClass()).buildWithoutId();
             newEntity.attributes().identifier().value(id);
-            attribute.inContextOf(Entity.this).value(newEntity);
+            attribute.value(newEntity);
             return newEntity;
         }
     }
