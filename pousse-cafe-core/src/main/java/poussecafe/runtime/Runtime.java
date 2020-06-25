@@ -304,6 +304,8 @@ public class Runtime {
             throw new IllegalStateException("Cannot submit command if Runtime is not started yet. Did you forget to call Runtime.start()?");
         }
 
+        environment.messageValidator().validOrThrow(command);
+
         CompletableFuture<Void> future = new CompletableFuture<>();
         messageBroker.dispatch(new ReceivedMessage.Builder()
                 .payload(new OriginalAndMarshaledMessage.Builder()
@@ -317,6 +319,7 @@ public class Runtime {
     }
 
     public void sendCommand(Command command) {
+        environment.messageValidator().validOrThrow(command);
         messageSenderLocator.locate(command.getClass()).sendMessage(command);
     }
 
@@ -333,6 +336,7 @@ public class Runtime {
     }
 
     public void issue(DomainEvent event) {
+        environment.messageValidator().validOrThrow(event);
         messageSenderLocator.locate(event.getClass()).sendMessage(event);
     }
 

@@ -80,7 +80,7 @@ public class AttributesValidatorTest {
 
     @Test
     public void validMessagePassesWithDefinition() {
-        givenDefinitionWhenIgnoringDontCare();
+        givenDefinition(AttributesDefinition.class);
         givenContainer(validContainerWithAnnotation());
         whenValidating();
         thenValidationPassed(true);
@@ -92,13 +92,13 @@ public class AttributesValidatorTest {
         return validMessage;
     }
 
-    private void givenDefinitionWhenIgnoringDontCare() {
-        validatorBuilder.definition(AttributesDefinition.class);
+    private void givenDefinition(Class<?> definition) {
+        validatorBuilder.definition(definition);
     }
 
     @Test
     public void invalidMessageFailsWithDefinition() {
-        givenDefinitionWhenIgnoringDontCare();
+        givenDefinition(AttributesDefinition.class);
         givenContainer(invalidMessageWithAnnotation());
         whenValidating();
         thenValidationPassed(false);
@@ -110,7 +110,7 @@ public class AttributesValidatorTest {
 
     @Test
     public void validMessageWithOverriddenFieldPassesWithDefinition() {
-        givenDefinitionWhenIgnoringDontCare();
+        givenDefinition(AttributesDefinition.class);
         givenContainer(validWithOverriddenField());
         whenValidating();
         thenValidationPassed(true);
@@ -120,5 +120,13 @@ public class AttributesValidatorTest {
         var validMessage = new AttributesContainerWithOverriddenField();
         validMessage.string().value("test");
         return validMessage;
+    }
+
+    @Test
+    public void validCombinedDefinitionAndContainerPasses() {
+        givenDefinition(AttributesContainerWithValidationAnnotation.class);
+        givenContainer(validContainerWithAnnotation());
+        whenValidating();
+        thenValidationPassed(true);
     }
 }
