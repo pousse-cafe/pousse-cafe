@@ -47,12 +47,12 @@ public interface AggregateMessageListenerRunner<M, K, A> {
      * throw a RetryOperationException.
      *
      * @param message The message
-     * @param targetAggregateRoot The aggregate telling if the message is anachronical or not.
+     * @param aggregate The aggregate telling if the message is anachronical or not.
      *
      * @throws SameOperationException
      * @throws RetryOperationException
      */
-    default void validChronologyOrElseThrow(M message, A targetAggregateRoot) {
+    default void validChronologyOrElseThrow(M message, A aggregate) {
         // Optional check
     }
 }
