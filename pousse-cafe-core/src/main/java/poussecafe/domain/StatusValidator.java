@@ -38,7 +38,7 @@ public class StatusValidator<E extends Enum<E>> {
             return this;
         }
 
-        private boolean elseValid = true;
+        private boolean elseValid = false;
 
         public StatusValidator<F> build() {
             if(elseValid) {

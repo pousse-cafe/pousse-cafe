@@ -23,8 +23,8 @@ public class StatusValidatorTest {
         if(elseValid.isPresent()) {
             builder.elseValid(elseValid.get());
         }
-        if(elseValid.isPresent()
-                && !elseValid.get().booleanValue()) {
+        if(elseValid.isEmpty()
+                || !elseValid.get().booleanValue()) {
             builder.valid(Status.VALID);
         }
         validator = builder
@@ -78,7 +78,7 @@ public class StatusValidatorTest {
     public void unregisteredStatusPassesByDefault() {
         givenValidator(Optional.empty());
         whenChecking(Status.UNREGISTERED);
-        thenThrowsNothing();
+        thenThrows(IllegalArgumentException.class);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class StatusValidatorTest {
         whenChecking(Status.RETRIED);
         thenThrows(RetryOperationException.class);
     }
-    
+
     @Test
     public void validStatusPassesWithElseValidTrue() {
         givenValidator(Optional.of(true));
