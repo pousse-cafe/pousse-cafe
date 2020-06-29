@@ -13,10 +13,10 @@ public class ChainElementTouchable implements Serializable, DomainEvent {
 
     public Attribute<NextChainElementId> next() {
         return AttributeBuilder.stringId(NextChainElementId.class)
-                .read(() -> id)
-                .write(value -> id = value)
+                .read(() -> next)
+                .write(value -> next = value)
                 .build();
     }
 
-    private String id;
+    private String next;
 }

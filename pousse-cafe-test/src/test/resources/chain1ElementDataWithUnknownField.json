@@ -1,0 +1,8 @@
+{
+    "poussecafe.domain.chain1.Chain1Element": [
+        {
+            "id": "test",
+            "unknownField": "bla"
+        }
+    ]
+}

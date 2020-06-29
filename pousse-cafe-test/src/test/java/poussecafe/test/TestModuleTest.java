@@ -10,13 +10,13 @@ import poussecafe.runtime.Runtime.Builder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PousseCafeTestTest extends PousseCafeTest {
+public class TestModuleTest extends PousseCafeTest {
 
     @Override
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
                 .withBundle(new BundleConfigurer.Builder()
-                .module(poussecafe.test.Test.class)
+                .module(TestModule.class)
                 .build()
                 .defineAndImplementDefault()
                 .build());

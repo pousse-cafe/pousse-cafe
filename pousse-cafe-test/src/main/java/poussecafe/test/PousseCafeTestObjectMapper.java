@@ -6,12 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import java.io.IOException;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.jackson.JacksonObjectMapperFactory;
+import poussecafe.jackson.JacksonObjectMapperBuilder;
 
 public class PousseCafeTestObjectMapper {
 
     public PousseCafeTestObjectMapper() {
-        objectMapper = JacksonObjectMapperFactory.staticBuildMapper(DefaultTyping.OBJECT_AND_NON_CONCRETE);
+        objectMapper = new JacksonObjectMapperBuilder()
+                .failOnUnknownProperties(true)
+                .withDefaultTyping(DefaultTyping.OBJECT_AND_NON_CONCRETE)
+                .build();
     }
 
     public <K, D extends EntityAttributes<K>> void readJson(D dataImplementation,
