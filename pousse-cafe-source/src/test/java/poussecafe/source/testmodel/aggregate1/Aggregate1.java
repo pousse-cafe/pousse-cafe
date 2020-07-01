@@ -1,0 +1,22 @@
+package poussecafe.source.testmodel.aggregate1;
+
+import poussecafe.discovery.MessageListener;
+import poussecafe.discovery.ProducesEvent;
+import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.EntityAttributes;
+import poussecafe.source.testmodel.events.Event1;
+import poussecafe.source.testmodel.events.Event2;
+import poussecafe.source.testmodel.process.Process1;
+
+public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
+
+    @MessageListener(processes = Process1.class)
+    @ProducesEvent(Event2.class)
+    public void process1Listener1(Event1 event) {
+
+    }
+
+    public static interface Attributes extends EntityAttributes<String> {
+
+    }
+}
