@@ -3,13 +3,14 @@ package poussecafe.source;
 import java.nio.file.Path;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 
 import static java.util.Objects.requireNonNull;
@@ -19,19 +20,13 @@ public class TypeVisitor extends ASTVisitor {
     @Override
     public boolean visit(ImportDeclaration node) {
         if(!node.isStatic()) {
-            Name importName = node.getName();
-            if(!aggregateRootClassImported
-                    && importName.isQualifiedName()
-                    && importName.getFullyQualifiedName().equals(
-                            AggregateRoot.class.getCanonicalName())) {
-                logger.debug("Detected import of {} in {}", AggregateRoot.class.getSimpleName(), sourcePath);
-                aggregateRootClassImported = true;
-            }
+            imports.tryRegister(node, AggregateRoot.class);
+            imports.tryRegister(node, MessageListener.class);
         }
         return false;
     }
 
-    private boolean aggregateRootClassImported;
+    private Imports imports = new Imports();
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,7 +40,7 @@ public class TypeVisitor extends ASTVisitor {
             Type parametrizedTypeType = parametrizedType.getType();
             if(parametrizedTypeType instanceof SimpleType) {
                 SimpleType simpleType = (SimpleType) parametrizedTypeType;
-                if(extendsAggregateRoot(simpleType)) {
+                if(imports.resolve(simpleType.getName()).isClass(AggregateRoot.class)) {
                     aggregateRootSourceBuilder = new AggregateRootSource.Builder()
                             .name(node.getName().getIdentifier())
                             .filePath(sourcePath);
@@ -56,21 +51,6 @@ public class TypeVisitor extends ASTVisitor {
             logger.debug("{} does not contain a parametrized type, skipping", sourcePath);
             return false;
         }
-    }
-
-    private boolean extendsAggregateRoot(SimpleType simpleType) {
-        return extendsAggregateRootWithImport(simpleType)
-                || extendsFullyQualifiedAggregateRoot(simpleType);
-    }
-
-    private boolean extendsAggregateRootWithImport(SimpleType simpleType) {
-        return aggregateRootClassImported
-                && simpleType.getName().toString().equals(AggregateRoot.class.getSimpleName());
-    }
-
-    private boolean extendsFullyQualifiedAggregateRoot(SimpleType simpleType) {
-        return simpleType.getName().isQualifiedName()
-                && simpleType.getName().getFullyQualifiedName().equals(AggregateRoot.class.getCanonicalName());
     }
 
     private AggregateRootSource.Builder aggregateRootSourceBuilder;
@@ -84,6 +64,18 @@ public class TypeVisitor extends ASTVisitor {
     }
 
     private Registry registry;
+
+    @Override
+    public boolean visit(MethodDeclaration node) {
+        if(MessageListenerSource.isMessageListener(imports, node)) {
+            if(aggregateRootSourceBuilder != null) {
+                aggregateRootSourceBuilder.withListener(new MessageListenerSource.Builder(imports)
+                        .withMethodDeclaration(node)
+                        .build());
+            }
+        }
+        return false;
+    }
 
     public static class Builder {
 

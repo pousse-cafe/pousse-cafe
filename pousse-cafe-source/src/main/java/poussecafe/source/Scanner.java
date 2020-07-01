@@ -21,7 +21,7 @@ public class Scanner {
     private Registry registry = new Registry();
 
     public void includeTree(Path sourceDirectory) throws IOException {
-        Files.walkFileTree(sourceDirectory, new JavaSourceVisitor(this));
+        Files.walkFileTree(sourceDirectory, new JavaSourceFileVisitor(this));
     }
 
     public void includeFile(Path sourceFilePath) throws IOException {

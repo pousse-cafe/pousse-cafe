@@ -8,11 +8,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static java.util.Objects.requireNonNull;
 
-class JavaSourceVisitor extends SimpleFileVisitor<Path> {
+class JavaSourceFileVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        if(file.toString().endsWith(".java")) {
+        if(file.toFile().isFile()
+                && file.toString().endsWith(".java")) {
             scanner.includeFile(file);
         }
         return FileVisitResult.CONTINUE;
@@ -20,7 +21,7 @@ class JavaSourceVisitor extends SimpleFileVisitor<Path> {
 
     private Scanner scanner;
 
-    public JavaSourceVisitor(Scanner scanner) {
+    public JavaSourceFileVisitor(Scanner scanner) {
         requireNonNull(scanner);
         this.scanner = scanner;
     }
