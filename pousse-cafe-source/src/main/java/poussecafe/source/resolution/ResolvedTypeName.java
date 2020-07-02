@@ -1,6 +1,7 @@
-package poussecafe.source;
+package poussecafe.source.resolution;
 
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.QualifiedName;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +25,15 @@ public class ResolvedTypeName {
     private boolean isClassGivenQualifiedName(Class<?> expectedClass) {
         return name.isQualifiedName()
                 && name.getFullyQualifiedName().equals(expectedClass.getCanonicalName());
+    }
+
+    public String simpleName() {
+        if(name.isSimpleName()) {
+            return name.getFullyQualifiedName();
+        } else {
+            QualifiedName qualifiedProcessName = (QualifiedName) name;
+            return qualifiedProcessName.getName().getIdentifier();
+        }
     }
 
     public static class Builder {

@@ -1,4 +1,4 @@
-package poussecafe.source;
+package poussecafe.source.resolution;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 
@@ -59,6 +61,20 @@ public class Imports {
         return new ResolvedTypeName.Builder()
                 .withImports(this)
                 .withName(name)
+                .build();
+    }
+
+    public ResolvedMethod resolve(MethodDeclaration method) {
+        return new ResolvedMethod.Builder()
+                .withImports(this)
+                .withDeclaration(method)
+                .build();
+    }
+
+    public ResolvedTypeDeclaration resolve(TypeDeclaration type) {
+        return new ResolvedTypeDeclaration.Builder()
+                .withImports(this)
+                .withDeclaration(type)
                 .build();
     }
 

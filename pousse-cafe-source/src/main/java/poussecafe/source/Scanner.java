@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.source.model.Model;
 
 public class Scanner {
 

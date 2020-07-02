@@ -1,4 +1,4 @@
-package poussecafe.source;
+package poussecafe.source.model;
 
 import java.util.HashMap;
 import java.util.Map;
