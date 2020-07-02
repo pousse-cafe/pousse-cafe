@@ -1,8 +1,12 @@
 package poussecafe.source.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 public class Model {
 
@@ -34,5 +38,24 @@ public class Model {
         } else {
             processes.put(name, source);
         }
+    }
+
+    public void addMessageListener(MessageListenerSource source) {
+        listeners.add(source);
+    }
+
+    private List<MessageListenerSource> listeners = new ArrayList<>();
+
+    public List<MessageListenerSource> aggregateRootListeners(String aggregateName) {
+        return listeners.stream()
+                .filter(listener -> listener.container().type() == MessageListenerContainerType.ROOT)
+                .filter(listener -> listener.container().aggregateName().orElseThrow().equals(aggregateName))
+                .collect(toList());
+    }
+
+    public List<MessageListenerSource> processListeners(String process) {
+        return listeners.stream()
+                .filter(listener -> listener.processNames().contains(process))
+                .collect(toList());
     }
 }

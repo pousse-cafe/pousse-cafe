@@ -1,10 +1,6 @@
 package poussecafe.source.model;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -23,21 +19,6 @@ public class AggregateRootSource {
         return filePath;
     }
 
-    private Map<String, MessageListenerSource> messageListeners = new HashMap<>();
-
-    public Optional<MessageListenerSource> messageListener(String name, String messageName) {
-        String listenerId = listenerId(name, messageName);
-        return Optional.ofNullable(messageListeners.get(listenerId));
-    }
-
-    private static String listenerId(String methodName, String messageName) {
-        return methodName + messageName;
-    }
-
-    public Collection<MessageListenerSource> messageListeners() {
-        return Collections.unmodifiableCollection(messageListeners.values());
-    }
-
     public static class Builder {
 
         private AggregateRootSource source = new AggregateRootSource();
@@ -53,13 +34,12 @@ public class AggregateRootSource {
             return this;
         }
 
-        public Builder filePath(Path filePath) {
-            source.filePath = filePath;
-            return this;
+        public Optional<String> name() {
+            return Optional.ofNullable(source.name);
         }
 
-        public Builder withListener(MessageListenerSource build) {
-            source.messageListeners.put(listenerId(build.methodName(), build.messageName()), build);
+        public Builder filePath(Path filePath) {
+            source.filePath = filePath;
             return this;
         }
     }

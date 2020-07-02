@@ -38,6 +38,9 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
     }
 
     private Optional<MessageListenerSource> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {
-        return aggregateRoot(aggregateName).orElseThrow().messageListener(listenerName, messageName);
+        return model().aggregateRootListeners(aggregateName).stream()
+                .filter(listener -> listener.methodName().equals(listenerName))
+                .filter(listener -> listener.messageName().equals(messageName))
+                .findFirst();
     }
 }

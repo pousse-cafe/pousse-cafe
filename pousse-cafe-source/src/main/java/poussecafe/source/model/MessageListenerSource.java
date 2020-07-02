@@ -10,6 +10,12 @@ import static java.util.Objects.requireNonNull;
 
 public class MessageListenerSource {
 
+    public MessageListenerContainer container() {
+        return container;
+    }
+
+    private MessageListenerContainer container;
+
     public String methodName() {
         return methodName;
     }
@@ -33,10 +39,16 @@ public class MessageListenerSource {
         private MessageListenerSource source = new MessageListenerSource();
 
         public MessageListenerSource build() {
+            requireNonNull(source.container);
             requireNonNull(source.methodName);
             requireNonNull(source.messageName);
             requireNonNull(source.processNames);
             return source;
+        }
+
+        public Builder withContainer(MessageListenerContainer container) {
+            source.container = container;
+            return this;
         }
 
         public Builder withMethodDeclaration(ResolvedMethod method) {
