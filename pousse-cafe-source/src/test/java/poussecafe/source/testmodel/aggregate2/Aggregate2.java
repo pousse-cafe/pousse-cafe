@@ -1,6 +1,6 @@
 package poussecafe.source.testmodel.aggregate2;
 
-import poussecafe.discovery.MessageListener;
+import poussecafe.discovery.*;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.testmodel.events.Event2;
 import poussecafe.source.testmodel.process.Process1;

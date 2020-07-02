@@ -38,6 +38,7 @@ public class MessageListenerSource {
 
         public MessageListenerSource build() {
             requireNonNull(source.methodName);
+            requireNonNull(source.messageName);
             return source;
         }
 

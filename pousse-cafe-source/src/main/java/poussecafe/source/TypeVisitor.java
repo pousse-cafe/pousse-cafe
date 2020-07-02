@@ -10,7 +10,6 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 
 import static java.util.Objects.requireNonNull;
@@ -19,10 +18,7 @@ public class TypeVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(ImportDeclaration node) {
-        if(!node.isStatic()) {
-            imports.tryRegister(node, AggregateRoot.class);
-            imports.tryRegister(node, MessageListener.class);
-        }
+        imports.tryRegister(node);
         return false;
     }
 
