@@ -58,12 +58,12 @@ public class TypeVisitor extends ASTVisitor {
     @Override
     public void endVisit(TypeDeclaration node) {
         if(aggregateRootSourceBuilder != null) {
-            registry.registerAggregateRoot(aggregateRootSourceBuilder.build());
+            model.addAggregateRoot(aggregateRootSourceBuilder.build());
             aggregateRootSourceBuilder = null;
         }
     }
 
-    private Registry registry;
+    private Model model;
 
     @Override
     public boolean visit(MethodDeclaration node) {
@@ -83,7 +83,7 @@ public class TypeVisitor extends ASTVisitor {
 
         public TypeVisitor build() {
             requireNonNull(visitor.sourcePath);
-            requireNonNull(visitor.registry);
+            requireNonNull(visitor.model);
             return visitor;
         }
 
@@ -92,8 +92,8 @@ public class TypeVisitor extends ASTVisitor {
             return this;
         }
 
-        public Builder registry(Registry registry) {
-            visitor.registry = registry;
+        public Builder model(Model registry) {
+            visitor.model = registry;
             return this;
         }
     }

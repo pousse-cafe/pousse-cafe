@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 
 public class Scanner {
 
-    public Registry registry() {
-        return registry;
+    public Model model() {
+        return model;
     }
 
-    private Registry registry = new Registry();
+    private Model model = new Model();
 
     public void includeTree(Path sourceDirectory) throws IOException {
         Files.walkFileTree(sourceDirectory, new JavaSourceFileVisitor(this));
@@ -59,7 +59,7 @@ public class Scanner {
     private ASTVisitor typeVisitor(Path sourceFilePath) {
         return new TypeVisitor.Builder()
                 .sourcePath(sourceFilePath)
-                .registry(registry)
+                .model(model)
                 .build();
     }
 

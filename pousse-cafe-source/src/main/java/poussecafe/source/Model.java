@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class Registry {
+public class Model {
 
-    public void registerAggregateRoot(AggregateRootSource source) {
+    public void addAggregateRoot(AggregateRootSource source) {
         String name = source.name();
         if(aggregateRoots.containsKey(name)) {
             throw new IllegalArgumentException("An aggregate root named " + name + " already exists in file " + source.filePath());

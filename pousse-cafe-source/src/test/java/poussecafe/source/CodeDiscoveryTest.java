@@ -2,9 +2,8 @@ package poussecafe.source;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.junit.Test;
-import poussecafe.source.testmodel.events.Event1;
-import poussecafe.source.testmodel.events.Event2;
 
 import static org.junit.Assert.assertTrue;
 
@@ -15,7 +14,7 @@ public class CodeDiscoveryTest {
         givenScanner();
         whenIncludingTree(testModelDirectory);
         thenAggregateRootsFound();
-        thenListenersFound();
+        thenAggregateListenersFound();
     }
 
     private void givenScanner() {
@@ -24,19 +23,23 @@ public class CodeDiscoveryTest {
 
     private Scanner scanner;
 
-    private void whenIncludingTree(Path sourceFilePath) throws IOException {
-        scanner.includeTree(sourceFilePath);
+    private void whenIncludingTree(Path sourceTreePath) throws IOException {
+        scanner.includeTree(sourceTreePath);
     }
 
     private Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
 
     private void thenAggregateRootsFound() {
-        assertTrue(scanner.registry().aggregateRoot("Aggregate1").isPresent());
-        assertTrue(scanner.registry().aggregateRoot("Aggregate2").isPresent());
+        assertTrue(aggregateRoot("Aggregate1").isPresent());
+        assertTrue(aggregateRoot("Aggregate2").isPresent());
     }
 
-    private void thenListenersFound() {
-        assertTrue(scanner.registry().aggregateRoot("Aggregate1").orElseThrow().messageListener("process1Listener1", Event1.class).isPresent());
-        assertTrue(scanner.registry().aggregateRoot("Aggregate2").orElseThrow().messageListener("process1Listener2", Event2.class).isPresent());
+    private Optional<AggregateRootSource> aggregateRoot(String name) {
+        return scanner.model().aggregateRoot(name);
+    }
+
+    private void thenAggregateListenersFound() {
+        assertTrue(aggregateRoot("Aggregate1").orElseThrow().messageListener("process1Listener1", "Event1").isPresent());
+        assertTrue(aggregateRoot("Aggregate2").orElseThrow().messageListener("process1Listener2", "Event2").isPresent());
     }
 }

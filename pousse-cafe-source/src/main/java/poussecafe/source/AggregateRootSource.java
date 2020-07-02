@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import poussecafe.messaging.Message;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,10 +22,6 @@ public class AggregateRootSource {
     }
 
     private Map<String, MessageListenerSource> messageListeners = new HashMap<>();
-
-    public Optional<MessageListenerSource> messageListener(String name, Class<? extends Message> messageClass) {
-        return messageListener(name, messageClass.getSimpleName());
-    }
 
     public Optional<MessageListenerSource> messageListener(String name, String messageName) {
         String listenerId = listenerId(name, messageName);

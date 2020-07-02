@@ -3,6 +3,8 @@ package poussecafe.source;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import poussecafe.discovery.MessageListener;
@@ -46,7 +48,14 @@ public class MessageListenerSource {
             source.methodName = declaration.getName().getIdentifier();
             SingleVariableDeclaration message = (SingleVariableDeclaration) declaration.parameters().get(0);
             SimpleType messageType = (SimpleType) message.getType();
-            source.messageName = messageType.getName().getFullyQualifiedName();
+            Name messageName = messageType.getName();
+            if(messageName.isSimpleName()) {
+                SimpleName simpleMessageName = (SimpleName) messageName;
+                source.messageName = simpleMessageName.getIdentifier();
+            } else {
+                QualifiedName qualifiedMessageName = (QualifiedName) messageName;
+                source.messageName = qualifiedMessageName.getName().getIdentifier();
+            }
             return this;
         }
     }
