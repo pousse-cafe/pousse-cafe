@@ -1,7 +1,6 @@
 package poussecafe.source;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.model.AggregateRootSource;
@@ -9,27 +8,15 @@ import poussecafe.source.model.MessageListenerSource;
 
 import static org.junit.Assert.assertTrue;
 
-public class AggregateDiscoveryTest {
+public class AggregateDiscoveryTest extends DiscoveryTest {
 
     @Test
     public void findAggregates() throws IOException {
         givenScanner();
-        whenIncludingTree(testModelDirectory);
+        whenIncludingTestModelTree();
         thenAggregateRootsFound();
         thenAggregateListenersFound();
     }
-
-    private void givenScanner() {
-        scanner = new Scanner.Builder().build();
-    }
-
-    private Scanner scanner;
-
-    private void whenIncludingTree(Path sourceTreePath) throws IOException {
-        scanner.includeTree(sourceTreePath);
-    }
-
-    private Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
 
     private void thenAggregateRootsFound() {
         assertTrue(aggregateRoot("Aggregate1").isPresent());
@@ -37,7 +24,7 @@ public class AggregateDiscoveryTest {
     }
 
     private Optional<AggregateRootSource> aggregateRoot(String name) {
-        return scanner.model().aggregateRoot(name);
+        return model().aggregateRoot(name);
     }
 
     private void thenAggregateListenersFound() {

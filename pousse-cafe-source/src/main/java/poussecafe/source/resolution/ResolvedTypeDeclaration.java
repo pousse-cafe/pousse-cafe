@@ -12,6 +12,10 @@ public class ResolvedTypeDeclaration {
 
     public Optional<ResolvedTypeName> superclass() {
         Type type = declaration.getSuperclassType();
+        return typeName(type);
+    }
+
+    private Optional<ResolvedTypeName> typeName(Type type) {
         if(type == null) {
             return Optional.empty();
         } else {
@@ -36,6 +40,20 @@ public class ResolvedTypeDeclaration {
     }
 
     private Imports imports;
+
+    public ResolvedTypeName name() {
+        return imports.resolve(declaration.getName());
+    }
+
+    public boolean implementsInterface(Class<?> interfaceClass) {
+        for(Object object : declaration.superInterfaceTypes()) {
+            Optional<ResolvedTypeName> typeName = typeName((Type) object);
+            if(typeName.isPresent() && typeName.get().isClass(interfaceClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static class Builder {
 

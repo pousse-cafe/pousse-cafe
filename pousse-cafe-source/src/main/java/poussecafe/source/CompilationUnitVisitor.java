@@ -6,18 +6,18 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.source.model.AggregateRootSource;
 import poussecafe.source.model.MessageListenerSource;
 import poussecafe.source.model.Model;
+import poussecafe.source.model.ProcessModel;
 import poussecafe.source.resolution.Imports;
+import poussecafe.source.resolution.ResolvedTypeDeclaration;
 import poussecafe.source.resolution.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
 
-public class TypeVisitor extends ASTVisitor {
+public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(ImportDeclaration node) {
@@ -27,23 +27,25 @@ public class TypeVisitor extends ASTVisitor {
 
     private Imports imports = new Imports();
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     private Path sourcePath;
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        Optional<ResolvedTypeName> superclassType = imports.resolve(node).superclass();
+        ResolvedTypeDeclaration resolvedTypeDeclaration = imports.resolve(node);
+        Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         if(superclassType.isPresent()
                 && superclassType.get().isClass(AggregateRoot.class)) {
             aggregateRootSourceBuilder = new AggregateRootSource.Builder()
                     .name(node.getName().getIdentifier())
                     .filePath(sourcePath);
             return true;
-        } else {
-            logger.debug("{} does not contain a parametrized type, skipping", sourcePath);
-            return false;
+        } else if(resolvedTypeDeclaration.implementsInterface(poussecafe.domain.Process.class)) {
+            model.addProcess(new ProcessModel.Builder()
+                    .name(resolvedTypeDeclaration.name().simpleName())
+                    .filePath(sourcePath)
+                    .build());
         }
+        return false;
     }
 
     private AggregateRootSource.Builder aggregateRootSourceBuilder;
@@ -73,9 +75,9 @@ public class TypeVisitor extends ASTVisitor {
 
     public static class Builder {
 
-        private TypeVisitor visitor = new TypeVisitor();
+        private CompilationUnitVisitor visitor = new CompilationUnitVisitor();
 
-        public TypeVisitor build() {
+        public CompilationUnitVisitor build() {
             requireNonNull(visitor.sourcePath);
             requireNonNull(visitor.model);
             return visitor;
@@ -92,7 +94,7 @@ public class TypeVisitor extends ASTVisitor {
         }
     }
 
-    private TypeVisitor() {
+    private CompilationUnitVisitor() {
 
     }
 }

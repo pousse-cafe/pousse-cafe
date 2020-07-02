@@ -20,4 +20,19 @@ public class Model {
     public Optional<AggregateRootSource> aggregateRoot(String name) {
         return Optional.ofNullable(aggregateRoots.get(name));
     }
+
+    public Optional<ProcessModel> process(String name) {
+        return Optional.ofNullable(processes.get(name));
+    }
+
+    private Map<String, ProcessModel> processes = new HashMap<>();
+
+    public void addProcess(ProcessModel source) {
+        String name = source.name();
+        if(processes.containsKey(name)) {
+            throw new IllegalArgumentException("A process named " + name + " already exists in file " + source.filePath());
+        } else {
+            processes.put(name, source);
+        }
+    }
 }

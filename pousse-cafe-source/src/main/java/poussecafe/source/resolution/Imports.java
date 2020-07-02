@@ -82,6 +82,7 @@ public class Imports {
     static {
         MONITORED_CLASSES.add(AggregateRoot.class);
         MONITORED_CLASSES.add(MessageListener.class);
+        MONITORED_CLASSES.add(poussecafe.domain.Process.class);
     }
 
     private static final Map<String, Set<Class<?>>> MONITORED_PACKAGES = new HashMap<>();

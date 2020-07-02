@@ -1,6 +1,8 @@
 package poussecafe.source.model;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +32,10 @@ public class AggregateRootSource {
 
     private static String listenerId(String methodName, String messageName) {
         return methodName + messageName;
+    }
+
+    public Collection<MessageListenerSource> messageListeners() {
+        return Collections.unmodifiableCollection(messageListeners.values());
     }
 
     public static class Builder {
