@@ -2,10 +2,8 @@ Command1 -> Aggregate1Factory
 
 Event1 -> [Process1Listener1Runner]
     @Aggregate1[process1Listener1]:
-        :Event2! -> . [TODO chain]
+        :Event2! -> [Process1Listener2Runner]
+            @Aggregate2[process1Listener2]:
+                :Event3! -> .
 
 Command2 -> Aggregate2Repository
-
-Event2 -> [Process1Listener2Runner]
-    @Aggregate2[process1Listener2]:
-        :Event3! -> . [TODO chain]
