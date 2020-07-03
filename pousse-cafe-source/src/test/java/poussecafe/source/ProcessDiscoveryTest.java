@@ -22,19 +22,16 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenProcessesHaveListeners() {
-        Optional<MessageListenerSource> listener1 = processListener("Process1", "Aggregate1", "process1Listener1", "Event1");
+        Optional<MessageListenerSource> listener1 = processListener("Process1", "process1Listener1");
         assertTrue(listener1.isPresent());
 
-        Optional<MessageListenerSource> listener2 = processListener("Process1", "Aggregate2", "process1Listener2", "Event2");
+        Optional<MessageListenerSource> listener2 = processListener("Process1", "process1Listener2");
         assertTrue(listener2.isPresent());
     }
 
-    private Optional<MessageListenerSource> processListener(String process, String aggregate, String method, String message) {
+    private Optional<MessageListenerSource> processListener(String process, String method) {
         return model().processListeners(process).stream()
-                .filter(listener -> listener.container().aggregateName().isPresent())
-                .filter(listener -> listener.container().aggregateName().get().equals(aggregate))
                 .filter(listener -> listener.methodName().equals(method))
-                .filter(listener -> listener.messageName().equals(message))
                 .findFirst();
     }
 }

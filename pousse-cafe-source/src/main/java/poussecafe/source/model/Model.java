@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 public class Model {
@@ -57,5 +58,9 @@ public class Model {
         return listeners.stream()
                 .filter(listener -> listener.processNames().contains(process))
                 .collect(toList());
+    }
+
+    public List<MessageListenerSource> messageListeners() {
+        return unmodifiableList(listeners);
     }
 }

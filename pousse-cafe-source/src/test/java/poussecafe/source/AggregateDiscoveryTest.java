@@ -30,11 +30,9 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
     private void thenAggregateListenersFound() {
         Optional<MessageListenerSource> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
         assertTrue(listener1.isPresent());
-        assertTrue(listener1.orElseThrow().processNames().contains("Process1"));
 
         Optional<MessageListenerSource> listener2 = aggregateMessageListener("Aggregate2", "process1Listener2", "Event2");
         assertTrue(listener2.isPresent());
-        assertTrue(listener2.orElseThrow().processNames().contains("Process1"));
     }
 
     private Optional<MessageListenerSource> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {
