@@ -12,7 +12,7 @@ import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerSource;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
-import poussecafe.source.resolution.Imports;
+import poussecafe.source.resolution.Resolver;
 import poussecafe.source.resolution.ResolvedTypeDeclaration;
 import poussecafe.source.resolution.ResolvedTypeName;
 
@@ -22,17 +22,17 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(ImportDeclaration node) {
-        imports.tryRegister(node);
+        resolver.tryRegister(node);
         return false;
     }
 
-    private Imports imports = new Imports();
+    private Resolver resolver = new Resolver();
 
     private Path sourcePath;
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        ResolvedTypeDeclaration resolvedTypeDeclaration = imports.resolve(node);
+        ResolvedTypeDeclaration resolvedTypeDeclaration = resolver.resolve(node);
         Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         if(superclassType.isPresent()
                 && superclassType.get().isClass(AggregateRoot.class)) {
@@ -63,12 +63,12 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        var method = imports.resolve(node);
+        var method = resolver.resolve(node);
         if(MessageListenerSource.isMessageListener(method.asAnnotatedElement())) {
             if(aggregateRootSourceBuilder != null) {
                 model.addMessageListener(new MessageListenerSource.Builder()
                         .withContainer(MessageListenerContainer.aggregateRoot(aggregateRootSourceBuilder.name().orElseThrow()))
-                        .withMethodDeclaration(imports.resolve(node))
+                        .withMethodDeclaration(resolver.resolve(node))
                         .build());
             }
         }

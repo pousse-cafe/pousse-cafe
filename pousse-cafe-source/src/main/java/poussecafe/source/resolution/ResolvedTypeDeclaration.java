@@ -36,13 +36,13 @@ public class ResolvedTypeDeclaration {
     private TypeDeclaration declaration;
 
     private ResolvedTypeName simpleType(SimpleType simpleType) {
-        return imports.resolve(simpleType.getName());
+        return resolver.resolve(simpleType.getName());
     }
 
-    private Imports imports;
+    private Resolver resolver;
 
     public ResolvedTypeName name() {
-        return imports.resolve(declaration.getName());
+        return resolver.resolve(declaration.getName());
     }
 
     public boolean implementsInterface(Class<?> interfaceClass) {
@@ -61,7 +61,7 @@ public class ResolvedTypeDeclaration {
 
         public ResolvedTypeDeclaration build() {
             requireNonNull(type.declaration);
-            requireNonNull(type.imports);
+            requireNonNull(type.resolver);
             return type;
         }
 
@@ -70,8 +70,8 @@ public class ResolvedTypeDeclaration {
             return this;
         }
 
-        public Builder withImports(Imports imports) {
-            type.imports = imports;
+        public Builder withImports(Resolver resolver) {
+            type.resolver = resolver;
             return this;
         }
     }

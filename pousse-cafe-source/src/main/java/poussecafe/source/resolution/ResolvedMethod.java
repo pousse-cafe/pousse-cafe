@@ -10,12 +10,12 @@ public class ResolvedMethod {
 
     public AnnotatedElement<MethodDeclaration> asAnnotatedElement() {
         return new AnnotatedElement.Builder<MethodDeclaration>()
-                .withImports(imports)
+                .withImports(resolver)
                 .withElement(declaration)
                 .build();
     }
 
-    private Imports imports;
+    private Resolver resolver;
 
     private MethodDeclaration declaration;
 
@@ -24,7 +24,7 @@ public class ResolvedMethod {
         Type parameterType = message.getType();
         if(parameterType instanceof SimpleType) {
             SimpleType messageType = (SimpleType) message.getType();
-            return Optional.of(imports.resolve(messageType.getName()));
+            return Optional.of(resolver.resolve(messageType.getName()));
         } else {
             return Optional.empty();
         }
@@ -42,8 +42,8 @@ public class ResolvedMethod {
             return annotatedElement;
         }
 
-        public Builder withImports(Imports imports) {
-            annotatedElement.imports = imports;
+        public Builder withImports(Resolver resolver) {
+            annotatedElement.resolver = resolver;
             return this;
         }
 

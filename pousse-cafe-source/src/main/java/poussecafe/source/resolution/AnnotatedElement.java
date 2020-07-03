@@ -17,16 +17,16 @@ public class AnnotatedElement<T> {
 
     public Optional<ResolvedAnnotation> findAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
         return annotations.stream()
-                .filter(annotation -> imports.resolve(annotation.getTypeName()).isClass(annotationClass))
+                .filter(annotation -> resolver.resolve(annotation.getTypeName()).isClass(annotationClass))
                 .findFirst().map(annotation -> new ResolvedAnnotation.Builder()
-                        .imports(imports)
+                        .resolver(resolver)
                         .annotation(annotation)
                         .build());
     }
 
     private List<Annotation> annotations = new ArrayList<>();
 
-    private Imports imports;
+    private Resolver resolver;
 
     public static class Builder<T> {
 
@@ -36,8 +36,8 @@ public class AnnotatedElement<T> {
             return annotatedElement;
         }
 
-        public Builder<T> withImports(Imports imports) {
-            annotatedElement.imports = imports;
+        public Builder<T> withImports(Resolver resolver) {
+            annotatedElement.resolver = resolver;
             return this;
         }
 

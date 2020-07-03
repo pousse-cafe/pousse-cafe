@@ -14,7 +14,7 @@ import poussecafe.domain.AggregateRoot;
 
 import static java.util.Collections.emptySet;
 
-public class Imports {
+public class Resolver {
 
     public void tryRegister(ImportDeclaration importDeclaration) {
         if(!importDeclaration.isStatic()) {

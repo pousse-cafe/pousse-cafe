@@ -43,7 +43,7 @@ public class ResolvedAnnotation {
             if(type instanceof SimpleType) {
                 SimpleType simpleType = (SimpleType) type;
                 return Optional.of(new ResolvedTypeName.Builder()
-                        .withImports(imports)
+                        .withImports(resolver)
                         .withName(simpleType.getName())
                         .build());
             } else {
@@ -67,7 +67,7 @@ public class ResolvedAnnotation {
         return Optional.empty();
     }
 
-    private Imports imports;
+    private Resolver resolver;
 
     private Annotation annotation;
 
@@ -76,13 +76,13 @@ public class ResolvedAnnotation {
         private ResolvedAnnotation annotation = new ResolvedAnnotation();
 
         public ResolvedAnnotation build() {
-            requireNonNull(annotation.imports);
+            requireNonNull(annotation.resolver);
             requireNonNull(annotation.annotation);
             return annotation;
         }
 
-        public Builder imports(Imports imports) {
-            annotation.imports = imports;
+        public Builder resolver(Resolver resolver) {
+            annotation.resolver = resolver;
             return this;
         }
 

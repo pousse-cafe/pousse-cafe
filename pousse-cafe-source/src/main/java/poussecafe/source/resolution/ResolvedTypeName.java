@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 
 public class ResolvedTypeName {
 
-    private Imports imports;
+    private Resolver resolver;
 
     private Name name;
 
@@ -18,7 +18,7 @@ public class ResolvedTypeName {
 
     private boolean isClassGivenUnqualifiedName(Class<?> expectedClass) {
         return !name.isQualifiedName()
-                && imports.hasImport(expectedClass)
+                && resolver.hasImport(expectedClass)
                 && name.toString().equals(expectedClass.getSimpleName());
     }
 
@@ -40,8 +40,8 @@ public class ResolvedTypeName {
 
         private ResolvedTypeName resolved = new ResolvedTypeName();
 
-        public Builder withImports(Imports imports) {
-            resolved.imports = imports;
+        public Builder withImports(Resolver resolver) {
+            resolved.resolver = resolver;
             return this;
         }
 
@@ -51,7 +51,7 @@ public class ResolvedTypeName {
         }
 
         public ResolvedTypeName build() {
-            requireNonNull(resolved.imports);
+            requireNonNull(resolved.resolver);
             requireNonNull(resolved.name);
             return resolved;
         }
