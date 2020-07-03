@@ -30,6 +30,9 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
 
         Optional<MessageListener> listener2 = processListener("Process1", "process1Listener2");
         assertTrue(listener2.isPresent());
+
+        Optional<MessageListener> listener3 = processListener("Process1", "process1Listener3");
+        assertTrue(listener3.isPresent());
     }
 
     private Optional<MessageListener> processListener(String process, String method) {

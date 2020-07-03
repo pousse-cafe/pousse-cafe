@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.Resolver;
@@ -38,6 +39,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
             AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(aggregateRootClass.aggregateName());
+            container = MessageListenerContainer.aggregateRoot(aggregateRootClass.aggregateName().simpleName());
             return true;
         } else if(resolvedTypeDeclaration.implementsInterface(Resolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
@@ -47,6 +49,12 @@ public class CompilationUnitVisitor extends ASTVisitor {
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
             FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(factoryClass.aggregateName());
+            container = MessageListenerContainer.factory(factoryClass.aggregateName().simpleName());
+            return true;
+        } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
+            RepositoryClass repositoryClass = new RepositoryClass(resolvedTypeDeclaration);
+            createOrUpdateAggregate(repositoryClass.aggregateName());
+            container = MessageListenerContainer.repository(repositoryClass.aggregateName().simpleName());
             return true;
         }
         return false;
@@ -64,11 +72,14 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     private Aggregate.Builder aggregateBuilder;
 
+    private MessageListenerContainer container;
+
     @Override
     public void endVisit(TypeDeclaration node) {
         if(aggregateBuilder != null) {
             model.putAggregateRoot(aggregateBuilder.build());
             aggregateBuilder = null;
+            container = null;
         }
     }
 
@@ -80,7 +91,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
         if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
             if(aggregateBuilder != null) {
                 model.addMessageListener(new MessageListener.Builder()
-                        .withContainer(MessageListenerContainer.aggregateRoot(aggregateBuilder.name().orElseThrow()))
+                        .withContainer(container)
                         .withMethodDeclaration(resolver.resolve(node))
                         .build());
             }

@@ -42,9 +42,9 @@ public class Model {
 
     private List<MessageListener> listeners = new ArrayList<>();
 
-    public List<MessageListener> aggregateRootListeners(String aggregateName) {
+    public List<MessageListener> aggregateListeners(String aggregateName) {
         return listeners.stream()
-                .filter(listener -> listener.container().type() == MessageListenerContainerType.ROOT)
+                .filter(listener -> listener.container().aggregateName().isPresent())
                 .filter(listener -> listener.container().aggregateName().orElseThrow().equals(aggregateName))
                 .collect(toList());
     }

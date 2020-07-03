@@ -26,4 +26,18 @@ public class MessageListenerContainer {
     }
 
     private MessageListenerContainerType type;
+
+    public static MessageListenerContainer factory(String name) {
+        MessageListenerContainer container = new MessageListenerContainer();
+        container.aggregateName = Optional.of(name);
+        container.type = MessageListenerContainerType.FACTORY;
+        return container;
+    }
+
+    public static MessageListenerContainer repository(String name) {
+        MessageListenerContainer container = new MessageListenerContainer();
+        container.aggregateName = Optional.of(name);
+        container.type = MessageListenerContainerType.REPOSITORY;
+        return container;
+    }
 }

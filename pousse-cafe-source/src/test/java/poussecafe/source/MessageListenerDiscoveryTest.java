@@ -24,7 +24,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
     private void thenAggregateListenersFound() {
         Optional<MessageListener> listener0 = aggregateMessageListener("process1Listener0");
         assertTrue(listener0.isPresent());
-        assertTrue(listener0.orElseThrow().container().type() == MessageListenerContainerType.ROOT);
+        assertTrue(listener0.orElseThrow().container().type() == MessageListenerContainerType.FACTORY);
         assertThat(listener0.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate1"));
         assertThat(listener0.orElseThrow().messageName(), equalTo("Command1"));
         assertTrue(listener0.orElseThrow().processNames().contains("Process1"));
@@ -50,6 +50,13 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
                 .eventName("Event3")
                 .required(false)
                 .build()));
+
+        Optional<MessageListener> listener3 = aggregateMessageListener("process1Listener3");
+        assertTrue(listener3.isPresent());
+        assertTrue(listener3.orElseThrow().container().type() == MessageListenerContainerType.REPOSITORY);
+        assertThat(listener3.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate2"));
+        assertThat(listener3.orElseThrow().messageName(), equalTo("Command2"));
+        assertTrue(listener3.orElseThrow().processNames().contains("Process1"));
     }
 
     private Optional<MessageListener> aggregateMessageListener(String listenerName) {

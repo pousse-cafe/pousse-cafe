@@ -36,10 +36,13 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
 
         Optional<MessageListener> listener2 = aggregateMessageListener("Aggregate2", "process1Listener2", "Event2");
         assertTrue(listener2.isPresent());
+
+        Optional<MessageListener> listener3 = aggregateMessageListener("Aggregate2", "process1Listener3", "Command2");
+        assertTrue(listener3.isPresent());
     }
 
     private Optional<MessageListener> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {
-        return model().aggregateRootListeners(aggregateName).stream()
+        return model().aggregateListeners(aggregateName).stream()
                 .filter(listener -> listener.methodName().equals(listenerName))
                 .filter(listener -> listener.messageName().equals(messageName))
                 .findFirst();
