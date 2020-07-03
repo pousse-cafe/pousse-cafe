@@ -1,8 +1,8 @@
 package poussecafe.source.model;
 
 public enum MessageListenerContainerType {
-    ROOT,
     FACTORY,
+    ROOT,
     REPOSITORY,
     OTHER
 }

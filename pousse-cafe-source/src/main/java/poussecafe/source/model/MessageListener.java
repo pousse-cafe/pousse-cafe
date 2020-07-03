@@ -24,11 +24,11 @@ public class MessageListener {
 
     private String methodName;
 
-    public String messageName() {
-        return messageName;
+    public String consumedMessageName() {
+        return consumedMessageName;
     }
 
-    private String messageName;
+    private String consumedMessageName;
 
     public List<String> processNames() {
         return processNames;
@@ -49,7 +49,7 @@ public class MessageListener {
         public MessageListener build() {
             requireNonNull(messageListener.container);
             requireNonNull(messageListener.methodName);
-            requireNonNull(messageListener.messageName);
+            requireNonNull(messageListener.consumedMessageName);
             requireNonNull(messageListener.processNames);
             return messageListener;
         }
@@ -67,7 +67,7 @@ public class MessageListener {
             }
 
             messageListener.methodName = methodName;
-            messageListener.messageName = method.parameterTypeName(0).orElseThrow().simpleName();
+            messageListener.consumedMessageName = method.parameterTypeName(0).orElseThrow().simpleName();
 
             MessageListenerAnnotations messageListenerAnnotation = new MessageListenerAnnotations(annotatedMethod);
             List<ResolvedTypeName> processes = messageListenerAnnotation.processes();

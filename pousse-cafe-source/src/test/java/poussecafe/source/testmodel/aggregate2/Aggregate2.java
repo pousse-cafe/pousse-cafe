@@ -8,7 +8,7 @@ import poussecafe.source.testmodel.process.Process1;
 
 public class Aggregate2 extends poussecafe.domain.AggregateRoot<String, Aggregate2.Attributes> {
 
-    @MessageListener(processes = {Process1.class})
+    @MessageListener(processes = {Process1.class}, runner = Process1Listener2Runner.class)
     @ProducesEvent(value = Event3.class, required = false)
     public void process1Listener2(Event2 event) {
 

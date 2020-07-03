@@ -20,7 +20,7 @@ public abstract class DiscoveryTest {
         whenIncludingTree(testModelDirectory);
     }
 
-    private Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
+    public static final Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
 
     protected Model model() {
         return scanner.model();
