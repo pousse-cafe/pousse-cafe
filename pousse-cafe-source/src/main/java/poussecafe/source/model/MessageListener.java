@@ -1,6 +1,7 @@
 package poussecafe.source.model;
 
 import java.util.List;
+import java.util.Optional;
 import poussecafe.discovery.DefaultProcess;
 import poussecafe.source.analysis.MessageListenerAnnotations;
 import poussecafe.source.analysis.ResolvedMethod;
@@ -41,6 +42,12 @@ public class MessageListener {
     }
 
     private List<ProducedEvent> producedEvents;
+
+    public Optional<String> runnerName() {
+        return runnerName;
+    }
+
+    private Optional<String> runnerName;
 
     public static class Builder {
 
@@ -85,6 +92,8 @@ public class MessageListener {
                             .required(annotation.required().orElse(true))
                             .build())
                     .collect(toList());
+
+            messageListener.runnerName = messageListenerAnnotation.runner().map(ResolvedTypeName::simpleName);
 
             return this;
         }

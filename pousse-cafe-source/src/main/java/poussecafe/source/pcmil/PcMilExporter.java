@@ -41,7 +41,7 @@ public class PcMilExporter {
                 builder.append(rootListener.orElseThrow().container().aggregateName().orElseThrow());
                 builder.append("Repository").append('\n');
             } else if(rootListener.orElseThrow().container().type() == MessageListenerContainerType.ROOT) {
-                builder.append("[TODO runner]").append('\n');
+                builder.append('[').append(rootListener.orElseThrow().runnerName().orElse("")).append(']').append('\n');
                 builder.append("    @").append(rootListener.orElseThrow().container().aggregateName().orElseThrow())
                     .append('[').append(rootListener.orElseThrow().methodName()).append(']')
                     .append(':').append('\n');

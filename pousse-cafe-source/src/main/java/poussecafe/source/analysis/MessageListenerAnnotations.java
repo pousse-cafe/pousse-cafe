@@ -1,6 +1,7 @@
 package poussecafe.source.analysis;
 
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import static java.util.Collections.emptyList;
@@ -13,12 +14,14 @@ public class MessageListenerAnnotations {
     }
 
     public MessageListenerAnnotations(AnnotatedElement<MethodDeclaration> annotatedMethod) {
-        setProcessNames(annotatedMethod.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow());
+        ResolvedAnnotation messageListenerAnnotation = annotatedMethod.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow();
+        setProcessNames(messageListenerAnnotation);
+        setRunner(messageListenerAnnotation);
         setProducedEvents(annotatedMethod.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS));
     }
 
     private void setProcessNames(ResolvedAnnotation messageListenerAnnotation) {
-        processes = messageListenerAnnotation.attributeValue("processes")
+        processes = messageListenerAnnotation.attribute("processes")
                 .map(AnnotationAttribute::asTypes)
                 .orElse(emptyList());
     }
@@ -41,5 +44,15 @@ public class MessageListenerAnnotations {
 
     public List<ProducedEventAnnotation> producedEvents() {
         return producedEvents;
+    }
+
+    private void setRunner(ResolvedAnnotation messageListenerAnnotation) {
+        runner = messageListenerAnnotation.attribute("runner").map(AnnotationAttribute::asType);
+    }
+
+    private Optional<ResolvedTypeName> runner;
+
+    public Optional<ResolvedTypeName> runner() {
+        return runner;
     }
 }

@@ -14,7 +14,7 @@ public class ResolvedAnnotation {
         return resolver.resolve(annotation.getTypeName()).isClass(annotationClass);
     }
 
-    public Optional<AnnotationAttribute> attributeValue(String attributeName) {
+    public Optional<AnnotationAttribute> attribute(String attributeName) {
         if(annotation.isNormalAnnotation()) {
             NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
             for(Object object : normalAnnotation.values()) {

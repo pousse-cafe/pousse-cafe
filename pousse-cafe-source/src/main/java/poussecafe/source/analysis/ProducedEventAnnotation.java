@@ -28,8 +28,8 @@ public class ProducedEventAnnotation {
         }
 
         public Builder withAnnotation(ResolvedAnnotation resolvedAnnotation) {
-            annotation.event = resolvedAnnotation.attributeValue("value").orElseThrow().asType();
-            annotation.required = resolvedAnnotation.attributeValue("required").map(AnnotationAttribute::asBoolean);
+            annotation.event = resolvedAnnotation.attribute("value").orElseThrow().asType();
+            annotation.required = resolvedAnnotation.attribute("required").map(AnnotationAttribute::asBoolean);
             return this;
         }
     }
