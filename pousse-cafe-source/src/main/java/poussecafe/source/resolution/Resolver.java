@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.discovery.MessageListener;
+import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
 
 import static java.util.Collections.emptySet;
@@ -83,6 +84,7 @@ public class Resolver {
         MONITORED_CLASSES.add(AggregateRoot.class);
         MONITORED_CLASSES.add(MessageListener.class);
         MONITORED_CLASSES.add(poussecafe.domain.Process.class);
+        MONITORED_CLASSES.add(ProducesEvent.class);
     }
 
     private static final Map<String, Set<Class<?>>> MONITORED_PACKAGES = new HashMap<>();

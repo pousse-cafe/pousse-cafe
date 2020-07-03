@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+
 @SuppressWarnings("unchecked")
 public class AnnotatedElement<T> {
 
@@ -17,14 +20,17 @@ public class AnnotatedElement<T> {
 
     public Optional<ResolvedAnnotation> findAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
         return annotations.stream()
-                .filter(annotation -> resolver.resolve(annotation.getTypeName()).isClass(annotationClass))
-                .findFirst().map(annotation -> new ResolvedAnnotation.Builder()
-                        .resolver(resolver)
-                        .annotation(annotation)
-                        .build());
+                .filter(annotation -> annotation.isClass(annotationClass))
+                .findFirst();
     }
 
-    private List<Annotation> annotations = new ArrayList<>();
+    private List<ResolvedAnnotation> annotations = new ArrayList<>();
+
+    public List<ResolvedAnnotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return annotations.stream()
+                .filter(annotation -> annotation.isClass(annotationClass))
+                .collect(toList());
+    }
 
     private Resolver resolver;
 
@@ -33,6 +39,12 @@ public class AnnotatedElement<T> {
         private AnnotatedElement<T> annotatedElement = new AnnotatedElement<>();
 
         public AnnotatedElement<T> build() {
+            requireNonNull(annotatedElement.resolver);
+            annotatedElement.annotations = annotations.stream().map(annotation -> new ResolvedAnnotation.Builder()
+                    .resolver(annotatedElement.resolver)
+                    .annotation(annotation)
+                    .build())
+                    .collect(toList());
             return annotatedElement;
         }
 
@@ -47,12 +59,14 @@ public class AnnotatedElement<T> {
                 MethodDeclaration declaration = (MethodDeclaration) element;
                 declaration.modifiers().stream()
                         .filter(item -> item instanceof Annotation)
-                        .forEach(annotationObject -> annotatedElement.annotations.add((Annotation) annotationObject));
+                        .forEach(annotationObject -> annotations.add((Annotation) annotationObject));
             } else {
                 throw new IllegalArgumentException("Unsupported annotated element type " + element.getClass().getSimpleName());
             }
             return this;
         }
+
+        private List<Annotation> annotations = new ArrayList<>();
     }
 
     private AnnotatedElement() {

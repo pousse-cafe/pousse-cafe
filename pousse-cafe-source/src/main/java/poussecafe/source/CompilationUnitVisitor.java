@@ -8,13 +8,14 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.source.model.AggregateRootSource;
+import poussecafe.source.model.MessageListenerAnnotations;
 import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerSource;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
-import poussecafe.source.resolution.Resolver;
 import poussecafe.source.resolution.ResolvedTypeDeclaration;
 import poussecafe.source.resolution.ResolvedTypeName;
+import poussecafe.source.resolution.Resolver;
 
 import static java.util.Objects.requireNonNull;
 
@@ -64,7 +65,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
         var method = resolver.resolve(node);
-        if(MessageListenerSource.isMessageListener(method.asAnnotatedElement())) {
+        if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
             if(aggregateRootSourceBuilder != null) {
                 model.addMessageListener(new MessageListenerSource.Builder()
                         .withContainer(MessageListenerContainer.aggregateRoot(aggregateRootSourceBuilder.name().orElseThrow()))

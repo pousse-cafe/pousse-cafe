@@ -1,12 +1,13 @@
 package poussecafe.source.model;
 
 import java.util.List;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import poussecafe.discovery.MessageListener;
-import poussecafe.source.resolution.AnnotatedElement;
+import poussecafe.discovery.DefaultProcess;
 import poussecafe.source.resolution.ResolvedMethod;
+import poussecafe.source.resolution.ResolvedTypeName;
 
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 public class MessageListenerSource {
 
@@ -34,41 +35,57 @@ public class MessageListenerSource {
 
     private List<String> processNames;
 
+    public List<ProducedEvent> producedEvents() {
+        return producedEvents;
+    }
+
+    private List<ProducedEvent> producedEvents;
+
     public static class Builder {
 
-        private MessageListenerSource source = new MessageListenerSource();
+        private MessageListenerSource messageListener = new MessageListenerSource();
 
         public MessageListenerSource build() {
-            requireNonNull(source.container);
-            requireNonNull(source.methodName);
-            requireNonNull(source.messageName);
-            requireNonNull(source.processNames);
-            return source;
+            requireNonNull(messageListener.container);
+            requireNonNull(messageListener.methodName);
+            requireNonNull(messageListener.messageName);
+            requireNonNull(messageListener.processNames);
+            return messageListener;
         }
 
         public Builder withContainer(MessageListenerContainer container) {
-            source.container = container;
+            messageListener.container = container;
             return this;
         }
 
         public Builder withMethodDeclaration(ResolvedMethod method) {
             var annotatedMethod = method.asAnnotatedElement();
             String methodName = method.name();
-            if(!isMessageListener(annotatedMethod)) {
+            if(!MessageListenerAnnotations.isMessageListener(annotatedMethod)) {
                 throw new IllegalArgumentException("Method " + methodName + " is not a message listener");
             }
 
-            source.methodName = methodName;
-            source.messageName = method.parameterTypeName(0).orElseThrow().simpleName();
+            messageListener.methodName = methodName;
+            messageListener.messageName = method.parameterTypeName(0).orElseThrow().simpleName();
 
-            MessageListenerAnnotation messageListenerAnnotation = new MessageListenerAnnotation(annotatedMethod);
-            source.processNames = messageListenerAnnotation.processNames();
+            MessageListenerAnnotations messageListenerAnnotation = new MessageListenerAnnotations(annotatedMethod);
+            List<ResolvedTypeName> processes = messageListenerAnnotation.processes();
+            if(processes.isEmpty()) {
+                messageListener.processNames = singletonList(DefaultProcess.class.getSimpleName());
+            } else {
+                messageListener.processNames = processes.stream()
+                        .map(ResolvedTypeName::simpleName)
+                        .collect(toList());
+            }
+
+            messageListener.producedEvents = messageListenerAnnotation.producedEvents().stream()
+                    .map(annotation -> new ProducedEvent.Builder()
+                            .eventName(annotation.event().simpleName())
+                            .required(annotation.required().orElse(true))
+                            .build())
+                    .collect(toList());
 
             return this;
         }
-    }
-
-    public static boolean isMessageListener(AnnotatedElement<MethodDeclaration> annotatedElement) {
-        return annotatedElement.findAnnotation(MessageListener.class).isPresent();
     }
 }
