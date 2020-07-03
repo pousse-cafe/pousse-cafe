@@ -6,16 +6,15 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import poussecafe.domain.AggregateRoot;
-import poussecafe.source.model.AggregateRootSource;
-import poussecafe.source.model.MessageListenerAnnotations;
+import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.ResolvedTypeDeclaration;
+import poussecafe.source.analysis.ResolvedTypeName;
+import poussecafe.source.analysis.Resolver;
+import poussecafe.source.model.AggregateRoot;
 import poussecafe.source.model.MessageListenerContainer;
-import poussecafe.source.model.MessageListenerSource;
+import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
-import poussecafe.source.resolution.ResolvedTypeDeclaration;
-import poussecafe.source.resolution.ResolvedTypeName;
-import poussecafe.source.resolution.Resolver;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,12 +35,12 @@ public class CompilationUnitVisitor extends ASTVisitor {
         ResolvedTypeDeclaration resolvedTypeDeclaration = resolver.resolve(node);
         Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         if(superclassType.isPresent()
-                && superclassType.get().isClass(AggregateRoot.class)) {
-            aggregateRootSourceBuilder = new AggregateRootSource.Builder()
+                && superclassType.get().isClass(Resolver.AGGREGATE_ROOT_CLASS)) {
+            aggregateRootSourceBuilder = new AggregateRoot.Builder()
                     .name(node.getName().getIdentifier())
                     .filePath(sourcePath);
             return true;
-        } else if(resolvedTypeDeclaration.implementsInterface(poussecafe.domain.Process.class)) {
+        } else if(resolvedTypeDeclaration.implementsInterface(Resolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
                     .name(resolvedTypeDeclaration.name().simpleName())
                     .filePath(sourcePath)
@@ -50,7 +49,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
         return false;
     }
 
-    private AggregateRootSource.Builder aggregateRootSourceBuilder;
+    private AggregateRoot.Builder aggregateRootSourceBuilder;
 
     @Override
     public void endVisit(TypeDeclaration node) {
@@ -67,7 +66,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
         var method = resolver.resolve(node);
         if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
             if(aggregateRootSourceBuilder != null) {
-                model.addMessageListener(new MessageListenerSource.Builder()
+                model.addMessageListener(new MessageListener.Builder()
                         .withContainer(MessageListenerContainer.aggregateRoot(aggregateRootSourceBuilder.name().orElseThrow()))
                         .withMethodDeclaration(resolver.resolve(node))
                         .build());

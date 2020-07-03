@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 public class Model {
 
-    public void addAggregateRoot(AggregateRootSource source) {
+    public void addAggregateRoot(AggregateRoot source) {
         String name = source.name();
         if(aggregateRoots.containsKey(name)) {
             throw new IllegalArgumentException("An aggregate root named " + name + " already exists in file " + source.filePath());
@@ -20,9 +20,9 @@ public class Model {
         }
     }
 
-    private Map<String, AggregateRootSource> aggregateRoots = new HashMap<>();
+    private Map<String, AggregateRoot> aggregateRoots = new HashMap<>();
 
-    public Optional<AggregateRootSource> aggregateRoot(String name) {
+    public Optional<AggregateRoot> aggregateRoot(String name) {
         return Optional.ofNullable(aggregateRoots.get(name));
     }
 
@@ -41,26 +41,26 @@ public class Model {
         }
     }
 
-    public void addMessageListener(MessageListenerSource source) {
+    public void addMessageListener(MessageListener source) {
         listeners.add(source);
     }
 
-    private List<MessageListenerSource> listeners = new ArrayList<>();
+    private List<MessageListener> listeners = new ArrayList<>();
 
-    public List<MessageListenerSource> aggregateRootListeners(String aggregateName) {
+    public List<MessageListener> aggregateRootListeners(String aggregateName) {
         return listeners.stream()
                 .filter(listener -> listener.container().type() == MessageListenerContainerType.ROOT)
                 .filter(listener -> listener.container().aggregateName().orElseThrow().equals(aggregateName))
                 .collect(toList());
     }
 
-    public List<MessageListenerSource> processListeners(String process) {
+    public List<MessageListener> processListeners(String process) {
         return listeners.stream()
                 .filter(listener -> listener.processNames().contains(process))
                 .collect(toList());
     }
 
-    public List<MessageListenerSource> messageListeners() {
+    public List<MessageListener> messageListeners() {
         return unmodifiableList(listeners);
     }
 }

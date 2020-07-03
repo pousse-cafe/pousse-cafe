@@ -1,13 +1,7 @@
-package poussecafe.source.model;
+package poussecafe.source.analysis;
 
 import java.util.List;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import poussecafe.discovery.MessageListener;
-import poussecafe.discovery.ProducesEvent;
-import poussecafe.source.resolution.AnnotatedElement;
-import poussecafe.source.resolution.AnnotationAttribute;
-import poussecafe.source.resolution.ResolvedAnnotation;
-import poussecafe.source.resolution.ResolvedTypeName;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -15,12 +9,12 @@ import static java.util.stream.Collectors.toList;
 public class MessageListenerAnnotations {
 
     public static boolean isMessageListener(AnnotatedElement<MethodDeclaration> annotatedElement) {
-        return annotatedElement.findAnnotation(MessageListener.class).isPresent();
+        return annotatedElement.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).isPresent();
     }
 
     public MessageListenerAnnotations(AnnotatedElement<MethodDeclaration> annotatedMethod) {
-        setProcessNames(annotatedMethod.findAnnotation(MessageListener.class).orElseThrow());
-        setProducedEvents(annotatedMethod.findAnnotations(ProducesEvent.class));
+        setProcessNames(annotatedMethod.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow());
+        setProducedEvents(annotatedMethod.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS));
     }
 
     private void setProcessNames(ResolvedAnnotation messageListenerAnnotation) {

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.model.MessageListenerContainerType;
-import poussecafe.source.model.MessageListenerSource;
+import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.ProducedEvent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -22,7 +22,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenAggregateListenersFound() {
-        Optional<MessageListenerSource> listener1 = aggregateMessageListener("process1Listener1");
+        Optional<MessageListener> listener1 = aggregateMessageListener("process1Listener1");
         assertTrue(listener1.isPresent());
         assertTrue(listener1.orElseThrow().container().type() == MessageListenerContainerType.ROOT);
         assertThat(listener1.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate1"));
@@ -33,7 +33,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
                 .required(true)
                 .build()));
 
-        Optional<MessageListenerSource> listener2 = aggregateMessageListener("process1Listener2");
+        Optional<MessageListener> listener2 = aggregateMessageListener("process1Listener2");
         assertTrue(listener2.isPresent());
         assertThat(listener2.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate2"));
         assertTrue(listener2.orElseThrow().container().type() == MessageListenerContainerType.ROOT);
@@ -45,7 +45,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
                 .build()));
     }
 
-    private Optional<MessageListenerSource> aggregateMessageListener(String listenerName) {
+    private Optional<MessageListener> aggregateMessageListener(String listenerName) {
         return model().messageListeners().stream()
                 .filter(listener -> listener.methodName().equals(listenerName))
                 .findFirst();

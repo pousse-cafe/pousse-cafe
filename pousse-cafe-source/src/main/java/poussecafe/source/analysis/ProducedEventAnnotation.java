@@ -1,9 +1,6 @@
-package poussecafe.source.model;
+package poussecafe.source.analysis;
 
 import java.util.Optional;
-import poussecafe.source.resolution.AnnotationAttribute;
-import poussecafe.source.resolution.ResolvedAnnotation;
-import poussecafe.source.resolution.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
 

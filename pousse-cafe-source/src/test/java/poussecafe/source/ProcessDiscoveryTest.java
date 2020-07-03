@@ -3,7 +3,7 @@ package poussecafe.source;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.source.model.MessageListenerSource;
+import poussecafe.source.model.MessageListener;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,14 +22,14 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenProcessesHaveListeners() {
-        Optional<MessageListenerSource> listener1 = processListener("Process1", "process1Listener1");
+        Optional<MessageListener> listener1 = processListener("Process1", "process1Listener1");
         assertTrue(listener1.isPresent());
 
-        Optional<MessageListenerSource> listener2 = processListener("Process1", "process1Listener2");
+        Optional<MessageListener> listener2 = processListener("Process1", "process1Listener2");
         assertTrue(listener2.isPresent());
     }
 
-    private Optional<MessageListenerSource> processListener(String process, String method) {
+    private Optional<MessageListener> processListener(String process, String method) {
         return model().processListeners(process).stream()
                 .filter(listener -> listener.methodName().equals(method))
                 .findFirst();

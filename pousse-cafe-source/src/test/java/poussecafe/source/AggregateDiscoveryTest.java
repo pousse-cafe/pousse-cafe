@@ -3,8 +3,8 @@ package poussecafe.source;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.source.model.AggregateRootSource;
-import poussecafe.source.model.MessageListenerSource;
+import poussecafe.source.model.AggregateRoot;
+import poussecafe.source.model.MessageListener;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,19 +23,19 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
         assertTrue(aggregateRoot("Aggregate2").isPresent());
     }
 
-    private Optional<AggregateRootSource> aggregateRoot(String name) {
+    private Optional<AggregateRoot> aggregateRoot(String name) {
         return model().aggregateRoot(name);
     }
 
     private void thenAggregateListenersFound() {
-        Optional<MessageListenerSource> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
+        Optional<MessageListener> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
         assertTrue(listener1.isPresent());
 
-        Optional<MessageListenerSource> listener2 = aggregateMessageListener("Aggregate2", "process1Listener2", "Event2");
+        Optional<MessageListener> listener2 = aggregateMessageListener("Aggregate2", "process1Listener2", "Event2");
         assertTrue(listener2.isPresent());
     }
 
-    private Optional<MessageListenerSource> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {
+    private Optional<MessageListener> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {
         return model().aggregateRootListeners(aggregateName).stream()
                 .filter(listener -> listener.methodName().equals(listenerName))
                 .filter(listener -> listener.messageName().equals(messageName))

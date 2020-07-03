@@ -1,5 +1,6 @@
-package poussecafe.source.resolution;
+package poussecafe.source.analysis;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,12 +80,20 @@ public class Resolver {
                 .build();
     }
 
+    public static final Class<?> AGGREGATE_ROOT_CLASS = AggregateRoot.class;
+
+    public static final Class<? extends Annotation> MESSAGE_LISTENER_ANNOTATION_CLASS = MessageListener.class;
+
+    public static final Class<?> PROCESS_INTERFACE = poussecafe.domain.Process.class;
+
+    public static final Class<? extends Annotation> PRODUCES_EVENT_ANNOTATION_CLASS = ProducesEvent.class;
+
     private static final Set<Class<?>> MONITORED_CLASSES = new HashSet<>();
     static {
-        MONITORED_CLASSES.add(AggregateRoot.class);
-        MONITORED_CLASSES.add(MessageListener.class);
-        MONITORED_CLASSES.add(poussecafe.domain.Process.class);
-        MONITORED_CLASSES.add(ProducesEvent.class);
+        MONITORED_CLASSES.add(AGGREGATE_ROOT_CLASS);
+        MONITORED_CLASSES.add(MESSAGE_LISTENER_ANNOTATION_CLASS);
+        MONITORED_CLASSES.add(PROCESS_INTERFACE);
+        MONITORED_CLASSES.add(PRODUCES_EVENT_ANNOTATION_CLASS);
     }
 
     private static final Map<String, Set<Class<?>>> MONITORED_PACKAGES = new HashMap<>();

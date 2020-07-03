@@ -1,4 +1,4 @@
-package poussecafe.source.resolution;
+package poussecafe.source.analysis;
 
 import java.util.ArrayList;
 import java.util.List;

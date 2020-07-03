@@ -2,14 +2,15 @@ package poussecafe.source.model;
 
 import java.util.List;
 import poussecafe.discovery.DefaultProcess;
-import poussecafe.source.resolution.ResolvedMethod;
-import poussecafe.source.resolution.ResolvedTypeName;
+import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.ResolvedMethod;
+import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
-public class MessageListenerSource {
+public class MessageListener {
 
     public MessageListenerContainer container() {
         return container;
@@ -43,9 +44,9 @@ public class MessageListenerSource {
 
     public static class Builder {
 
-        private MessageListenerSource messageListener = new MessageListenerSource();
+        private MessageListener messageListener = new MessageListener();
 
-        public MessageListenerSource build() {
+        public MessageListener build() {
             requireNonNull(messageListener.container);
             requireNonNull(messageListener.methodName);
             requireNonNull(messageListener.messageName);

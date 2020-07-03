@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
-public class AggregateRootSource {
+public class AggregateRoot {
 
     private String name;
 
@@ -21,9 +21,9 @@ public class AggregateRootSource {
 
     public static class Builder {
 
-        private AggregateRootSource source = new AggregateRootSource();
+        private AggregateRoot source = new AggregateRoot();
 
-        public AggregateRootSource build() {
+        public AggregateRoot build() {
             requireNonNull(source.name);
             requireNonNull(source.filePath);
             return source;
@@ -44,7 +44,7 @@ public class AggregateRootSource {
         }
     }
 
-    private AggregateRootSource() {
+    private AggregateRoot() {
 
     }
 }

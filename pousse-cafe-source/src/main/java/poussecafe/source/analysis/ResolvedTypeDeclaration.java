@@ -1,4 +1,4 @@
-package poussecafe.source.resolution;
+package poussecafe.source.analysis;
 
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ParameterizedType;
