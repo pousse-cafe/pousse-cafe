@@ -11,18 +11,13 @@ import static java.util.stream.Collectors.toList;
 
 public class Model {
 
-    public void addAggregateRoot(AggregateRoot source) {
-        String name = source.name();
-        if(aggregateRoots.containsKey(name)) {
-            throw new IllegalArgumentException("An aggregate root named " + name + " already exists in file " + source.filePath());
-        } else {
-            aggregateRoots.put(name, source);
-        }
+    public void putAggregateRoot(Aggregate source) {
+        aggregateRoots.put(source.name(), source);
     }
 
-    private Map<String, AggregateRoot> aggregateRoots = new HashMap<>();
+    private Map<String, Aggregate> aggregateRoots = new HashMap<>();
 
-    public Optional<AggregateRoot> aggregateRoot(String name) {
+    public Optional<Aggregate> aggregateRoot(String name) {
         return Optional.ofNullable(aggregateRoots.get(name));
     }
 

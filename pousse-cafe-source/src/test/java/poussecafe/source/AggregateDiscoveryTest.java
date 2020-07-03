@@ -3,7 +3,7 @@ package poussecafe.source;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.source.model.AggregateRoot;
+import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 
 import static org.junit.Assert.assertTrue;
@@ -23,11 +23,14 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
         assertTrue(aggregateRoot("Aggregate2").isPresent());
     }
 
-    private Optional<AggregateRoot> aggregateRoot(String name) {
+    private Optional<Aggregate> aggregateRoot(String name) {
         return model().aggregateRoot(name);
     }
 
     private void thenAggregateListenersFound() {
+        Optional<MessageListener> listener0 = aggregateMessageListener("Aggregate1", "process1Listener0", "Command1");
+        assertTrue(listener0.isPresent());
+
         Optional<MessageListener> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
         assertTrue(listener1.isPresent());
 

@@ -22,6 +22,9 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenProcessesHaveListeners() {
+        Optional<MessageListener> listener0 = processListener("Process1", "process1Listener0");
+        assertTrue(listener0.isPresent());
+
         Optional<MessageListener> listener1 = processListener("Process1", "process1Listener1");
         assertTrue(listener1.isPresent());
 

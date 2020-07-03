@@ -55,6 +55,21 @@ public class ResolvedTypeDeclaration {
         return false;
     }
 
+    public ResolvedTypeName typeParameter(int parameter) {
+        Type type = declaration.getSuperclassType();
+        if(type instanceof ParameterizedType) {
+            ParameterizedType parametrizedType = (ParameterizedType) type;
+            Type typeParameter = (Type) parametrizedType.typeArguments().get(parameter);
+            if(typeParameter instanceof SimpleType) {
+                return simpleType((SimpleType) typeParameter);
+            } else {
+                throw new UnsupportedOperationException("Unsupported parameter type " + typeParameter.getClass());
+            }
+        } else {
+            throw new UnsupportedOperationException("Type is not parametrized");
+        }
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();

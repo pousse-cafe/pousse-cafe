@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.Factory;
 
 import static java.util.Collections.emptySet;
 
@@ -88,12 +89,15 @@ public class Resolver {
 
     public static final Class<? extends Annotation> PRODUCES_EVENT_ANNOTATION_CLASS = ProducesEvent.class;
 
+    public static final Class<?> FACTORY_CLASS = Factory.class;
+
     private static final Set<Class<?>> MONITORED_CLASSES = new HashSet<>();
     static {
         MONITORED_CLASSES.add(AGGREGATE_ROOT_CLASS);
         MONITORED_CLASSES.add(MESSAGE_LISTENER_ANNOTATION_CLASS);
         MONITORED_CLASSES.add(PROCESS_INTERFACE);
         MONITORED_CLASSES.add(PRODUCES_EVENT_ANNOTATION_CLASS);
+        MONITORED_CLASSES.add(FACTORY_CLASS);
     }
 
     private static final Map<String, Set<Class<?>>> MONITORED_PACKAGES = new HashMap<>();
