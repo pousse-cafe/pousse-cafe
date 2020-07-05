@@ -127,6 +127,9 @@ public class PcMilExporter {
             .append(':').append('\n');
         for(ProducedEvent producedEvent : listener.producedEvents()) {
             builder.append(indent(level + 2)).append(':');
+            if(!producedEvent.required()) {
+                builder.append('#');
+            }
             appendListeners(level + 2, builder, producedEvent.message(), findAndRemoveListeners(producedEvent.message()));
         }
     }

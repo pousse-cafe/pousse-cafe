@@ -1,9 +1,13 @@
 Command1? -> Aggregate1Factory
 
+Command3? -> Aggregate1Factory
+
+Command4? -> Aggregate1Factory
+
 Event1! -> Process1Listener1Runner
     @Aggregate1[process1Listener1]:
         :Event2! -> Process1Listener2Runner
             @Aggregate2[process1Listener2]:
-                :Event3! -> .
+                :#Event3! -> .
 
 Command2? -> Aggregate2Repository
