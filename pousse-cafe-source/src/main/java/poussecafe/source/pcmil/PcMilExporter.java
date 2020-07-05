@@ -28,10 +28,10 @@ public class PcMilExporter {
     private String pcMil;
 
     private void generatePcMil() {
-        var builder = new StringBuilder();
+        builder = new StringBuilder();
         while(!listeners.isEmpty()) {
             MessageListener next = next();
-            appendTopListener(builder, next);
+            appendTopListener(next);
 
             listeners.remove(next);
             if(!listeners.isEmpty()) {
@@ -40,6 +40,8 @@ public class PcMilExporter {
         }
         pcMil = builder.toString();
     }
+
+    private StringBuilder builder;
 
     private List<MessageListener> listeners;
 
@@ -60,30 +62,25 @@ public class PcMilExporter {
 
     private Set<Message> producedEvents = new HashSet<>();
 
-    private void appendTopListener(StringBuilder builder, MessageListener rootListener) {
-        appendListeners(0, builder, rootListener.consumedMessage(), findAndRemoveListeners(rootListener.consumedMessage()));
+    private void appendTopListener(MessageListener rootListener) {
+        Message message = rootListener.consumedMessage();
+        appendMessageConsumption(0, message);
     }
 
-    private void appendListeners(int level, StringBuilder builder, Message message, List<MessageListener> listeners) {
-        appendMessage(builder, message);
+    private void appendMessageConsumption(int level, Message message) {
+        appendMessage(message);
 
-        if(listeners.isEmpty()) {
-            builder.append(" -> .").append('\n');
-        } else if(listeners.size() == 1) {
-            builder.append(" -> ");
+        List<MessageListener> consumers = findAndRemoveConsumers(message);
+        if(consumers.isEmpty()) {
+            appendNoListener();
+        } else if(consumers.size() == 1) {
+            appendSingleListener(level, consumers.get(0));
         } else {
-            builder.append(" -> ").append('\n');
-        }
-
-        for(MessageListener listener : listeners) {
-            if(listeners.size() > 1) {
-                builder.append(indent(level + 1)).append(" -> ");
-            }
-            appendListener(level, builder, listener);
+            appendMultipleListeners(level, consumers);
         }
     }
 
-    private void appendMessage(StringBuilder builder, Message message) {
+    private void appendMessage(Message message) {
         builder.append(message.name());
         if(message.type() == MessageType.COMMAND) {
             builder.append('?');
@@ -92,45 +89,88 @@ public class PcMilExporter {
         }
     }
 
-    private void appendListener(int level, StringBuilder builder, MessageListener listener) {
+    private void appendNoListener() {
+        builder.append(" -> .").append('\n');
+    }
+
+    private void appendSingleListener(int level, MessageListener consumer) {
+        builder.append(" -> ");
+        appendListener(level, consumer);
+    }
+
+    private void appendMultipleListeners(int level, List<MessageListener> consumers) {
+        builder.append(" -> ").append('\n');
+        for(MessageListener listener : consumers) {
+            builder.append(indent(level + 1)).append(" -> ");
+            appendListener(level, listener);
+        }
+    }
+
+    private void appendListener(int level, MessageListener listener) {
         if(listener.container().type() == MessageListenerContainerType.FACTORY) {
-            appendFactoryListener(level, builder, listener);
+            appendFactoryListener(level, listener);
         } else if(listener.container().type() == MessageListenerContainerType.REPOSITORY) {
-            appendRepositoryListener(level, builder, listener);
+            appendRepositoryListener(level, listener);
         } else if(listener.container().type() == MessageListenerContainerType.ROOT) {
-            appendAggregateRootListener(level, builder, listener);
+            appendAggregateRootListener(level, listener);
         } else {
             builder.append(". [external]");
         }
     }
 
-    private void appendFactoryListener(int level, StringBuilder builder, MessageListener listener) {
+    private void appendFactoryListener(int level, MessageListener listener) {
+        appendFactoryName(listener);
+        appendMessageConsumptions(level, listener);
+    }
+
+    private void appendFactoryName(MessageListener listener) {
         builder.append(listener.container().aggregateName().orElseThrow());
         builder.append("Factory").append('\n');
+    }
+
+    private void appendMessageConsumptions(int level, MessageListener listener) {
         for(ProducedEvent producedEvent : listener.producedEvents()) {
-            appendListeners(level, builder, producedEvent.message(), findAndRemoveListeners(producedEvent.message()));
+            appendMessageConsumption(level, producedEvent.message());
         }
     }
 
-    private void appendRepositoryListener(int level, StringBuilder builder, MessageListener listener) {
+    private void appendRepositoryListener(int level, MessageListener listener) {
+        appendRepositoryName(listener);
+        appendMessageConsumptions(level, listener);
+    }
+
+    private void appendRepositoryName(MessageListener listener) {
         builder.append(listener.container().aggregateName().orElseThrow());
         builder.append("Repository").append('\n');
-        for(ProducedEvent producedEvent : listener.producedEvents()) {
-            appendListeners(level, builder, producedEvent.message(), findAndRemoveListeners(producedEvent.message()));
-        }
     }
 
-    private void appendAggregateRootListener(int level, StringBuilder builder, MessageListener listener) {
+    private void appendAggregateRootListener(int level, MessageListener listener) {
+        appendRunnerAndAggregateRoot(level, listener);
+        appendAggregateMessageConsumptions(level, listener);
+    }
+
+    private void appendRunnerAndAggregateRoot(int level, MessageListener listener) {
+        appendRunnerName(listener);
+        appendAggregateListener(level, listener);
+    }
+
+    private void appendRunnerName(MessageListener listener) {
         builder.append(listener.runnerName().orElse("")).append('\n');
+    }
+
+    private void appendAggregateListener(int level, MessageListener listener) {
         builder.append(indent(level + 1)).append("@").append(listener.container().aggregateName().orElseThrow())
             .append('[').append(listener.methodName()).append(']')
             .append(':').append('\n');
+    }
+
+    private void appendAggregateMessageConsumptions(int level, MessageListener listener) {
         for(ProducedEvent producedEvent : listener.producedEvents()) {
             builder.append(indent(level + 2)).append(':');
             if(!producedEvent.required()) {
                 builder.append('#');
             }
-            appendListeners(level + 2, builder, producedEvent.message(), findAndRemoveListeners(producedEvent.message()));
+            appendMessageConsumption(level + 2, producedEvent.message());
         }
     }
 
@@ -144,7 +184,7 @@ public class PcMilExporter {
 
     private static final Object TAB = "    ";
 
-    private List<MessageListener> findAndRemoveListeners(Message event) {
+    private List<MessageListener> findAndRemoveConsumers(Message event) {
         var removedListeners = new ArrayList<MessageListener>();
         Iterator<MessageListener> iterator = listeners.iterator();
         while(iterator.hasNext()) {
