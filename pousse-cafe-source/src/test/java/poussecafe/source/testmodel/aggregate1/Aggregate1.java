@@ -6,6 +6,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.testmodel.events.Event1;
 import poussecafe.source.testmodel.events.Event2;
+import poussecafe.source.testmodel.events.Event4;
 import poussecafe.source.testmodel.process.Process1;
 
 public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
@@ -13,6 +14,11 @@ public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
     @MessageListener(processes = Process1.class, runner = Process1Listener1Runner.class, consumesFromExternal = "External1")
     @ProducesEvent(Event2.class)
     public void process1Listener1(Event1 event) {
+
+    }
+
+    @MessageListener(processes = Process1.class, runner = Process1Listener6Runner.class)
+    public void process1Listener6(Event4 event) {
 
     }
 
