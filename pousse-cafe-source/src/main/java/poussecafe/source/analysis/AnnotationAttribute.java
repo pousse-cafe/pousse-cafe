@@ -35,10 +35,7 @@ public class AnnotationAttribute {
             Type type = typeLiteral.getType();
             if(type instanceof SimpleType) {
                 SimpleType simpleType = (SimpleType) type;
-                return Optional.of(new ResolvedTypeName.Builder()
-                        .withImports(resolver)
-                        .withName(simpleType.getName())
-                        .build());
+                return Optional.of(resolver.resolve(simpleType.getName()));
             } else {
                 return Optional.empty();
             }

@@ -3,22 +3,34 @@ package poussecafe.source.analysis;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
+import poussecafe.messaging.Message;
+import poussecafe.runtime.Command;
 
-import static java.util.Collections.emptySet;
+import static java.util.Objects.requireNonNull;
 
 public class Resolver {
+
+    public Resolver(CompilationUnit compilationUnit) {
+        requireNonNull(compilationUnit);
+        this.compilationUnit = compilationUnit;
+    }
+
+    private CompilationUnit compilationUnit;
 
     public void tryRegister(ImportDeclaration importDeclaration) {
         if(!importDeclaration.isStatic()) {
@@ -32,40 +44,70 @@ public class Resolver {
 
     private void tryRegisterOnDemandImport(ImportDeclaration importDeclaration) {
         Name packageName = importDeclaration.getName();
-        Set<Class<?>> monitoredClasses = MONITORED_PACKAGES.computeIfAbsent(packageName.getFullyQualifiedName(),
-                key -> emptySet());
-        monitoredClasses.stream().forEach(this::tryClassImport);
+        importedPackages.add(packageName.getFullyQualifiedName());
     }
+
+    private List<String> importedPackages = new ArrayList<>();
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
-        Name importName = importDeclaration.getName();
-        for(Class<?> expectedClass : new ArrayList<>(notImported)) {
-            if(importName.getFullyQualifiedName().equals(expectedClass.getCanonicalName())) {
-                tryClassImport(expectedClass);
-            }
+        QualifiedName importName = (QualifiedName) importDeclaration.getName();
+        String fullyQualifiedName = importName.getFullyQualifiedName();
+        loadClass(fullyQualifiedName).ifPresent(this::registerImportedClass);
+    }
+
+    private void registerImportedClass(Class<?> importedClass) {
+        importedClasses.put(importedClass.getCanonicalName(), importedClass);
+        resolvedNames.put(importedClass.getSimpleName(), importedClass);
+    }
+
+    private Optional<Class<?>> loadClass(String importedClassName) {
+        try {
+            return Optional.of(getClass().getClassLoader().loadClass(importedClassName));
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
         }
     }
 
-    private void tryClassImport(Class<?> expectedClass) {
-        if(notImported.contains(expectedClass)) {
-            imported.add(expectedClass);
-            notImported.remove(expectedClass);
-        }
-    }
-
-    private Set<Class<?>> notImported = new HashSet<>(MONITORED_CLASSES);
-
-    private Set<Class<?>> imported = new HashSet<>();
-
-    public boolean hasImport(Class<?> expectedClass) {
-        return imported.contains(expectedClass);
-    }
+    private Map<String, Class<?>> importedClasses = new HashMap<>();
 
     public ResolvedTypeName resolve(Name name) {
+        Optional<Class<?>> resolvedClass = resolveClass(name);
         return new ResolvedTypeName.Builder()
                 .withImports(this)
                 .withName(name)
+                .withResolvedClass(resolvedClass)
                 .build();
+    }
+
+    private Optional<Class<?>> resolveClass(Name name) {
+        if(name.isQualifiedName()) {
+            String resolvedClassName = name.getFullyQualifiedName();
+            return loadClass(resolvedClassName);
+        } else {
+            String simpleName = name.getFullyQualifiedName();
+            return Optional.ofNullable(resolvedNames.computeIfAbsent(simpleName, this::resolveName));
+        }
+    }
+
+    private Map<String, Class<?>> resolvedNames = new HashMap<>();
+
+    private Class<?> resolveName(String simpleName) {
+        for(String importedPackage : importedPackages) {
+            Optional<Class<?>> loadedClass = tryResolution(importedPackage, simpleName);
+            if(loadedClass.isPresent()) {
+                return loadedClass.get();
+            }
+        }
+        return tryResolution(compilationUnitPackageName(), simpleName).orElse(null);
+    }
+
+    private String compilationUnitPackageName() {
+        return compilationUnit.getPackage().getName().getFullyQualifiedName();
+    }
+
+    private Optional<Class<?>> tryResolution(String packageName, String simpleName) {
+        String candidateQualifiedName = packageName + "." + simpleName;
+        return loadClass(candidateQualifiedName);
     }
 
     public ResolvedMethod resolve(MethodDeclaration method) {
@@ -94,20 +136,9 @@ public class Resolver {
 
     public static final Class<?> REPOSITORY_CLASS = Repository.class;
 
-    private static final Set<Class<?>> MONITORED_CLASSES = new HashSet<>();
-    static {
-        MONITORED_CLASSES.add(AGGREGATE_ROOT_CLASS);
-        MONITORED_CLASSES.add(MESSAGE_LISTENER_ANNOTATION_CLASS);
-        MONITORED_CLASSES.add(PROCESS_INTERFACE);
-        MONITORED_CLASSES.add(PRODUCES_EVENT_ANNOTATION_CLASS);
-        MONITORED_CLASSES.add(FACTORY_CLASS);
-        MONITORED_CLASSES.add(REPOSITORY_CLASS);
-    }
+    public static final Class<?> MESSAGE_CLASS = Message.class;
 
-    private static final Map<String, Set<Class<?>>> MONITORED_PACKAGES = new HashMap<>();
-    static {
-        MONITORED_CLASSES.stream().forEach(monitoredClass -> MONITORED_PACKAGES
-                .computeIfAbsent(monitoredClass.getPackageName(), key -> new HashSet<>())
-                .add(monitoredClass));
-    }
+    public static final Class<?> DOMAIN_EVENT_INTERFACE = DomainEvent.class;
+
+    public static final Class<?> COMMAND_INTERFACE = Command.class;
 }

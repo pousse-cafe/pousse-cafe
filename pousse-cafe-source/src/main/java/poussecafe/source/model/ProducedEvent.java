@@ -9,11 +9,11 @@ import static poussecafe.util.Equality.referenceEquals;
 
 public class ProducedEvent {
 
-    public String eventName() {
-        return eventName;
+    public Message message() {
+        return message;
     }
 
-    private String eventName;
+    private Message message;
 
     public boolean required() {
         return required;
@@ -26,12 +26,12 @@ public class ProducedEvent {
         private ProducedEvent event = new ProducedEvent();
 
         public ProducedEvent build() {
-            requireNonNull(event.eventName);
+            requireNonNull(event.message);
             return event;
         }
 
-        public Builder eventName(String eventName) {
-            event.eventName = eventName;
+        public Builder message(Message message) {
+            event.message = message;
             return this;
         }
 
@@ -48,7 +48,7 @@ public class ProducedEvent {
     @Override
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
-                .append(eventName, other.eventName)
+                .append(message, other.message)
                 .append(required, other.required)
                 .build());
     }
@@ -56,7 +56,7 @@ public class ProducedEvent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(eventName)
+                .append(message)
                 .append(required)
                 .build();
     }
@@ -64,7 +64,7 @@ public class ProducedEvent {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append(eventName)
+                .append(message)
                 .append(required)
                 .build();
     }

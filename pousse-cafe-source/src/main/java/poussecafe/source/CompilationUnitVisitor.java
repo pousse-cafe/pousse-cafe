@@ -3,6 +3,7 @@ package poussecafe.source;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -29,7 +30,9 @@ public class CompilationUnitVisitor extends ASTVisitor {
         return false;
     }
 
-    private Resolver resolver = new Resolver();
+    private Resolver resolver;
+
+    private CompilationUnit compilationUnit;
 
     private Path sourcePath;
 
@@ -104,9 +107,18 @@ public class CompilationUnitVisitor extends ASTVisitor {
         private CompilationUnitVisitor visitor = new CompilationUnitVisitor();
 
         public CompilationUnitVisitor build() {
+            requireNonNull(visitor.compilationUnit);
             requireNonNull(visitor.sourcePath);
             requireNonNull(visitor.model);
+
+            visitor.resolver = new Resolver(visitor.compilationUnit);
+
             return visitor;
+        }
+
+        public Builder compilationUnit(CompilationUnit compilationUnit) {
+            visitor.compilationUnit = compilationUnit;
+            return this;
         }
 
         public Builder sourcePath(Path sourcePath) {

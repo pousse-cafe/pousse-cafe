@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.util.Optional;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.QualifiedName;
 
@@ -11,20 +12,17 @@ public class ResolvedTypeName {
 
     private Name name;
 
+    private Optional<Class<?>> resolvedClass = Optional.empty();
+
     public boolean isClass(Class<?> expectedClass) {
-        return isClassGivenUnqualifiedName(expectedClass)
-                || isClassGivenQualifiedName(expectedClass);
+        resolvedOrElseThrow();
+        return expectedClass.equals(resolvedClass.get());
     }
 
-    private boolean isClassGivenUnqualifiedName(Class<?> expectedClass) {
-        return !name.isQualifiedName()
-                && resolver.hasImport(expectedClass)
-                && name.toString().equals(expectedClass.getSimpleName());
-    }
-
-    private boolean isClassGivenQualifiedName(Class<?> expectedClass) {
-        return name.isQualifiedName()
-                && name.getFullyQualifiedName().equals(expectedClass.getCanonicalName());
+    private void resolvedOrElseThrow() {
+        if(resolvedClass.isEmpty()) {
+            throw new IllegalStateException("Type name could not be resolved");
+        }
     }
 
     public String simpleName() {
@@ -34,6 +32,11 @@ public class ResolvedTypeName {
             QualifiedName qualifiedProcessName = (QualifiedName) name;
             return qualifiedProcessName.getName().getIdentifier();
         }
+    }
+
+    public boolean instanceOf(Class<?> superType) {
+        resolvedOrElseThrow();
+        return superType.isAssignableFrom(resolvedClass.orElseThrow());
     }
 
     public static class Builder {
@@ -50,9 +53,15 @@ public class ResolvedTypeName {
             return this;
         }
 
+        public Builder withResolvedClass(Optional<Class<?>> resolvedClass) {
+            resolved.resolvedClass = resolvedClass;
+            return this;
+        }
+
         public ResolvedTypeName build() {
             requireNonNull(resolved.resolver);
             requireNonNull(resolved.name);
+            requireNonNull(resolved.resolvedClass);
             return resolved;
         }
     }

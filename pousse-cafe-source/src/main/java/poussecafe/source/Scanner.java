@@ -45,7 +45,7 @@ public class Scanner {
                 logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
             }
         } else {
-            unit.accept(compilationUnitVisitor(sourceFilePath));
+            unit.accept(compilationUnitVisitor(unit, sourceFilePath));
         }
     }
 
@@ -57,8 +57,9 @@ public class Scanner {
         return content.toCharArray();
     }
 
-    private ASTVisitor compilationUnitVisitor(Path sourceFilePath) {
+    private ASTVisitor compilationUnitVisitor(CompilationUnit unit, Path sourceFilePath) {
         return new CompilationUnitVisitor.Builder()
+                .compilationUnit(unit)
                 .sourcePath(sourceFilePath)
                 .model(model)
                 .build();
