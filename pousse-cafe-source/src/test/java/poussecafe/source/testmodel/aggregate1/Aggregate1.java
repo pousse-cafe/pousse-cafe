@@ -11,6 +11,11 @@ import poussecafe.source.testmodel.process.Process1;
 
 public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
 
+    @Override
+    public void onAdd() {
+
+    }
+
     @MessageListener(processes = Process1.class, runner = Process1Listener1Runner.class, consumesFromExternal = "External1")
     @ProducesEvent(Event2.class)
     public void process1Listener1(Event1 event) {

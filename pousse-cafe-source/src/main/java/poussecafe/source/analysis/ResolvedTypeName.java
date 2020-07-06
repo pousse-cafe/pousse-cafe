@@ -21,7 +21,7 @@ public class ResolvedTypeName {
 
     private void resolvedOrElseThrow() {
         if(resolvedClass.isEmpty()) {
-            throw new IllegalStateException("Type name could not be resolved");
+            throw new IllegalStateException("Type " + name + " could not be resolved");
         }
     }
 

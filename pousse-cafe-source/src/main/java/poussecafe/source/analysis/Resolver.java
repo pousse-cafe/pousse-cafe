@@ -82,11 +82,31 @@ public class Resolver {
     private Optional<Class<?>> resolveClass(Name name) {
         if(name.isQualifiedName()) {
             String resolvedClassName = name.getFullyQualifiedName();
-            return loadClass(resolvedClassName);
+            return loadClass(resolvedClassName)
+                    .or(() -> tryResolveInnerClass((QualifiedName) name));
         } else {
             String simpleName = name.getFullyQualifiedName();
             return Optional.ofNullable(resolvedNames.computeIfAbsent(simpleName, this::resolveName));
         }
+    }
+
+    private Optional<Class<?>> tryResolveInnerClass(QualifiedName name) {
+        String innerClassName = name.getName().getIdentifier();
+        Optional<Class<?>> outerClass = resolveClass(name.getQualifier());
+        if(outerClass.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return locateInnerClass(outerClass.get(), innerClassName);
+        }
+    }
+
+    private Optional<Class<?>> locateInnerClass(Class<?> outerClass, String innerClassName) {
+        for(Class<?> innerClass : outerClass.getDeclaredClasses()) {
+            if(innerClass.getSimpleName().equals(innerClassName)) {
+                return Optional.of(innerClass);
+            }
+        }
+        return Optional.empty();
     }
 
     private Map<String, Class<?>> resolvedNames = new HashMap<>();
@@ -98,7 +118,10 @@ public class Resolver {
                 return loadedClass.get();
             }
         }
-        return tryResolution(compilationUnitPackageName(), simpleName).orElse(null);
+        return tryResolution(compilationUnitPackageName(), simpleName)
+                .or(() -> tryResolution("java.lang", simpleName))
+                .or(() -> tryResolution("", simpleName))
+                .orElse(null);
     }
 
     private String compilationUnitPackageName() {
