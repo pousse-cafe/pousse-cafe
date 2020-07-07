@@ -63,7 +63,7 @@ class SimpleEditableSet<T> implements EditableSet<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return set.contains(c);
+        return set.containsAll(c);
     }
 
     @Override
