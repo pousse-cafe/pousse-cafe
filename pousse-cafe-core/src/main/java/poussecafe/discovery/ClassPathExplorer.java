@@ -37,18 +37,17 @@ import static java.util.stream.Collectors.toList;
 
 class ClassPathExplorer {
 
-    ClassPathExplorer(Collection<String> packagePrefixes) {
-        this.packagePrefixes = new HashSet<>(packagePrefixes);
-        this.packagePrefixes.add("poussecafe.messaging");
-        this.packagePrefixes.add("poussecafe.runtime");
-        this.packagePrefixes.add("poussecafe.domain");
+    ClassPathExplorer(Collection<String> basePackages) {
+        var completedBasePackages = withPousseCafeBasePackages(basePackages);
 
         ConfigurationBuilder reflectionsConfigurationBuilder = new ConfigurationBuilder();
         FilterBuilder filter = new FilterBuilder();
         ClassLoader[] classLoaders = null;
-        for(String packagePrefix : this.packagePrefixes) {
-            filter.includePackage(packagePrefix);
-            reflectionsConfigurationBuilder.addUrls(ClasspathHelper.forPackage(packagePrefix, classLoaders));
+        for(String basePackage : completedBasePackages) {
+            validOrThrow(basePackage);
+            String packageRootPrefix = basePackage + ".";
+            filter.includePackage(packageRootPrefix);
+            reflectionsConfigurationBuilder.addUrls(ClasspathHelper.forPackage(packageRootPrefix, classLoaders));
         }
         filter.exclude(".*\\.java");
 
@@ -57,7 +56,21 @@ class ClassPathExplorer {
         reflections = new Reflections(reflectionsConfigurationBuilder);
     }
 
-    private Set<String> packagePrefixes = new HashSet<>();
+    private void validOrThrow(String basePackage) {
+        if(!basePackage.matches(VALID_PACKAGE_NAME_REGEX)) {
+            throw new IllegalArgumentException("Invalid package name " + basePackage);
+        }
+    }
+
+    private static final String VALID_PACKAGE_NAME_REGEX = "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]$";
+
+    private HashSet<String> withPousseCafeBasePackages(Collection<String> basePackages) {
+        var completedBasePackages = new HashSet<>(basePackages);
+        completedBasePackages.add("poussecafe.messaging");
+        completedBasePackages.add("poussecafe.runtime");
+        completedBasePackages.add("poussecafe.domain");
+        return completedBasePackages;
+    }
 
     private Reflections reflections;
 

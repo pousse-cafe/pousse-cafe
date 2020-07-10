@@ -6,6 +6,7 @@ import poussecafe.testmodule.TestDomainEvent;
 import poussecafe.testmodule.TestDomainEvent2;
 import poussecafe.testmodule.TestDomainEvent3;
 
+@Aggregate(factory = FactoryWithSingleListener.class, repository = RepositoryWithSingleListener.class)
 public class AggregateRootWithSingleListener extends AggregateRoot<String, EntityAttributes<String>> {
 
     @Override
