@@ -10,7 +10,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateRoot;
@@ -31,10 +33,32 @@ import poussecafe.storage.internal.InternalStorage;
 
 public class TestRuntimeWrapper {
 
-    public TestRuntimeWrapper(Runtime context) {
-        Objects.requireNonNull(context);
-        runtime = context;
-        runtimeFriend = new RuntimeFriend(runtime);
+    public static class Builder {
+
+        private TestRuntimeWrapper wrapper = new TestRuntimeWrapper();
+
+        public TestRuntimeWrapper build() {
+            Objects.requireNonNull(wrapper.runtime);
+            Objects.requireNonNull(wrapper.maxWaitTime);
+
+            wrapper.runtimeFriend = new RuntimeFriend(wrapper.runtime);
+
+            return wrapper;
+        }
+
+        public Builder runtime(Runtime runtime) {
+            wrapper.runtime = runtime;
+            return this;
+        }
+
+        public Builder maxWaitTime(Optional<Duration> maxWaitTime) {
+            wrapper.maxWaitTime = maxWaitTime;
+            return this;
+        }
+    }
+
+    private TestRuntimeWrapper() {
+
     }
 
     private Runtime runtime;
@@ -47,19 +71,7 @@ public class TestRuntimeWrapper {
         return runtime;
     }
 
-    /**
-     * @deprecated use getOptional instead
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated(since = "0.8.0")
-    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
-            K id) {
-        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
-                .environment()
-                .repositoryOf(entityClass)
-                .orElseThrow(PousseCafeException::new);
-        return (T) repository.find(id);
-    }
+    private Optional<Duration> maxWaitTime = Optional.of(Duration.ofSeconds(5));
 
     /**
      * @deprecated inject repository directly in test case class
@@ -76,12 +88,6 @@ public class TestRuntimeWrapper {
     }
 
     public void waitUntilEndOfMessageProcessing() {
-        waitUntilEndOfMessageProcessing(MAX_WAIT_TIME);
-    }
-
-    public static final Optional<Duration> MAX_WAIT_TIME = Optional.of(Duration.ofSeconds(5));
-
-    public void waitUntilEndOfMessageProcessing(Optional<Duration> maxWaitTime) {
         for(MessagingConnection connection : runtime.messagingConnections()) {
             @SuppressWarnings("rawtypes")
             MessageReceiver receiver = connection.messageReceiver();
@@ -150,17 +156,25 @@ public class TestRuntimeWrapper {
 
     public void submitCommand(Command command) {
         try {
-            runtime.submitCommand(command).get(5, TimeUnit.SECONDS);
+            submitAndWaitProcessed(command);
             waitUntilEndOfMessageProcessing();
         } catch (Exception e) {
             throw new PousseCafeException("Error while submitting command", e);
         }
     }
 
+    private void submitAndWaitProcessed(Command command) throws InterruptedException, ExecutionException, TimeoutException {
+        if(maxWaitTime.isPresent()) {
+            runtime.submitCommand(command).get(maxWaitTime.get().toSeconds(), TimeUnit.SECONDS);
+        } else {
+            runtime.submitCommand(command).get();
+        }
+    }
+
     public void submitCommands(List<? extends Command> commands) {
         try {
             for(Command command : commands) {
-                runtime.submitCommand(command).get(5, TimeUnit.SECONDS);
+                submitAndWaitProcessed(command);
             }
             waitUntilEndOfMessageProcessing();
         } catch (Exception e) {

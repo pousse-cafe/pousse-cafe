@@ -8,7 +8,6 @@ import org.junit.Before;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.environment.MessageListenersPoolSplitStrategy;
 import poussecafe.environment.NewEntityInstanceSpecification;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
@@ -23,7 +22,10 @@ public abstract class PousseCafeTest {
         runtime.injector().injectDependenciesInto(this);
         runtime.registerListenersOf(this);
         runtime.start();
-        wrapper = new TestRuntimeWrapper(runtime);
+        wrapper = new TestRuntimeWrapper.Builder()
+                .runtime(runtime)
+                .maxWaitTime(maxWaitTime())
+                .build();
     }
 
     protected Runtime.Builder runtimeBuilder() {
@@ -31,25 +33,8 @@ public abstract class PousseCafeTest {
                 .messageValidation(true);
     }
 
-    /**
-     * @deprecated The new message brokerage implementation does not expect a MessageListenersPoolSplitStrategy anymore
-     */
-    @Deprecated(since = "0.18", forRemoval = true)
-    public MessageListenersPoolSplitStrategy replicationStrategy(int numberOfPools) {
-        return null;
-    }
-
     public Runtime testRuntime() {
         return wrapper.runtime();
-    }
-
-    /**
-     * @deprecated use getOptional instead
-     */
-    @Deprecated(since = "0.8.0", forRemoval = true)
-    public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> T find(Class<T> entityClass,
-            K id) {
-        return wrapper.find(entityClass, id);
     }
 
     /**
@@ -62,7 +47,7 @@ public abstract class PousseCafeTest {
     }
 
     protected void waitUntilAllMessageQueuesEmpty() {
-        wrapper.waitUntilEndOfMessageProcessing(maxWaitTime());
+        wrapper.waitUntilEndOfMessageProcessing();
     }
 
     protected Optional<Duration> maxWaitTime() {
