@@ -96,9 +96,7 @@ public class MessageListener {
 
             messageListener.producedEvents = messageListenerAnnotation.producedEvents().stream()
                     .map(annotation -> new ProducedEvent.Builder()
-                            .message(Message.ofTypeName(annotation.event()))
-                            .required(annotation.required().orElse(true))
-                            .consumedByExternal(annotation.consumedByExternal())
+                            .withAnnotation(annotation)
                             .build())
                     .collect(toList());
 

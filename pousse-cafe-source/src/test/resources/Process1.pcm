@@ -1,10 +1,14 @@
 Command1? -> Aggregate1Factory
     @Aggregate1[onAdd]:
-        :Event5 -> .
+        :Event5! -> .
 
 Command3? -> #Aggregate1Factory
+    @Aggregate1[onAdd]:
+        :Event5! -> .
 
 Command4? -> {}Aggregate1Factory
+    @Aggregate1[onAdd]:
+        :Event5! -> .
 
 [External1] Event1! -> Process1Listener1Runner
     @Aggregate1[process1Listener1]:
@@ -17,4 +21,4 @@ Event4! -> Process1Listener6Runner
 
 Command2? -> Aggregate2Repository
     @Aggregate2[onDelete]:
-        :Event6 -> .
+        :Event6! -> .

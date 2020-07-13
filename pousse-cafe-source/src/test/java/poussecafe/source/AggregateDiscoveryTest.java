@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
+import poussecafe.source.model.ProducedEvent;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class AggregateDiscoveryTest extends DiscoveryTest {
@@ -19,7 +24,14 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenAggregateRootsFound() {
-        assertTrue(aggregateRoot("Aggregate1").isPresent());
+        Optional<Aggregate> aggregate1 = aggregateRoot("Aggregate1");
+        assertTrue(aggregate1.isPresent());
+        assertThat(aggregate1.orElseThrow().onAddProducedEvents().size(), is(1));
+        assertThat(aggregate1.orElseThrow().onAddProducedEvents(), hasItem(new ProducedEvent.Builder()
+                .message(Message.domainEvent("Event5"))
+                .required(true)
+                .build()));
+
         assertTrue(aggregateRoot("Aggregate2").isPresent());
     }
 

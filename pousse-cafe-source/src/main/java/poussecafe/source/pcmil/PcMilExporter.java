@@ -7,10 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
+import poussecafe.source.model.Model;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Objects.requireNonNull;
@@ -149,9 +151,20 @@ public class PcMilExporter {
     }
 
     private void appendFactoryName(MessageListener listener) {
+        var aggregateName = listener.container().aggregateName().orElseThrow();
         builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
         builder.appendNewLine();
+        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
+        if(!aggregate.onAddProducedEvents().isEmpty()) {
+            builder.incrementIndent();
+            builder.indent();
+            builder.appendAggregateIdentifier(aggregateName);
+            builder.appendInlineNote(Aggregate.ON_ADD_METHOD_NAME);
+            appendAggregateMessageConsumptions(aggregate.onAddProducedEvents());
+        }
     }
+
+    private Model model;
 
     private void appendMessageConsumptions(MessageListener listener) {
         for(ProducedEvent producedEvent : listener.producedEvents()) {
@@ -183,7 +196,7 @@ public class PcMilExporter {
     private void appendAggregateRootListener(MessageListener listener) {
         appendRunnerAndAggregateRoot(listener);
         if(!listener.producedEvents().isEmpty()) {
-            appendAggregateMessageConsumptions(listener);
+            appendAggregateMessageConsumptions(listener.producedEvents());
         } else {
             builder.appendNewLine();
         }
@@ -198,11 +211,11 @@ public class PcMilExporter {
         builder.appendInlineNote(listener.methodName());
     }
 
-    private void appendAggregateMessageConsumptions(MessageListener listener) {
+    private void appendAggregateMessageConsumptions(List<ProducedEvent> events) {
         builder.appendOpenRelation();
         builder.appendNewLine();
         builder.incrementIndent();
-        for(ProducedEvent producedEvent : listener.producedEvents()) {
+        for(ProducedEvent producedEvent : events) {
             builder.indent();
             builder.appendCloseRelation();
             if(!producedEvent.required()) {
@@ -218,18 +231,30 @@ public class PcMilExporter {
         private PcMilExporter exporter = new PcMilExporter();
 
         public PcMilExporter build() {
-            requireNonNull(exporter.listeners);
+            requireNonNull(exporter.model);
+            requireNonNull(processName);
+
+            exporter.listeners = new LinkedList<>(exporter.model.processListeners(processName));
+            exporter.listeners.sort(new PcMilListenersComparator());
+
+            exporter.producedEvents = new HashSet<>();
+            exporter.listeners.stream().forEach(listener -> exporter.producedEvents.addAll(
+                    listener.producedEvents().stream().map(ProducedEvent::message).collect(toList())));
+
             return exporter;
         }
 
-        public Builder withListeners(List<MessageListener> listeners) {
-            exporter.listeners = new LinkedList<>(listeners);
-            exporter.listeners.sort(new PcMilListenersComparator());
-            exporter.producedEvents = new HashSet<>();
-            listeners.stream().forEach(listener -> exporter.producedEvents.addAll(
-                    listener.producedEvents().stream().map(ProducedEvent::message).collect(toList())));
+        public Builder model(Model model) {
+            exporter.model = model;
             return this;
         }
+
+        public Builder processName(String processName) {
+            this.processName = processName;
+            return this;
+        }
+
+        private String processName;
     }
 
     private PcMilExporter() {

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import poussecafe.source.analysis.ProducedEventAnnotation;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
@@ -52,6 +53,13 @@ public class ProducedEvent {
 
         public Builder consumedByExternal(List<String> consumedByExternal) {
             event.consumedByExternal = consumedByExternal;
+            return this;
+        }
+
+        public Builder withAnnotation(ProducedEventAnnotation annotation) {
+            message(Message.ofTypeName(annotation.event()));
+            required(annotation.required().orElse(true));
+            consumedByExternal(annotation.consumedByExternal());
             return this;
         }
     }

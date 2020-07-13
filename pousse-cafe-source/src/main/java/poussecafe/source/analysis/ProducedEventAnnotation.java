@@ -4,9 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
 
 public class ProducedEventAnnotation {
+
+    public ProducedEventAnnotation(ResolvedAnnotation resolvedAnnotation) {
+        event = resolvedAnnotation.attribute("value").orElseThrow().asType();
+        required = resolvedAnnotation.attribute("required").map(AnnotationAttribute::asBoolean);
+        consumedByExternal = resolvedAnnotation.attribute("consumedByExternal")
+                .map(AnnotationAttribute::asStrings)
+                .orElse(emptyList());
+    }
 
     public ResolvedTypeName event() {
         return event;
@@ -25,28 +32,4 @@ public class ProducedEventAnnotation {
     }
 
     private List<String> consumedByExternal;
-
-    public static class Builder {
-
-        private ProducedEventAnnotation annotation = new ProducedEventAnnotation();
-
-        public ProducedEventAnnotation build() {
-            requireNonNull(annotation.event);
-            requireNonNull(annotation.consumedByExternal);
-            return annotation;
-        }
-
-        public Builder withAnnotation(ResolvedAnnotation resolvedAnnotation) {
-            annotation.event = resolvedAnnotation.attribute("value").orElseThrow().asType();
-            annotation.required = resolvedAnnotation.attribute("required").map(AnnotationAttribute::asBoolean);
-            annotation.consumedByExternal = resolvedAnnotation.attribute("consumedByExternal")
-                    .map(AnnotationAttribute::asStrings)
-                    .orElse(emptyList());
-            return this;
-        }
-    }
-
-    private ProducedEventAnnotation() {
-
-    }
 }

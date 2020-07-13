@@ -31,7 +31,8 @@ public class PcMilExporterTest {
 
     private void whenExportingPcMil() {
         exported = new PcMilExporter.Builder()
-                .withListeners(model.processListeners("Process1"))
+                .model(model)
+                .processName("Process1")
                 .build()
                 .toPcMil();
     }

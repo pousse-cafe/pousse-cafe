@@ -36,11 +36,7 @@ public class MessageListenerAnnotations {
     }
 
     public void setProducedEvents(List<ResolvedAnnotation> annotations) {
-        producedEvents = annotations.stream()
-                .map(annotation -> new ProducedEventAnnotation.Builder()
-                        .withAnnotation(annotation)
-                        .build())
-                .collect(toList());
+        producedEvents = annotations.stream().map(ProducedEventAnnotation::new).collect(toList());
     }
 
     private List<ProducedEventAnnotation> producedEvents;

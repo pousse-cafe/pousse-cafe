@@ -1,5 +1,7 @@
 package poussecafe.source.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import poussecafe.source.analysis.ResolvedTypeName;
 
@@ -12,6 +14,14 @@ public class Aggregate {
     public String name() {
         return name;
     }
+
+    public static final String ON_ADD_METHOD_NAME = "onAdd";
+
+    public List<ProducedEvent> onAddProducedEvents() {
+        return onAddProducedEvents;
+    }
+
+    private List<ProducedEvent> onAddProducedEvents = new ArrayList<>();
 
     public static class Builder {
 
@@ -33,6 +43,12 @@ public class Aggregate {
 
         public Builder startingFrom(Aggregate other) {
             aggregate.name = other.name;
+            aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
+            return this;
+        }
+
+        public Builder onAddProducedEvents(List<ProducedEvent> producedEvents) {
+            aggregate.onAddProducedEvents.addAll(producedEvents);
             return this;
         }
     }

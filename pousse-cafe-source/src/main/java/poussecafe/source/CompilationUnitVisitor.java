@@ -1,6 +1,7 @@
 package poussecafe.source;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -8,8 +9,10 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.AggregateRootClass;
+import poussecafe.source.analysis.AnnotatedElement;
 import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.ProducedEventAnnotation;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
@@ -17,10 +20,13 @@ import poussecafe.source.analysis.Resolver;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
+import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
+import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 public class CompilationUnitVisitor extends ASTVisitor {
 
@@ -90,16 +96,29 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        var method = resolver.resolve(node);
-        if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
-            if(aggregateBuilder != null) {
+        if(aggregateBuilder != null) {
+            var method = resolver.resolve(node);
+            if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
                 model.addMessageListener(new MessageListener.Builder()
                         .withContainer(container)
                         .withMethodDeclaration(resolver.resolve(node))
                         .build());
+            } else if(container.type() == MessageListenerContainerType.ROOT
+                    && method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
+                var annotatedMethod = method.asAnnotatedElement();
+                var producedEvents = producesEvents(annotatedMethod);
+                aggregateBuilder.onAddProducedEvents(producedEvents);
             }
         }
         return false;
+    }
+
+    private List<ProducedEvent> producesEvents(AnnotatedElement<MethodDeclaration> method) {
+        return method.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS)
+                .stream()
+                .map(ProducedEventAnnotation::new)
+                .map(annotation -> new ProducedEvent.Builder().withAnnotation(annotation).build())
+                .collect(toList());
     }
 
     public static class Builder {
