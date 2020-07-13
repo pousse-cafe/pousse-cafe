@@ -7,11 +7,13 @@ import poussecafe.domain.EntityAttributes;
 import poussecafe.source.testmodel.events.Event1;
 import poussecafe.source.testmodel.events.Event2;
 import poussecafe.source.testmodel.events.Event4;
+import poussecafe.source.testmodel.events.Event5;
 import poussecafe.source.testmodel.process.Process1;
 
 public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
 
     @Override
+    @ProducesEvent(Event5.class)
     public void onAdd() {
 
     }

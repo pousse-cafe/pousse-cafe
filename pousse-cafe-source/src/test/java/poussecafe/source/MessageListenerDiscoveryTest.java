@@ -8,6 +8,7 @@ import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.ProducedEvent;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,6 +41,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
                 .message(Message.domainEvent("Event2"))
                 .required(true)
                 .build()));
+        assertThat(listener1.orElseThrow().consumesFromExternal(), equalTo(Optional.of("External1")));
 
         Optional<MessageListener> listener2 = aggregateMessageListener("process1Listener2");
         assertTrue(listener2.isPresent());
@@ -50,6 +52,7 @@ public class MessageListenerDiscoveryTest extends DiscoveryTest {
         assertThat(listener2.orElseThrow().producedEvents(), hasItem(new ProducedEvent.Builder()
                 .message(Message.domainEvent("Event3"))
                 .required(false)
+                .consumedByExternal(asList("External2"))
                 .build()));
 
         Optional<MessageListener> listener3 = aggregateMessageListener("process1Listener3");

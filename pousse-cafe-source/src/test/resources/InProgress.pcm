@@ -4,11 +4,11 @@ Command3? -> Aggregate1Factory
 
 Command4? -> Aggregate1Factory
 
-Event1! -> Process1Listener1Runner
+[External1] Event1! -> Process1Listener1Runner
     @Aggregate1[process1Listener1]:
         :Event2! -> Process1Listener2Runner
             @Aggregate2[process1Listener2]:
-                :#Event3! -> .
+                :#Event3! -> . [External2]
 
 Event4! -> Process1Listener6Runner
     @Aggregate1[process1Listener6]

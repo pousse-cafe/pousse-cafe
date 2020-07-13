@@ -15,8 +15,11 @@ public class MessageListenerAnnotations {
 
     public MessageListenerAnnotations(AnnotatedElement<MethodDeclaration> annotatedMethod) {
         ResolvedAnnotation messageListenerAnnotation = annotatedMethod.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow();
+
         setProcessNames(messageListenerAnnotation);
         setRunner(messageListenerAnnotation);
+        setConsumesFromExternal(messageListenerAnnotation);
+
         setProducedEvents(annotatedMethod.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS));
     }
 
@@ -54,5 +57,16 @@ public class MessageListenerAnnotations {
 
     public Optional<ResolvedTypeName> runner() {
         return runner;
+    }
+
+    private void setConsumesFromExternal(ResolvedAnnotation messageListenerAnnotation) {
+        consumesFromExternal = messageListenerAnnotation.attribute("consumesFromExternal")
+                .map(AnnotationAttribute::asString);
+    }
+
+    private Optional<String> consumesFromExternal;
+
+    public Optional<String> consumesFromExternal() {
+        return consumesFromExternal;
     }
 }

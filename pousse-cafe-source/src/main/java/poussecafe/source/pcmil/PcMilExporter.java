@@ -14,6 +14,7 @@ import poussecafe.source.model.MessageType;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class PcMilExporter {
@@ -64,15 +65,19 @@ public class PcMilExporter {
 
     private void appendTopListener(MessageListener rootListener) {
         builder.resetIndent();
-        appendMessageConsumption(rootListener.consumedMessage());
+        Optional<String> consumesFromExternal = rootListener.consumesFromExternal();
+        if(consumesFromExternal.isPresent()) {
+            builder.appendOpeningNote(consumesFromExternal.get());
+        }
+        appendMessageConsumption(rootListener.consumedMessage(), Optional.empty());
     }
 
-    private void appendMessageConsumption(Message message) {
+    private void appendMessageConsumption(Message message, Optional<String> noteIfNoListeners) {
         appendMessage(message);
 
         List<MessageListener> consumers = findAndRemoveConsumers(message);
         if(consumers.isEmpty()) {
-            appendNoListener();
+            appendNoListener(noteIfNoListeners);
         } else if(consumers.size() == 1) {
             appendSingleListener(consumers.get(0));
         } else {
@@ -82,9 +87,9 @@ public class PcMilExporter {
 
     private void appendMessage(Message message) {
         if(message.type() == MessageType.COMMAND) {
-            builder.appendCommandToken(message.name());
+            builder.appendCommandIdentifier(message.name());
         } else if(message.type() == MessageType.DOMAIN_EVENT) {
-            builder.appendDomainEventToken(message.name());
+            builder.appendDomainEventIdentifier(message.name());
         }
     }
 
@@ -101,8 +106,11 @@ public class PcMilExporter {
         return removedListeners;
     }
 
-    private void appendNoListener() {
-        builder.appendEndOfConsumptionToken(Optional.empty());
+    private void appendNoListener(Optional<String> noteIfNoListeners) {
+        builder.appendEndOfConsumption();
+        if(noteIfNoListeners.isPresent()) {
+            builder.appendClosingNote(noteIfNoListeners.get());
+        }
         builder.appendNewLine();
     }
 
@@ -119,7 +127,8 @@ public class PcMilExporter {
         } else if(listener.container().type() == MessageListenerContainerType.ROOT) {
             appendAggregateRootListener(listener);
         } else {
-            builder.appendEndOfConsumptionToken(Optional.of("external"));
+            builder.appendEndOfConsumption();
+            builder.appendClosingNote("external");
         }
     }
 
@@ -140,14 +149,25 @@ public class PcMilExporter {
     }
 
     private void appendFactoryName(MessageListener listener) {
-        builder.appendFactoryToken(listener.container().aggregateName().orElseThrow());
+        builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
         builder.appendNewLine();
     }
 
     private void appendMessageConsumptions(MessageListener listener) {
         for(ProducedEvent producedEvent : listener.producedEvents()) {
-            appendMessageConsumption(producedEvent.message());
+            Optional<String> note = consumedByExternalNote(producedEvent);
+            appendMessageConsumption(producedEvent.message(), note);
         }
+    }
+
+    private Optional<String> consumedByExternalNote(ProducedEvent producedEvent) {
+        Optional<String> note;
+        if(producedEvent.consumedByExternal().isEmpty()) {
+            note = Optional.empty();
+        } else {
+            note = Optional.of(producedEvent.consumedByExternal().stream().collect(joining(", ")));
+        }
+        return note;
     }
 
     private void appendRepositoryListener(MessageListener listener) {
@@ -156,7 +176,7 @@ public class PcMilExporter {
     }
 
     private void appendRepositoryName(MessageListener listener) {
-        builder.appendRepositoryToken(listener.container().aggregateName().orElseThrow());
+        builder.appendRepositoryIdentifier(listener.container().aggregateName().orElseThrow());
         builder.appendNewLine();
     }
 
@@ -170,11 +190,12 @@ public class PcMilExporter {
     }
 
     private void appendRunnerAndAggregateRoot(MessageListener listener) {
-        builder.appendRunnerToken(listener.runnerName().orElse(""));
+        builder.appendRunnerIdentifier(listener.runnerName().orElse(""));
         builder.appendNewLine();
         builder.incrementIndent();
         builder.indent();
-        builder.appendAggregateListener(listener.container().aggregateName().orElseThrow(), listener.methodName());
+        builder.appendAggregateIdentifier(listener.container().aggregateName().orElseThrow());
+        builder.appendInlineNote(listener.methodName());
     }
 
     private void appendAggregateMessageConsumptions(MessageListener listener) {
@@ -187,7 +208,8 @@ public class PcMilExporter {
             if(!producedEvent.required()) {
                 builder.appendOptionalEventToken();
             }
-            appendMessageConsumption(producedEvent.message());
+            Optional<String> note = consumedByExternalNote(producedEvent);
+            appendMessageConsumption(producedEvent.message(), note);
         }
     }
 

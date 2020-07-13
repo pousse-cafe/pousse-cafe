@@ -49,6 +49,12 @@ public class MessageListener {
 
     private Optional<String> runnerName;
 
+    public Optional<String> consumesFromExternal() {
+        return consumesFromExternal;
+    }
+
+    private Optional<String> consumesFromExternal;
+
     public static class Builder {
 
         private MessageListener messageListener = new MessageListener();
@@ -58,6 +64,7 @@ public class MessageListener {
             requireNonNull(messageListener.methodName);
             requireNonNull(messageListener.consumedMessage);
             requireNonNull(messageListener.processNames);
+            requireNonNull(messageListener.consumesFromExternal);
             return messageListener;
         }
 
@@ -77,6 +84,7 @@ public class MessageListener {
             messageListener.consumedMessage = Message.ofTypeName(method.parameterTypeName(0).orElseThrow());
 
             MessageListenerAnnotations messageListenerAnnotation = new MessageListenerAnnotations(annotatedMethod);
+            messageListener.consumesFromExternal = messageListenerAnnotation.consumesFromExternal();
             List<ResolvedTypeName> processes = messageListenerAnnotation.processes();
             if(processes.isEmpty()) {
                 messageListener.processNames = singletonList(DefaultProcess.class.getSimpleName());
@@ -90,6 +98,7 @@ public class MessageListener {
                     .map(annotation -> new ProducedEvent.Builder()
                             .message(Message.ofTypeName(annotation.event()))
                             .required(annotation.required().orElse(true))
+                            .consumedByExternal(annotation.consumedByExternal())
                             .build())
                     .collect(toList());
 

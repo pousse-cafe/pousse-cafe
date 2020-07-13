@@ -7,9 +7,11 @@ import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 public class AnnotationAttribute {
@@ -56,6 +58,32 @@ public class AnnotationAttribute {
             return literal.booleanValue();
         } else {
             throw new IllegalStateException("Attribute value is not a boolean literal");
+        }
+    }
+
+    public String asString() {
+        if(value instanceof StringLiteral) {
+            StringLiteral literal = (StringLiteral) value;
+            return literal.getLiteralValue();
+        } else {
+            throw new IllegalStateException("Attribute value is not a string literal");
+        }
+    }
+
+    public List<String> asStrings() {
+        if(value instanceof StringLiteral) {
+            StringLiteral literal = (StringLiteral) value;
+            return asList(literal.getLiteralValue());
+        } else if(value instanceof ArrayInitializer) {
+            ArrayInitializer initializer = (ArrayInitializer) value;
+            List<String> strings = new ArrayList<>();
+            for(Object expressionObject : initializer.expressions()) {
+                StringLiteral literal = (StringLiteral) expressionObject;
+                strings.add(literal.getLiteralValue());
+            }
+            return strings;
+        } else {
+            throw new IllegalStateException("Attribute value is not a string literal");
         }
     }
 

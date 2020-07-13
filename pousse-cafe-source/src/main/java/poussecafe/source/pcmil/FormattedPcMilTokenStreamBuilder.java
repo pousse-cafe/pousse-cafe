@@ -1,7 +1,5 @@
 package poussecafe.source.pcmil;
 
-import java.util.Optional;
-
 public class FormattedPcMilTokenStreamBuilder {
 
     private StringBuilder builder = new StringBuilder();
@@ -31,46 +29,56 @@ public class FormattedPcMilTokenStreamBuilder {
         return builder.toString();
     }
 
-    public void appendCommandToken(String name) {
+    public void appendCommandIdentifier(String name) {
         builder.append(name);
         builder.append('?');
     }
 
-    public void appendDomainEventToken(String name) {
+    public void appendDomainEventIdentifier(String name) {
         builder.append(name);
         builder.append('!');
     }
 
-    public void appendEndOfConsumptionToken(Optional<String> note) {
+    public void appendEndOfConsumption() {
         builder.append(" -> .");
-        if(note.isPresent()) {
-            builder.append(" [");
-            builder.append(note.get());
-            builder.append(']');
-        }
+    }
+
+    public void appendOpeningNote(String note) {
+        appendInlineNote(note);
+        builder.append(' ');
+    }
+
+    public void appendInlineNote(String note) {
+        builder.append('[');
+        builder.append(note);
+        builder.append(']');
+    }
+
+    public void appendClosingNote(String note) {
+        builder.append(' ');
+        appendInlineNote(note);
     }
 
     public void appendConsumptionToken() {
         builder.append(" -> ");
     }
 
-    public void appendFactoryToken(String aggregateName) {
+    public void appendFactoryIdentifier(String aggregateName) {
         builder.append(aggregateName);
         builder.append("Factory");
     }
 
-    public void appendRepositoryToken(String aggregateName) {
+    public void appendRepositoryIdentifier(String aggregateName) {
         builder.append(aggregateName);
         builder.append("Repository");
     }
 
-    public void appendRunnerToken(String aggregateName) {
+    public void appendRunnerIdentifier(String aggregateName) {
         builder.append(aggregateName);
     }
 
-    public void appendAggregateListener(String aggregateName, String listenerName) {
+    public void appendAggregateIdentifier(String aggregateName) {
         builder.append("@").append(aggregateName);
-        builder.append('[').append(listenerName).append(']');
     }
 
     public void appendOpenRelation() {

@@ -1,9 +1,12 @@
 package poussecafe.source.model;
 
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
@@ -21,12 +24,19 @@ public class ProducedEvent {
 
     private boolean required;
 
+    private List<String> consumedByExternal = emptyList();
+
+    public List<String> consumedByExternal() {
+        return Collections.unmodifiableList(consumedByExternal);
+    }
+
     public static class Builder {
 
         private ProducedEvent event = new ProducedEvent();
 
         public ProducedEvent build() {
             requireNonNull(event.message);
+            requireNonNull(event.consumedByExternal);
             return event;
         }
 
@@ -37,6 +47,11 @@ public class ProducedEvent {
 
         public Builder required(boolean required) {
             event.required = required;
+            return this;
+        }
+
+        public Builder consumedByExternal(List<String> consumedByExternal) {
+            event.consumedByExternal = consumedByExternal;
             return this;
         }
     }
@@ -50,6 +65,7 @@ public class ProducedEvent {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(message, other.message)
                 .append(required, other.required)
+                .append(consumedByExternal, other.consumedByExternal)
                 .build());
     }
 
@@ -58,6 +74,7 @@ public class ProducedEvent {
         return new HashCodeBuilder()
                 .append(message)
                 .append(required)
+                .append(consumedByExternal)
                 .build();
     }
 
@@ -66,6 +83,7 @@ public class ProducedEvent {
         return new ToStringBuilder(this)
                 .append(message)
                 .append(required)
+                .append(consumedByExternal)
                 .build();
     }
 }
