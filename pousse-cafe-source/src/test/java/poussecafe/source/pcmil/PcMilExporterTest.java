@@ -40,7 +40,7 @@ public class PcMilExporterTest {
     private String exported;
 
     private void thenPcMilIsExpected() throws IOException, URISyntaxException {
-        assertThat(exported, equalTo(readResource("InProgress.pcm")));
+        assertThat(exported, equalTo(readResource("Process1.pcm")));
     }
 
     private String readResource(String string) throws IOException, URISyntaxException {
