@@ -189,8 +189,17 @@ public class PcMilExporter {
     }
 
     private void appendRepositoryName(MessageListener listener) {
-        builder.appendRepositoryIdentifier(listener.container().aggregateName().orElseThrow());
+        String aggregateName = listener.container().aggregateName().orElseThrow();
+        builder.appendRepositoryIdentifier(aggregateName);
         builder.appendNewLine();
+        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
+        if(!aggregate.onDeleteProducedEvents().isEmpty()) {
+            builder.incrementIndent();
+            builder.indent();
+            builder.appendAggregateIdentifier(aggregateName);
+            builder.appendInlineNote(Aggregate.ON_DELETE_METHOD_NAME);
+            appendAggregateMessageConsumptions(aggregate.onDeleteProducedEvents());
+        }
     }
 
     private void appendAggregateRootListener(MessageListener listener) {

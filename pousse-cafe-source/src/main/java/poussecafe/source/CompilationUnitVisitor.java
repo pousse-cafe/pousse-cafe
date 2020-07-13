@@ -103,11 +103,16 @@ public class CompilationUnitVisitor extends ASTVisitor {
                         .withContainer(container)
                         .withMethodDeclaration(resolver.resolve(node))
                         .build());
-            } else if(container.type() == MessageListenerContainerType.ROOT
-                    && method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
-                var annotatedMethod = method.asAnnotatedElement();
-                var producedEvents = producesEvents(annotatedMethod);
-                aggregateBuilder.onAddProducedEvents(producedEvents);
+            } else if(container.type() == MessageListenerContainerType.ROOT) {
+                if(method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
+                    var annotatedMethod = method.asAnnotatedElement();
+                    var producedEvents = producesEvents(annotatedMethod);
+                    aggregateBuilder.onAddProducedEvents(producedEvents);
+                } else if(method.name().equals(Aggregate.ON_DELETE_METHOD_NAME)) {
+                    var annotatedMethod = method.asAnnotatedElement();
+                    var producedEvents = producesEvents(annotatedMethod);
+                    aggregateBuilder.onDeleteProducedEvents(producedEvents);
+                }
             }
         }
         return false;

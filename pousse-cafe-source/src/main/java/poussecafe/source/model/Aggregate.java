@@ -23,6 +23,14 @@ public class Aggregate {
 
     private List<ProducedEvent> onAddProducedEvents = new ArrayList<>();
 
+    public static final String ON_DELETE_METHOD_NAME = "onDelete";
+
+    public List<ProducedEvent> onDeleteProducedEvents() {
+        return onDeleteProducedEvents;
+    }
+
+    private List<ProducedEvent> onDeleteProducedEvents = new ArrayList<>();
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
@@ -44,11 +52,17 @@ public class Aggregate {
         public Builder startingFrom(Aggregate other) {
             aggregate.name = other.name;
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
+            aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
             return this;
         }
 
         public Builder onAddProducedEvents(List<ProducedEvent> producedEvents) {
             aggregate.onAddProducedEvents.addAll(producedEvents);
+            return this;
+        }
+
+        public Builder onDeleteProducedEvents(List<ProducedEvent> onDeleteProducedEvents) {
+            aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
             return this;
         }
     }
