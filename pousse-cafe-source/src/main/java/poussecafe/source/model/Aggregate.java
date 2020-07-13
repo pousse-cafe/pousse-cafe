@@ -31,6 +31,14 @@ public class Aggregate {
 
     private List<ProducedEvent> onDeleteProducedEvents = new ArrayList<>();
 
+    public static final String ON_UPDATE_METHOD_NAME = "onUpdate";
+
+    public List<ProducedEvent> onUpdateProducedEvents() {
+        return onUpdateProducedEvents;
+    }
+
+    private List<ProducedEvent> onUpdateProducedEvents = new ArrayList<>();
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
@@ -53,6 +61,7 @@ public class Aggregate {
             aggregate.name = other.name;
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
             aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
+            aggregate.onUpdateProducedEvents.addAll(other.onUpdateProducedEvents);
             return this;
         }
 
@@ -63,6 +72,11 @@ public class Aggregate {
 
         public Builder onDeleteProducedEvents(List<ProducedEvent> onDeleteProducedEvents) {
             aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
+            return this;
+        }
+
+        public Builder onUpdateProducedEvents(List<ProducedEvent> onUpdateProducedEvents) {
+            aggregate.onUpdateProducedEvents.addAll(onUpdateProducedEvents);
             return this;
         }
     }

@@ -34,9 +34,16 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
 
         Optional<Aggregate> aggregate2 = aggregateRoot("Aggregate2");
         assertTrue(aggregate2.isPresent());
+
         assertThat(aggregate2.orElseThrow().onDeleteProducedEvents().size(), is(1));
         assertThat(aggregate2.orElseThrow().onDeleteProducedEvents(), hasItem(new ProducedEvent.Builder()
                 .message(Message.domainEvent("Event6"))
+                .required(true)
+                .build()));
+
+        assertThat(aggregate2.orElseThrow().onUpdateProducedEvents().size(), is(1));
+        assertThat(aggregate2.orElseThrow().onUpdateProducedEvents(), hasItem(new ProducedEvent.Builder()
+                .message(Message.domainEvent("Event7"))
                 .required(true)
                 .build()));
     }

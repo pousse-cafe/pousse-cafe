@@ -204,11 +204,26 @@ public class PcMilExporter {
 
     private void appendAggregateRootListener(MessageListener listener) {
         appendRunnerAndAggregateRoot(listener);
-        if(!listener.producedEvents().isEmpty()) {
-            appendAggregateMessageConsumptions(listener.producedEvents());
+        var listenerProducedEvents = aggregateRootListenerProducedEvents(listener);
+        if(!listenerProducedEvents.isEmpty()) {
+            appendAggregateMessageConsumptions(listenerProducedEvents);
         } else {
             builder.appendNewLine();
         }
+    }
+
+    private List<ProducedEvent> aggregateRootListenerProducedEvents(MessageListener listener) {
+        var eventsSet = new HashSet<ProducedEvent>();
+        eventsSet.addAll(listener.producedEvents());
+
+        String aggregateName = listener.container().aggregateName().orElseThrow();
+        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
+        eventsSet.addAll(aggregate.onUpdateProducedEvents());
+
+        var listenerProducedEvents = new ArrayList<>(eventsSet);
+        listenerProducedEvents.sort((e1, e2) -> e1.message().name().compareTo(e2.message().name()));
+
+        return listenerProducedEvents;
     }
 
     private void appendRunnerAndAggregateRoot(MessageListener listener) {

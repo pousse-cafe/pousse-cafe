@@ -112,6 +112,10 @@ public class CompilationUnitVisitor extends ASTVisitor {
                     var annotatedMethod = method.asAnnotatedElement();
                     var producedEvents = producesEvents(annotatedMethod);
                     aggregateBuilder.onDeleteProducedEvents(producedEvents);
+                } else if(method.name().equals(Aggregate.ON_UPDATE_METHOD_NAME)) {
+                    var annotatedMethod = method.asAnnotatedElement();
+                    var producedEvents = producesEvents(annotatedMethod);
+                    aggregateBuilder.onUpdateProducedEvents(producedEvents);
                 }
             }
         }
