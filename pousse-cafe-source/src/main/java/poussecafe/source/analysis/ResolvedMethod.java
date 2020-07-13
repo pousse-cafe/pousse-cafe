@@ -34,6 +34,18 @@ public class ResolvedMethod {
         return declaration.getName().getIdentifier();
     }
 
+    public Optional<ResolvedType> returnType() {
+        Type returnType = declaration.getReturnType2();
+        if(returnType == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new ResolvedType.Builder()
+                    .resolver(resolver)
+                    .type(returnType)
+                    .build());
+        }
+    }
+
     public static class Builder {
 
         private ResolvedMethod annotatedElement = new ResolvedMethod();

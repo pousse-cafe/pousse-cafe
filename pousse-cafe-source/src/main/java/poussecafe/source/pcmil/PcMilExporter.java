@@ -14,6 +14,7 @@ import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProducedEvent;
+import poussecafe.source.model.ProductionType;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
@@ -152,6 +153,12 @@ public class PcMilExporter {
 
     private void appendFactoryName(MessageListener listener) {
         var aggregateName = listener.container().aggregateName().orElseThrow();
+        ProductionType productionType = listener.productionType().orElseThrow();
+        if(productionType == ProductionType.OPTIONAL) {
+            builder.appendOptionalOperator();
+        } else if(productionType == ProductionType.SEVERAL) {
+            builder.appendSeveralOperator();
+        }
         builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
         builder.appendNewLine();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
@@ -243,7 +250,7 @@ public class PcMilExporter {
             builder.indent();
             builder.appendCloseRelation();
             if(!producedEvent.required()) {
-                builder.appendOptionalEventToken();
+                builder.appendOptionalOperator();
             }
             Optional<String> note = consumedByExternalNote(producedEvent);
             appendMessageConsumption(producedEvent.message(), note);

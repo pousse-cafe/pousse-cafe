@@ -89,7 +89,11 @@ public class FormattedPcMilTokenStreamBuilder {
         builder.append(':');
     }
 
-    public void appendOptionalEventToken() {
+    public void appendOptionalOperator() {
         builder.append('#');
+    }
+
+    public void appendSeveralOperator() {
+        builder.append("{}");
     }
 }

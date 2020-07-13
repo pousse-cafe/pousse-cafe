@@ -1,10 +1,12 @@
 package poussecafe.source.model;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import poussecafe.discovery.DefaultProcess;
 import poussecafe.source.analysis.MessageListenerAnnotations;
 import poussecafe.source.analysis.ResolvedMethod;
+import poussecafe.source.analysis.ResolvedType;
 import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Collections.singletonList;
@@ -55,6 +57,12 @@ public class MessageListener {
 
     private Optional<String> consumesFromExternal;
 
+    public Optional<ProductionType> productionType() {
+        return productionType;
+    }
+
+    private Optional<ProductionType> productionType;
+
     public static class Builder {
 
         private MessageListener messageListener = new MessageListener();
@@ -65,6 +73,12 @@ public class MessageListener {
             requireNonNull(messageListener.consumedMessage);
             requireNonNull(messageListener.processNames);
             requireNonNull(messageListener.consumesFromExternal);
+
+            if(messageListener.container.type() == MessageListenerContainerType.FACTORY
+                    && messageListener.productionType.isEmpty()) {
+                throw new IllegalStateException("Production type must be present with factory listeners");
+            }
+
             return messageListener;
         }
 
@@ -102,7 +116,24 @@ public class MessageListener {
 
             messageListener.runnerName = messageListenerAnnotation.runner().map(ResolvedTypeName::simpleName);
 
+            Optional<ResolvedType> returnType = method.returnType();
+            if(returnType.isPresent()
+                    && !returnType.get().isPrimitive()) {
+                messageListener.productionType = Optional.of(productionType(returnType.get()));
+            }
+
             return this;
+        }
+
+        private ProductionType productionType(ResolvedType returnType) {
+            ResolvedTypeName typeName = returnType.genericTypeName();
+            if(typeName.instanceOf(Collection.class)) {
+                return ProductionType.SEVERAL;
+            } else if(typeName.instanceOf(Optional.class)) {
+                return ProductionType.OPTIONAL;
+            } else {
+                return ProductionType.SINGLE;
+            }
         }
     }
 }

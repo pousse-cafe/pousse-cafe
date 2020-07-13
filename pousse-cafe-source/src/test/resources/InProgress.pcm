@@ -2,11 +2,11 @@ Command1? -> Aggregate1Factory
     @Aggregate1[onAdd]:
         :Event5! -> .
 
-Command3? -> Aggregate1Factory
+Command3? -> #Aggregate1Factory
     @Aggregate1[onAdd]:
         :Event5! -> .
 
-Command4? -> Aggregate1Factory
+Command4? -> {}Aggregate1Factory
     @Aggregate1[onAdd]:
         :Event5! -> .
 
