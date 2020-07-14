@@ -1,12 +1,12 @@
-Command1? -> Aggregate1Factory
+Command1? -> Aggregate1Factory[process1Listener0]
     @Aggregate1[onAdd]:
         :Event5! -> .
 
-Command3? -> #Aggregate1Factory
+Command3? -> #Aggregate1Factory[process1Listener4]
     @Aggregate1[onAdd]:
         :Event5! -> .
 
-Command4? -> {}Aggregate1Factory
+Command4? -> {}Aggregate1Factory[process1Listener5]
     @Aggregate1[onAdd]:
         :Event5! -> .
 
@@ -22,6 +22,6 @@ Command4? -> {}Aggregate1Factory
 Event4! -> Process1Listener6Runner
     @Aggregate1[process1Listener6]
 
-Command2? -> Aggregate2Repository
+Command2? -> Aggregate2Repository[process1Listener3]
     @Aggregate2[onDelete]:
         :Event6! -> .

@@ -197,6 +197,7 @@ public class PcMilExporter {
             builder.appendSeveralOperator();
         }
         builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
+        builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
         if(!aggregate.onAddProducedEvents().isEmpty()) {
@@ -236,6 +237,7 @@ public class PcMilExporter {
     private void appendRepositoryName(MessageListener listener) {
         String aggregateName = listener.container().aggregateName().orElseThrow();
         builder.appendRepositoryIdentifier(aggregateName);
+        builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
         if(!aggregate.onDeleteProducedEvents().isEmpty()) {
