@@ -2,7 +2,6 @@ package poussecafe.source.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.Resolver;
 
@@ -104,9 +103,13 @@ public class Message {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append(name)
-                .append(type)
-                .build();
+        var builder = new StringBuilder();
+        builder.append(name);
+        if(type == MessageType.COMMAND) {
+            builder.append('?');
+        } else {
+            builder.append('!');
+        }
+        return builder.toString();
     }
 }

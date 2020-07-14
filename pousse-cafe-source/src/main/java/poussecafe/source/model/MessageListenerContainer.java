@@ -62,4 +62,22 @@ public class MessageListenerContainer {
             return this;
         }
     }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder();
+        if(type == MessageListenerContainerType.FACTORY) {
+            builder.append("F{");
+        } else if(type == MessageListenerContainerType.REPOSITORY) {
+            builder.append("Re{");
+        } else if(type == MessageListenerContainerType.ROOT) {
+            builder.append("@");
+        }
+        builder.append(className);
+        if(type == MessageListenerContainerType.FACTORY
+                || type == MessageListenerContainerType.REPOSITORY) {
+            builder.append("}");
+        }
+        return builder.toString();
+    }
 }

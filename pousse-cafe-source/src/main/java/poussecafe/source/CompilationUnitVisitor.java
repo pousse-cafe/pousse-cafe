@@ -44,6 +44,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(TypeDeclaration node) {
+        ++typeLevel;
         ResolvedTypeDeclaration resolvedTypeDeclaration = resolver.resolve(node);
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
             AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
@@ -81,6 +82,8 @@ public class CompilationUnitVisitor extends ASTVisitor {
         return false;
     }
 
+    private int typeLevel;
+
     private void createOrUpdateAggregate(ResolvedTypeName name) {
         aggregateBuilder = new Aggregate.Builder();
         Optional<Aggregate> aggregate = model.aggregateRoot(name.simpleName());
@@ -97,7 +100,9 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public void endVisit(TypeDeclaration node) {
-        if(aggregateBuilder != null) {
+        --typeLevel;
+        if(typeLevel == 0
+                && aggregateBuilder != null) {
             model.putAggregateRoot(aggregateBuilder.build());
             aggregateBuilder = null;
             container = null;

@@ -16,7 +16,7 @@ public class ResolvedTypeName {
 
     public boolean isClass(Class<?> expectedClass) {
         resolvedOrElseThrow();
-        return expectedClass.equals(resolvedClass.get());
+        return expectedClass.equals(resolvedClass.orElseThrow());
     }
 
     private void resolvedOrElseThrow() {
@@ -37,6 +37,15 @@ public class ResolvedTypeName {
     public boolean instanceOf(Class<?> superType) {
         resolvedOrElseThrow();
         return superType.isAssignableFrom(resolvedClass.orElseThrow());
+    }
+
+    public String qualifiedName() {
+        if(name.isQualifiedName()) {
+            return name.getFullyQualifiedName();
+        } else {
+            resolvedOrElseThrow();
+            return resolvedClass.orElseThrow().getCanonicalName();
+        }
     }
 
     public static class Builder {

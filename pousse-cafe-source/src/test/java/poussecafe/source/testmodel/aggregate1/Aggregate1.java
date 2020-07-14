@@ -18,6 +18,10 @@ public class Aggregate1 extends AggregateRoot<String, Aggregate1.Attributes> {
 
     }
 
+    static class SomeInnerClass {
+
+    }
+
     @MessageListener(processes = Process1.class, runner = Process1Listener1Runner.class, consumesFromExternal = "External1")
     @ProducesEvent(Event2.class)
     public void process1Listener1(Event1 event) {
