@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
@@ -78,11 +79,11 @@ public class PcMilExporter {
     private void appendMessageConsumption(Message message, Optional<String> noteIfNoListeners) {
         appendMessage(message);
 
-        List<MessageListener> consumers = findAndRemoveConsumers(message);
+        var consumers = findAndRemoveConsumers(message);
         if(consumers.isEmpty()) {
             appendNoListener(noteIfNoListeners);
         } else if(consumers.size() == 1) {
-            appendSingleListener(consumers.get(0));
+            appendSingleListener(consumers);
         } else {
             appendMultipleListeners(consumers);
         }
@@ -96,25 +97,42 @@ public class PcMilExporter {
         }
     }
 
-    private List<MessageListener> findAndRemoveConsumers(Message event) {
-        var consumers = new ArrayList<MessageListener>();
+    private Consumers findAndRemoveConsumers(Message event) {
+        var consumers = new Consumers();
 
         Iterator<MessageListener> iterator = processListeners.iterator();
         while(iterator.hasNext()) {
             MessageListener listener = iterator.next();
             if(listener.consumedMessage().equals(event)) {
-                consumers.add(listener);
+                consumers.listeners.add(listener);
                 iterator.remove();
             }
         }
 
-        List<MessageListener> listenersOfOtherProcesses = model.messageListeners().stream()
+        var uniqueOrderedProcessNames = new TreeSet<String>();
+        model.messageListeners().stream()
                 .filter(listener -> !listener.processNames().contains(processName))
                 .filter(listener -> listener.consumedMessage().equals(event))
-                .collect(toList());
-        consumers.addAll(listenersOfOtherProcesses);
+                .forEach(listener -> uniqueOrderedProcessNames.addAll(listener.processNames()));
+        consumers.processes.addAll(uniqueOrderedProcessNames);
 
         return consumers;
+    }
+
+    class Consumers {
+
+        List<MessageListener> listeners = new ArrayList<>();
+
+        List<String> processes = new ArrayList<>();
+
+        public boolean isEmpty() {
+            return listeners.isEmpty()
+                    && processes.isEmpty();
+        }
+
+        public int size() {
+            return listeners.size() + processes.size();
+        }
     }
 
     private String processName;
@@ -127,15 +145,17 @@ public class PcMilExporter {
         builder.appendNewLine();
     }
 
-    private void appendSingleListener(MessageListener consumer) {
+    private void appendSingleListener(Consumers consumers) {
         builder.appendConsumptionToken();
-        appendListener(consumer);
+        if(consumers.listeners.size() == 1) {
+            appendListener(consumers.listeners.get(0));
+        } else {
+            appendProcess(consumers.processes.get(0));
+        }
     }
 
     private void appendListener(MessageListener listener) {
-        if(!listener.processNames().contains(processName)) {
-            appendOtherProcessListener(listener);
-        } else if(listener.container().type() == MessageListenerContainerType.FACTORY) {
+        if(listener.container().type() == MessageListenerContainerType.FACTORY) {
             appendFactoryListener(listener);
         } else if(listener.container().type() == MessageListenerContainerType.REPOSITORY) {
             appendRepositoryListener(listener);
@@ -147,14 +167,19 @@ public class PcMilExporter {
         }
     }
 
-    private void appendMultipleListeners(List<MessageListener> consumers) {
+    private void appendMultipleListeners(Consumers consumers) {
         builder.appendOpeningConsumptionToken();
         builder.appendNewLine();
         builder.incrementIndent();
-        for(MessageListener listener : consumers) {
+        for(MessageListener listener : consumers.listeners) {
             builder.indent();
             builder.appendClosingConsumptionToken();
             appendListener(listener);
+        }
+        for(String process : consumers.processes) {
+            builder.indent();
+            builder.appendClosingConsumptionToken();
+            appendProcess(process);
         }
     }
 
@@ -180,6 +205,7 @@ public class PcMilExporter {
             builder.appendAggregateIdentifier(aggregateName);
             builder.appendInlineNote(Aggregate.ON_ADD_METHOD_NAME);
             appendAggregateMessageConsumptions(aggregate.onAddProducedEvents());
+            builder.decrementIndent();
         }
     }
 
@@ -218,6 +244,7 @@ public class PcMilExporter {
             builder.appendAggregateIdentifier(aggregateName);
             builder.appendInlineNote(Aggregate.ON_DELETE_METHOD_NAME);
             appendAggregateMessageConsumptions(aggregate.onDeleteProducedEvents());
+            builder.decrementIndent();
         }
     }
 
@@ -271,24 +298,9 @@ public class PcMilExporter {
         builder.decrementIndent();
     }
 
-    private void appendOtherProcessListener(MessageListener listener) {
-        var iterator = listener.processNames().iterator();
-        while(iterator.hasNext()) {
-            String listenerProcessName = iterator.next();
-            if(!listenerProcessName.equals(processName)) {
-                builder.appendProcessIdentifier(listenerProcessName);
-                builder.appendNewLine();
-                break;
-            }
-        }
-        while(iterator.hasNext()) {
-            String listenerProcessName = iterator.next();
-            if(!listenerProcessName.equals(processName)) {
-                builder.appendConsumptionToken();
-                builder.appendProcessIdentifier(listenerProcessName);
-                builder.appendNewLine();
-            }
-        }
+    private void appendProcess(String processName) {
+        builder.appendProcessIdentifier(processName);
+        builder.appendNewLine();
     }
 
     public static class Builder {
