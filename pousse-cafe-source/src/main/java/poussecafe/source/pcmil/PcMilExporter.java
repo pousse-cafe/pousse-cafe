@@ -33,12 +33,12 @@ public class PcMilExporter {
 
     private void generatePcMil() {
         builder = new FormattedPcMilTokenStreamBuilder();
-        while(!listeners.isEmpty()) {
+        while(!processListeners.isEmpty()) {
             MessageListener next = next();
             appendTopListener(next);
 
-            listeners.remove(next);
-            if(!listeners.isEmpty()) {
+            processListeners.remove(next);
+            if(!processListeners.isEmpty()) {
                 builder.appendNewLine();
             }
         }
@@ -47,24 +47,24 @@ public class PcMilExporter {
 
     private FormattedPcMilTokenStreamBuilder builder;
 
-    private List<MessageListener> listeners;
+    private List<MessageListener> processListeners;
 
     private MessageListener next() {
         Optional<MessageListener> topListener = findNextTopListener();
         if(topListener.isEmpty()) {
-            return listeners.get(0);
+            return processListeners.get(0);
         } else {
             return topListener.get();
         }
     }
 
     private Optional<MessageListener> findNextTopListener() {
-        return listeners.stream()
-                .filter(listener -> !producedEvents.contains(listener.consumedMessage()))
+        return processListeners.stream()
+                .filter(listener -> !processProducedEvents.contains(listener.consumedMessage()))
                 .findFirst();
     }
 
-    private Set<Message> producedEvents = new HashSet<>();
+    private Set<Message> processProducedEvents = new HashSet<>();
 
     private void appendTopListener(MessageListener rootListener) {
         builder.resetIndent();
@@ -97,17 +97,27 @@ public class PcMilExporter {
     }
 
     private List<MessageListener> findAndRemoveConsumers(Message event) {
-        var removedListeners = new ArrayList<MessageListener>();
-        Iterator<MessageListener> iterator = listeners.iterator();
+        var consumers = new ArrayList<MessageListener>();
+
+        Iterator<MessageListener> iterator = processListeners.iterator();
         while(iterator.hasNext()) {
             MessageListener listener = iterator.next();
             if(listener.consumedMessage().equals(event)) {
-                removedListeners.add(listener);
+                consumers.add(listener);
                 iterator.remove();
             }
         }
-        return removedListeners;
+
+        List<MessageListener> listenersOfOtherProcesses = model.messageListeners().stream()
+                .filter(listener -> !listener.processNames().contains(processName))
+                .filter(listener -> listener.consumedMessage().equals(event))
+                .collect(toList());
+        consumers.addAll(listenersOfOtherProcesses);
+
+        return consumers;
     }
+
+    private String processName;
 
     private void appendNoListener(Optional<String> noteIfNoListeners) {
         builder.appendEndOfConsumption();
@@ -123,7 +133,9 @@ public class PcMilExporter {
     }
 
     private void appendListener(MessageListener listener) {
-        if(listener.container().type() == MessageListenerContainerType.FACTORY) {
+        if(!listener.processNames().contains(processName)) {
+            appendOtherProcessListener(listener);
+        } else if(listener.container().type() == MessageListenerContainerType.FACTORY) {
             appendFactoryListener(listener);
         } else if(listener.container().type() == MessageListenerContainerType.REPOSITORY) {
             appendRepositoryListener(listener);
@@ -136,12 +148,12 @@ public class PcMilExporter {
     }
 
     private void appendMultipleListeners(List<MessageListener> consumers) {
-        builder.appendConsumptionToken();
+        builder.appendOpeningConsumptionToken();
         builder.appendNewLine();
         builder.incrementIndent();
         for(MessageListener listener : consumers) {
             builder.indent();
-            builder.appendConsumptionToken();
+            builder.appendClosingConsumptionToken();
             appendListener(listener);
         }
     }
@@ -217,6 +229,7 @@ public class PcMilExporter {
         } else {
             builder.appendNewLine();
         }
+        builder.decrementIndent();
     }
 
     private List<ProducedEvent> aggregateRootListenerProducedEvents(MessageListener listener) {
@@ -255,6 +268,27 @@ public class PcMilExporter {
             Optional<String> note = consumedByExternalNote(producedEvent);
             appendMessageConsumption(producedEvent.message(), note);
         }
+        builder.decrementIndent();
+    }
+
+    private void appendOtherProcessListener(MessageListener listener) {
+        var iterator = listener.processNames().iterator();
+        while(iterator.hasNext()) {
+            String listenerProcessName = iterator.next();
+            if(!listenerProcessName.equals(processName)) {
+                builder.appendProcessIdentifier(listenerProcessName);
+                builder.appendNewLine();
+                break;
+            }
+        }
+        while(iterator.hasNext()) {
+            String listenerProcessName = iterator.next();
+            if(!listenerProcessName.equals(processName)) {
+                builder.appendConsumptionToken();
+                builder.appendProcessIdentifier(listenerProcessName);
+                builder.appendNewLine();
+            }
+        }
     }
 
     public static class Builder {
@@ -263,13 +297,13 @@ public class PcMilExporter {
 
         public PcMilExporter build() {
             requireNonNull(exporter.model);
-            requireNonNull(processName);
+            requireNonNull(exporter.processName);
 
-            exporter.listeners = new LinkedList<>(exporter.model.processListeners(processName));
-            exporter.listeners.sort(new PcMilListenersComparator());
+            exporter.processListeners = new LinkedList<>(exporter.model.processListeners(exporter.processName));
+            exporter.processListeners.sort(new PcMilListenersComparator());
 
-            exporter.producedEvents = new HashSet<>();
-            exporter.listeners.stream().forEach(listener -> exporter.producedEvents.addAll(
+            exporter.processProducedEvents = new HashSet<>();
+            exporter.processListeners.stream().forEach(listener -> exporter.processProducedEvents.addAll(
                     listener.producedEvents().stream().map(ProducedEvent::message).collect(toList())));
 
             return exporter;
@@ -281,11 +315,9 @@ public class PcMilExporter {
         }
 
         public Builder processName(String processName) {
-            this.processName = processName;
+            exporter.processName = processName;
             return this;
         }
-
-        private String processName;
     }
 
     private PcMilExporter() {

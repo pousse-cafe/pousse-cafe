@@ -22,7 +22,7 @@ public class FormattedPcMilTokenStreamBuilder {
         indent = indent + TAB;
     }
 
-    private static final Object TAB = "    ";
+    private static final String TAB = "    ";
 
     @Override
     public String toString() {
@@ -59,8 +59,16 @@ public class FormattedPcMilTokenStreamBuilder {
         appendInlineNote(note);
     }
 
+    public void appendOpeningConsumptionToken() {
+        builder.append(" ->");
+    }
+
     public void appendConsumptionToken() {
         builder.append(" -> ");
+    }
+
+    public void appendClosingConsumptionToken() {
+        builder.append("-> ");
     }
 
     public void appendFactoryIdentifier(String aggregateName) {
@@ -95,5 +103,15 @@ public class FormattedPcMilTokenStreamBuilder {
 
     public void appendSeveralOperator() {
         builder.append("{}");
+    }
+
+    public void appendProcessIdentifier(String processName) {
+        builder.append('(');
+        builder.append(processName);
+        builder.append(')');
+    }
+
+    public void decrementIndent() {
+        indent = indent.substring(0, indent.length() - TAB.length());
     }
 }

@@ -19,6 +19,7 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
 
     private void thenProcessesFound() {
         assertTrue(model().process("Process1").isPresent());
+        assertTrue(model().process("Process2").isPresent());
     }
 
     private void thenProcessesHaveListeners() {
@@ -33,6 +34,9 @@ public class ProcessDiscoveryTest extends DiscoveryTest {
 
         Optional<MessageListener> listener3 = processListener("Process1", "process1Listener3");
         assertTrue(listener3.isPresent());
+
+        Optional<MessageListener> process2Listener0 = processListener("Process2", "process2Listener0");
+        assertTrue(process2Listener0.isPresent());
     }
 
     private Optional<MessageListener> processListener(String process, String method) {
