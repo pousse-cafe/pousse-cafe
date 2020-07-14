@@ -114,7 +114,7 @@ public class PcMilExporter {
                 .filter(listener -> !listener.processNames().contains(processName))
                 .filter(listener -> listener.consumedMessage().equals(event))
                 .forEach(listener -> uniqueOrderedProcessNames.addAll(listener.processNames()));
-        consumers.processes.addAll(uniqueOrderedProcessNames);
+        consumers.otherProcesses.addAll(uniqueOrderedProcessNames);
 
         return consumers;
     }
@@ -123,15 +123,15 @@ public class PcMilExporter {
 
         List<MessageListener> listeners = new ArrayList<>();
 
-        List<String> processes = new ArrayList<>();
+        List<String> otherProcesses = new ArrayList<>();
 
         public boolean isEmpty() {
             return listeners.isEmpty()
-                    && processes.isEmpty();
+                    && otherProcesses.isEmpty();
         }
 
         public int size() {
-            return listeners.size() + processes.size();
+            return listeners.size() + otherProcesses.size();
         }
     }
 
@@ -150,7 +150,7 @@ public class PcMilExporter {
         if(consumers.listeners.size() == 1) {
             appendListener(consumers.listeners.get(0));
         } else {
-            appendProcess(consumers.processes.get(0));
+            appendProcess(consumers.otherProcesses.get(0));
         }
     }
 
@@ -176,7 +176,7 @@ public class PcMilExporter {
             builder.appendClosingConsumptionToken();
             appendListener(listener);
         }
-        for(String process : consumers.processes) {
+        for(String process : consumers.otherProcesses) {
             builder.indent();
             builder.appendClosingConsumptionToken();
             appendProcess(process);
