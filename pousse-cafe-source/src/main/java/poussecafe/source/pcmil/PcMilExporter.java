@@ -73,11 +73,11 @@ public class PcMilExporter {
         if(consumesFromExternal.isPresent()) {
             builder.appendOpeningNote(consumesFromExternal.get());
         }
-        appendMessageConsumption(rootListener.consumedMessage(), Optional.empty());
+        appendMessageConsumption(rootListener.consumedMessage(), true, Optional.empty());
     }
 
-    private void appendMessageConsumption(Message message, Optional<String> noteIfNoListeners) {
-        appendMessage(message);
+    private void appendMessageConsumption(Message message, boolean required, Optional<String> noteIfNoListeners) {
+        appendMessage(message, required);
 
         var consumers = findAndRemoveConsumers(message);
         if(consumers.isEmpty()) {
@@ -89,11 +89,14 @@ public class PcMilExporter {
         }
     }
 
-    private void appendMessage(Message message) {
+    private void appendMessage(Message message, boolean required) {
         if(message.type() == MessageType.COMMAND) {
             builder.appendCommandIdentifier(message.name());
         } else if(message.type() == MessageType.DOMAIN_EVENT) {
             builder.appendDomainEventIdentifier(message.name());
+        }
+        if(!required) {
+            builder.appendOptionalOperator();
         }
     }
 
@@ -190,14 +193,14 @@ public class PcMilExporter {
 
     private void appendFactoryName(MessageListener listener) {
         var aggregateName = listener.container().aggregateName().orElseThrow();
+        builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
+        builder.appendInlineNote(listener.methodName());
         ProductionType productionType = listener.productionType().orElseThrow();
         if(productionType == ProductionType.OPTIONAL) {
             builder.appendOptionalOperator();
         } else if(productionType == ProductionType.SEVERAL) {
             builder.appendSeveralOperator();
         }
-        builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
-        builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
         if(!aggregate.onAddProducedEvents().isEmpty()) {
@@ -215,7 +218,7 @@ public class PcMilExporter {
     private void appendMessageConsumptions(MessageListener listener) {
         for(ProducedEvent producedEvent : listener.producedEvents()) {
             Optional<String> note = consumedByExternalNote(producedEvent);
-            appendMessageConsumption(producedEvent.message(), note);
+            appendMessageConsumption(producedEvent.message(), producedEvent.required(), note);
         }
     }
 
@@ -291,11 +294,8 @@ public class PcMilExporter {
         for(ProducedEvent producedEvent : events) {
             builder.indent();
             builder.appendCloseRelation();
-            if(!producedEvent.required()) {
-                builder.appendOptionalOperator();
-            }
             Optional<String> note = consumedByExternalNote(producedEvent);
-            appendMessageConsumption(producedEvent.message(), note);
+            appendMessageConsumption(producedEvent.message(), producedEvent.required(), note);
         }
         builder.decrementIndent();
     }

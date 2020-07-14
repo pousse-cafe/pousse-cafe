@@ -72,17 +72,23 @@ public class FormattedPcMilTokenStreamBuilder {
     }
 
     public void appendFactoryIdentifier(String aggregateName) {
+        builder.append("F{");
         builder.append(aggregateName);
         builder.append("Factory");
+        builder.append('}');
     }
 
     public void appendRepositoryIdentifier(String aggregateName) {
+        builder.append("Re{");
         builder.append(aggregateName);
         builder.append("Repository");
+        builder.append('}');
     }
 
     public void appendRunnerIdentifier(String aggregateName) {
+        builder.append("Ru{");
         builder.append(aggregateName);
+        builder.append('}');
     }
 
     public void appendAggregateIdentifier(String aggregateName) {
@@ -102,13 +108,13 @@ public class FormattedPcMilTokenStreamBuilder {
     }
 
     public void appendSeveralOperator() {
-        builder.append("{}");
+        builder.append("+");
     }
 
     public void appendProcessIdentifier(String processName) {
-        builder.append('(');
+        builder.append("P{");
         builder.append(processName);
-        builder.append(')');
+        builder.append('}');
     }
 
     public void decrementIndent() {
