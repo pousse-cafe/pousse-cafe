@@ -112,12 +112,14 @@ public class PcMilExporter {
             }
         }
 
-        var uniqueOrderedProcessNames = new TreeSet<String>();
-        model.messageListeners().stream()
-                .filter(listener -> !listener.processNames().contains(processName))
-                .filter(listener -> listener.consumedMessage().equals(event))
-                .forEach(listener -> uniqueOrderedProcessNames.addAll(listener.processNames()));
-        consumers.otherProcesses.addAll(uniqueOrderedProcessNames);
+        if(processName.isPresent()) {
+            var uniqueOrderedProcessNames = new TreeSet<String>();
+            model.messageListeners().stream()
+                    .filter(listener -> !listener.processNames().contains(processName.get()))
+                    .filter(listener -> listener.consumedMessage().equals(event))
+                    .forEach(listener -> uniqueOrderedProcessNames.addAll(listener.processNames()));
+            consumers.otherProcesses.addAll(uniqueOrderedProcessNames);
+        }
 
         return consumers;
     }
@@ -138,7 +140,7 @@ public class PcMilExporter {
         }
     }
 
-    private String processName;
+    private Optional<String> processName;
 
     private void appendNoListener(Optional<String> noteIfNoListeners) {
         builder.appendEndOfConsumption();
@@ -315,7 +317,11 @@ public class PcMilExporter {
             requireNonNull(exporter.model);
             requireNonNull(exporter.processName);
 
-            exporter.processListeners = new LinkedList<>(exporter.model.processListeners(exporter.processName));
+            if(exporter.processName.isPresent()) {
+                exporter.processListeners = new LinkedList<>(exporter.model.processListeners(exporter.processName.get()));
+            } else {
+                exporter.processListeners = new LinkedList<>(exporter.model.messageListeners());
+            }
             exporter.processListeners.sort(new PcMilListenersComparator());
 
             exporter.processProducedEvents = new HashSet<>();
@@ -330,7 +336,7 @@ public class PcMilExporter {
             return this;
         }
 
-        public Builder processName(String processName) {
+        public Builder processName(Optional<String> processName) {
             exporter.processName = processName;
             return this;
         }

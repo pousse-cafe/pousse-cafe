@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
 import poussecafe.source.Scanner;
@@ -15,10 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class PcMilExporterTest {
 
     @Test
-    public void toPcMil() throws IOException, URISyntaxException {
+    public void exportSingleProcess() throws IOException, URISyntaxException {
         givenModel();
-        whenExportingPcMil();
-        thenPcMilIsExpected();
+        whenExporting(Optional.of("Process1"));
+        thenEmilIsExpected("Process1.emil");
     }
 
     private void givenModel() throws IOException {
@@ -29,21 +30,28 @@ public class PcMilExporterTest {
 
     private Model model;
 
-    private void whenExportingPcMil() {
+    private void whenExporting(Optional<String> process) {
         exported = new PcMilExporter.Builder()
                 .model(model)
-                .processName("Process1")
+                .processName(process)
                 .build()
                 .toPcMil();
     }
 
     private String exported;
 
-    private void thenPcMilIsExpected() throws IOException, URISyntaxException {
-        assertThat(exported, equalTo(readResource("Process1.pcm")));
+    private void thenEmilIsExpected(String resourceName) throws IOException, URISyntaxException {
+        assertThat(exported, equalTo(readResource(resourceName)));
     }
 
     private String readResource(String string) throws IOException, URISyntaxException {
         return new String(Files.readString(Path.of(this.getClass().getResource("/" + string).toURI())));
+    }
+
+    @Test
+    public void exportAll() throws IOException, URISyntaxException {
+        givenModel();
+        whenExporting(Optional.empty());
+        thenEmilIsExpected("all.emil");
     }
 }
