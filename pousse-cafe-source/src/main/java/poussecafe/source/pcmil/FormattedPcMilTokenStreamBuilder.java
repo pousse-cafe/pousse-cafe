@@ -71,23 +71,21 @@ public class FormattedPcMilTokenStreamBuilder {
         builder.append("-> ");
     }
 
-    public void appendFactoryIdentifier(String aggregateName) {
+    public void appendFactoryIdentifier(String className) {
         builder.append("F{");
-        builder.append(aggregateName);
-        builder.append("Factory");
+        builder.append(className);
         builder.append('}');
     }
 
-    public void appendRepositoryIdentifier(String aggregateName) {
+    public void appendRepositoryIdentifier(String className) {
         builder.append("Re{");
-        builder.append(aggregateName);
-        builder.append("Repository");
+        builder.append(className);
         builder.append('}');
     }
 
-    public void appendRunnerIdentifier(String aggregateName) {
+    public void appendRunnerIdentifier(String className) {
         builder.append("Ru{");
-        builder.append(aggregateName);
+        builder.append(className);
         builder.append('}');
     }
 

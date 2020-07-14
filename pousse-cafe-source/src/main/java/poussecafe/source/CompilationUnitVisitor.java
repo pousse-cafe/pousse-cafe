@@ -48,7 +48,11 @@ public class CompilationUnitVisitor extends ASTVisitor {
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
             AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(aggregateRootClass.aggregateName());
-            container = MessageListenerContainer.aggregateRoot(aggregateRootClass.aggregateName().simpleName());
+            container = new MessageListenerContainer.Builder()
+                    .type(MessageListenerContainerType.ROOT)
+                    .aggregateName(aggregateRootClass.aggregateName().simpleName())
+                    .className(aggregateRootClass.aggregateName().simpleName())
+                    .build();
             return true;
         } else if(resolvedTypeDeclaration.implementsInterface(Resolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
@@ -58,12 +62,20 @@ public class CompilationUnitVisitor extends ASTVisitor {
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
             FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(factoryClass.aggregateName());
-            container = MessageListenerContainer.factory(factoryClass.aggregateName().simpleName());
+            container = new MessageListenerContainer.Builder()
+                    .type(MessageListenerContainerType.FACTORY)
+                    .aggregateName(factoryClass.aggregateName().simpleName())
+                    .className(factoryClass.simpleName())
+                    .build();
             return true;
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
             RepositoryClass repositoryClass = new RepositoryClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(repositoryClass.aggregateName());
-            container = MessageListenerContainer.repository(repositoryClass.aggregateName().simpleName());
+            container = new MessageListenerContainer.Builder()
+                    .type(MessageListenerContainerType.REPOSITORY)
+                    .aggregateName(repositoryClass.aggregateName().simpleName())
+                    .className(repositoryClass.simpleName())
+                    .build();
             return true;
         }
         return false;

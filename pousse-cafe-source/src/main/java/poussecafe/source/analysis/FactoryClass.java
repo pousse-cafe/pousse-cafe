@@ -14,13 +14,19 @@ public class FactoryClass {
         if(!isFactory(resolvedTypeDeclaration)) {
             throw new IllegalArgumentException();
         }
-
         aggregateName = resolvedTypeDeclaration.typeParameter(1);
+        className = resolvedTypeDeclaration.name();
     }
 
     private ResolvedTypeName aggregateName;
 
     public ResolvedTypeName aggregateName() {
         return aggregateName;
+    }
+
+    private ResolvedTypeName className;
+
+    public String simpleName() {
+        return className.simpleName();
     }
 }

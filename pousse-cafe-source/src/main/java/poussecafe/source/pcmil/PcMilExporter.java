@@ -192,8 +192,7 @@ public class PcMilExporter {
     }
 
     private void appendFactoryName(MessageListener listener) {
-        var aggregateName = listener.container().aggregateName().orElseThrow();
-        builder.appendFactoryIdentifier(listener.container().aggregateName().orElseThrow());
+        builder.appendFactoryIdentifier(listener.container().className());
         builder.appendInlineNote(listener.methodName());
         ProductionType productionType = listener.productionType().orElseThrow();
         if(productionType == ProductionType.OPTIONAL) {
@@ -202,6 +201,8 @@ public class PcMilExporter {
             builder.appendSeveralOperator();
         }
         builder.appendNewLine();
+
+        var aggregateName = listener.container().aggregateName().orElseThrow();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
         if(!aggregate.onAddProducedEvents().isEmpty()) {
             builder.incrementIndent();
@@ -238,10 +239,11 @@ public class PcMilExporter {
     }
 
     private void appendRepositoryName(MessageListener listener) {
-        String aggregateName = listener.container().aggregateName().orElseThrow();
-        builder.appendRepositoryIdentifier(aggregateName);
+        builder.appendRepositoryIdentifier(listener.container().className());
         builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
+
+        String aggregateName = listener.container().aggregateName().orElseThrow();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
         if(!aggregate.onDeleteProducedEvents().isEmpty()) {
             builder.incrementIndent();
