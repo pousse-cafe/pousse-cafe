@@ -193,7 +193,12 @@ public class PcMilExporter {
 
         var aggregateName = listener.container().aggregateName().orElseThrow();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
-        appendMessageConsumptions(listener, Aggregate.ON_ADD_METHOD_NAME, aggregate.onAddProducedEvents());
+
+        var allProducedEvents = new ArrayList<ProducedEvent>();
+        allProducedEvents.addAll(aggregate.onAddProducedEvents());
+        allProducedEvents.addAll(listener.producedEvents());
+
+        appendMessageConsumptions(listener, Aggregate.ON_ADD_METHOD_NAME, allProducedEvents);
     }
 
     private void appendFactoryName(MessageListener listener) {
@@ -239,7 +244,12 @@ public class PcMilExporter {
 
         var aggregateName = listener.container().aggregateName().orElseThrow();
         var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
-        appendMessageConsumptions(listener, Aggregate.ON_DELETE_METHOD_NAME, aggregate.onDeleteProducedEvents());
+
+        var allProducedEvents = new ArrayList<ProducedEvent>();
+        allProducedEvents.addAll(aggregate.onDeleteProducedEvents());
+        allProducedEvents.addAll(listener.producedEvents());
+
+        appendMessageConsumptions(listener, Aggregate.ON_DELETE_METHOD_NAME, allProducedEvents);
     }
 
     private void appendRepositoryName(MessageListener listener) {
