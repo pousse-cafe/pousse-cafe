@@ -24,7 +24,7 @@ public class EnvironmentMessageValidator implements MessageValidator {
         validator.validOrElseThrow(message);
     }
 
-    private AttributesValidator validator(Class<?> messageClass) {
+    private synchronized AttributesValidator validator(Class<?> messageClass) {
         return validators.computeIfAbsent(messageClass, this::newValidator);
     }
 
