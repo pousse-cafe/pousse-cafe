@@ -36,7 +36,6 @@ public class AdaptingMap<L, U, K, V> implements EditableMap<K, V> {
         return mutableMap.containsKey(adaptedKey);
     }
 
-    @SuppressWarnings("unchecked")
     private L adaptKToL(K key) {
         return nullOrAdapted(key, keyAdapter::adaptSet);
     }

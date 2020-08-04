@@ -11,7 +11,9 @@ extends MapAttribute<K, E> {
     EditableEntityMap<K, E> value();
 
     @Deprecated(since = "0.20")
-    MapAttribute<K, E> inContextOf(Entity<?, ?> primitive);
+    default MapAttribute<K, E> inContextOf(Entity<?, ?> primitive) {
+        return this;
+    }
 
     @Deprecated(since = "0.20")
     E newInContextOf(Entity<?, ?> primitive);

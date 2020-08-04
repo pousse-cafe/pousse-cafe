@@ -7,9 +7,9 @@ import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.adapters.CollectionBackedAdaptingMap;
 import poussecafe.attribute.adapters.DataAdapters;
 
-abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, V> {
+public abstract class CollectionBackedMapAttribute<U, K, V> implements MapAttribute<K, V> {
 
-    CollectionBackedMapAttribute(Collection<U> collection) {
+    public CollectionBackedMapAttribute(Collection<U> collection) {
         map = new CollectionBackedAdaptingMap.Builder<U, K, V>()
                 .collection(collection)
                 .adapter(DataAdapters.adapter(this::convertFromValue, this::convertToValue))

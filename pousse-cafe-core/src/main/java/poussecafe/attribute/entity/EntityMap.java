@@ -90,4 +90,14 @@ class EntityMap<K, E extends Entity<K, ?>> implements EditableEntityMap<K, E> {
     public E putEntity(E entity) {
         return map.put(entity.attributes().identifier().value(), entity);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return map.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
+    }
 }
