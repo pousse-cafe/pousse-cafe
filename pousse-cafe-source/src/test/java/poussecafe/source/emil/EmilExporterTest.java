@@ -1,4 +1,4 @@
-package poussecafe.source.pcmil;
+package poussecafe.source.emil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,7 +13,7 @@ import poussecafe.source.model.Model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PcMilExporterTest {
+public class EmilExporterTest {
 
     @Test
     public void exportSingleProcess() throws IOException, URISyntaxException {
@@ -31,7 +31,7 @@ public class PcMilExporterTest {
     private Model model;
 
     private void whenExporting(Optional<String> process) {
-        exported = new PcMilExporter.Builder()
+        exported = new EmilExporter.Builder()
                 .model(model)
                 .processName(process)
                 .build()

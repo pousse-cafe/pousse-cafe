@@ -1,9 +1,9 @@
-package poussecafe.source.pcmil;
+package poussecafe.source.emil;
 
 import java.util.Comparator;
 import poussecafe.source.model.MessageListener;
 
-public class PcMilListenersComparator implements Comparator<MessageListener> {
+public class EmilListenersComparator implements Comparator<MessageListener> {
 
     @Override
     public int compare(MessageListener o1, MessageListener o2) {

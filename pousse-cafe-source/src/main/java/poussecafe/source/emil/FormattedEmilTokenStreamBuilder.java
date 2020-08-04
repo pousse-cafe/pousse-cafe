@@ -1,6 +1,6 @@
-package poussecafe.source.pcmil;
+package poussecafe.source.emil;
 
-public class FormattedPcMilTokenStreamBuilder {
+public class FormattedEmilTokenStreamBuilder {
 
     private StringBuilder builder = new StringBuilder();
 
