@@ -23,16 +23,16 @@ import static java.util.stream.Collectors.toList;
 
 public class EmilExporter {
 
-    public String toPcMil() {
-        if(pcMil == null) {
-            generatePcMil();
+    public String toEmil() {
+        if(emil == null) {
+            generateEmil();
         }
-        return pcMil;
+        return emil;
     }
 
-    private String pcMil;
+    private String emil;
 
-    private void generatePcMil() {
+    private void generateEmil() {
         builder = new FormattedEmilTokenStreamBuilder();
         while(!targetListeners.isEmpty()) {
             MessageListener next = next();
@@ -43,7 +43,7 @@ public class EmilExporter {
                 builder.appendNewLine();
             }
         }
-        pcMil = builder.toString();
+        emil = builder.toString();
     }
 
     private FormattedEmilTokenStreamBuilder builder;

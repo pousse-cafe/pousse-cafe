@@ -35,7 +35,7 @@ public class EmilExporterTest {
                 .model(model)
                 .processName(process)
                 .build()
-                .toPcMil();
+                .toEmil();
     }
 
     private String exported;
