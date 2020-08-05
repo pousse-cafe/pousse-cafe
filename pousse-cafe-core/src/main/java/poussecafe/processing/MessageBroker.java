@@ -7,10 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.processing.MessageToProcess.Callback;
-import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageBroker {
@@ -24,13 +22,8 @@ public class MessageBroker {
             return this;
         }
 
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            broker.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            broker.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+        public Builder messageConsumptionContext(MessageConsumptionContext messageConsumptionContext) {
+            broker.messageConsumptionContext = messageConsumptionContext;
             return this;
         }
 
@@ -41,8 +34,7 @@ public class MessageBroker {
 
         public MessageBroker build() {
             Objects.requireNonNull(broker.messageProcessingThreadsPool);
-            Objects.requireNonNull(broker.messageConsumptionHandler);
-            Objects.requireNonNull(broker.applicationPerformanceMonitoring);
+            Objects.requireNonNull(broker.messageConsumptionContext);
             Objects.requireNonNull(broker.listenersSet);
 
             broker.processingThreadSelector =
@@ -58,9 +50,7 @@ public class MessageBroker {
 
     private MessageProcessingThreadPool messageProcessingThreadsPool;
 
-    private MessageConsumptionHandler messageConsumptionHandler;
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+    private MessageConsumptionContext messageConsumptionContext;
 
     public synchronized void dispatch(ReceivedMessage receivedMessage) {
         logger.debug("Handling received message {}", receivedMessage.message().original());
@@ -95,9 +85,8 @@ public class MessageBroker {
     private List<MessageListenersGroup> buildMessageListenerGroups(OriginalAndMarshaledMessage message) {
         Collection<MessageListener> listeners = listenersSet.messageListenersOf(message.original().getClass());
         return new MessageListenersGroupsFactory.Builder()
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .messageConsumptionContext(messageConsumptionContext)
                 .message(message)
-                .messageConsumptionHandler(messageConsumptionHandler)
                 .build()
                 .buildMessageListenerGroups(listeners);
     }

@@ -12,7 +12,6 @@ import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
-import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
@@ -34,8 +33,8 @@ public class MessageListenerGroupConsumptionTest {
     }
 
     private void givenOtherListeners() {
-        factoryListeners.add(listener("factoryListener"));
-        repositoryListeners.add(listener("repositoryListener"));
+        factoryListener = Optional.of(listener("factoryListener"));
+        repositoryListener = Optional.of(listener("repositoryListener"));
         otherListeners.add(listener("otherListener"));
     }
 
@@ -48,15 +47,14 @@ public class MessageListenerGroupConsumptionTest {
         return listener;
     }
 
-    private List<MessageListener> factoryListeners = new ArrayList<>();
+    private Optional<MessageListener> factoryListener = Optional.empty();
 
-    private List<MessageListener> repositoryListeners = new ArrayList<>();
+    private Optional<MessageListener> repositoryListener = Optional.empty();
 
     private List<MessageListener> otherListeners = new ArrayList<>();
 
     private void givenUpdateListenersWithFirstHavingFailingRunner() {
-        aggregateListeners.add(failingRunnerListener());
-        aggregateListeners.add(aggregateListener("successfulAggregateListener"));
+        aggregateListener = Optional.of(failingRunnerListener());
     }
 
     private MessageListener failingRunnerListener() {
@@ -77,42 +75,21 @@ public class MessageListenerGroupConsumptionTest {
         return failingRunner;
     }
 
-    private MessageListener aggregateListener(String listenerId) {
-        MessageListener listener = mock(MessageListener.class);
-        AggregateUpdateMessageConsumer consumer = mock(AggregateUpdateMessageConsumer.class);
-        when(consumer.consume(groupConsumptionState)).thenReturn(new MessageListenerConsumptionReport.Builder("listenerId").build());
-        @SuppressWarnings("rawtypes")
-        AggregateMessageListenerRunner successfulRunner = successfulRunner();
-        when(consumer.runner()).thenReturn(successfulRunner);
-        when(listener.consumer()).thenReturn(consumer);
-        when(listener.shortId()).thenReturn(listenerId);
-        return listener;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private AggregateMessageListenerRunner successfulRunner() {
-        AggregateMessageListenerRunner successfulRunner = mock(AggregateMessageListenerRunner.class);
-        TargetAggregates targetAggregates = new TargetAggregates.Builder()
-                .toUpdate(aggregateId)
-                .build();
-        when(successfulRunner.targetAggregates(original)).thenReturn(targetAggregates);
-        return successfulRunner;
-    }
-
-    private String aggregateId = "aggregateId";
-
-    private List<MessageListener> aggregateListeners = new ArrayList<>();
+    private Optional<MessageListener> aggregateListener = Optional.empty();
 
     private void whenExecuting() {
         MessageListenerGroupConsumption consumption = new MessageListenerGroupConsumption.Builder()
-                .aggregateListeners(aggregateListeners)
+                .aggregateListener(aggregateListener)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring())
+                .messageConsumptionContext(new MessageConsumptionContext.Builder()
+                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring())
+                        .messageConsumptionHandler(messageConsumptionHandler())
+                        .messageConsumptionConfiguration(MessageConsumptionConfiguration.defaultConfiguration())
+                        .build())
                 .consumptionState(groupConsumptionState)
-                .factoryListeners(factoryListeners)
-                .messageConsumptionHandler(messageConsumptionHandler())
+                .factoryListener(factoryListener)
                 .otherListeners(otherListeners)
-                .repositoryListeners(repositoryListeners)
+                .repositoryListener(repositoryListener)
                 .build();
         consumption.execute();
     }
@@ -143,23 +120,18 @@ public class MessageListenerGroupConsumptionTest {
     }
 
     private void thenListenersExecutedExceptOneWithFailingRunner() {
-        allListenersExecuted(factoryListeners);
-        allListenersExecuted(repositoryListeners);
+        factoryListener.ifPresent(this::listenerExecuted);
+        repositoryListener.ifPresent(this::listenerExecuted);
         allListenersExecuted(otherListeners);
-        allListenersExecutedExceptFirst(aggregateListeners, 1);
     }
 
     private void allListenersExecuted(List<MessageListener> listeners) {
         for(MessageListener listener : listeners) {
-            verify(listener.consumer()).consume(groupConsumptionState);
+            listenerExecuted(listener);
         }
     }
 
-    private void allListenersExecutedExceptFirst(List<MessageListener> listeners, int firstSkipped) {
-        for(int i = firstSkipped; i < listeners.size(); ++i) {
-            MessageListener listener = listeners.get(i);
-            AggregateUpdateMessageConsumer consumer = (AggregateUpdateMessageConsumer) listener.consumer();
-            verify(consumer).consume(groupConsumptionState, aggregateId);
-        }
+    private void listenerExecuted(MessageListener listener) {
+        verify(listener.consumer()).consume(groupConsumptionState);
     }
 }

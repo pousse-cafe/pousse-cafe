@@ -20,6 +20,7 @@ import poussecafe.messaging.Messaging;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.processing.MessageBroker;
 import poussecafe.processing.MessageConsumptionConfiguration;
+import poussecafe.processing.MessageConsumptionContext;
 import poussecafe.processing.MessageProcessingThreadPool;
 import poussecafe.processing.ReceivedMessage;
 import poussecafe.storage.Storage;
@@ -221,8 +222,11 @@ public class Runtime {
     private void createMessageBroker() {
         messageBroker = new MessageBroker.Builder()
                 .messageProcessingThreadsPool(messageProcessingThreadPool)
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .messageConsumptionHandler(messageConsumptionHandler)
+                .messageConsumptionContext(new MessageConsumptionContext.Builder()
+                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                        .messageConsumptionHandler(messageConsumptionHandler)
+                        .messageConsumptionConfiguration(messageConsumptionConfiguration)
+                        .build())
                 .listenersSet(environment.messageListenersSet())
                 .build();
     }

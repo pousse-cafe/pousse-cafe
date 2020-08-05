@@ -12,6 +12,7 @@ import poussecafe.domain.Repository;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
+import poussecafe.processing.MessageListenersGroup;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.NoTransactionRunner;
@@ -85,9 +86,14 @@ public class AggregateUpdateMessageConsumerTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        messageListenersGroup = mock(MessageListenersGroup.class);
+        when(messageListenersGroup.aggregateRootClass()).thenReturn(Optional.of(aggregateRoot.getClass()));
     }
 
     private Repository repository;
+
+    private MessageListenersGroup messageListenersGroup;
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
@@ -103,7 +109,7 @@ public class AggregateUpdateMessageConsumerTest {
                     .original(message)
                     .build())
                 .isFirstConsumption(true)
-                .aggregateRootClass(Optional.of(aggregateRoot.getClass()))
+                .messageListenersGroup(messageListenersGroup)
                 .toUpdate(emptySet())
                 .processorLogger(LoggerFactory.getLogger(getClass()))
                 .consumptionId("consumptionId")

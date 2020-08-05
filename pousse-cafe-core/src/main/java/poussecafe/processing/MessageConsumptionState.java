@@ -60,8 +60,8 @@ public class MessageConsumptionState {
             .isFirstConsumption(isFirstConsumption)
             .toUpdate(idsToRetry.getOrDefault(group, emptySet()))
             .processorLogger(processorLogger)
-            .hasUpdates(group.hasUpdates())
             .consumptionId(consumptionId)
+            .messageListenersGroup(group)
             .build();
     }
 

@@ -7,12 +7,10 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.environment.MessageListenerType;
-import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageListenersGroup {
@@ -31,13 +29,8 @@ public class MessageListenersGroup {
             return this;
         }
 
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            group.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            group.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+        public Builder messageConsumptionContext(MessageConsumptionContext messageConsumptionContext) {
+            group.messageConsumptionContext = messageConsumptionContext;
             return this;
         }
 
@@ -54,8 +47,7 @@ public class MessageListenersGroup {
 
         public MessageListenersGroup build() {
             Objects.requireNonNull(group.message);
-            Objects.requireNonNull(group.messageConsumptionHandler);
-            Objects.requireNonNull(group.applicationPerformanceMonitoring);
+            Objects.requireNonNull(group.messageConsumptionContext);
             Objects.requireNonNull(group.aggregateRootClass);
             Objects.requireNonNull(group.logger);
 
@@ -63,17 +55,28 @@ public class MessageListenersGroup {
             group.listeners.sort(null);
             for(MessageListener listener : group.listeners) {
                 if(listener.priority() == MessageListenerType.AGGREGATE) {
-                    group.aggregateListeners.add(listener);
+                    group.aggregateListener = ifEmptyOrElseThrow(listener, group.aggregateListener, "Aggregate");
                 } else if(listener.priority() == MessageListenerType.FACTORY) {
-                    group.factoryListeners.add(listener);
+                    group.factoryListener = ifEmptyOrElseThrow(listener, group.factoryListener, "Factory");
                 } else if(listener.priority() == MessageListenerType.REPOSITORY) {
-                    group.repositoryListeners.add(listener);
+                    group.repositoryListener = ifEmptyOrElseThrow(listener, group.repositoryListener, "Repository");
                 } else {
                     group.otherListeners.add(listener);
                 }
             }
 
             return group;
+        }
+
+        private Optional<MessageListener> ifEmptyOrElseThrow(MessageListener listener, Optional<MessageListener> optional, String componentName) {
+            if(group.aggregateRootClass.isEmpty()) {
+                throw new IllegalStateException(componentName + " listeners must be associated with an aggregate");
+            }
+            if(optional.isEmpty()) {
+                return Optional.of(listener);
+            } else {
+                throw new IllegalStateException("There must be 1 or 0 " + componentName.toLowerCase() + " listener per group");
+            }
         }
     }
 
@@ -83,11 +86,11 @@ public class MessageListenersGroup {
         return message;
     }
 
-    private List<MessageListener> aggregateListeners = new ArrayList<>();
+    private Optional<MessageListener> aggregateListener = Optional.empty();
 
-    private List<MessageListener> factoryListeners = new ArrayList<>();
+    private Optional<MessageListener> factoryListener = Optional.empty();
 
-    private List<MessageListener> repositoryListeners = new ArrayList<>();
+    private Optional<MessageListener> repositoryListener = Optional.empty();
 
     private List<MessageListener> otherListeners = new ArrayList<>();
 
@@ -95,12 +98,11 @@ public class MessageListenersGroup {
 
     public List<MessageListenerConsumptionReport> consumeMessageOrRetry(MessageListenerGroupConsumptionState consumptionState) {
         MessageListenerGroupConsumption groupConsumption = new MessageListenerGroupConsumption.Builder()
-                .aggregateListeners(aggregateListeners)
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .aggregateListener(aggregateListener)
+                .messageConsumptionContext(messageConsumptionContext)
                 .consumptionState(consumptionState)
-                .factoryListeners(factoryListeners)
-                .repositoryListeners(repositoryListeners)
-                .messageConsumptionHandler(messageConsumptionHandler)
+                .factoryListener(factoryListener)
+                .repositoryListener(repositoryListener)
                 .otherListeners(otherListeners)
                 .aggregateRootClass(aggregateRootClass)
                 .build();
@@ -108,11 +110,9 @@ public class MessageListenersGroup {
         return groupConsumption.reports();
     }
 
-    private MessageConsumptionHandler messageConsumptionHandler;
+    private MessageConsumptionContext messageConsumptionContext;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     @SuppressWarnings("rawtypes")
     public Optional<Class> aggregateRootClass() {
@@ -127,6 +127,6 @@ public class MessageListenersGroup {
     }
 
     public boolean hasUpdates() {
-        return !aggregateListeners.isEmpty();
+        return aggregateListener.isPresent();
     }
 }

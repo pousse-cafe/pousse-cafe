@@ -10,9 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.MessageListener;
-import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 import static java.util.Arrays.asList;
@@ -23,13 +21,8 @@ public class MessageListenersGroupsFactory {
 
         private MessageListenersGroupsFactory factory = new MessageListenersGroupsFactory();
 
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            factory.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            factory.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+        public Builder messageConsumptionContext(MessageConsumptionContext messageConsumptionContext) {
+            factory.messageConsumptionContext = messageConsumptionContext;
             return this;
         }
 
@@ -45,8 +38,7 @@ public class MessageListenersGroupsFactory {
 
         public MessageListenersGroupsFactory build() {
             Objects.requireNonNull(factory.message);
-            Objects.requireNonNull(factory.messageConsumptionHandler);
-            Objects.requireNonNull(factory.applicationPerformanceMonitoring);
+            Objects.requireNonNull(factory.messageConsumptionContext);
             Objects.requireNonNull(factory.logger);
             return factory;
         }
@@ -76,9 +68,8 @@ public class MessageListenersGroupsFactory {
             MessageListenersGroup group = new MessageListenersGroup.Builder()
                     .listeners(entry.getValue())
                     .aggregateRootClass(Optional.of(entry.getKey()))
-                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                    .messageConsumptionContext(messageConsumptionContext)
                     .message(message)
-                    .messageConsumptionHandler(messageConsumptionHandler)
                     .logger(logger)
                     .build();
             groups.add(group);
@@ -89,9 +80,8 @@ public class MessageListenersGroupsFactory {
             MessageListenersGroup group = new MessageListenersGroup.Builder()
                     .listeners(asList(customListener))
                     .aggregateRootClass(Optional.empty())
-                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                    .messageConsumptionContext(messageConsumptionContext)
                     .message(message)
-                    .messageConsumptionHandler(messageConsumptionHandler)
                     .logger(logger)
                     .build();
             groups.add(group);
@@ -102,9 +92,7 @@ public class MessageListenersGroupsFactory {
 
     private OriginalAndMarshaledMessage message;
 
-    private MessageConsumptionHandler messageConsumptionHandler;
+    private MessageConsumptionContext messageConsumptionContext;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 }

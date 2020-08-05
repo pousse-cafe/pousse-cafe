@@ -90,12 +90,15 @@ public class MessageListenersGroupsFactoryTest {
         ApplicationPerformanceMonitoring applicationPerformanceMonitoring = mock(ApplicationPerformanceMonitoring.class);
         MessageConsumptionHandler messageConsumptionHandler = mock(MessageConsumptionHandler.class);
         groups = new MessageListenersGroupsFactory.Builder()
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .messageConsumptionContext(new MessageConsumptionContext.Builder()
+                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                        .messageConsumptionHandler(messageConsumptionHandler)
+                        .messageConsumptionConfiguration(MessageConsumptionConfiguration.defaultConfiguration())
+                        .build())
                 .message(new OriginalAndMarshaledMessage.Builder()
                         .marshaled(message)
                         .original(message)
                         .build())
-                .messageConsumptionHandler(messageConsumptionHandler)
                 .build()
                 .buildMessageListenerGroups(listeners);
     }

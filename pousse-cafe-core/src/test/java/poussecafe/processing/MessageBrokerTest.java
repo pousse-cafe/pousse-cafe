@@ -68,8 +68,11 @@ public class MessageBrokerTest {
 
     private void givenBroker() {
         broker = new MessageBroker.Builder()
-                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
-                .messageConsumptionHandler(messageConsumptionHandler)
+                .messageConsumptionContext(new MessageConsumptionContext.Builder()
+                        .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                        .messageConsumptionHandler(messageConsumptionHandler)
+                        .messageConsumptionConfiguration(MessageConsumptionConfiguration.defaultConfiguration())
+                        .build())
                 .messageProcessingThreadsPool(threadPool)
                 .listenersSet(listenersSet)
                 .build();

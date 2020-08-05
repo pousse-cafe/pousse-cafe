@@ -2,9 +2,9 @@ package poussecafe.environment;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
+import poussecafe.processing.MessageListenersGroup;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageListenerGroupConsumptionState {
@@ -18,9 +18,8 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
-        @SuppressWarnings("rawtypes")
-        public Builder aggregateRootClass(Optional<Class> aggregateRootClass) {
-            state.aggregateRootClass = aggregateRootClass;
+        public Builder messageListenersGroup(MessageListenersGroup messageListenersGroup) {
+            state.messageListenersGroup = messageListenersGroup;
             return this;
         }
 
@@ -39,11 +38,6 @@ public class MessageListenerGroupConsumptionState {
             return this;
         }
 
-        public Builder hasUpdates(boolean hasUpdates) {
-            state.hasUpdates = hasUpdates;
-            return this;
-        }
-
         public Builder consumptionId(String consumptionId) {
             state.consumptionId = consumptionId;
             return this;
@@ -51,7 +45,7 @@ public class MessageListenerGroupConsumptionState {
 
         public MessageListenerGroupConsumptionState build() {
             Objects.requireNonNull(state.message);
-            Objects.requireNonNull(state.aggregateRootClass);
+            Objects.requireNonNull(state.messageListenersGroup);
             Objects.requireNonNull(state.processorLogger);
             Objects.requireNonNull(state.consumptionId);
             return state;
@@ -68,12 +62,10 @@ public class MessageListenerGroupConsumptionState {
         return message;
     }
 
-    @SuppressWarnings("rawtypes")
-    private Optional<Class> aggregateRootClass = Optional.empty();
+    private MessageListenersGroup messageListenersGroup;
 
-    @SuppressWarnings("rawtypes")
-    public Optional<Class> aggregateRootClass() {
-        return aggregateRootClass;
+    public MessageListenersGroup messageListenersGroup() {
+        return messageListenersGroup;
     }
 
     public boolean isFirstConsumption() {
@@ -93,12 +85,6 @@ public class MessageListenerGroupConsumptionState {
     }
 
     private Logger processorLogger;
-
-    private boolean hasUpdates;
-
-    public boolean hasUpdates() {
-        return hasUpdates;
-    }
 
     private String consumptionId;
 

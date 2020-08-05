@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmTransaction;
 import poussecafe.apm.ApmTransactionLabels;
 import poussecafe.apm.ApmTransactionResults;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.AggregateUpdateMessageConsumer;
 import poussecafe.environment.MessageListener;
@@ -25,7 +24,6 @@ import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
 import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
-import poussecafe.runtime.MessageConsumptionHandler;
 import poussecafe.util.MethodInvokerException;
 
 import static java.util.stream.Collectors.toList;
@@ -41,18 +39,18 @@ public class MessageListenerGroupConsumption {
             return this;
         }
 
-        public Builder aggregateListeners(List<MessageListener> aggregateListeners) {
-            consumption.aggregateListeners = aggregateListeners;
+        public Builder aggregateListener(Optional<MessageListener> aggregateListener) {
+            consumption.aggregateListener = aggregateListener;
             return this;
         }
 
-        public Builder factoryListeners(List<MessageListener> factoryListeners) {
-            consumption.factoryListeners = factoryListeners;
+        public Builder factoryListener(Optional<MessageListener> factoryListener) {
+            consumption.factoryListener = factoryListener;
             return this;
         }
 
-        public Builder repositoryListeners(List<MessageListener> repositoryListeners) {
-            consumption.repositoryListeners = repositoryListeners;
+        public Builder repositoryListener(Optional<MessageListener> repositoryListener) {
+            consumption.repositoryListener = repositoryListener;
             return this;
         }
 
@@ -61,13 +59,8 @@ public class MessageListenerGroupConsumption {
             return this;
         }
 
-        public Builder messageConsumptionHandler(MessageConsumptionHandler messageConsumptionHandler) {
-            consumption.messageConsumptionHandler = messageConsumptionHandler;
-            return this;
-        }
-
-        public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
-            consumption.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+        public Builder messageConsumptionContext(MessageConsumptionContext messageConsumptionContext) {
+            consumption.messageConsumptionContext = messageConsumptionContext;
             return this;
         }
 
@@ -79,11 +72,11 @@ public class MessageListenerGroupConsumption {
 
         public MessageListenerGroupConsumption build() {
             Objects.requireNonNull(consumption.consumptionState);
-            Objects.requireNonNull(consumption.aggregateListeners);
-            Objects.requireNonNull(consumption.factoryListeners);
-            Objects.requireNonNull(consumption.repositoryListeners);
+            Objects.requireNonNull(consumption.aggregateListener);
+            Objects.requireNonNull(consumption.factoryListener);
+            Objects.requireNonNull(consumption.repositoryListener);
             Objects.requireNonNull(consumption.otherListeners);
-            Objects.requireNonNull(consumption.messageConsumptionHandler);
+            Objects.requireNonNull(consumption.messageConsumptionContext);
             Objects.requireNonNull(consumption.aggregateRootClass);
             return consumption;
         }
@@ -95,15 +88,15 @@ public class MessageListenerGroupConsumption {
 
     private MessageListenerGroupConsumptionState consumptionState;
 
-    private List<MessageListener> aggregateListeners;
+    private Optional<MessageListener> aggregateListener;
 
-    private List<MessageListener> factoryListeners;
+    private Optional<MessageListener> factoryListener;
 
-    private List<MessageListener> repositoryListeners;
+    private Optional<MessageListener> repositoryListener;
 
     private List<MessageListener> otherListeners;
 
-    private MessageConsumptionHandler messageConsumptionHandler;
+    private MessageConsumptionContext messageConsumptionContext;
 
     public void execute() {
         executeRepositoryListeners();
@@ -114,19 +107,23 @@ public class MessageListenerGroupConsumption {
     }
 
     private void executeRepositoryListeners() {
-        executeSimpleListeners(repositoryListeners);
+        repositoryListener.ifPresent(this::executeSimpleListener);
     }
 
     private void executeSimpleListeners(Collection<MessageListener> listeners) {
         for(MessageListener listener : listeners) {
-            MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
-                    .listener(listener)
-                    .messageConsumptionHandler(messageConsumptionHandler)
-                    .consumptionState(consumptionState)
-                    .logger(logger)
-                    .build();
-            reports.add(executeInApmTransaction(executor));
+            executeSimpleListener(listener);
         }
+    }
+
+    private void executeSimpleListener(MessageListener listener) {
+        MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
+                .listener(listener)
+                .messageConsumptionHandler(messageConsumptionContext.messageConsumptionHandler())
+                .consumptionState(consumptionState)
+                .logger(logger)
+                .build();
+        reports.add(executeInApmTransaction(executor));
     }
 
     private List<MessageListenerConsumptionReport> reports = new ArrayList<>();
@@ -139,7 +136,8 @@ public class MessageListenerGroupConsumption {
 
     private MessageListenerConsumptionReport executeInApmTransaction(MessageListenerExecutor executor) {
         String transactionName = executor.listener().shortId();
-        ApmTransaction apmTransaction = applicationPerformanceMonitoring.startTransaction(transactionName);
+        ApmTransaction apmTransaction = messageConsumptionContext.applicationPerformanceMonitoring()
+                .startTransaction(transactionName);
         try {
             executor.executeListener();
             configureApmTransaction(executor, apmTransaction);
@@ -155,8 +153,6 @@ public class MessageListenerGroupConsumption {
             apmTransaction.end();
         }
     }
-
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private void configureApmTransaction(MessageListenerExecutor executor, ApmTransaction apmTransaction) {
         MessageListenerConsumptionReport report = executor.messageConsumptionReport();
@@ -201,13 +197,12 @@ public class MessageListenerGroupConsumption {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void planUpdates() {
-        for(MessageListener listener : aggregateListeners) {
+        if(aggregateListener.isPresent()) {
+            MessageListener listener = aggregateListener.get();
             Optional<TargetAggregates> targetAggregates = safelyGetTargetAggregates(listener);
             if(targetAggregates.isPresent()) {
                 for(Object aggregateId : targetAggregates.get().toUpdate()) {
-                    if(updates.put(aggregateId, listener) != null) {
-                        throw new IllegalStateException("Cannot have several listeners of an aggregate consuming the same message");
-                    }
+                    updates.put(aggregateId, listener);
                 }
                 toCreate.addAll(targetAggregates.get().toCreate());
             }
@@ -247,7 +242,7 @@ public class MessageListenerGroupConsumption {
             Object aggregateId = entry.getKey();
             MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
                     .listener(entry.getValue())
-                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .messageConsumptionHandler(messageConsumptionContext.messageConsumptionHandler())
                     .consumptionState(consumptionState)
                     .logger(logger)
                     .toUpdateId(Optional.of(aggregateId))
@@ -261,10 +256,11 @@ public class MessageListenerGroupConsumption {
     private List<MessageListenerConsumptionReport> updatesReports = new ArrayList<>();
 
     private void executeCreations() {
-        for(MessageListener listener : factoryListeners) {
+        if(factoryListener.isPresent()) {
+            MessageListener listener = factoryListener.get();
             MessageListenerExecutor executor = new MessageListenerExecutor.Builder()
                     .listener(listener)
-                    .messageConsumptionHandler(messageConsumptionHandler)
+                    .messageConsumptionHandler(messageConsumptionContext.messageConsumptionHandler())
                     .consumptionState(consumptionState)
                     .logger(logger)
                     .build();
@@ -320,6 +316,6 @@ public class MessageListenerGroupConsumption {
     private Optional<Class> aggregateRootClass = Optional.empty();
 
     public boolean hasUpdates() {
-        return !aggregateListeners.isEmpty();
+        return aggregateListener.isPresent();
     }
 }

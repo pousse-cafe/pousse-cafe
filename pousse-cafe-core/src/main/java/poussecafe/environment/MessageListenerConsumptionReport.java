@@ -162,7 +162,7 @@ public class MessageListenerConsumptionReport {
                 aggregateIdToRetry(id);
             } catch (DuplicateKeyException e) {
                 if(state.isFirstConsumption()
-                        && state.hasUpdates()) {
+                        && state.messageListenersGroup().hasUpdates()) {
                     logWillRetry(e, "insert", id);
                     aggregateIdToRetry(id);
                 } else {

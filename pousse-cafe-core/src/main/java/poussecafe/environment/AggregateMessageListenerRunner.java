@@ -55,4 +55,12 @@ public interface AggregateMessageListenerRunner<M, K, A> {
     default void validChronologyOrElseThrow(M message, A aggregate) {
         // Optional check
     }
+
+    default AggregateRetriever<K, A> aggregateRetriever() {
+        return null;
+    }
+
+    default IdentifierExtractor<A, K> identifierExtractor() {
+        return null;
+    }
 }

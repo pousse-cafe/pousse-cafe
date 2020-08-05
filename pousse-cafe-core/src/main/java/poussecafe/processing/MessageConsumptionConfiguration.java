@@ -2,6 +2,10 @@ package poussecafe.processing;
 
 public class MessageConsumptionConfiguration {
 
+    public static MessageConsumptionConfiguration defaultConfiguration() {
+        return new Builder().build();
+    }
+
     public static class Builder {
 
         private MessageConsumptionConfiguration configuration = new MessageConsumptionConfiguration();
