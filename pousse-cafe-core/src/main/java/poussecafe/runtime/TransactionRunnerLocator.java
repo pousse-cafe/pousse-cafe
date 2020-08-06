@@ -15,7 +15,7 @@ public class TransactionRunnerLocator {
     private Environment environment;
 
     public TransactionRunner locateTransactionRunner(Class<?> entityClass) {
-        EntityImplementation implementation = environment.entityImplementation(entityClass);
+        EntityImplementation implementation = environment.entityImplementationOrElseThrow(entityClass);
         return implementation.getStorage().getTransactionRunner();
     }
 

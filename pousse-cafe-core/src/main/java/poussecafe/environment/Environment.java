@@ -69,23 +69,49 @@ public class Environment {
 
     Map<Class<?>, EntityImplementation> entityImplementations = new HashMap<>();
 
+    Map<String, Set<EntityImplementation>> entityImplementationsBySimpleName = new HashMap<>();
+
+    Map<String, EntityImplementation> entityImplementationsByQualifiedName = new HashMap<>();
+
     Set<Storage> storages = new HashSet<>();
 
     Storage storageOfEntity(Class<?> entityClass) {
-        EntityImplementation implementation = entityImplementation(entityClass);
+        EntityImplementation implementation = entityImplementationOrElseThrow(entityClass);
         return implementation.getStorage();
     }
 
-    public EntityImplementation entityImplementation(Class<?> entityClass) {
-        EntityImplementation implementation = entityImplementations.get(entityClass);
-        if(implementation == null) {
-            throw new PousseCafeException("Entity " + entityClass.getName() + " is not implemented");
+    public EntityImplementation entityImplementationOrElseThrow(Class<?> entityClass) {
+        return entityImplementation(entityClass).orElseThrow(
+                () -> new PousseCafeException("Entity " + entityClass.getName() + " is not implemented"));
+    }
+
+    public Optional<EntityImplementation> entityImplementation(Class<?> entityClass) {
+        return Optional.ofNullable(entityImplementations.get(entityClass));
+    }
+
+    public Optional<EntityImplementation> entityImplementationByName(String name) {
+        Set<EntityImplementation> implementations = entityImplementationsBySimpleName.get(name);
+        if(implementations == null) {
+            var implementation = entityImplementationsByQualifiedName.get(name);
+            if(implementation == null) {
+                try {
+                    Class<?> entityClass = Class.forName(name);
+                    return entityImplementation(entityClass);
+                } catch (ClassNotFoundException e) {
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.of(implementation);
+            }
+        } else if(implementations.size() != 1) {
+            throw new PousseCafeException("Simple name is ambiguous, please use a qualified name");
+        } else {
+            return Optional.of(implementations.iterator().next());
         }
-        return implementation;
     }
 
     Supplier<Object> entityDataFactory(Class<?> entityClass) {
-        EntityImplementation implementation = entityImplementation(entityClass);
+        EntityImplementation implementation = entityImplementationOrElseThrow(entityClass);
         return implementation.getDataFactory();
     }
 
@@ -100,7 +126,7 @@ public class Environment {
     Map<Class<?>, Class<?>> entityClassByFactoryOrRepository = new HashMap<>();
 
     Supplier<Object> entityDataAccessFactory(Class<?> entityClass) {
-        EntityImplementation implementation = entityImplementation(entityClass);
+        EntityImplementation implementation = entityImplementationOrElseThrow(entityClass);
         if(!implementation.hasDataAccess()) {
             throw new PousseCafeException("Entity " + entityClass + " has no data access");
         }

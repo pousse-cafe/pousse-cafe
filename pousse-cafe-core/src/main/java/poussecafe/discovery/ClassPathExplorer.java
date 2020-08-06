@@ -74,6 +74,7 @@ class ClassPathExplorer {
 
     private Reflections reflections;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<AggregateDefinition> discoverAggregates() {
         Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
 
@@ -97,7 +98,7 @@ class ClassPathExplorer {
             }
 
             definitions.add(new AggregateDefinition.Builder()
-                    .withAggregateRoot(aggregateRootClass)
+                    .withAggregateRoot((Class<? extends AggregateRoot>) aggregateRootClass)
                     .withFactoryClass(annotation.factory())
                     .withRepositoryClass(annotation.repository())
                     .withModuleClass(moduleClass)

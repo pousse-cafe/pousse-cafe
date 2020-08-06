@@ -119,37 +119,38 @@ public class TestRuntimeWrapper {
         try {
             String json = new String(Files.readAllBytes(Paths.get(fileUrl.toURI())),
                     StandardCharsets.UTF_8);
-
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.reader().readTree(json);
-            jsonNode.fieldNames().forEachRemaining(entityClassName -> loadEntity(entityClassName, jsonNode));
+            JsonNode tree = mapper.reader().readTree(json);
+            tree.fieldNames().forEachRemaining(name -> loadEntity(name, tree));
         } catch (Exception e) {
             throw new PousseCafeException("Unable to load data file", e);
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void loadEntity(String entityClassName, JsonNode jsonNode) {
-        logger.info("Loading data for entity {}", entityClassName);
-        try {
-            Class<?> entityClass = Class.forName(entityClassName);
-            EntityImplementation entityImplementation = runtime.environment().entityImplementation(entityClass);
-            if(entityImplementation.getStorage() != InternalStorage.instance()) {
-                throw new PousseCafeException("Unsupported test storage");
-            }
-
-            AggregateServices services = runtime.environment().aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
-            InternalDataAccess dataAccess = (InternalDataAccess) services.repository().dataAccess();
-            logger.debug("Field value {}", jsonNode.get(entityClassName));
-            jsonNode.get(entityClassName).elements().forEachRemaining(dataJson -> {
-                logger.debug("Loading {}", dataJson);
-                EntityAttributes<?> dataImplementation = (EntityAttributes<?>) entityImplementation.getDataFactory().get();
-                objectMapper.readJson(dataImplementation, dataJson);
-                dataAccess.addData(dataImplementation);
-            });
-        } catch (ClassNotFoundException e) {
-            throw new PousseCafeException("No entity with class " + entityClassName, e);
+    @SuppressWarnings({ "rawtypes" })
+    private void loadEntity(String name, JsonNode tree) {
+        logger.info("Loading data for entity {}", name);
+        Optional<EntityImplementation> optionalEntityImplementation =
+                runtime.environment().entityImplementationByName(name);
+        if(optionalEntityImplementation.isEmpty()) {
+            throw new PousseCafeException("No entity implementation found with name " + name);
         }
+
+        var entityImplementation = optionalEntityImplementation.get();
+        if(entityImplementation.getStorage() != InternalStorage.instance()) {
+            throw new PousseCafeException("Unsupported test storage");
+        }
+
+        AggregateServices services = runtime.environment().aggregateServicesOf(entityImplementation.getEntityClass())
+                .orElseThrow();
+        InternalDataAccess dataAccess = (InternalDataAccess) services.repository().dataAccess();
+        var entities = tree.get(name).elements();
+        var loader = new EntityLoader.Builder()
+                .entityImplementation(entityImplementation)
+                .dataAccess(dataAccess)
+                .objectMapper(objectMapper)
+                .build();
+        entities.forEachRemaining(loader::loadEntity);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());

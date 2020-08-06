@@ -4,16 +4,19 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.discovery.DefaultModule;
+import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Module;
 import poussecafe.util.Equality;
 
+@SuppressWarnings("rawtypes")
 public class AggregateDefinition {
 
-    public Class<?> getAggregateRootClass() {
+    public Class<? extends AggregateRoot> getAggregateRootClass() {
         return aggregateRootClass;
     }
 
-    private Class<?> aggregateRootClass;
+    private Class<? extends AggregateRoot> aggregateRootClass;
 
     public Optional<Class<? extends Module>> moduleClass() {
         return moduleClass;
@@ -25,14 +28,12 @@ public class AggregateDefinition {
         return factoryClass != null;
     }
 
-    @SuppressWarnings("rawtypes")
     public Class getFactoryClass() {
         return factoryClass;
     }
 
     private Class<?> factoryClass;
 
-    @SuppressWarnings("rawtypes")
     public Class getRepositoryClass() {
         return repositoryClass;
     }
@@ -43,6 +44,14 @@ public class AggregateDefinition {
         return repositoryClass != null;
     }
 
+    public String getSimpleName() {
+        return NamingConvention.simpleAggregateName(aggregateRootClass);
+    }
+
+    public String getQualifiedName() {
+        return NamingConvention.qualifiedAggregateName(moduleClass.orElse(DefaultModule.class), aggregateRootClass);
+    }
+
     public static class Builder {
 
         public Builder() {
@@ -51,7 +60,7 @@ public class AggregateDefinition {
 
         private AggregateDefinition definition;
 
-        public Builder withAggregateRoot(Class<?> aggregateRootClass) {
+        public Builder withAggregateRoot(Class<? extends AggregateRoot> aggregateRootClass) {
             definition.aggregateRootClass = aggregateRootClass;
             return this;
         }

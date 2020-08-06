@@ -47,6 +47,12 @@ public class EnvironmentBuilder {
     }
 
     private void withAggregateDefinition(AggregateDefinition definition) {
+        var qualifiedName = definition.getQualifiedName();
+        var alreadyDefinedWithName = aggregateDefinitionsByName.put(qualifiedName, definition);
+        if(alreadyDefinedWithName != null) {
+            throw new PousseCafeException("Aggregates with roots " + alreadyDefinedWithName.getAggregateRootClass() + " and " + definition.getAggregateRootClass() + " are using the same qualified name " + qualifiedName);
+        }
+
         Class<?> entityClass = definition.getAggregateRootClass();
         if(aggregateDefinitions.containsKey(entityClass)) {
             if(definition.equals(aggregateDefinitions.get(entityClass))) {
@@ -68,6 +74,8 @@ public class EnvironmentBuilder {
 
     private Map<Class<?>, AggregateDefinition> aggregateDefinitions = new HashMap<>();
 
+    private Map<String, AggregateDefinition> aggregateDefinitionsByName = new HashMap<>();
+
     private Set<Class<? extends Message>> definedMessages = new HashSet<>();
 
     private Set<Class<? extends DomainProcess>> definedDomainProcesses = new HashSet<>();
@@ -86,12 +94,23 @@ public class EnvironmentBuilder {
         Objects.requireNonNull(implementation);
         Class<?> entityClass = implementation.getEntityClass();
 
-        if(!aggregateDefinitions.containsKey(entityClass)
+        AggregateDefinition aggregateDefinition = aggregateDefinitions.get(entityClass);
+        if(aggregateDefinition == null
                 && implementation.hasDataAccess()) {
             throw new PousseCafeException("Trying to implement an undefined aggregate with root " + entityClass.getName());
         }
 
         environment.entityImplementations.put(entityClass, implementation);
+        if(aggregateDefinition != null) {
+            var simpleNameImplementations = environment.entityImplementationsBySimpleName.computeIfAbsent(
+                    aggregateDefinition.getSimpleName(), key -> new HashSet<>());
+            simpleNameImplementations.add(implementation);
+
+            var qualifiedName = aggregateDefinition.getQualifiedName();
+            if(environment.entityImplementationsByQualifiedName.put(qualifiedName, implementation) != null) {
+                throw new PousseCafeException("Trying to re-use qualified name " + qualifiedName);
+            }
+        }
 
         if(implementation.hasStorage()) {
             environment.storages.add(implementation.getStorage());

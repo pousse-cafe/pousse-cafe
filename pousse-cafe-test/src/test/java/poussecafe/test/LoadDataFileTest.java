@@ -9,10 +9,10 @@ import poussecafe.runtime.Runtime.Builder;
 
 import static org.junit.Assert.assertTrue;
 
-public class PousseCafeTestObjectMapperTest extends PousseCafeTest {
+public class LoadDataFileTest extends PousseCafeTest {
 
     @Test
-    public void validDataLoad() {
+    public void validDataLoadByClass() {
         loadDataFile("/validChain1ElementData.json");
         assertTrue(chain1ElementRepository.existsById(new Chain1ElementId("test")));
     }
@@ -32,5 +32,17 @@ public class PousseCafeTestObjectMapperTest extends PousseCafeTest {
     @Test(expected = PousseCafeException.class)
     public void dataWithUnknownFieldFails() {
         loadDataFile("/chain1ElementDataWithUnknownField.json");
+    }
+
+    @Test
+    public void validDataLoadByName() {
+        loadDataFile("/chain1ElementDataByName.json");
+        assertTrue(chain1ElementRepository.existsById(new Chain1ElementId("test")));
+    }
+
+    @Test
+    public void validDataLoadByQualifiedName() {
+        loadDataFile("/chain1ElementDataByQualifiedName.json");
+        assertTrue(chain1ElementRepository.existsById(new Chain1ElementId("test")));
     }
 }
