@@ -17,7 +17,7 @@ import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.internal.InternalStorage;
 import poussecafe.testmodule.SimpleAggregate;
 import poussecafe.testmodule.SimpleAggregateData;
-import poussecafe.testmodule.SimpleAggregateDataAccess;
+import poussecafe.testmodule.InternalSimpleAggregateDataAccess;
 import poussecafe.testmodule.SimpleAggregateFactory;
 import poussecafe.testmodule.SimpleAggregateRepository;
 import poussecafe.testmodule.SimpleAggregateTouchRunner;
@@ -87,7 +87,7 @@ public class RuntimeTest {
                 .withEntityImplementation(new EntityImplementation.Builder()
                         .withEntityClass(SimpleAggregate.class)
                         .withDataFactory(SimpleAggregateData::new)
-                        .withDataAccessFactory(SimpleAggregateDataAccess::new)
+                        .withDataAccessFactory(InternalSimpleAggregateDataAccess::new)
                         .withStorage(InternalStorage.instance())
                         .build())
                 .withMessageImplentation(new MessageImplementation.Builder()

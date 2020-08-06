@@ -7,6 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.AggregateRoot;
+import poussecafe.environment.AggregateMessageListenerRunner;
+import poussecafe.environment.SecondaryIdentifierHandler;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerConsumptionReport;
 import poussecafe.environment.MessageListenerGroupConsumptionState;
@@ -128,5 +131,25 @@ public class MessageListenersGroup {
 
     public boolean hasUpdates() {
         return aggregateListener.isPresent();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Object aggregateId(AggregateRoot aggregate) {
+        Optional<SecondaryIdentifierHandler> identifierHandler = runner().map(AggregateMessageListenerRunner::secondaryIdentifierHandler);
+        if(identifierHandler.isEmpty()
+                || identifierHandler.get() == null) {
+            return aggregate.attributes().identifier().value();
+        } else {
+            return identifierHandler.get().identifierExtractor().extractFrom(aggregate);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Optional<AggregateMessageListenerRunner> runner() {
+        if(aggregateListener.isPresent()) {
+            return aggregateListener.get().runner();
+        } else {
+            return Optional.empty();
+        }
     }
 }

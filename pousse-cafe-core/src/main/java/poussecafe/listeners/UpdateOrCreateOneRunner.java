@@ -1,12 +1,10 @@
 package poussecafe.listeners;
 
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Repository;
 import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class UpdateOrCreateOneRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class UpdateOrCreateOneRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 extends AggregateStateAwareRunner<M, K, A> {
 
     public UpdateOrCreateOneRunner(Class<A> aggregateRootClass) {
@@ -15,10 +13,9 @@ extends AggregateStateAwareRunner<M, K, A> {
 
     @Override
     public TargetAggregates<K> targetAggregates(M message) {
-        Repository aggregateRepository = aggregateRepository();
         TargetAggregates.Builder<K> builder = new TargetAggregates.Builder<>();
         K id = aggregateId(message);
-        if(aggregateRepository.existsById(id)) {
+        if(existsById(id)) {
             builder.toUpdate(id);
         } else {
             builder.toCreate(id);

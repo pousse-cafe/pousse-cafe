@@ -2,6 +2,7 @@ package poussecafe.testmodule;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.Factory;
 
@@ -30,4 +31,24 @@ public class SimpleAggregateFactory extends Factory<SimpleAggregateId, SimpleAgg
     public Optional<SimpleAggregate> newSimpleAggregate(TestDomainEvent3 event) {
         throw new IllegalArgumentException(); // reproduce bug https://github.com/pousse-cafe/pousse-cafe/issues/130
     }
+
+    @MessageListener
+    public SimpleAggregate newSimpleAggregate(CreateSimpleAggregate command) {
+        var aggregate = newSimpleAggregate(command.identifier().value());
+        aggregate.attributes().data().valueOf(command.data());
+        return aggregate;
+    }
+
+    @MessageListener
+    public Optional<SimpleAggregate> newSimpleAggregate(TestDomainEvent5 event) {
+        if(repository.findByData(event.identifier().value()).isEmpty()) {
+            var aggregate = newSimpleAggregate(new SimpleAggregateId(UUID.randomUUID().toString()));
+            aggregate.attributes().data().valueOf(event.identifier());
+            return Optional.of(aggregate);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private SimpleAggregateRepository repository;
 }

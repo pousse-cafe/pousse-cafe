@@ -5,10 +5,11 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.Environment;
+import poussecafe.environment.SecondaryIdentifierHandler;
 import poussecafe.messaging.Message;
 
 @SuppressWarnings({"rawtypes"})
-public abstract class AggregateStateAwareRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class AggregateStateAwareRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 implements AggregateMessageListenerRunner<M, K, A> {
 
     public AggregateStateAwareRunner(Class<A> aggregateRootClass) {
@@ -28,4 +29,14 @@ implements AggregateMessageListenerRunner<M, K, A> {
     }
 
     private Repository repository;
+
+    @SuppressWarnings({ "unchecked" })
+    protected boolean existsById(K identifier) {
+        SecondaryIdentifierHandler<K, A> secondaryIdentifierHandler = secondaryIdentifierHandler();
+        if(secondaryIdentifierHandler == null) {
+            return aggregateRepository().existsById(identifier);
+        } else {
+            return secondaryIdentifierHandler.aggregateRetriever().retrieve(identifier).isPresent();
+        }
+    }
 }

@@ -8,7 +8,7 @@ import poussecafe.messaging.Message;
  * @deprecated Implement directly AggregateMessageListenerRunner.
  */
 @Deprecated(since = "0.17")
-public abstract class NoContextByDefaultRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class NoContextByDefaultRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 implements AggregateMessageListenerRunner<M, K, A> {
 
     @Override

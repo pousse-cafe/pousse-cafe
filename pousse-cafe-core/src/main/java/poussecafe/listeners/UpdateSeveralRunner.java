@@ -6,7 +6,7 @@ import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.TargetAggregates;
 import poussecafe.messaging.Message;
 
-public abstract class UpdateSeveralRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class UpdateSeveralRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 implements AggregateMessageListenerRunner<M, K, A> {
 
     @Override

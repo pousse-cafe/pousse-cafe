@@ -15,7 +15,16 @@ public class SimpleAggregate extends AggregateRoot<SimpleAggregateId, SimpleAggr
 
     @MessageListener(runner = SimpleAggregateTouchRunner.class)
     public void touch(TestDomainEvent3 event) {
+        touch();
+    }
+
+    private void touch() {
         attributes().data().value("touched");
+    }
+
+    @MessageListener(runner = SimpleAggregateTouchByDataRunner.class)
+    public void touch(TestDomainEvent5 event) {
+        touch();
     }
 
     public static interface Attributes extends EntityAttributes<SimpleAggregateId> {

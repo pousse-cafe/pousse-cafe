@@ -82,7 +82,8 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
                 Class entityClass = aggregateServices.aggregateRootEntityClass();
                 Repository repository = aggregateServices.repository();
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-                reportBuilder.runAndReport(state, aggregate.attributes().identifier().value(), () -> {
+                Object identifier = state.messageListenersGroup().aggregateId(aggregate);
+                reportBuilder.runAndReport(state, identifier, () -> {
                     addCreatedAggregate(transactionRunner, repository, aggregate);
                     return aggregate;
                 });

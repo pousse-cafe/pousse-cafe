@@ -9,7 +9,7 @@ import poussecafe.messaging.Message;
  * @deprecated Use UpdateOneRunner instead.
  */
 @Deprecated(since = "0.17")
-public abstract class AlwaysUpdateOneRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class AlwaysUpdateOneRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 implements AggregateMessageListenerRunner<M, K, A> {
 
     @Override

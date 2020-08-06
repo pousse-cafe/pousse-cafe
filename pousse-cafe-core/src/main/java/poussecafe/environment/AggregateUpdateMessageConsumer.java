@@ -99,7 +99,13 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(method.getName());
         try {
-            AggregateRoot targetAggregateRoot = repository.get(id);
+            SecondaryIdentifierHandler identifierHandler = runner.secondaryIdentifierHandler();
+            AggregateRoot targetAggregateRoot;
+            if(identifierHandler == null) {
+                targetAggregateRoot = repository.get(id);
+            } else {
+                targetAggregateRoot = (AggregateRoot) identifierHandler.aggregateRetriever().retrieve(id).orElseThrow();
+            }
             runner.validChronologyOrElseThrow(message, targetAggregateRoot);
             targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
             MethodInvoker invoker = new MethodInvoker.Builder()

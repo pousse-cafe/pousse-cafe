@@ -11,7 +11,7 @@ import poussecafe.messaging.Message;
  * UpdateIfExistsRunner or UpdateOneIfExistsRunner.
  */
 @Deprecated(since = "0.16.0")
-public abstract class DefaultAggregateMessageListenerRunner<M extends Message, K, A extends AggregateRoot<K, ?>>
+public abstract class DefaultAggregateMessageListenerRunner<M extends Message, K, A extends AggregateRoot<?, ?>>
 implements AggregateMessageListenerRunner<M, K, A> {
 
 }

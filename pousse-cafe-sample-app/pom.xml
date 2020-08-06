@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>pousse-cafe-sample-app</artifactId>
+    <name>Pousse-Café - Sample App</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

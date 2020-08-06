@@ -56,11 +56,24 @@ public interface AggregateMessageListenerRunner<M, K, A> {
         // Optional check
     }
 
-    default AggregateRetriever<K, A> aggregateRetriever() {
-        return null;
-    }
-
-    default IdentifierExtractor<A, K> identifierExtractor() {
+    /**
+     * An Aggregate has a main identifier which is the identifier of the AggregateRoot (K in the type declaration
+     * of AggregateRoot<K, D>). The main identifier is the one
+     * used by default when fetching an Aggregate using a Repository (see get(K) and getOptional(K) methods).
+     *
+     * Most of the time, runners are able to directly extract the main identifier out of a message so that aggregates
+     * to update are identified by their main identifier. However, there are situations where the aggregate to update
+     * cannot be identified using its main identifier. A "secondary" identifier is then used.
+     *
+     * To enable this, the second type argument K of a runner may be different from the main identifier of the
+     * aggregate. It is then necessary to tell the Runtime how to fetch aggregates given the secondary identifier.
+     * This is the purpose of SecondaryIdentifierHandler class: provide an aggregate given its alternative
+     * identifier and extract the secondary identifier out of an existing aggregate (necessary in the case of expected
+     * creations, also identified using the secondary identifier).
+     *
+     * @return A SecondaryIdentifierHandler instance or null if none is needed (i.e. the main identifier is used).
+     */
+    default SecondaryIdentifierHandler<K, A> secondaryIdentifierHandler() {
         return null;
     }
 }

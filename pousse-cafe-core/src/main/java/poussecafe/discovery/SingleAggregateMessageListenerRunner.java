@@ -10,7 +10,7 @@ import static poussecafe.collection.Collections.asSet;
  * @deprecated use UpdateOneRunner instead
  */
 @Deprecated(since = "0.16.0")
-public abstract class SingleAggregateMessageListenerRunner<M extends Message, K, A extends AggregateRoot<K, ?>> extends DefaultAggregateMessageListenerRunner<M, K, A> {
+public abstract class SingleAggregateMessageListenerRunner<M extends Message, K, A extends AggregateRoot<?, ?>> extends DefaultAggregateMessageListenerRunner<M, K, A> {
 
     @Override
     public Set<K> targetAggregatesIds(M message) {
