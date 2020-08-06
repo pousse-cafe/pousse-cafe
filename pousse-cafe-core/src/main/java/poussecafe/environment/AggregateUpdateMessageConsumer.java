@@ -2,10 +2,12 @@ package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Optional;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.Repository;
+import poussecafe.exception.NotFoundException;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
@@ -100,14 +102,19 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         span.setName(method.getName());
         try {
             SecondaryIdentifierHandler identifierHandler = runner.secondaryIdentifierHandler();
-            AggregateRoot targetAggregateRoot;
+            Optional<AggregateRoot> optionalAggregateRoot;
             if(identifierHandler == null) {
-                targetAggregateRoot = repository.get(id);
+                optionalAggregateRoot = repository.getOptional(id);
             } else {
-                targetAggregateRoot = (AggregateRoot) identifierHandler.aggregateRetriever().retrieve(id).orElseThrow();
+                optionalAggregateRoot = identifierHandler.aggregateRetriever().retrieve(id);
             }
-            runner.validChronologyOrElseThrow(message, targetAggregateRoot);
+
+            runner.validChronologyOrElseThrow(message, id, optionalAggregateRoot);
+
+            var targetAggregateRoot = optionalAggregateRoot
+                    .orElseThrow(() -> new NotFoundException("Aggregate with id " + id + " not found"));
             targetAggregateRoot.context(runner.context(message, targetAggregateRoot));
+
             MethodInvoker invoker = new MethodInvoker.Builder()
                     .method(method)
                     .target(targetAggregateRoot)
@@ -116,6 +123,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .build();
             invoker.invoke(message);
             repository.update(targetAggregateRoot);
+
             reference.aggregate = targetAggregateRoot;
         } catch(SameOperationException | RetryOperationException e) {
             throw e;
