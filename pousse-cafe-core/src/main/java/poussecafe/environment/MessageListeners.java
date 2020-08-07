@@ -4,7 +4,7 @@ package poussecafe.environment;
 public class MessageListeners {
 
     public void include(MessageListener listener) {
-        MessageListenerType priority = listener.priority();
+        MessageListenerType priority = listener.type();
         if(priority == MessageListenerType.FACTORY) {
             if(factoryListener == null) {
                 factoryListener = listener;

@@ -20,7 +20,7 @@ public class DomainProcessMessageListenerFactory {
                 .target(target)
                 .build();
         return definition.messageListenerBuilder()
-                .priority(MessageListenerType.DOMAIN_PROCESS)
+                .type(MessageListenerType.DOMAIN_PROCESS)
                 .consumer(buildConsumer(invoker, definition.shortId()))
                 .collisionSpace(definition.collisionSpace())
                 .build();

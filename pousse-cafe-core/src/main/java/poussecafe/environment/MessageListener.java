@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.messaging.Message;
+import poussecafe.util.ClassHierarchyTypeArgumentsValidator;
 
 import static poussecafe.util.Equality.referenceEquals;
 
@@ -43,8 +44,8 @@ public class MessageListener implements Comparable<MessageListener> {
             return this;
         }
 
-        public Builder priority(MessageListenerType priority) {
-            listener.priority = priority;
+        public Builder type(MessageListenerType type) {
+            listener.type = type;
             return this;
         }
 
@@ -74,17 +75,46 @@ public class MessageListener implements Comparable<MessageListener> {
             Objects.requireNonNull(listener.consumedMessageClass);
             Objects.requireNonNull(listener.consumer);
             Objects.requireNonNull(listener.runner);
-            Objects.requireNonNull(listener.priority);
+            Objects.requireNonNull(listener.type);
             Objects.requireNonNull(listener.collisionSpace);
             Objects.requireNonNull(listener.aggregateRootClass);
             Objects.requireNonNull(listener.expectedEvents);
 
-            if(listener.withExpectedEvents
-                    && listener.aggregateRootClass.isEmpty()) {
-                throw new IllegalStateException("Cannot check produced events on a listener which is not on an AggregateRoot, Factory or Repository");
+            if((listener.type == MessageListenerType.AGGREGATE
+                    || listener.type == MessageListenerType.FACTORY
+                    || listener.type == MessageListenerType.REPOSITORY)
+                && listener.aggregateRootClass.isEmpty()) {
+                throw new IllegalStateException("Aggregate, factory or repository listeners require an aggregate root class");
             }
 
+            if((listener.type != MessageListenerType.AGGREGATE
+                    && listener.type != MessageListenerType.FACTORY
+                    && listener.type != MessageListenerType.REPOSITORY)
+                && listener.withExpectedEvents) {
+                throw new IllegalStateException("Cannot check produced events on a listener which is not on an Aggregate Root, a Factory or a Repository");
+            }
+
+            if(listener.type == MessageListenerType.AGGREGATE
+                    && listener.runner.isEmpty()) {
+                throw new IllegalStateException("Aggregate Root listeners must have a runner");
+            }
+
+            validRunnerOrThrow();
+
             return listener;
+        }
+
+        private void validRunnerOrThrow() {
+            if(listener.type == MessageListenerType.AGGREGATE) {
+                var runner = listener.runner.orElseThrow();
+                var validator = new ClassHierarchyTypeArgumentsValidator.Builder()
+                    .listenerId(listener.id)
+                    .expectedTypeArgument(listener.aggregateRootClass.orElseThrow())
+                    .expectedTypeArgument(listener.consumedMessageClass)
+                    .runner(runner.getClass())
+                    .build();
+                validator.validOrThrow();
+            }
         }
     }
 
@@ -124,10 +154,10 @@ public class MessageListener implements Comparable<MessageListener> {
         return runner;
     }
 
-    private MessageListenerType priority;
+    private MessageListenerType type;
 
-    public MessageListenerType priority() {
-        return priority;
+    public MessageListenerType type() {
+        return type;
     }
 
     private Optional<String> collisionSpace = Optional.empty();
@@ -163,7 +193,7 @@ public class MessageListener implements Comparable<MessageListener> {
 
     @Override
     public int compareTo(MessageListener o) {
-        return priority.compareTo(o.priority);
+        return type.compareTo(o.type);
     }
 
     @Override

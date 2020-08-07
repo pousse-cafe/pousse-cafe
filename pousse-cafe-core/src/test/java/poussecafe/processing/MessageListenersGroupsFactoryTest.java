@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.MessageConsumer;
 import poussecafe.environment.MessageListener;
 import poussecafe.environment.MessageListenerType;
@@ -42,7 +41,7 @@ public class MessageListenersGroupsFactoryTest {
                 .shortId("custom")
                 .consumer(consumer)
                 .consumedMessageClass(SimpleMessage.class)
-                .priority(MessageListenerType.CUSTOM)
+                .type(MessageListenerType.CUSTOM)
                 .build());
 
         listeners.add(new MessageListener.Builder()
@@ -50,7 +49,7 @@ public class MessageListenersGroupsFactoryTest {
                 .shortId("process")
                 .consumer(consumer)
                 .consumedMessageClass(SimpleMessage.class)
-                .priority(MessageListenerType.DOMAIN_PROCESS)
+                .type(MessageListenerType.DOMAIN_PROCESS)
                 .build());
 
         listeners.add(new MessageListener.Builder()
@@ -58,18 +57,17 @@ public class MessageListenersGroupsFactoryTest {
                 .shortId("factory")
                 .consumer(consumer)
                 .consumedMessageClass(SimpleMessage.class)
-                .priority(MessageListenerType.FACTORY)
+                .type(MessageListenerType.FACTORY)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .build());
 
-        @SuppressWarnings("rawtypes")
-        AggregateMessageListenerRunner runner = mock(AggregateMessageListenerRunner.class);
+        DummyRunner runner = mock(DummyRunner.class);
         listeners.add(new MessageListener.Builder()
                 .id("aggregate")
                 .shortId("aggregate")
                 .consumer(consumer)
                 .consumedMessageClass(SimpleMessage.class)
-                .priority(MessageListenerType.AGGREGATE)
+                .type(MessageListenerType.AGGREGATE)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .runner(Optional.of(runner))
                 .build());
@@ -79,7 +77,7 @@ public class MessageListenersGroupsFactoryTest {
                 .shortId("repository")
                 .consumer(consumer)
                 .consumedMessageClass(SimpleMessage.class)
-                .priority(MessageListenerType.REPOSITORY)
+                .type(MessageListenerType.REPOSITORY)
                 .aggregateRootClass(Optional.of(SimpleAggregate.class))
                 .build());
     }

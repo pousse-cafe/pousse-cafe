@@ -48,7 +48,7 @@ public class CustomMessageListenerFactory {
                 .id(listenerId)
                 .shortId(listenerShortId)
                 .consumedMessageClass(messageClass)
-                .priority(MessageListenerType.CUSTOM)
+                .type(MessageListenerType.CUSTOM)
                 .consumer(buildMessageConsumer(target, method, listenerShortId))
                 .collisionSpace(collisionSpace)
                 .build();

@@ -57,11 +57,11 @@ public class MessageListenersGroup {
             Objects.requireNonNull(group.listeners);
             group.listeners.sort(null);
             for(MessageListener listener : group.listeners) {
-                if(listener.priority() == MessageListenerType.AGGREGATE) {
+                if(listener.type() == MessageListenerType.AGGREGATE) {
                     group.aggregateListener = ifEmptyOrElseThrow(listener, group.aggregateListener, "Aggregate");
-                } else if(listener.priority() == MessageListenerType.FACTORY) {
+                } else if(listener.type() == MessageListenerType.FACTORY) {
                     group.factoryListener = ifEmptyOrElseThrow(listener, group.factoryListener, "Factory");
-                } else if(listener.priority() == MessageListenerType.REPOSITORY) {
+                } else if(listener.type() == MessageListenerType.REPOSITORY) {
                     group.repositoryListener = ifEmptyOrElseThrow(listener, group.repositoryListener, "Repository");
                 } else {
                     group.otherListeners.add(listener);
