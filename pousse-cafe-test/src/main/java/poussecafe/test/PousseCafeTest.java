@@ -1,24 +1,29 @@
 package poussecafe.test;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
+import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.environment.NewEntityInstanceSpecification;
+import poussecafe.messaging.Message;
 import poussecafe.runtime.Command;
 import poussecafe.runtime.Runtime;
 
-public abstract class PousseCafeTest {
+import static java.util.Collections.emptyList;
 
-    private TestRuntimeWrapper wrapper;
+public abstract class PousseCafeTest {
 
     @Before
     public void configureContext() {
-        Runtime runtime = runtimeBuilder().build();
+        runtime = runtimeBuilder().build();
         runtime.injector().injectDependenciesInto(this);
         runtime.registerListenersOf(this);
         runtime.start();
@@ -27,6 +32,10 @@ public abstract class PousseCafeTest {
                 .maxWaitTime(maxWaitTime())
                 .build();
     }
+
+    private Runtime runtime;
+
+    private TestRuntimeWrapper wrapper;
 
     protected Runtime.Builder runtimeBuilder() {
         return new Runtime.Builder()
@@ -135,5 +144,30 @@ public abstract class PousseCafeTest {
 
     public void whenEvents(List<? extends DomainEvent> events) {
         issue(events);
+    }
+
+    @MessageListener
+    @SuppressWarnings("unchecked")
+    public void catchAll(Message message) {
+        Class<? extends Message> messageClass = runtime.environment().definedMessageClass(message.getClass());
+        var messages = issuedMessages.computeIfAbsent(messageClass, key -> new ArrayList<>());
+        messages.add(message);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Map<Class<? extends Message>, List> issuedMessages = new HashMap<>();
+
+    @SuppressWarnings("unchecked")
+    public <M extends Message> List<M> capturedMessages(Class<M> messageClass) {
+        return issuedMessages.getOrDefault(messageClass, emptyList());
+    }
+
+    public <M extends Message> M capturedMessage(Class<M> messageClass) {
+        var consumed = capturedMessages(messageClass);
+        if(consumed.size() != 1) {
+            throw new IllegalStateException(consumed.size() + " messages were captured instead of a single one");
+        } else {
+            return consumed.get(0);
+        }
     }
 }

@@ -5,12 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import poussecafe.messaging.Message;
 import poussecafe.processing.ListenersSet;
-
-import static java.util.Collections.emptySet;
 
 public class MessageListenersSetBuilder implements ListenersSet {
 
@@ -30,11 +27,12 @@ public class MessageListenersSetBuilder implements ListenersSet {
 
     @Override
     public synchronized Set<MessageListener> messageListenersOf(Class<? extends Message> messageClass) {
-        return getListenersForMessageClass(messageClass);
-    }
-
-    private Set<MessageListener> getListenersForMessageClass(Class<? extends Message> key) {
-        return Optional.ofNullable(listenersByMessageClass.get(key)).map(Collections::unmodifiableSet).orElse(emptySet());
+        var listeners = new HashSet<MessageListener>();
+        if(listenersByMessageClass.containsKey(messageClass)) {
+            listeners.addAll(listenersByMessageClass.get(messageClass));
+        }
+        listeners.addAll(wildcardListeners);
+        return Collections.unmodifiableSet(listeners);
     }
 
     @Override
@@ -46,14 +44,20 @@ public class MessageListenersSetBuilder implements ListenersSet {
 
     @Override
     public synchronized boolean contains(MessageListener listener) {
-        return messageClassesByListener.keySet().contains(listener);
+        return messageClassesByListener.keySet().contains(listener) || wildcardListeners.contains(listener);
     }
 
     public synchronized int countListeners() {
-        return messageClassesByListener.size();
+        return messageClassesByListener.size() + wildcardListeners.size();
     }
 
     public synchronized Map<MessageListener, Set<Class<? extends Message>>> messageClassesByListener() {
         return Collections.unmodifiableMap(messageClassesByListener);
     }
+
+    public void registerWildcardListener(MessageListener listener) {
+        wildcardListeners.add(listener);
+    }
+
+    private Set<MessageListener> wildcardListeners = new HashSet<>();
 }

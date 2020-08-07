@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import poussecafe.discovery.BundleConfigurer;
-import poussecafe.discovery.MessageListener;
 import poussecafe.runtime.Runtime.Builder;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,15 +36,9 @@ public class TestModuleTest extends PousseCafeTest {
 
     private List<SampleMessage> messages = new ArrayList<>();
 
-    @MessageListener
-    public void recordMessage(SampleMessage message) {
-        recordedMessages.add(message);
-    }
-
-    private List<SampleMessage> recordedMessages = new ArrayList<>();
-
     private void thenAllRecordedAfterWait() {
         waitUntilAllMessageQueuesEmpty();
+        var recordedMessages = capturedMessages(SampleMessage.class);
         assertThat(recordedMessages.size(), is(messages.size()));
     }
 }

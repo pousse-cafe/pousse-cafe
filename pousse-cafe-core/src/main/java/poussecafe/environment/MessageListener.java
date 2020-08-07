@@ -186,6 +186,10 @@ public class MessageListener implements Comparable<MessageListener> {
 
     private boolean withExpectedEvents;
 
+    public boolean isWildcard() {
+        return consumedMessageClass == Message.class;
+    }
+
     @Override
     public String toString() {
         return id;

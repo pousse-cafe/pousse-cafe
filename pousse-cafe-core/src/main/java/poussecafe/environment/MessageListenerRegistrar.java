@@ -17,7 +17,9 @@ public class MessageListenerRegistrar {
         Class<? extends Message> messageClass = listener.consumedMessageClass();
         messageListenersSetBuilder.registerListenerForMessageClass(listener, messageClass);
 
-        if(ReflectionUtils.isAbstract(messageClass)) {
+        if(listener.isWildcard()) {
+            messageListenersSetBuilder.registerWildcardListener(listener);
+        } else if(ReflectionUtils.isAbstract(messageClass)) {
             Class<? extends Message> messageImplementationClass = environment.messageImplementationClass(messageClass);
             messageListenersSetBuilder.registerListenerForMessageClass(listener, messageImplementationClass);
         }
