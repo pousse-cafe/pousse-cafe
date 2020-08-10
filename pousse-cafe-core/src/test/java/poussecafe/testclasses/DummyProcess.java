@@ -1,4 +1,4 @@
-package poussecafe.runtime;
+package poussecafe.testclasses;
 
 import poussecafe.discovery.MessageListener;
 import poussecafe.process.DomainProcess;

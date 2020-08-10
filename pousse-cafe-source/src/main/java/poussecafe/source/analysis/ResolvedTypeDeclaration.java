@@ -36,13 +36,13 @@ public class ResolvedTypeDeclaration {
     private TypeDeclaration declaration;
 
     private ResolvedTypeName simpleType(SimpleType simpleType) {
-        return resolver.resolve(simpleType.getName());
+        return resolver.resolve(new Name(simpleType.getName()));
     }
 
     private Resolver resolver;
 
     public ResolvedTypeName name() {
-        return resolver.resolve(declaration.getName());
+        return resolver.resolve(new Name(declaration.getName()));
     }
 
     public boolean implementsInterface(Class<?> interfaceClass) {
@@ -70,6 +70,13 @@ public class ResolvedTypeDeclaration {
         }
     }
 
+    public AnnotatedElement<TypeDeclaration> asAnnotatedElement() {
+        return new AnnotatedElement.Builder<TypeDeclaration>()
+                .withElement(declaration)
+                .withResolver(resolver)
+                .build();
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();
@@ -85,7 +92,7 @@ public class ResolvedTypeDeclaration {
             return this;
         }
 
-        public Builder withImports(Resolver resolver) {
+        public Builder withResolver(Resolver resolver) {
             type.resolver = resolver;
             return this;
         }

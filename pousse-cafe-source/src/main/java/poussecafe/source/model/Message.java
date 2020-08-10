@@ -3,7 +3,7 @@ package poussecafe.source.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.ResolvedTypeName;
-import poussecafe.source.analysis.Resolver;
+import poussecafe.source.analysis.CompilationUnitResolver;
 
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
@@ -21,13 +21,13 @@ public class Message {
     }
 
     public static boolean isMessage(ResolvedTypeName typeName) {
-        return typeName.instanceOf(Resolver.MESSAGE_CLASS);
+        return typeName.instanceOf(CompilationUnitResolver.MESSAGE_CLASS);
     }
 
     private static MessageType typeOf(ResolvedTypeName typeName) {
-        if(typeName.instanceOf(Resolver.DOMAIN_EVENT_INTERFACE)) {
+        if(typeName.instanceOf(CompilationUnitResolver.DOMAIN_EVENT_INTERFACE)) {
             return MessageType.DOMAIN_EVENT;
-        } else if(typeName.instanceOf(Resolver.COMMAND_INTERFACE)) {
+        } else if(typeName.instanceOf(CompilationUnitResolver.COMMAND_INTERFACE)) {
             return MessageType.COMMAND;
         } else {
             throw new UnsupportedOperationException();

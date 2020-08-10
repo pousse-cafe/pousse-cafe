@@ -13,9 +13,9 @@ import poussecafe.domain.Repository;
 @SuppressWarnings("rawtypes")
 public @interface Aggregate {
 
-    Class<? extends Factory> factory();
+    Class<? extends Factory> factory() default InnerClassFactory.class;
 
-    Class<? extends Repository> repository();
+    Class<? extends Repository> repository() default InnerClassRepository.class;
 
     Class<? extends Module> module() default DefaultModule.class;
 }

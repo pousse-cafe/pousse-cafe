@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.reflections.Reflections;
@@ -76,34 +75,46 @@ class ClassPathExplorer {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<AggregateDefinition> discoverAggregates() {
-        Set<Class<?>> aggregateRootClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
+        Set<Class<?>> aggregateClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
 
         List<AggregateDefinition> definitions = new ArrayList<>();
-        for(Class<?> aggregateRootClass : aggregateRootClasses) {
-            if(!AggregateRoot.class.isAssignableFrom(aggregateRootClass)) {
-                throw new PousseCafeException("Only aggregate roots can be annotated with @" + Aggregate.class.getSimpleName());
+        for(Class<?> aggregateClass : aggregateClasses) {
+            Aggregate annotation = aggregateClass.getAnnotation(Aggregate.class);
+            Class<? extends Module> moduleClass = annotation.module();
+            String aggregatePackage = aggregateClass.getPackageName();
+            String moduleClassPackage = annotation.module().getPackageName();
+            if(moduleClass != DefaultModule.class
+                    && !aggregatePackage.startsWith(moduleClassPackage)) {
+                throw new PousseCafeException("Aggregate " + aggregateClass.getName() + " is not in a sub-package of its module class package " + moduleClassPackage);
             }
 
-            Aggregate annotation = aggregateRootClass.getAnnotation(Aggregate.class);
-            Optional<Class<? extends Module>> moduleClass;
-            if(annotation.module() == DefaultModule.class) {
-                moduleClass = Optional.empty();
-            } else {
-                String aggregateRootPackage = aggregateRootClass.getPackageName();
-                String moduleClassPackage = annotation.module().getPackageName();
-                if(!aggregateRootPackage.startsWith(moduleClassPackage)) {
-                    throw new PousseCafeException("Aggregate root " + aggregateRootClass.getName() + " is not in a sub-package of its module class package " + moduleClassPackage);
+            var definitionBuilder = new AggregateDefinition.Builder()
+                    .withModuleClass(moduleClass);
+
+            if(AggregateRoot.class.isAssignableFrom(aggregateClass)) {
+                definitionBuilder.withAggregateRoot((Class<? extends AggregateRoot>) aggregateClass);
+
+                if(annotation.factory() == InnerClassFactory.class) {
+                    throw new PousseCafeException("@Aggregate on aggregate root class requires factory attribute to be set");
+                } else {
+                    definitionBuilder.withFactoryClass(annotation.factory());
                 }
-                moduleClass = Optional.of(annotation.module());
+
+                if(annotation.repository() == InnerClassRepository.class) {
+                    throw new PousseCafeException("@Aggregate on aggregate root class requires repository attribute to be set");
+                } else {
+                    definitionBuilder.withRepositoryClass(annotation.repository());
+                }
+            } else {
+                var containerClass = new AggregateContainerClass(aggregateClass);
+                definitionBuilder.withAggregateRoot(containerClass.aggregateRootClass());
+                definitionBuilder.withFactoryClass(containerClass.factoryClass());
+                definitionBuilder.withRepositoryClass(containerClass.repositoryClass());
             }
 
-            definitions.add(new AggregateDefinition.Builder()
-                    .withAggregateRoot((Class<? extends AggregateRoot>) aggregateRootClass)
-                    .withFactoryClass(annotation.factory())
-                    .withRepositoryClass(annotation.repository())
-                    .withModuleClass(moduleClass)
-                    .build());
+            definitions.add(definitionBuilder.build());
         }
+
         return definitions;
     }
 

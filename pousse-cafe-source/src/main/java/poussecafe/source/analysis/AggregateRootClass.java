@@ -7,7 +7,7 @@ public class AggregateRootClass {
     public static boolean isAggregateRoot(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         return superclassType.isPresent()
-                && superclassType.get().isClass(Resolver.AGGREGATE_ROOT_CLASS);
+                && superclassType.get().isClass(CompilationUnitResolver.AGGREGATE_ROOT_CLASS);
     }
 
     public AggregateRootClass(ResolvedTypeDeclaration resolvedTypeDeclaration) {

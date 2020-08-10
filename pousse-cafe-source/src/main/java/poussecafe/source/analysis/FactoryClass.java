@@ -7,7 +7,7 @@ public class FactoryClass {
     public static boolean isFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         return superclassType.isPresent()
-                && superclassType.get().isClass(Resolver.FACTORY_CLASS);
+                && superclassType.get().isClass(CompilationUnitResolver.FACTORY_CLASS);
     }
 
     public FactoryClass(ResolvedTypeDeclaration resolvedTypeDeclaration) {

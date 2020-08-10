@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -48,7 +49,7 @@ public class AnnotatedElement<T> {
             return annotatedElement;
         }
 
-        public Builder<T> withImports(Resolver resolver) {
+        public Builder<T> withResolver(Resolver resolver) {
             annotatedElement.resolver = resolver;
             return this;
         }
@@ -57,13 +58,20 @@ public class AnnotatedElement<T> {
             annotatedElement.element = element;
             if(element instanceof MethodDeclaration) {
                 MethodDeclaration declaration = (MethodDeclaration) element;
-                declaration.modifiers().stream()
-                        .filter(item -> item instanceof Annotation)
-                        .forEach(annotationObject -> annotations.add((Annotation) annotationObject));
+                withModifiers(declaration.modifiers());
+            } else if(element instanceof TypeDeclaration) {
+                TypeDeclaration declaration = (TypeDeclaration) element;
+                withModifiers(declaration.modifiers());
             } else {
                 throw new IllegalArgumentException("Unsupported annotated element type " + element.getClass().getSimpleName());
             }
             return this;
+        }
+
+        private void withModifiers(@SuppressWarnings("rawtypes") List modifiers) {
+            modifiers.stream()
+                    .filter(item -> item instanceof Annotation)
+                    .forEach(annotationObject -> annotations.add((Annotation) annotationObject));
         }
 
         private List<Annotation> annotations = new ArrayList<>();

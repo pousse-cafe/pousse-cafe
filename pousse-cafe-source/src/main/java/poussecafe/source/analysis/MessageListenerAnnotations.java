@@ -10,17 +10,17 @@ import static java.util.stream.Collectors.toList;
 public class MessageListenerAnnotations {
 
     public static boolean isMessageListener(AnnotatedElement<MethodDeclaration> annotatedElement) {
-        return annotatedElement.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).isPresent();
+        return annotatedElement.findAnnotation(CompilationUnitResolver.MESSAGE_LISTENER_ANNOTATION_CLASS).isPresent();
     }
 
     public MessageListenerAnnotations(AnnotatedElement<MethodDeclaration> annotatedMethod) {
-        ResolvedAnnotation messageListenerAnnotation = annotatedMethod.findAnnotation(Resolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow();
+        ResolvedAnnotation messageListenerAnnotation = annotatedMethod.findAnnotation(CompilationUnitResolver.MESSAGE_LISTENER_ANNOTATION_CLASS).orElseThrow();
 
         setProcessNames(messageListenerAnnotation);
         setRunner(messageListenerAnnotation);
         setConsumesFromExternal(messageListenerAnnotation);
 
-        setProducedEvents(annotatedMethod.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS));
+        setProducedEvents(annotatedMethod.findAnnotations(CompilationUnitResolver.PRODUCES_EVENT_ANNOTATION_CLASS));
     }
 
     private void setProcessNames(ResolvedAnnotation messageListenerAnnotation) {

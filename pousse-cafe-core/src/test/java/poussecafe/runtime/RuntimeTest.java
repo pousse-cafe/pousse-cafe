@@ -15,6 +15,7 @@ import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.MessagingConnection;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.storage.internal.InternalStorage;
+import poussecafe.testclasses.DummyProcess;
 import poussecafe.testmodule.SimpleAggregate;
 import poussecafe.testmodule.SimpleAggregateData;
 import poussecafe.testmodule.InternalSimpleAggregateDataAccess;

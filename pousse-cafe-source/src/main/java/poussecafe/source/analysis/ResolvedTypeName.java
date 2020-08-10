@@ -1,9 +1,5 @@
 package poussecafe.source.analysis;
 
-import java.util.Optional;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.QualifiedName;
-
 import static java.util.Objects.requireNonNull;
 
 public class ResolvedTypeName {
@@ -12,47 +8,29 @@ public class ResolvedTypeName {
 
     private Name name;
 
-    private Optional<Class<?>> resolvedClass = Optional.empty();
+    private Class<?> resolvedClass;
 
     public boolean isClass(Class<?> expectedClass) {
-        resolvedOrElseThrow();
-        return expectedClass.equals(resolvedClass.orElseThrow());
-    }
-
-    private void resolvedOrElseThrow() {
-        if(resolvedClass.isEmpty()) {
-            throw new IllegalStateException("Type " + name + " could not be resolved");
-        }
+        return expectedClass.equals(resolvedClass);
     }
 
     public String simpleName() {
-        if(name.isSimpleName()) {
-            return name.getFullyQualifiedName();
-        } else {
-            QualifiedName qualifiedProcessName = (QualifiedName) name;
-            return qualifiedProcessName.getName().getIdentifier();
-        }
+        return resolvedClass.getSimpleName();
     }
 
     public boolean instanceOf(Class<?> superType) {
-        resolvedOrElseThrow();
-        return superType.isAssignableFrom(resolvedClass.orElseThrow());
+        return superType.isAssignableFrom(resolvedClass);
     }
 
     public String qualifiedName() {
-        if(name.isQualifiedName()) {
-            return name.getFullyQualifiedName();
-        } else {
-            resolvedOrElseThrow();
-            return resolvedClass.orElseThrow().getCanonicalName();
-        }
+        return resolvedClass.getCanonicalName();
     }
 
     public static class Builder {
 
         private ResolvedTypeName resolved = new ResolvedTypeName();
 
-        public Builder withImports(Resolver resolver) {
+        public Builder withResolver(Resolver resolver) {
             resolved.resolver = resolver;
             return this;
         }
@@ -62,7 +40,7 @@ public class ResolvedTypeName {
             return this;
         }
 
-        public Builder withResolvedClass(Optional<Class<?>> resolvedClass) {
+        public Builder withResolvedClass(Class<?> resolvedClass) {
             resolved.resolvedClass = resolvedClass;
             return this;
         }

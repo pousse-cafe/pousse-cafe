@@ -1,6 +1,9 @@
 package poussecafe.source;
 
 import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -8,15 +11,18 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import poussecafe.source.analysis.AggregateContainerClass;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.AnnotatedElement;
+import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageListenerAnnotations;
 import poussecafe.source.analysis.ProducedEventAnnotation;
 import poussecafe.source.analysis.RepositoryClass;
+import poussecafe.source.analysis.ResolutionException;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
-import poussecafe.source.analysis.Resolver;
+import poussecafe.source.analysis.TypeDeclarationResolver;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
@@ -36,7 +42,9 @@ public class CompilationUnitVisitor extends ASTVisitor {
         return false;
     }
 
-    private Resolver resolver;
+    private CompilationUnitResolver resolver;
+
+    private Deque<TypeDeclarationResolver> typeDeclarationResolvers = new ArrayDeque<>();
 
     private CompilationUnit compilationUnit;
 
@@ -45,24 +53,35 @@ public class CompilationUnitVisitor extends ASTVisitor {
     @Override
     public boolean visit(TypeDeclaration node) {
         ++typeLevel;
-        ResolvedTypeDeclaration resolvedTypeDeclaration = resolver.resolve(node);
+        pushResolver(node);
+        return visitListenersContainerOrSkip(node);
+    }
+
+    private boolean visitListenersContainerOrSkip(TypeDeclaration node) {
+        ResolvedTypeDeclaration resolvedTypeDeclaration = new ResolvedTypeDeclaration.Builder()
+                .withResolver(typeDeclarationResolvers.peek())
+                .withDeclaration(node)
+                .build();
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
             AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(aggregateRootClass.aggregateName());
+            containerLevel = typeLevel;
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.ROOT)
                     .aggregateName(aggregateRootClass.aggregateName().simpleName())
                     .className(aggregateRootClass.aggregateName().simpleName())
                     .build();
             return true;
-        } else if(resolvedTypeDeclaration.implementsInterface(Resolver.PROCESS_INTERFACE)) {
+        } else if(resolvedTypeDeclaration.implementsInterface(CompilationUnitResolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
                     .name(resolvedTypeDeclaration.name().simpleName())
                     .filePath(sourcePath)
                     .build());
+            return false;
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
             FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(factoryClass.aggregateName());
+            containerLevel = typeLevel;
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.FACTORY)
                     .aggregateName(factoryClass.aggregateName().simpleName())
@@ -72,17 +91,63 @@ public class CompilationUnitVisitor extends ASTVisitor {
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
             RepositoryClass repositoryClass = new RepositoryClass(resolvedTypeDeclaration);
             createOrUpdateAggregate(repositoryClass.aggregateName());
+            containerLevel = typeLevel;
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.REPOSITORY)
                     .aggregateName(repositoryClass.aggregateName().simpleName())
                     .className(repositoryClass.simpleName())
                     .build();
             return true;
+        } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
+            return true;
+        } else {
+            return false;
         }
-        return false;
+    }
+
+    private void pushResolver(TypeDeclaration node) {
+        TypeDeclarationResolver typeDeclarationResolver;
+        if(typeDeclarationResolvers.isEmpty()) {
+            typeDeclarationResolver = new TypeDeclarationResolver.Builder()
+                    .parent(resolver)
+                    .typeDeclaration(node)
+                    .containerClass(getRootClass(node))
+                    .build();
+        } else {
+            typeDeclarationResolver = new TypeDeclarationResolver.Builder()
+                    .parent(resolver)
+                    .typeDeclaration(node)
+                    .containerClass(getInnerClass(typeDeclarationResolvers.peek().containerClass(), node))
+                    .build();
+        }
+        typeDeclarationResolvers.push(typeDeclarationResolver);
+    }
+
+    private Class<?> getRootClass(TypeDeclaration typeDeclaration) {
+        var className = compilationUnit.getPackage().getName().getFullyQualifiedName()
+                + "."
+                + typeDeclaration.getName().getFullyQualifiedName();
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new ResolutionException("Unable to resolve root class " + className);
+        }
+    }
+
+    private Class<?> getInnerClass(Class<?> containerClass, TypeDeclaration node) {
+        var innerClassName = node.getName().getFullyQualifiedName();
+        return getDeclaredClass(containerClass, innerClassName);
+    }
+
+    private Class<?> getDeclaredClass(Class<?> containerClass, String innerClassName) {
+        return Arrays.stream(containerClass.getDeclaredClasses())
+                .filter(innerClass -> innerClass.getSimpleName().equals(innerClassName))
+                .findFirst().orElseThrow();
     }
 
     private int typeLevel;
+
+    private int containerLevel;
 
     private void createOrUpdateAggregate(ResolvedTypeName name) {
         aggregateBuilder = new Aggregate.Builder();
@@ -100,13 +165,14 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     @Override
     public void endVisit(TypeDeclaration node) {
-        --typeLevel;
-        if(typeLevel == 0
+        if(typeLevel == containerLevel
                 && aggregateBuilder != null) {
             model.putAggregateRoot(aggregateBuilder.build());
             aggregateBuilder = null;
             container = null;
         }
+        typeDeclarationResolvers.pop();
+        --typeLevel;
     }
 
     private Model model;
@@ -114,11 +180,11 @@ public class CompilationUnitVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
         if(aggregateBuilder != null) {
-            var method = resolver.resolve(node);
+            var method = typeDeclarationResolvers.peek().resolve(node);
             if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
                 model.addMessageListener(new MessageListener.Builder()
                         .withContainer(container)
-                        .withMethodDeclaration(resolver.resolve(node))
+                        .withMethodDeclaration(typeDeclarationResolvers.peek().resolve(node))
                         .build());
             } else if(container.type() == MessageListenerContainerType.ROOT) {
                 if(method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
@@ -140,7 +206,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
     }
 
     private List<ProducedEvent> producesEvents(AnnotatedElement<MethodDeclaration> method) {
-        return method.findAnnotations(Resolver.PRODUCES_EVENT_ANNOTATION_CLASS)
+        return method.findAnnotations(CompilationUnitResolver.PRODUCES_EVENT_ANNOTATION_CLASS)
                 .stream()
                 .map(ProducedEventAnnotation::new)
                 .map(annotation -> new ProducedEvent.Builder().withAnnotation(annotation).build())
@@ -156,7 +222,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
             requireNonNull(visitor.sourcePath);
             requireNonNull(visitor.model);
 
-            visitor.resolver = new Resolver(visitor.compilationUnit);
+            visitor.resolver = new CompilationUnitResolver(visitor.compilationUnit);
 
             return visitor;
         }

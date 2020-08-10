@@ -1,7 +1,6 @@
 package poussecafe.environment;
 
 import java.util.Objects;
-import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.discovery.DefaultModule;
@@ -18,11 +17,11 @@ public class AggregateDefinition {
 
     private Class<? extends AggregateRoot> aggregateRootClass;
 
-    public Optional<Class<? extends Module>> moduleClass() {
+    public Class<? extends Module> moduleClass() {
         return moduleClass;
     }
 
-    private Optional<Class<? extends Module>> moduleClass = Optional.empty();
+    private Class<? extends Module> moduleClass = DefaultModule.class;
 
     public boolean hasFactory() {
         return factoryClass != null;
@@ -49,7 +48,7 @@ public class AggregateDefinition {
     }
 
     public String getQualifiedName() {
-        return NamingConvention.qualifiedAggregateName(moduleClass.orElse(DefaultModule.class), aggregateRootClass);
+        return NamingConvention.qualifiedAggregateName(moduleClass, aggregateRootClass);
     }
 
     public static class Builder {
@@ -75,7 +74,7 @@ public class AggregateDefinition {
             return this;
         }
 
-        public Builder withModuleClass(Optional<Class<? extends Module>> moduleClass) {
+        public Builder withModuleClass(Class<? extends Module> moduleClass) {
             definition.moduleClass = moduleClass;
             return this;
         }
