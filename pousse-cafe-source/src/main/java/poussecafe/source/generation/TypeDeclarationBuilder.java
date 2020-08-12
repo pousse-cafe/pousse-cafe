@@ -1,6 +1,7 @@
 package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Type;
@@ -77,4 +78,9 @@ public class TypeDeclarationBuilder {
     }
 
     private AST ast;
+
+    public TypeDeclarationBuilder addField(FieldDeclaration identifierField) {
+        typeDeclaration().bodyDeclarations().add(identifierField);
+        return this;
+    }
 }

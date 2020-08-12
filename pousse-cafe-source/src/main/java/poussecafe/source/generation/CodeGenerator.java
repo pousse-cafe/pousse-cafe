@@ -14,6 +14,7 @@ public class CodeGenerator {
         addAggregateDataAccess(aggregate);
         addAggregateFactory(aggregate);
         addAggregateRepository(aggregate);
+        addAttributesImplementation(aggregate);
     }
 
     private void addAggregateId(Aggregate aggregate) {
@@ -70,6 +71,16 @@ public class CodeGenerator {
         var typeName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateFactoryEditor = new AggregateRepositoryEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .aggregate(aggregate)
+                .build();
+        aggregateFactoryEditor.edit();
+    }
+
+    private void addAttributesImplementation(Aggregate aggregate) {
+        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var aggregateFactoryEditor = new AggregateAttributesImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
                 .build();

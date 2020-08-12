@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
 import poussecafe.source.analysis.Name;
@@ -88,6 +89,29 @@ public class AstWrapper {
     public MarkerAnnotation newOverrideAnnotation() {
         var annotation = ast.newMarkerAnnotation();
         annotation.setTypeName(ast.newSimpleName(Override.class.getSimpleName()));
+        return annotation;
+    }
+
+    public IExtendedModifier newPrivateModifier() {
+        return ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD);
+    }
+
+    public SingleMemberAnnotation newSuppressWarningsAnnotation(String... value) {
+        var annotation = ast.newSingleMemberAnnotation();
+        annotation.setTypeName(ast.newSimpleName(SuppressWarnings.class.getSimpleName()));
+        if(value.length == 1) {
+            var singleString = ast.newStringLiteral();
+            singleString.setLiteralValue(value[0]);
+            annotation.setValue(singleString);
+        } else if(value.length > 1) {
+            var stringArray = ast.newArrayInitializer();
+            for(String string : value) {
+                var singleString = ast.newStringLiteral();
+                singleString.setLiteralValue(string);
+                stringArray.expressions().add(singleString);
+            }
+            annotation.setValue(stringArray);
+        }
         return annotation;
     }
 }

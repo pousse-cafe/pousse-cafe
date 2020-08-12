@@ -33,6 +33,16 @@ public class AggregateCodeGenerationConventions {
 
     public static final String REPOSITORY_DATA_ACCESS_METHOD_NAME = "dataAccess";
 
+    public static final String ADAPTERS_PACKAGE_NAME = "adapters";
+
+    public static Name aggregateAttributesImplementationTypeName(Aggregate aggregate) {
+        return new Name(adaptersPackageName(aggregate), aggregate.name() + ATTRIBUTES_CLASS_NAME);
+    }
+
+    public static String adaptersPackageName(Aggregate aggregate) {
+        return aggregate.packageName() + "." + ADAPTERS_PACKAGE_NAME;
+    }
+
     private AggregateCodeGenerationConventions() {
 
     }
