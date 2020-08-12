@@ -1,18 +1,23 @@
 package poussecafe.doc;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.Patch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.files.Difference;
+import poussecafe.files.DifferenceType;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -59,13 +64,34 @@ public class PousseCafeDocTest {
         Path expectedDocDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", expectedDocFolder);
         Path targetDirectory = Paths.get(configuration.outputDirectory());
         try {
-            Files.walkFileTree(expectedDocDirectory, new FileContentComparator.Builder()
-                    .targetDirectory(targetDirectory)
-                    .expectedDirectory(expectedDocDirectory)
-                    .build());
+            assertDifferences(poussecafe.files.Tree.compareTrees(targetDirectory, expectedDocDirectory, ".dot"));
         } catch (IOException e) {
             fail();
         }
+    }
+
+    private void assertDifferences(List<Difference> differences) {
+        for(Difference difference : differences) {
+            if(difference.type() == DifferenceType.TARGET_DOES_NOT_EXIST) {
+                assertTrue("File " + difference.relativePath() + " does not exist", false);
+            } else if(difference.type() == DifferenceType.CONTENT_DOES_NOT_MATCH) {
+                String message = message(difference);
+                assertTrue(message, false);
+            }
+        }
+    }
+
+    private String message(Difference difference) {
+        StringBuilder message = new StringBuilder();
+        message.append("File ");
+        message.append(difference.relativePath());
+        message.append(" does not match expected content");
+        if(!difference.contentSorted()) {
+            Patch<String> diff = DiffUtils.diffInline(difference.expectedContent(), difference.targetContent());
+            message.append(": ");
+            message.append(diff.toString());
+        }
+        return message.toString();
     }
 
     private boolean executableInstalled(String type, String executable) {

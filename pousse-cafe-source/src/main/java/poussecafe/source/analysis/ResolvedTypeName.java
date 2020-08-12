@@ -26,6 +26,10 @@ public class ResolvedTypeName {
         return resolvedClass.getCanonicalName();
     }
 
+    public String packageName() {
+        return resolvedClass.getPackageName();
+    }
+
     public static class Builder {
 
         private ResolvedTypeName resolved = new ResolvedTypeName();

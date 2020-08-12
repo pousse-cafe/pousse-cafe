@@ -1,6 +1,7 @@
 package poussecafe.source.analysis;
 
 import java.util.Arrays;
+import org.eclipse.jdt.core.dom.AST;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
@@ -17,6 +18,18 @@ public class Name {
         requireNonNull(name);
         this.name = name;
         evaluate();
+    }
+
+    public Name(String qualifier, String identifier) {
+        qualified = true;
+
+        requireNonNull(qualifier);
+        this.qualifier = qualifier;
+
+        requireNonNull(identifier);
+        this.identifier = identifier;
+
+        name = qualifier + "." + identifier;
     }
 
     private void evaluate() {
@@ -71,5 +84,13 @@ public class Name {
     public Name withoutLastSegment() {
         var segments = segments();
         return new Name(Arrays.stream(segments, 0, segments.length - 1).collect(joining(".")));
+    }
+
+    public org.eclipse.jdt.core.dom.Name toJdomName(AST ast) {
+        if(qualified) {
+            return ast.newQualifiedName(ast.newName(qualifier), ast.newSimpleName(identifier));
+        } else {
+            return ast.newSimpleName(identifier);
+        }
     }
 }

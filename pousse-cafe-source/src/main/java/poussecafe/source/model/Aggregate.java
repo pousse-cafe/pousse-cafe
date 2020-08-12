@@ -39,17 +39,25 @@ public class Aggregate {
 
     private List<ProducedEvent> onUpdateProducedEvents = new ArrayList<>();
 
+    private String packageName;
+
+    public String packageName() {
+        return packageName;
+    }
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
 
         public Aggregate build() {
             requireNonNull(aggregate.name);
+            requireNonNull(aggregate.packageName);
             return aggregate;
         }
 
         public Builder name(ResolvedTypeName name) {
             aggregate.name = name.simpleName();
+            aggregate.packageName = name.packageName();
             return this;
         }
 
@@ -77,6 +85,16 @@ public class Aggregate {
 
         public Builder onUpdateProducedEvents(List<ProducedEvent> onUpdateProducedEvents) {
             aggregate.onUpdateProducedEvents.addAll(onUpdateProducedEvents);
+            return this;
+        }
+
+        public Builder name(String name) {
+            aggregate.name = name;
+            return this;
+        }
+
+        public Builder packageName(String packageName) {
+            aggregate.packageName = packageName;
             return this;
         }
     }
