@@ -67,6 +67,7 @@ public class Aggregate {
 
         public Builder startingFrom(Aggregate other) {
             aggregate.name = other.name;
+            aggregate.packageName = other.packageName;
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
             aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
             aggregate.onUpdateProducedEvents.addAll(other.onUpdateProducedEvents);
