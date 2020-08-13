@@ -26,9 +26,11 @@ public class Tree {
     }
 
     public static void delete(Path sourceDirectory) throws IOException {
-        Files.walk(sourceDirectory) // NOSONAR
-            .sorted(Comparator.reverseOrder())
-            .map(Path::toFile)
-            .forEach(File::delete);
+        if(sourceDirectory.toFile().exists()) {
+            Files.walk(sourceDirectory) // NOSONAR
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+        }
     }
 }

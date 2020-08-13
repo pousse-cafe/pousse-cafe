@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
@@ -18,6 +17,8 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.ModifierInsertor.DefaultInsertionMode;
+import poussecafe.source.generation.ModifierInsertor.InsertionMode;
 
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
@@ -26,25 +27,20 @@ import static java.util.stream.Collectors.toList;
 public class ModifiersEditor {
 
     public void setVisibility(Visibility visibility) {
-        setModifier(
-                keyword(visibility),
-                VISIBILITY_KEYWORDS,
-                visibility != Visibility.PACKAGE,
-                this::visibilityPivot,
-                this::visibilityInsertionModeProvider,
-                DefaultInsertionMode.FIRST);
+        var visibilityInsertor = modifierInsertorBuilder()
+                .toReplace(VISIBILITY_KEYWORDS)
+                .pivotProvider(this::visibilityPivot)
+                .pivotInsertionModeProvider(this::visibilityInsertionModeProvider)
+                .defaultInsertionMode(DefaultInsertionMode.FIRST)
+                .build();
+        visibilityInsertor.set(keyword(visibility), visibility != Visibility.PACKAGE);
     }
 
-    private ModifierKeyword keyword(Visibility visibility) {
-        if(visibility == Visibility.PRIVATE) {
-            return ModifierKeyword.PRIVATE_KEYWORD;
-        } else if(visibility == Visibility.PROTECTED) {
-            return ModifierKeyword.PROTECTED_KEYWORD;
-        } else if(visibility == Visibility.PUBLIC) {
-            return ModifierKeyword.PUBLIC_KEYWORD;
-        } else {
-            return null;
-        }
+    private ModifierInsertor.Builder modifierInsertorBuilder() {
+        return new ModifierInsertor.Builder()
+                .modifiers(modifiers())
+                .listRewrite(listRewrite())
+                .rewrite(rewrite);
     }
 
     private static final Set<ModifierKeyword> VISIBILITY_KEYWORDS = visibilityKeywords();
@@ -65,6 +61,28 @@ public class ModifiersEditor {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private List<Annotation> annotations() {
+        return (List<Annotation>) modifiers().stream()
+                .filter(this::isAnnotation)
+                .collect(toList());
+    }
+
+    private boolean isAnnotation(Object node) {
+        return node instanceof Annotation;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Modifier> actualModifiers() {
+        return (List<Modifier>) modifiers().stream()
+                .filter(this::isModifier)
+                .collect(toList());
+    }
+
+    private boolean isModifier(Object node) {
+        return node instanceof Modifier;
+    }
+
     private InsertionMode visibilityInsertionModeProvider(ASTNode pivot) {
         if(pivot instanceof Annotation) {
             return InsertionMode.AFTER;
@@ -73,69 +91,26 @@ public class ModifiersEditor {
         }
     }
 
+    private ModifierKeyword keyword(Visibility visibility) {
+        if(visibility == Visibility.PRIVATE) {
+            return ModifierKeyword.PRIVATE_KEYWORD;
+        } else if(visibility == Visibility.PROTECTED) {
+            return ModifierKeyword.PROTECTED_KEYWORD;
+        } else if(visibility == Visibility.PUBLIC) {
+            return ModifierKeyword.PUBLIC_KEYWORD;
+        } else {
+            return null;
+        }
+    }
+
     public void setStatic(boolean enabled) {
-        setModifier(
-                ModifierKeyword.STATIC_KEYWORD,
-                singleton(ModifierKeyword.STATIC_KEYWORD),
-                enabled,
-                this::staticPivot,
-                this::staticInsertionModeProvider,
-                DefaultInsertionMode.LAST);
-    }
-
-    private void setModifier(
-            ModifierKeyword keyword,
-            Set<ModifierKeyword> toReplace,
-            boolean enabled,
-            Supplier<Optional<ASTNode>> pivotProvider,
-            Function<ASTNode, InsertionMode> pivotInsertionModeProvider,
-            DefaultInsertionMode defaultInsertionMode) {
-        List<Modifier> modifiers = findModifier(toReplace);
-        if(enabled && modifiers.isEmpty()) {
-            Optional<ASTNode> firstModifier = pivotProvider.get();
-            var newModifier = rewrite.ast().newModifier(keyword);
-            if(firstModifier.isPresent()) {
-                var pivotInsertionMode = pivotInsertionModeProvider.apply(firstModifier.get());
-                if(pivotInsertionMode == InsertionMode.AFTER) {
-                    listRewrite().insertAfter(newModifier, firstModifier.get(), null);
-                } else if(pivotInsertionMode == InsertionMode.BEFORE) {
-                    listRewrite().insertBefore(newModifier, firstModifier.get(), null);
-                }
-            } else {
-                if(defaultInsertionMode == DefaultInsertionMode.FIRST) {
-                    listRewrite().insertFirst(newModifier, null);
-                } else if(defaultInsertionMode == DefaultInsertionMode.LAST) {
-                    listRewrite().insertLast(newModifier, null);
-                }
-            }
-        } else if(!enabled && !modifiers.isEmpty()) {
-            for(Modifier modifier : modifiers) {
-                listRewrite().remove(modifier, null);
-            }
-        }
-    }
-
-    private enum InsertionMode {
-        AFTER,
-        BEFORE
-    }
-
-    private enum DefaultInsertionMode {
-        FIRST,
-        LAST
-    }
-
-    public List<Modifier> findModifier(Set<ModifierKeyword> keywords) {
-        var modifiers = new ArrayList<Modifier>();
-        for(Object modifierObject : modifiers()) {
-            if(modifierObject instanceof Modifier) {
-                Modifier modifier = (Modifier) modifierObject;
-                if(keywords.contains(modifier.getKeyword())) {
-                    modifiers.add(modifier);
-                }
-            }
-        }
-        return modifiers;
+        var staticInsertor = modifierInsertorBuilder()
+                .toReplace(singleton(ModifierKeyword.STATIC_KEYWORD))
+                .pivotProvider(this::staticPivot)
+                .pivotInsertionModeProvider(this::staticInsertionModeProvider)
+                .defaultInsertionMode(DefaultInsertionMode.LAST)
+                .build();
+        staticInsertor.set(ModifierKeyword.STATIC_KEYWORD, enabled);
     }
 
     private Optional<ASTNode> staticPivot() {
@@ -156,7 +131,7 @@ public class ModifiersEditor {
         for(Object modifierObject : modifiers()) {
             if(modifierObject instanceof Modifier) {
                 Modifier modifier = (Modifier) modifierObject;
-                if(VISIBILITY_MODIFIERS.contains(modifier.getKeyword().toFlagValue())) {
+                if(VISIBILITY_KEYWORDS.contains(modifier.getKeyword())) {
                     return Optional.of(modifier);
                 }
             }
@@ -164,52 +139,8 @@ public class ModifiersEditor {
         return Optional.empty();
     }
 
-    private static final Set<Integer> VISIBILITY_MODIFIERS = visibilityModifiers();
-    private static Set<Integer> visibilityModifiers() {
-        var modifiers = new HashSet<Integer>();
-        modifiers.add(Modifier.PRIVATE);
-        modifiers.add(Modifier.PROTECTED);
-        modifiers.add(Modifier.PUBLIC);
-        return modifiers;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Annotation> annotations() {
-        return (List<Annotation>) modifiers().stream()
-                .filter(this::isAnnotation)
-                .collect(toList());
-    }
-
-    private boolean isAnnotation(Object node) {
-        return node instanceof Annotation;
-    }
-
     private InsertionMode staticInsertionModeProvider(ASTNode pivot) {
         return InsertionMode.AFTER;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Modifier> actualModifiers() {
-        return (List<Modifier>) modifiers().stream()
-                .filter(this::isModifier)
-                .collect(toList());
-    }
-
-    private boolean isModifier(Object node) {
-        return node instanceof Modifier;
-    }
-
-    public List<Modifier> findModifier(ModifierKeyword keyword) {
-        var modifiers = new ArrayList<Modifier>();
-        for(Object modifierObject : modifiers()) {
-            if(modifierObject instanceof Modifier) {
-                Modifier modifier = (Modifier) modifierObject;
-                if(modifier.getKeyword().equals(keyword)) {
-                    modifiers.add(modifier);
-                }
-            }
-        }
-        return modifiers;
     }
 
     @SuppressWarnings("rawtypes")
