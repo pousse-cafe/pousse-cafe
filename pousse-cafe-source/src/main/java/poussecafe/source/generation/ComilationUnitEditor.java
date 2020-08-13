@@ -1,5 +1,6 @@
 package poussecafe.source.generation;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,10 +20,12 @@ import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
+import poussecafe.files.TextFiles;
 import poussecafe.source.analysis.Name;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("unchecked")
 public class ComilationUnitEditor {
 
     public void setPackage(String packageName) {
@@ -38,15 +41,31 @@ public class ComilationUnitEditor {
     }
 
     public void addImportLast(String name) {
-        ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
-        importDeclaration.setName(rewrite.ast().newName(name));
+        if(!alreadyImported(name)) {
+            ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
+            importDeclaration.setName(rewrite.ast().newName(name));
 
-        ListRewrite listRewrite = rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY);
-        listRewrite.insertLast(importDeclaration, null);
+            ListRewrite listRewrite = rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY);
+            listRewrite.insertLast(importDeclaration, null);
+        }
+    }
+
+    private boolean alreadyImported(String name) {
+        return rewrite.comilationUnit().imports().stream()
+                .anyMatch(importDeclaration -> alreadyImports(importDeclaration, name));
+    }
+
+    private boolean alreadyImports(Object importDeclarationObject, String name) {
+        ImportDeclaration importDeclaration = (ImportDeclaration) importDeclarationObject;
+        return importDeclaration.getName().getFullyQualifiedName().equals(name);
     }
 
     public void addImportLast(Name name) {
         addImportLast(name.toString());
+    }
+
+    public void addImportLast(Class<?> importedClass) {
+        addImportLast(importedClass.getCanonicalName());
     }
 
     public void setDeclaredType(TypeDeclaration typeDeclaration) {
@@ -56,6 +75,24 @@ public class ComilationUnitEditor {
             typesRewrite.insertFirst(typeDeclaration, null);
         } else {
             throw new CodeGenerationException("Unexpected number of types in compilation unit");
+        }
+    }
+
+    public TypeDeclarationEditor typeDeclaration() {
+        var type = existingOrNewType();
+        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), type);
+        return new TypeDeclarationEditor(nodeRewriter);
+    }
+
+    private TypeDeclaration existingOrNewType() {
+        var type = rewrite.comilationUnit().types().stream()
+                .findFirst();
+        if(type.isPresent()) {
+            return (TypeDeclaration) type.get();
+        } else {
+            var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
+            rewrite.listRewrite(CompilationUnit.TYPES_PROPERTY).insertLast(newTypeDeclaration, null);
+            return newTypeDeclaration;
         }
     }
 
@@ -165,10 +202,23 @@ public class ComilationUnitEditor {
     }
 
     protected void prepareEdit() {
-        document = new Document();
+        document = document();
         ASTParser parser = ASTParser.newParser(AST.JLS14);
         parser.setSource(document.get().toCharArray());
 
         rewrite = new ComilationUnitRewrite((CompilationUnit) parser.createAST(null));
+    }
+
+    private Document document() {
+        File file = filePath.toFile();
+        if(file.exists()) {
+            try {
+                return new Document(TextFiles.readContent(file));
+            } catch (IOException e) {
+                throw new CodeGenerationException("Unable to load document content", e);
+            }
+        } else {
+            return new Document();
+        }
     }
 }

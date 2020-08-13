@@ -2,16 +2,13 @@ package poussecafe.files;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 import poussecafe.exception.PousseCafeException;
 
 import static java.util.stream.Collectors.joining;
@@ -66,18 +63,13 @@ public class TreeComparator extends SimpleFileVisitor<Path> {
 
     private String readContent(File file, boolean sortContent) {
         try {
-            return fileContentStream(file, sortContent).collect(joining("\n"));
+            var lines = TextFiles.streamLines(file);
+            if(sortContent) {
+                lines = lines.sorted();
+            }
+            return lines.collect(joining("\n"));
         } catch (IOException e) {
             throw new PousseCafeException("Unable to read content", e);
-        }
-    }
-
-    private Stream<String> fileContentStream(File file, boolean sortContent) throws IOException {
-        Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
-        if(sortContent) {
-            return stream.sorted();
-        } else {
-            return stream;
         }
     }
 

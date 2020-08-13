@@ -1,7 +1,5 @@
 package poussecafe.source.generation;
 
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.model.Aggregate;
@@ -19,37 +17,33 @@ public class AggregateIdEditor {
 
         var idSupertype = ast.newSimpleType(StringId.class);
         var valueObjectType = ast.newSimpleType(ValueObject.class);
-        var constuctor = constructor();
 
         var typeName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
         var simpleTypeName = typeName.getIdentifier().toString();
-        var aggregateIdentifierTypeDeclaration = ast.newTypeDeclarationBuilder()
-            .addModifier(ast.ast().newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD))
+        var typeEditor = compilationUnitEditor.typeDeclaration()
             .setName(simpleTypeName)
             .setSuperclass(idSupertype)
-            .addSuperinterface(valueObjectType)
-            .addMethod(constuctor)
-            .build();
-        compilationUnitEditor.setDeclaredType(aggregateIdentifierTypeDeclaration);
+            .addSuperinterface(valueObjectType);
+
+        constructor(typeEditor.constructors(simpleTypeName).get(0));
+
+        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         compilationUnitEditor.flush();
     }
 
     @SuppressWarnings("unchecked")
-    private MethodDeclaration constructor() {
-        Name typeName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
-        var constuctor = ast.newPublicConstructor(typeName);
+    private void constructor(MethodDeclarationEditor editor) {
+        editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        var constructorParameter = ast.newSimpleMethodParameter("String", "value");
-        constuctor.parameters().add(constructorParameter);
+        editor.clearParameters();
+        editor.addParameter(new Name("String"), "value");
 
         var body = ast.ast().newBlock();
         var superInvocation = ast.ast().newSuperConstructorInvocation();
         superInvocation.arguments().add(ast.newVariableAccess("value"));
         body.statements().add(superInvocation);
-        constuctor.setBody(body);
-
-        return constuctor;
+        editor.setBody(body);
     }
 
     private Aggregate aggregate;

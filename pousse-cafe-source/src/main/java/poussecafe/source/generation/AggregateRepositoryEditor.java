@@ -1,6 +1,5 @@
 package poussecafe.source.generation;
 
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.Repository;
@@ -18,13 +17,13 @@ public class AggregateRepositoryEditor {
 
         ParameterizedType supertype = supertype();
 
-        var typeDeclaration = ast.newTypeDeclarationBuilder()
-            .addModifier(ast.newPublicModifier())
+        var typeEditor = compilationUnitEditor.typeDeclaration()
             .setName(AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate))
-            .setSuperclass(supertype)
-            .addMethod(dataAccessMethod())
-            .build();
-        compilationUnitEditor.setDeclaredType(typeDeclaration);
+            .setSuperclass(supertype);
+
+        dataAccessMethod(typeEditor.method(AggregateCodeGenerationConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
+
+        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         compilationUnitEditor.flush();
     }
@@ -51,16 +50,13 @@ public class AggregateRepositoryEditor {
         return ast.newSimpleType(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
     }
 
-    private MethodDeclaration dataAccessMethod() {
-        var method = ast.ast().newMethodDeclaration();
-        method.modifiers().add(ast.newOverrideAnnotation());
-        method.modifiers().add(ast.newPublicModifier());
+    private void dataAccessMethod(MethodDeclarationEditor editor) {
+        editor.modifiers().markerAnnotation(Override.class);
+        editor.modifiers().setVisibility(Visibility.PUBLIC);
 
         var returnType = ast.newParameterizedType(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
         returnType.typeArguments().add(ast.newSimpleType(AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)));
-        method.setReturnType2(returnType);
-
-        method.setName(ast.ast().newSimpleName(AggregateCodeGenerationConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME));
+        editor.setReturnType(returnType);
 
         var body = ast.ast().newBlock();
 
@@ -76,9 +72,7 @@ public class AggregateRepositoryEditor {
         returnStatement.setExpression(castedDataAccess);
         body.statements().add(returnStatement);
 
-        method.setBody(body);
-
-        return method;
+        editor.setBody(body);
     }
 
     public static class Builder {

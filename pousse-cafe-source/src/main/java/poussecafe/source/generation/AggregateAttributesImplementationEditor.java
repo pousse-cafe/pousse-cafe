@@ -1,9 +1,6 @@
 package poussecafe.source.generation;
 
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
@@ -28,38 +25,34 @@ public class AggregateAttributesImplementationEditor {
 
         var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
         var simpleTypeName = typeName.getIdentifier().toString();
-        var identifierAttribute = identifierAttribute();
-        var identifierField = identifierField();
-        var versionField = versionField();
-        var aggregateIdentifierTypeDeclaration = ast.newTypeDeclarationBuilder()
-            .addModifier(ast.ast().newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD))
+        var typeEditor = compilationUnitEditor.typeDeclaration()
             .setName(simpleTypeName)
-            .addSuperinterface(attributesType)
-            .addMethod(identifierAttribute)
-            .addField(identifierField)
-            .addField(versionField)
-            .build();
-        compilationUnitEditor.setDeclaredType(aggregateIdentifierTypeDeclaration);
+            .addSuperinterface(attributesType);
+
+        var modifiers = typeEditor.modifiers();
+        modifiers.setVisibility(Visibility.PUBLIC);
+
+        editIdentifierAttribute(typeEditor.method(IDENTIFIER_FIELD_NAME).get(0));
+        editIdentifierField(typeEditor.field(IDENTIFIER_FIELD_NAME).get(0));
+        editVersionField(typeEditor.field("version").get(0));
 
         compilationUnitEditor.flush();
     }
 
-    private MethodDeclaration identifierAttribute() {
-        var method = ast.ast().newMethodDeclaration();
-        method.modifiers().add(ast.newOverrideAnnotation());
-        method.modifiers().add(ast.newPublicModifier());
-        method.setName(ast.ast().newSimpleName(IDENTIFIER_FIELD_NAME));
+    private void editIdentifierAttribute(MethodDeclarationEditor editor) {
+        editor.modifiers().markerAnnotation(Override.class);
+        editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        var returnType = ast.newParameterizedType(Attribute.class);
-        returnType.typeArguments().add(ast.newSimpleType(identifierSimpleName()));
-        method.setReturnType2(returnType);
+        var returnSimpleType = ast.ast().newSimpleType(ast.ast().newSimpleName(Attribute.class.getSimpleName()));
+        var returnType = ast.ast().newParameterizedType(returnSimpleType);
+        var identifierSimpleName = ast.ast().newSimpleName(identifierSimpleName().toString());
+        returnType.typeArguments().add(ast.ast().newSimpleType(identifierSimpleName));
+        editor.setReturnType(returnType);
 
         var body = ast.ast().newBlock();
         var returnAttribute = returnAttribute();
         body.statements().add(returnAttribute);
-        method.setBody(body);
-
-        return method;
+        editor.setBody(body);
     }
 
     private static final String IDENTIFIER_FIELD_NAME = "identifier";
@@ -124,25 +117,19 @@ public class AggregateAttributesImplementationEditor {
         return build;
     }
 
-    private FieldDeclaration identifierField() {
-        var declaration = ast.ast().newVariableDeclarationFragment();
-        declaration.setName(ast.ast().newSimpleName(IDENTIFIER_FIELD_NAME));
-
-        var fieldDeclaration = ast.ast().newFieldDeclaration(declaration);
-        fieldDeclaration.modifiers().add(ast.newPrivateModifier());
-        fieldDeclaration.setType(ast.newSimpleType("String"));
-        return fieldDeclaration;
+    private void editIdentifierField(FieldDeclarationEditor editor) {
+        editor.modifiers().setVisibility(Visibility.PRIVATE);
+        editor.setType(ast.newSimpleType("String"));
     }
 
-    private FieldDeclaration versionField() {
-        var declaration = ast.ast().newVariableDeclarationFragment();
-        declaration.setName(ast.ast().newSimpleName("version"));
+    private void editVersionField(FieldDeclarationEditor editor) {
+        var suppressWarningsAnnotation = editor.modifiers().singleMemberAnnotation(SuppressWarnings.class);
+        var singleString = ast.ast().newStringLiteral();
+        singleString.setLiteralValue("unused");
+        suppressWarningsAnnotation.get(0).setValue(singleString);
 
-        var fieldDeclaration = ast.ast().newFieldDeclaration(declaration);
-        fieldDeclaration.modifiers().add(ast.newSuppressWarningsAnnotation("unused"));
-        fieldDeclaration.modifiers().add(ast.newPrivateModifier());
-        fieldDeclaration.setType(ast.newSimpleType("Long"));
-        return fieldDeclaration;
+        editor.modifiers().setVisibility(Visibility.PRIVATE);
+        editor.setType(ast.newSimpleType("Long"));
     }
 
     private Aggregate aggregate;

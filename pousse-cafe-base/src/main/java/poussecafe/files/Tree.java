@@ -1,8 +1,10 @@
 package poussecafe.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 
 public class Tree {
@@ -21,5 +23,12 @@ public class Tree {
 
     private Tree() {
 
+    }
+
+    public static void delete(Path sourceDirectory) throws IOException {
+        Files.walk(sourceDirectory) // NOSONAR
+            .sorted(Comparator.reverseOrder())
+            .map(Path::toFile)
+            .forEach(File::delete);
     }
 }

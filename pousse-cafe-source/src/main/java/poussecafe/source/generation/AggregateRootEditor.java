@@ -1,14 +1,9 @@
 package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.MemberValuePair;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.discovery.DefaultModule;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
@@ -29,50 +24,38 @@ public class AggregateRootEditor {
 
         ParameterizedType aggregateRootSupertype = aggregateRootSupertype();
 
-        var aggregateAnnotation = aggregateAnnotation();
+        var aggregateRootType = compilationUnitEditor.typeDeclaration()
+                .setName(aggregate.name())
+                .setSuperclass(aggregateRootSupertype);
 
-        var attributesType = attributesType();
+        var modifiers = aggregateRootType.modifiers();
+        modifiers.setVisibility(Visibility.PUBLIC);
 
-        var aggregateRootTypeDeclaration = new TypeDeclarationBuilder(compilationUnitEditor.ast())
-            .addModifier(aggregateAnnotation)
-            .addModifier(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD))
-            .setName(aggregate.name())
-            .setSuperclass(aggregateRootSupertype)
-            .addDeclaredType(attributesType)
-            .build();
-        compilationUnitEditor.setDeclaredType(aggregateRootTypeDeclaration);
+        var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
+        editAggregateAnnotation(annotationEditor.get(0));
+
+        var attributesType = aggregateRootType.declaredType(AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME);
+        editAttributesType(attributesType);
 
         compilationUnitEditor.flush();
     }
 
     private Aggregate aggregate;
 
-    private NormalAnnotation aggregateAnnotation() {
-        var aggregateAnnotation = ast.newNormalAnnotation();
-        aggregateAnnotation.setTypeName(ast.newSimpleName(Aggregate.class.getSimpleName()));
-
+    private void editAggregateAnnotation(NormalAnnotationEditor editor) {
         var factoryClassName = AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate);
-        var factoryValuePair = typeLiteralAttribute("factory", ast.newSimpleName(factoryClassName.getIdentifier().toString()));
-        aggregateAnnotation.values().add(factoryValuePair);
+        var factoryType = ast.newTypeLiteral();
+        factoryType.setType(ast.newSimpleType(ast.newSimpleName(factoryClassName.getIdentifier().toString())));
+        editor.setAttribute("factory", factoryType);
 
         var repositoryClassName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
-        var repositoryValuePair = typeLiteralAttribute("repository", ast.newSimpleName(repositoryClassName.getIdentifier().toString()));
-        aggregateAnnotation.values().add(repositoryValuePair);
+        var repositoryType = ast.newTypeLiteral();
+        repositoryType.setType(ast.newSimpleType(ast.newSimpleName(repositoryClassName.getIdentifier().toString())));
+        editor.setAttribute("repository", repositoryType);
 
-        var moduleValuePair = typeLiteralAttribute("module", ast.newSimpleName(DefaultModule.class.getSimpleName()));
-        aggregateAnnotation.values().add(moduleValuePair);
-
-        return aggregateAnnotation;
-    }
-
-    private MemberValuePair typeLiteralAttribute(String name, Name typeName) {
-        var factoryValuePair = ast.newMemberValuePair();
-        factoryValuePair.setName(ast.newSimpleName(name));
-        var factoryTypeLiteral = ast.newTypeLiteral();
-        var factoryClass = ast.newSimpleType(typeName);
-        factoryTypeLiteral.setType(factoryClass);
-        factoryValuePair.setValue(factoryTypeLiteral);
-        return factoryValuePair;
+        var defaultModuleType = ast.newTypeLiteral();
+        defaultModuleType.setType(ast.newSimpleType(ast.newSimpleName(DefaultModule.class.getSimpleName())));
+        editor.setAttribute("module", defaultModuleType);
     }
 
     private ParameterizedType aggregateRootSupertype() {
@@ -93,14 +76,11 @@ public class AggregateRootEditor {
         return ast.newSimpleType(ast.newSimpleName(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier().toString()));
     }
 
-    private TypeDeclaration attributesType() {
-        return new TypeDeclarationBuilder(compilationUnitEditor.ast())
-                .addModifier(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD))
-                .addModifier(ast.newModifier(Modifier.ModifierKeyword.STATIC_KEYWORD))
-                .setInterface(true)
-                .setName(AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME)
-                .addSuperinterface(entityAttributesType())
-                .build();
+    private void editAttributesType(TypeDeclarationEditor editor) {
+        editor.modifiers().setVisibility(Visibility.PUBLIC);
+        editor.modifiers().setStatic(true);
+        editor.setInterface(true);
+        editor.addSuperinterface(entityAttributesType());
     }
 
     private ParameterizedType entityAttributesType() {

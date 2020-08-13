@@ -17,12 +17,11 @@ public class AggregateFactoryEditor {
 
         ParameterizedType factorySupertype = factorySupertype();
 
-        var aggregateFactoryTypeDeclaration = ast.newTypeDeclarationBuilder()
-            .addModifier(ast.newPublicModifier())
+        var typeEditor = compilationUnitEditor.typeDeclaration()
             .setName(AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate))
-            .setSuperclass(factorySupertype)
-            .build();
-        compilationUnitEditor.setDeclaredType(aggregateFactoryTypeDeclaration);
+            .setSuperclass(factorySupertype);
+
+        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         compilationUnitEditor.flush();
     }

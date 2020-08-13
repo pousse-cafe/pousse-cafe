@@ -1,7 +1,6 @@
 package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
@@ -82,18 +81,10 @@ public class AstWrapper {
         return parameter;
     }
 
-    public IExtendedModifier newPublicModifier() {
-        return ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD);
-    }
-
     public MarkerAnnotation newOverrideAnnotation() {
         var annotation = ast.newMarkerAnnotation();
         annotation.setTypeName(ast.newSimpleName(Override.class.getSimpleName()));
         return annotation;
-    }
-
-    public IExtendedModifier newPrivateModifier() {
-        return ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD);
     }
 
     public SingleMemberAnnotation newSuppressWarningsAnnotation(String... value) {

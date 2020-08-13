@@ -4,15 +4,22 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import poussecafe.files.Difference;
 import poussecafe.files.DifferenceType;
+import poussecafe.files.Tree;
 import poussecafe.source.model.Aggregate;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CodeGeneratorTest {
+
+    @Before
+    public void clearExistingCode() throws IOException {
+        Tree.delete(sourceDirectory);
+    }
 
     @Test
     public void newAggregate() {
@@ -23,7 +30,6 @@ public class CodeGeneratorTest {
     }
 
     private void givenCodeGenerator() {
-        sourceDirectory = Path.of(System.getProperty("java.io.tmpdir"), "pousse-cafe-test-generator");
         generator = new CodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory)
                 .build();
@@ -44,7 +50,7 @@ public class CodeGeneratorTest {
         generator.addAggregate(aggregate);
     }
 
-    private Path sourceDirectory;
+    private Path sourceDirectory = Path.of(System.getProperty("java.io.tmpdir"), "pousse-cafe-test-generator");
 
     private void thenGeneratedCodeMatchesExpected() {
         Path targetDirectory = sourceDirectory.resolve(Path.of("poussecafe", "source", "generation", "generated"));
@@ -64,5 +70,18 @@ public class CodeGeneratorTest {
                 assertTrue("File content of " + difference.relativePath() + " does not match", false);
             }
         }
+    }
+
+    @Test
+    public void updateExistingAggregate() {
+        givenCodeGenerator();
+        givenAggregate();
+        givenExisingCode();
+        whenGeneratingCodeOfAggregate();
+        thenGeneratedCodeMatchesExpected();
+    }
+
+    private void givenExisingCode() {
+        whenGeneratingCodeOfAggregate();
     }
 }

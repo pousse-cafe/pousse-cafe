@@ -16,15 +16,14 @@ public class AggregateDataAccessEditor {
 
         ParameterizedType entityDataAccessType = entityDataAccessType();
 
-        var aggregateRepositoryTypeDeclaration = ast.newTypeDeclarationBuilder()
-            .addModifier(ast.newPublicModifier())
+        var typeEditor = compilationUnitEditor.typeDeclaration()
             .setInterface(true)
             .setName(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate))
-            .addTypeParameter(ast.newExtendingTypeParameter("D",
+            .setTypeParameter(0, ast.newExtendingTypeParameter("D",
                     AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)))
-            .addSuperinterface(entityDataAccessType)
-            .build();
-        compilationUnitEditor.setDeclaredType(aggregateRepositoryTypeDeclaration);
+            .addSuperinterface(entityDataAccessType);
+
+        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         compilationUnitEditor.flush();
     }
