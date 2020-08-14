@@ -153,15 +153,15 @@ public class ModifiersEditor {
     }
 
     public List<NormalAnnotationEditor> normalAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return annotations(annotationClass,
+        return annotations(new Name(annotationClass.getCanonicalName()),
                 this::newNormalAnnotation,
                 this::normalAnnotationEditor,
                 Annotation::isNormalAnnotation);
     }
 
     private <E extends AnnotationEditor> List<E> annotations(
-            Class<? extends java.lang.annotation.Annotation> annotationClass,
-            Function<Class<? extends java.lang.annotation.Annotation>, Annotation> factory,
+            Name annotationClass,
+            Function<Name, Annotation> factory,
             Function<Annotation, E> editorFactory,
             Predicate<Annotation> isExpectedType) {
         var annotations = findAnnotation(annotationClass);
@@ -194,9 +194,9 @@ public class ModifiersEditor {
         return editors;
     }
 
-    private NormalAnnotation newNormalAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    private NormalAnnotation newNormalAnnotation(Name annotationClass) {
         var newNormalAnnotation = rewrite.ast().newNormalAnnotation();
-        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getSimpleName()));
+        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
     }
 
@@ -204,13 +204,13 @@ public class ModifiersEditor {
         return new NormalAnnotationEditor(new NodeRewrite(rewrite.rewrite(), a));
     }
 
-    private List<Annotation> findAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    private List<Annotation> findAnnotation(Name annotationClass) {
         var annotations = new ArrayList<Annotation>();
         for(Object annotationObject : modifiers()) {
             if(annotationObject instanceof Annotation) {
                 Annotation annotation = (Annotation) annotationObject;
                 Name annotationTypeName = new Name(annotation.getTypeName());
-                if(annotationTypeName.getIdentifier().toString().equals(annotationClass.getSimpleName())) {
+                if(annotationTypeName.getIdentifier().equals(annotationClass.getIdentifier())) {
                     annotations.add(annotation);
                 }
             }
@@ -219,15 +219,19 @@ public class ModifiersEditor {
     }
 
     public List<SingleMemberAnnotationEditor> singleMemberAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return singleMemberAnnotation(new Name(annotationClass.getCanonicalName()));
+    }
+
+    public List<SingleMemberAnnotationEditor> singleMemberAnnotation(Name annotationClass) {
         return annotations(annotationClass,
                 this::newSingleMemberAnnotation,
                 this::singleMemberAnnotationEditor,
                 Annotation::isSingleMemberAnnotation);
     }
 
-    private SingleMemberAnnotation newSingleMemberAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    private SingleMemberAnnotation newSingleMemberAnnotation(Name annotationClass) {
         var newNormalAnnotation = rewrite.ast().newSingleMemberAnnotation();
-        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getSimpleName()));
+        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
     }
 
@@ -236,15 +240,19 @@ public class ModifiersEditor {
     }
 
     public List<MarkerAnnotationEditor> markerAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return markerAnnotation(new Name(annotationClass.getCanonicalName()));
+    }
+
+    public List<MarkerAnnotationEditor> markerAnnotation(Name annotationClass) {
         return annotations(annotationClass,
                 this::newMarkerAnnotation,
                 this::markerAnnotationEditor,
                 Annotation::isMarkerAnnotation);
     }
 
-    private MarkerAnnotation newMarkerAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    private MarkerAnnotation newMarkerAnnotation(Name annotationClass) {
         var newNormalAnnotation = rewrite.ast().newMarkerAnnotation();
-        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getSimpleName()));
+        newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
     }
 
@@ -253,6 +261,10 @@ public class ModifiersEditor {
     }
 
     public void removeAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        removeAnnotations(new Name(annotationClass.getCanonicalName()));
+    }
+
+    public void removeAnnotations(Name annotationClass) {
         var nodes = findAnnotation(annotationClass);
         ListRewrite listRewrite = listRewrite();
         nodes.forEach(node -> listRewrite.remove(node, null));

@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.AST;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class Name {
 
@@ -92,5 +93,15 @@ public class Name {
         } else {
             return ast.newSimpleName(identifier);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> name.equals(other.name));
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

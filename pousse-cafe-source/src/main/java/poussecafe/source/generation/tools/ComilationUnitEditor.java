@@ -72,6 +72,10 @@ public class ComilationUnitEditor {
         addImportFirst(importedClass.getCanonicalName());
     }
 
+    public void addImportFirst(Name importedClass) {
+        addImportFirst(importedClass.toString());
+    }
+
     public void addImportFirst(String name) {
         if(!alreadyImported(name)) {
             ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
