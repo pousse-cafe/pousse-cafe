@@ -1,4 +1,4 @@
-package poussecafe.source.generation;
+package poussecafe.source.generation.tools;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;

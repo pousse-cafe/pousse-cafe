@@ -1,4 +1,4 @@
-package poussecafe.source.generation;
+package poussecafe.source.generation.tools;
 
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.Expression;

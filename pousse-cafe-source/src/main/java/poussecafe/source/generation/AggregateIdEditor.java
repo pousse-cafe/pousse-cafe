@@ -2,6 +2,10 @@ package poussecafe.source.generation;
 
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.MethodDeclarationEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.util.StringId;
 
@@ -15,35 +19,38 @@ public class AggregateIdEditor {
         compilationUnitEditor.addImportLast(ValueObject.class.getCanonicalName());
         compilationUnitEditor.addImportLast(StringId.class.getCanonicalName());
 
-        var idSupertype = ast.newSimpleType(StringId.class);
-        var valueObjectType = ast.newSimpleType(ValueObject.class);
+        var typeEditor = compilationUnitEditor.typeDeclaration();
+        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         var typeName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
         var simpleTypeName = typeName.getIdentifier().toString();
-        var typeEditor = compilationUnitEditor.typeDeclaration()
-            .setName(simpleTypeName)
-            .setSuperclass(idSupertype)
-            .addSuperinterface(valueObjectType);
+        typeEditor.setName(simpleTypeName);
+
+        var idSupertype = ast.newSimpleType(StringId.class);
+        typeEditor.setSuperclass(idSupertype);
+
+        var valueObjectType = ast.newSimpleType(ValueObject.class);
+        typeEditor.addSuperinterface(valueObjectType);
 
         constructor(typeEditor.constructors(simpleTypeName).get(0));
-
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         compilationUnitEditor.flush();
     }
 
     @SuppressWarnings("unchecked")
     private void constructor(MethodDeclarationEditor editor) {
-        editor.modifiers().setVisibility(Visibility.PUBLIC);
+        if(editor.isNewNode()) {
+            editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        editor.clearParameters();
-        editor.addParameter(new Name("String"), "value");
+            editor.clearParameters();
+            editor.addParameter(new Name("String"), "value");
 
-        var body = ast.ast().newBlock();
-        var superInvocation = ast.ast().newSuperConstructorInvocation();
-        superInvocation.arguments().add(ast.newVariableAccess("value"));
-        body.statements().add(superInvocation);
-        editor.setBody(body);
+            var body = ast.ast().newBlock();
+            var superInvocation = ast.ast().newSuperConstructorInvocation();
+            superInvocation.arguments().add(ast.newVariableAccess("value"));
+            body.statements().add(superInvocation);
+            editor.setBody(body);
+        }
     }
 
     private Aggregate aggregate;

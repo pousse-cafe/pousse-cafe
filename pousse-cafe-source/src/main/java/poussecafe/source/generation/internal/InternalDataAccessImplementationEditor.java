@@ -2,9 +2,9 @@ package poussecafe.source.generation.internal;
 
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.source.generation.AggregateCodeGenerationConventions;
-import poussecafe.source.generation.AstWrapper;
-import poussecafe.source.generation.ComilationUnitEditor;
-import poussecafe.source.generation.Visibility;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
@@ -36,7 +36,7 @@ public class InternalDataAccessImplementationEditor {
         dataAccessImplementationAnnotation.setAttribute("storageName", storageNameAccess);
 
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        var typeName = AggregateCodeGenerationConventions.aggregateDataAccessImplementationTypeName(aggregate, InternalStorageGenerator.INTERNAL_STORAGE_NAME).getIdentifier();
+        var typeName = AggregateCodeGenerationConventions.aggregateDataAccessImplementationTypeName(aggregate, InternalStorageAdaptersCodeGenerator.INTERNAL_STORAGE_NAME).getIdentifier();
         typeEditor.setName(typeName);
 
         var superclassType = ast.newParameterizedType(InternalDataAccess.class);

@@ -5,7 +5,7 @@ import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
 
-public class CoreGenerator extends AbstractCodeGenerator {
+public class CoreCodeGenerator extends AbstractCodeGenerator {
 
     public void generate(Aggregate aggregate) {
         addAggregateId(aggregate);
@@ -78,9 +78,9 @@ public class CoreGenerator extends AbstractCodeGenerator {
 
     public static class Builder {
 
-        private CoreGenerator generator = new CoreGenerator();
+        private CoreCodeGenerator generator = new CoreCodeGenerator();
 
-        public CoreGenerator build() {
+        public CoreCodeGenerator build() {
             requireNonNull(generator.sourceDirectory);
             return generator;
         }
@@ -91,7 +91,7 @@ public class CoreGenerator extends AbstractCodeGenerator {
         }
     }
 
-    private CoreGenerator() {
+    private CoreCodeGenerator() {
 
     }
 }

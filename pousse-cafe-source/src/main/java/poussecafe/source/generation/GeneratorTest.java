@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Test;
 import poussecafe.files.Difference;
 import poussecafe.files.DifferenceType;
 import poussecafe.files.Tree;
@@ -20,6 +21,24 @@ public abstract class GeneratorTest {
     public void clearExistingCode() throws IOException {
         Tree.delete(sourceDirectory);
     }
+
+    @Test
+    public void newAggregate() { // NOSONAR - add assert - see parent
+        givenCoreGenerator();
+        givenStorageGenerator();
+        givenAggregate();
+        whenGeneratingCode();
+        thenGeneratedCodeMatchesExpected();
+    }
+
+    protected abstract void givenStorageGenerator();
+
+    private void whenGeneratingCode() {
+        whenGeneratingCoreCode();
+        whenGeneratingStorageCode();
+    }
+
+    protected abstract void whenGeneratingStorageCode();
 
     private Path sourceDirectory = Path.of(System.getProperty("java.io.tmpdir"), tempDirectoryName());
 
@@ -57,12 +76,12 @@ public abstract class GeneratorTest {
     }
 
     protected void givenCoreGenerator() {
-        generator = new CoreGenerator.Builder()
+        generator = new CoreCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory())
                 .build();
     }
 
-    private CoreGenerator generator;
+    private CoreCodeGenerator generator;
 
     protected void whenGeneratingCoreCode() {
         generator.generate(aggregate());
@@ -92,5 +111,19 @@ public abstract class GeneratorTest {
                 assertTrue("File content of " + difference.relativePath() + " does not match", false);
             }
         }
+    }
+
+    @Test
+    public void updateExistingAggregate() { // NOSONAR - add assert - see parent
+        givenCoreGenerator();
+        givenStorageGenerator();
+        givenAggregate();
+        givenExisingCode();
+        whenGeneratingCode();
+        thenGeneratedCodeMatchesExpected();
+    }
+
+    private void givenExisingCode() {
+        whenGeneratingCode();
     }
 }

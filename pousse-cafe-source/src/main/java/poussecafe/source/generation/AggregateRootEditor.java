@@ -7,6 +7,10 @@ import org.eclipse.jdt.core.dom.Type;
 import poussecafe.discovery.DefaultModule;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.NormalAnnotationEditor;
+import poussecafe.source.generation.tools.TypeDeclarationEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
@@ -22,19 +26,19 @@ public class AggregateRootEditor {
         compilationUnitEditor.addImportLast(AggregateRoot.class.getCanonicalName());
         compilationUnitEditor.addImportLast(poussecafe.domain.EntityAttributes.class.getCanonicalName());
 
-        ParameterizedType aggregateRootSupertype = aggregateRootSupertype();
+        var typeEditor = compilationUnitEditor.typeDeclaration();
 
-        var aggregateRootType = compilationUnitEditor.typeDeclaration()
-                .setName(aggregate.name())
-                .setSuperclass(aggregateRootSupertype);
-
-        var modifiers = aggregateRootType.modifiers();
-        modifiers.setVisibility(Visibility.PUBLIC);
-
+        var modifiers = typeEditor.modifiers();
         var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
         editAggregateAnnotation(annotationEditor.get(0));
 
-        var attributesType = aggregateRootType.declaredType(AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME);
+        modifiers.setVisibility(Visibility.PUBLIC);
+        typeEditor.setName(aggregate.name());
+
+        var aggregateRootSupertype = aggregateRootSupertype();
+        typeEditor.setSuperclass(aggregateRootSupertype);
+
+        var attributesType = typeEditor.declaredType(AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME);
         editAttributesType(attributesType);
 
         compilationUnitEditor.flush();
@@ -59,8 +63,8 @@ public class AggregateRootEditor {
     }
 
     private ParameterizedType aggregateRootSupertype() {
-        Type superclassType = ast.newSimpleType(ast.newSimpleName(AggregateRoot.class.getSimpleName()));
-        ParameterizedType parametrizedRootType = ast.newParameterizedType(superclassType);
+        var superclassType = ast.newSimpleType(ast.newSimpleName(AggregateRoot.class.getSimpleName()));
+        var parametrizedRootType = ast.newParameterizedType(superclassType);
 
         parametrizedRootType.typeArguments().add(aggregateIdentifierType());
 

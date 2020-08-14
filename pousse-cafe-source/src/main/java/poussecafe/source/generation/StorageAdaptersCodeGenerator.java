@@ -1,8 +1,9 @@
 package poussecafe.source.generation;
 
+import poussecafe.source.generation.tools.ComilationUnitEditor;
 import poussecafe.source.model.Aggregate;
 
-public abstract class StorageGenerator extends AbstractCodeGenerator {
+public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator {
 
     public void generate(Aggregate aggregate) {
         updateDefaultAttributesImplementation(aggregate);

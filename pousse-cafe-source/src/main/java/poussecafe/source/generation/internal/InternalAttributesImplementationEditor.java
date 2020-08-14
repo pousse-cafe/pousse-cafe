@@ -1,9 +1,9 @@
 package poussecafe.source.generation.internal;
 
 import java.io.Serializable;
-import poussecafe.source.generation.AstWrapper;
-import poussecafe.source.generation.ComilationUnitEditor;
-import poussecafe.source.generation.SuppressWarningsEditor;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.SuppressWarningsEditor;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;

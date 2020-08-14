@@ -5,6 +5,11 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.FieldDeclarationEditor;
+import poussecafe.source.generation.tools.MethodDeclarationEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
@@ -20,21 +25,20 @@ public class AggregateAttributesImplementationEditor {
         compilationUnitEditor.addImportLast(AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate));
         compilationUnitEditor.addImportLast(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate));
 
+        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeEditor = compilationUnitEditor.typeDeclaration();
+        typeEditor.setName(typeName.getIdentifier().toString());
+
         var attributesType = ast.newSimpleType(
                 AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate));
-
-        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
-        var simpleTypeName = typeName.getIdentifier().toString();
-        var typeEditor = compilationUnitEditor.typeDeclaration()
-            .setName(simpleTypeName)
-            .addSuperinterface(attributesType);
+        typeEditor.addSuperinterface(attributesType);
 
         var modifiers = typeEditor.modifiers();
         modifiers.setVisibility(Visibility.PUBLIC);
 
         editIdentifierAttribute(typeEditor.method(IDENTIFIER_FIELD_NAME).get(0));
         editIdentifierField(typeEditor.field(IDENTIFIER_FIELD_NAME).get(0));
-        editVersionField(typeEditor.field("version").get(0));
+        editVersionField(typeEditor.field(VERSION_FIELD_NAME).get(0));
 
         compilationUnitEditor.flush();
     }
@@ -55,7 +59,9 @@ public class AggregateAttributesImplementationEditor {
         editor.setBody(body);
     }
 
-    private static final String IDENTIFIER_FIELD_NAME = "identifier";
+    public static final String IDENTIFIER_FIELD_NAME = "identifier";
+
+    public static final String VERSION_FIELD_NAME = "version";
 
     private Name identifierSimpleName() {
         return AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier();

@@ -1,4 +1,4 @@
-package poussecafe.source.generation;
+package poussecafe.source.generation.tools;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,8 +17,8 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.generation.ModifierInsertor.DefaultInsertionMode;
-import poussecafe.source.generation.ModifierInsertor.InsertionMode;
+import poussecafe.source.generation.tools.ModifierInsertor.DefaultInsertionMode;
+import poussecafe.source.generation.tools.ModifierInsertor.InsertionMode;
 
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
@@ -250,6 +250,12 @@ public class ModifiersEditor {
 
     private MarkerAnnotationEditor markerAnnotationEditor(Annotation annotation) {
         return new MarkerAnnotationEditor(new NodeRewrite(rewrite.rewrite(), annotation));
+    }
+
+    public void removeAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        var nodes = findAnnotation(annotationClass);
+        ListRewrite listRewrite = listRewrite();
+        nodes.forEach(node -> listRewrite.remove(node, null));
     }
 
     public ModifiersEditor(NodeRewrite rewrite, ChildListPropertyDescriptor property) {

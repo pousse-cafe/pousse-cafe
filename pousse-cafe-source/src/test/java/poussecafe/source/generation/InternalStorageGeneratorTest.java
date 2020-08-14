@@ -1,44 +1,21 @@
 package poussecafe.source.generation;
 
-import org.junit.Test;
-import poussecafe.source.generation.internal.InternalStorageGenerator;
+import poussecafe.source.generation.internal.InternalStorageAdaptersCodeGenerator;
 
 public class InternalStorageGeneratorTest extends GeneratorTest {
 
-    @Test
-    public void newAggregate() { // NOSONAR - add assert - see parent
-        givenCoreGenerator();
-        givenInternalStorageGenerator();
-        givenAggregate();
-        whenGeneratingCode();
-        thenGeneratedCodeMatchesExpected();
-    }
-
-    protected void givenInternalStorageGenerator() {
-        generator = new InternalStorageGenerator.Builder()
+    @Override
+    protected void givenStorageGenerator() {
+        generator = new InternalStorageAdaptersCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory())
                 .build();
     }
 
-    private InternalStorageGenerator generator;
+    private InternalStorageAdaptersCodeGenerator generator;
 
-    private void whenGeneratingCode() {
-        whenGeneratingCoreCode();
+    @Override
+    protected void whenGeneratingStorageCode() {
         generator.generate(aggregate());
-    }
-
-    @Test
-    public void updateExistingAggregate() { // NOSONAR - add assert - see parent
-        givenCoreGenerator();
-        givenInternalStorageGenerator();
-        givenAggregate();
-        givenExisingCode();
-        whenGeneratingCode();
-        thenGeneratedCodeMatchesExpected();
-    }
-
-    private void givenExisingCode() {
-        whenGeneratingCode();
     }
 
     @Override

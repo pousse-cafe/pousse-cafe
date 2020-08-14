@@ -3,6 +3,9 @@ package poussecafe.source.generation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.Factory;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
@@ -15,13 +18,12 @@ public class AggregateFactoryEditor {
 
         compilationUnitEditor.addImportLast(Factory.class.getCanonicalName());
 
-        ParameterizedType factorySupertype = factorySupertype();
-
-        var typeEditor = compilationUnitEditor.typeDeclaration()
-            .setName(AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate))
-            .setSuperclass(factorySupertype);
-
+        var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+        typeEditor.setName(AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate));
+
+        var factorySupertype = factorySupertype();
+        typeEditor.setSuperclass(factorySupertype);
 
         compilationUnitEditor.flush();
     }

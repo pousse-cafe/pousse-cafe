@@ -1,4 +1,4 @@
-package poussecafe.source.generation;
+package poussecafe.source.generation.tools;
 
 public class MarkerAnnotationEditor implements AnnotationEditor {
 

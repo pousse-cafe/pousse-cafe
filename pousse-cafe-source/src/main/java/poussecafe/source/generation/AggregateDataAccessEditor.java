@@ -2,6 +2,9 @@ package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import poussecafe.domain.EntityDataAccess;
+import poussecafe.source.generation.tools.AstWrapper;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
@@ -14,16 +17,15 @@ public class AggregateDataAccessEditor {
 
         compilationUnitEditor.addImportLast(EntityDataAccess.class.getCanonicalName());
 
-        ParameterizedType entityDataAccessType = entityDataAccessType();
-
-        var typeEditor = compilationUnitEditor.typeDeclaration()
-            .setInterface(true)
-            .setName(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate))
-            .setTypeParameter(0, ast.newExtendingTypeParameter("D",
-                    AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)))
-            .addSuperinterface(entityDataAccessType);
-
+        var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+        typeEditor.setInterface(true);
+        typeEditor.setName(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate));
+        typeEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
+            AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+
+        var entityDataAccessType = entityDataAccessType();
+        typeEditor.addSuperinterface(entityDataAccessType);
 
         compilationUnitEditor.flush();
     }
@@ -31,7 +33,7 @@ public class AggregateDataAccessEditor {
     private Aggregate aggregate;
 
     private ParameterizedType entityDataAccessType() {
-        ParameterizedType parametrizedType = ast.newParameterizedType(EntityDataAccess.class);
+        var parametrizedType = ast.newParameterizedType(EntityDataAccess.class);
 
         var aggregateIdentifierType = ast.newSimpleType(
                 AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());

@@ -1,13 +1,13 @@
 package poussecafe.source.generation.internal;
 
 import java.nio.file.Path;
-import poussecafe.source.generation.ComilationUnitEditor;
-import poussecafe.source.generation.StorageGenerator;
+import poussecafe.source.generation.StorageAdaptersCodeGenerator;
+import poussecafe.source.generation.tools.ComilationUnitEditor;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
 
-public class InternalStorageGenerator extends StorageGenerator {
+public class InternalStorageAdaptersCodeGenerator extends StorageAdaptersCodeGenerator {
 
     @Override
     protected void updateDefaultAttributesImplementation(Aggregate aggregate, ComilationUnitEditor compilationUnitEditor) {
@@ -36,9 +36,9 @@ public class InternalStorageGenerator extends StorageGenerator {
 
     public static class Builder {
 
-        private InternalStorageGenerator generator = new InternalStorageGenerator();
+        private InternalStorageAdaptersCodeGenerator generator = new InternalStorageAdaptersCodeGenerator();
 
-        public InternalStorageGenerator build() {
+        public InternalStorageAdaptersCodeGenerator build() {
             requireNonNull(generator.sourceDirectory);
             return generator;
         }
@@ -49,7 +49,7 @@ public class InternalStorageGenerator extends StorageGenerator {
         }
     }
 
-    private InternalStorageGenerator() {
+    private InternalStorageAdaptersCodeGenerator() {
 
     }
 }
