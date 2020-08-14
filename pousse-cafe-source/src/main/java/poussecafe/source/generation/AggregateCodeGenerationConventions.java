@@ -43,6 +43,10 @@ public class AggregateCodeGenerationConventions {
         return aggregate.packageName() + "." + ADAPTERS_PACKAGE_NAME;
     }
 
+    public static Name aggregateDataAccessImplementationTypeName(Aggregate aggregate, String storageName) {
+        return new Name(adaptersPackageName(aggregate), aggregate.name() + storageName + "DataAccess");
+    }
+
     private AggregateCodeGenerationConventions() {
 
     }

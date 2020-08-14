@@ -1,15 +1,26 @@
-package poussecafe.source.generation;
+package poussecafe.source.generation.internal;
 
 import java.io.Serializable;
+import poussecafe.source.generation.AstWrapper;
+import poussecafe.source.generation.ComilationUnitEditor;
+import poussecafe.source.generation.SuppressWarningsEditor;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("unchecked")
 public class InternalAttributesImplementationEditor {
 
     public void edit() {
-        compilationUnitEditor.addImportLast(Serializable.class);
+        compilationUnitEditor.addImportFirst(Serializable.class);
+
+        var typeEditor = compilationUnitEditor.typeDeclaration();
+
+        var annotationEditor = new SuppressWarningsEditor(
+                typeEditor.modifiers().singleMemberAnnotation(SuppressWarnings.class).get(0));
+        annotationEditor.addWarning("serial");
+
+        typeEditor.addSuperinterfaceFirst(ast.newSimpleType(Serializable.class));
+
         compilationUnitEditor.flush();
     }
 

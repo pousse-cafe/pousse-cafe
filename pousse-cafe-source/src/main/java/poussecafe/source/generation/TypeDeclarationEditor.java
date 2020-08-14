@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
@@ -72,6 +73,14 @@ public class TypeDeclarationEditor {
         return containsNode(typeDeclaration.superInterfaceTypes(), superinterfaceType);
     }
 
+    public TypeDeclarationEditor addSuperinterfaceFirst(SimpleType superinterfaceType) {
+        if(!alreadyImplements(superinterfaceType)) {
+            rewrite.listRewrite(TypeDeclaration.SUPER_INTERFACE_TYPES_PROPERTY).insertFirst(superinterfaceType, null);
+        }
+        return this;
+
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean containsNode(List list, Object node) {
         return list.stream().anyMatch(listNode -> listNode.toString().equals(node.toString()));
@@ -100,16 +109,21 @@ public class TypeDeclarationEditor {
 
     public List<MethodDeclarationEditor> method(String methodName) {
         var methods = findMethods(methodName);
-        if(methods.isEmpty()) {
-            var method = rewrite.ast().newMethodDeclaration();
-            method.setName(rewrite.ast().newSimpleName(methodName));
-            rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(method, null);
-            methods.add(method);
-        }
-
+        var newMethod = createMethodIfAbsent(methodName, methods);
         return methods.stream()
-                .map(method -> new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), method)))
+                .map(method -> new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), method), method == newMethod))
                 .collect(toList());
+    }
+
+    private MethodDeclaration createMethodIfAbsent(String methodName, List<MethodDeclaration> methods) {
+        MethodDeclaration newMethod = null;
+        if(methods.isEmpty()) {
+            newMethod = rewrite.ast().newMethodDeclaration();
+            newMethod.setName(rewrite.ast().newSimpleName(methodName));
+            rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newMethod, null);
+            methods.add(newMethod);
+        }
+        return newMethod;
     }
 
     private List<MethodDeclaration> findMethods(String methodName) {
@@ -165,17 +179,22 @@ public class TypeDeclarationEditor {
 
     public List<MethodDeclarationEditor> constructors(String typeName) {
         var methods = findConstructors();
-        if(methods.isEmpty()) {
-            var method = rewrite.ast().newMethodDeclaration();
-            method.setConstructor(true);
-            method.setName(rewrite.ast().newSimpleName(typeName));
-            rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(method, null);
-            methods.add(method);
-        }
-
+        var newConstructor = createConstructorIfAbsent(typeName, methods);
         return methods.stream()
-                .map(method -> new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), method)))
+                .map(method -> new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), method), method == newConstructor))
                 .collect(toList());
+    }
+
+    private MethodDeclaration createConstructorIfAbsent(String typeName, List<MethodDeclaration> methods) {
+        MethodDeclaration newConstructor = null;
+        if(methods.isEmpty()) {
+            newConstructor = rewrite.ast().newMethodDeclaration();
+            newConstructor.setConstructor(true);
+            newConstructor.setName(rewrite.ast().newSimpleName(typeName));
+            rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newConstructor, null);
+            methods.add(newConstructor);
+        }
+        return newConstructor;
     }
 
     private List<MethodDeclaration> findConstructors() {

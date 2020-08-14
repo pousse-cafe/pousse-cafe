@@ -1,5 +1,6 @@
 package poussecafe.source.generation;
 
+import poussecafe.source.generation.internal.InternalAttributesImplementationEditor;
 import poussecafe.source.model.Aggregate;
 
 public class InternalStorageCodeGenerator extends AbstractCodeGenerator {

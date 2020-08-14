@@ -21,10 +21,6 @@ public class Tree {
         return treeComparator.differences();
     }
 
-    private Tree() {
-
-    }
-
     public static void delete(Path sourceDirectory) throws IOException {
         if(sourceDirectory.toFile().exists()) {
             Files.walk(sourceDirectory) // NOSONAR
@@ -32,5 +28,16 @@ public class Tree {
                 .map(Path::toFile)
                 .forEach(File::delete);
         }
+    }
+
+    public static Path path(String[] segments) {
+        var firstSegment = segments[0];
+        var nextSegments = new String[segments.length - 1];
+        System.arraycopy(segments, 1, nextSegments, 0, nextSegments.length);
+        return Path.of(firstSegment, nextSegments);
+    }
+
+    private Tree() {
+
     }
 }

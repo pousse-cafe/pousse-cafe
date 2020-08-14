@@ -68,6 +68,20 @@ public class ComilationUnitEditor {
         addImportLast(importedClass.getCanonicalName());
     }
 
+    public void addImportFirst(Class<?> importedClass) {
+        addImportFirst(importedClass.getCanonicalName());
+    }
+
+    public void addImportFirst(String name) {
+        if(!alreadyImported(name)) {
+            ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
+            importDeclaration.setName(rewrite.ast().newName(name));
+
+            ListRewrite listRewrite = rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY);
+            listRewrite.insertFirst(importDeclaration, null);
+        }
+    }
+
     public void setDeclaredType(TypeDeclaration typeDeclaration) {
         ListRewrite typesRewrite = rewrite.listRewrite(CompilationUnit.TYPES_PROPERTY);
         var types = typesRewrite.getOriginalList();

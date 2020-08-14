@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.TypeParameter;
 import poussecafe.source.analysis.Name;
 
@@ -38,6 +40,12 @@ public class AstWrapper {
 
     public SimpleType newSimpleType(Name name) {
         return ast.newSimpleType(name.toJdomName(ast));
+    }
+
+    public TypeLiteral newTypeLiteral(Name name) {
+        var typeLiteral = ast.newTypeLiteral();
+        typeLiteral.setType(newSimpleType(name.getIdentifier()));
+        return typeLiteral;
     }
 
     public TypeDeclarationBuilder newTypeDeclarationBuilder() {
@@ -104,5 +112,15 @@ public class AstWrapper {
             annotation.setValue(stringArray);
         }
         return annotation;
+    }
+
+    public SimpleName newSimpleName(Name name) {
+        return ast.newSimpleName(name.getIdentifier().toString());
+    }
+
+    public StringLiteral newStringLiteral(String string) {
+        var literal = ast.newStringLiteral();
+        literal.setLiteralValue(string);
+        return literal;
     }
 }

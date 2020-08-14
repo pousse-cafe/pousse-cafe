@@ -11,10 +11,18 @@ public class SingleMemberAnnotationEditor implements AnnotationEditor {
         nodeRewrite.set(SingleMemberAnnotation.VALUE_PROPERTY, value);
     }
 
+    public Expression getValue() {
+        return (Expression) nodeRewrite.get(SingleMemberAnnotation.VALUE_PROPERTY);
+    }
+
     public SingleMemberAnnotationEditor(NodeRewrite nodeRewrite) {
         requireNonNull(nodeRewrite);
         this.nodeRewrite = nodeRewrite;
     }
 
     private NodeRewrite nodeRewrite;
+
+    public NodeRewrite rewrite() {
+        return nodeRewrite;
+    }
 }

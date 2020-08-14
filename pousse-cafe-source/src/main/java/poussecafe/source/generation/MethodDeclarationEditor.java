@@ -37,12 +37,20 @@ public class MethodDeclarationEditor {
         rewrite.set(MethodDeclaration.RETURN_TYPE2_PROPERTY, returnType);
     }
 
-    public MethodDeclarationEditor(NodeRewrite rewrite) {
+    public MethodDeclarationEditor(NodeRewrite rewrite, boolean isNewNode) {
         requireNonNull(rewrite);
         this.rewrite = rewrite;
+
+        this.isNewNode = isNewNode;
 
         methodDeclaration = (MethodDeclaration) rewrite.node();
     }
 
     private NodeRewrite rewrite;
+
+    public boolean isNewNode() {
+        return isNewNode;
+    }
+
+    private boolean isNewNode;
 }

@@ -3,6 +3,7 @@ package poussecafe.source.generation;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
+import org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
@@ -33,6 +34,10 @@ public class NodeRewrite {
 
     public void set(StructuralPropertyDescriptor packageProperty, Object data) {
         rewrite.set(node, packageProperty, data, null);
+    }
+
+    public Object get(ChildPropertyDescriptor property) {
+        return rewrite.get(node, property);
     }
 
     public NodeRewrite(ASTRewrite rewrite, ASTNode node) {
