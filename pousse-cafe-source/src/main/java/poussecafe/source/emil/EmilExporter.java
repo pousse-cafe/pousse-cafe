@@ -71,14 +71,11 @@ public class EmilExporter {
     private void appendTopListener(MessageListener rootListener) {
         builder.resetIndent();
         Optional<String> consumesFromExternal = rootListener.consumesFromExternal();
-        if(consumesFromExternal.isPresent()) {
-            builder.appendOpeningNote(consumesFromExternal.get());
-        }
-        appendMessageConsumption(rootListener.consumedMessage(), true, Optional.empty());
+        appendMessageConsumption(consumesFromExternal, rootListener.consumedMessage(), true, Optional.empty());
     }
 
-    private void appendMessageConsumption(Message message, boolean required, Optional<String> noteIfNoListeners) {
-        appendMessage(message, required);
+    private void appendMessageConsumption(Optional<String> consumesFromExternal, Message message, boolean required, Optional<String> noteIfNoListeners) {
+        appendMessage(consumesFromExternal, message, required);
 
         var consumers = findAndRemoveConsumers(message);
         if(consumers.isEmpty()) {
@@ -90,11 +87,14 @@ public class EmilExporter {
         }
     }
 
-    private void appendMessage(Message message, boolean required) {
+    private void appendMessage(Optional<String> consumesFromExternal, Message message, boolean required) {
         if(message.type() == MessageType.COMMAND) {
             builder.appendCommandIdentifier(message.name());
         } else if(message.type() == MessageType.DOMAIN_EVENT) {
             builder.appendDomainEventIdentifier(message.name());
+            if(consumesFromExternal.isPresent()) {
+                builder.appendClosingNote(consumesFromExternal.get());
+            }
         }
         if(!required) {
             builder.appendOptionalOperator();
@@ -193,7 +193,7 @@ public class EmilExporter {
         appendFactoryName(listener);
 
         var aggregateName = listener.container().aggregateName().orElseThrow();
-        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
+        var aggregate = model.aggregate(aggregateName).orElseThrow();
 
         var allProducedEvents = new ArrayList<ProducedEvent>();
         allProducedEvents.addAll(aggregate.onAddProducedEvents());
@@ -244,7 +244,7 @@ public class EmilExporter {
         appendRepositoryName(listener);
 
         var aggregateName = listener.container().aggregateName().orElseThrow();
-        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
+        var aggregate = model.aggregate(aggregateName).orElseThrow();
 
         var allProducedEvents = new ArrayList<ProducedEvent>();
         allProducedEvents.addAll(aggregate.onDeleteProducedEvents());
@@ -271,16 +271,8 @@ public class EmilExporter {
     }
 
     private List<ProducedEvent> aggregateRootListenerProducedEvents(MessageListener listener) {
-        var eventsSet = new HashSet<ProducedEvent>();
-        eventsSet.addAll(listener.producedEvents());
-
-        String aggregateName = listener.container().aggregateName().orElseThrow();
-        var aggregate = model.aggregateRoot(aggregateName).orElseThrow();
-        eventsSet.addAll(aggregate.onUpdateProducedEvents());
-
-        var listenerProducedEvents = new ArrayList<>(eventsSet);
+        var listenerProducedEvents = new ArrayList<>(listener.producedEvents());
         listenerProducedEvents.sort((e1, e2) -> e1.message().name().compareTo(e2.message().name()));
-
         return listenerProducedEvents;
     }
 
@@ -301,7 +293,7 @@ public class EmilExporter {
             builder.indent();
             builder.appendCloseRelation();
             Optional<String> note = consumedByExternalNote(producedEvent);
-            appendMessageConsumption(producedEvent.message(), producedEvent.required(), note);
+            appendMessageConsumption(Optional.empty(), producedEvent.message(), producedEvent.required(), note);
         }
         builder.decrementIndent();
     }

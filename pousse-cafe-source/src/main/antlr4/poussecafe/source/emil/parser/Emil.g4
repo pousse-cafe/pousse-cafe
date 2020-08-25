@@ -35,14 +35,14 @@ factoryConsumption :
         ( aggregateRoot '[' 'onAdd' ']' ':' eventProductions )?
     ;
 
-factoryListener : 'F' '{' factoryName=NAME '}' '[' listenerName=NAME ']' ( '#' | '+' )? ;
+factoryListener : 'F' '{' factoryName=NAME '}' '[' listenerName=NAME ']' ( optional='#' | serveral='+' )? ;
 
 aggregateRoot : '@' NAME ;
 
 eventProductions : eventProduction+ ;
 
 eventProduction :
-    ':' event '#'? '->' messageConsumptions
+    ':' event optional='#'? '->' messageConsumptions
     ;
 
 event : NAME '!' ;
@@ -67,6 +67,6 @@ multipleMessageConsumptions : multipleMessageConsumptionsItem+ ;
 
 multipleMessageConsumptionsItem : '->' singleMessageConsumption ;
 
-eventConsumption : external? event '->' messageConsumptions ;
+eventConsumption : event external? '->' messageConsumptions ;
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines

@@ -75,7 +75,6 @@ public class CompilationUnitVisitor extends ASTVisitor {
         } else if(resolvedTypeDeclaration.implementsInterface(CompilationUnitResolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
                     .name(resolvedTypeDeclaration.name().simpleName())
-                    .filePath(sourcePath)
                     .build());
             return false;
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
@@ -151,7 +150,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     private void createOrUpdateAggregate(ResolvedTypeName name) {
         aggregateBuilder = new Aggregate.Builder();
-        Optional<Aggregate> aggregate = model.aggregateRoot(name.simpleName());
+        Optional<Aggregate> aggregate = model.aggregate(name.simpleName());
         if(aggregate.isPresent()) {
             aggregateBuilder.startingFrom(aggregate.get());
         } else {
@@ -167,7 +166,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
     public void endVisit(TypeDeclaration node) {
         if(typeLevel == containerLevel
                 && aggregateBuilder != null) {
-            model.putAggregateRoot(aggregateBuilder.build());
+            model.putAggregate(aggregateBuilder.build());
             aggregateBuilder = null;
             container = null;
         }
@@ -195,10 +194,6 @@ public class CompilationUnitVisitor extends ASTVisitor {
                     var annotatedMethod = method.asAnnotatedElement();
                     var producedEvents = producesEvents(annotatedMethod);
                     aggregateBuilder.onDeleteProducedEvents(producedEvents);
-                } else if(method.name().equals(Aggregate.ON_UPDATE_METHOD_NAME)) {
-                    var annotatedMethod = method.asAnnotatedElement();
-                    var producedEvents = producesEvents(annotatedMethod);
-                    aggregateBuilder.onUpdateProducedEvents(producedEvents);
                 }
             }
         }

@@ -1,8 +1,9 @@
 package poussecafe.source.model;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
@@ -17,27 +18,19 @@ public class Aggregate {
 
     public static final String ON_ADD_METHOD_NAME = "onAdd";
 
-    public List<ProducedEvent> onAddProducedEvents() {
+    public Set<ProducedEvent> onAddProducedEvents() {
         return onAddProducedEvents;
     }
 
-    private List<ProducedEvent> onAddProducedEvents = new ArrayList<>();
+    private Set<ProducedEvent> onAddProducedEvents = new HashSet<>();
 
     public static final String ON_DELETE_METHOD_NAME = "onDelete";
 
-    public List<ProducedEvent> onDeleteProducedEvents() {
+    public Set<ProducedEvent> onDeleteProducedEvents() {
         return onDeleteProducedEvents;
     }
 
-    private List<ProducedEvent> onDeleteProducedEvents = new ArrayList<>();
-
-    public static final String ON_UPDATE_METHOD_NAME = "onUpdate";
-
-    public List<ProducedEvent> onUpdateProducedEvents() {
-        return onUpdateProducedEvents;
-    }
-
-    private List<ProducedEvent> onUpdateProducedEvents = new ArrayList<>();
+    private Set<ProducedEvent> onDeleteProducedEvents = new HashSet<>();
 
     private String packageName;
 
@@ -70,7 +63,6 @@ public class Aggregate {
             aggregate.packageName = other.packageName;
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
             aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
-            aggregate.onUpdateProducedEvents.addAll(other.onUpdateProducedEvents);
             return this;
         }
 
@@ -79,13 +71,13 @@ public class Aggregate {
             return this;
         }
 
-        public Builder onDeleteProducedEvents(List<ProducedEvent> onDeleteProducedEvents) {
-            aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
+        public Builder onAddProducedEvent(ProducedEvent producedEvent) {
+            aggregate.onAddProducedEvents.add(producedEvent);
             return this;
         }
 
-        public Builder onUpdateProducedEvents(List<ProducedEvent> onUpdateProducedEvents) {
-            aggregate.onUpdateProducedEvents.addAll(onUpdateProducedEvents);
+        public Builder onDeleteProducedEvents(List<ProducedEvent> onDeleteProducedEvents) {
+            aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
             return this;
         }
 

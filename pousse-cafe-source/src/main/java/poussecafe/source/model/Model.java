@@ -1,24 +1,27 @@
 package poussecafe.source.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 public class Model {
 
-    public void putAggregateRoot(Aggregate source) {
-        aggregateRoots.put(source.name(), source);
+    public void putAggregate(Aggregate source) {
+        aggregates.put(source.name(), source);
     }
 
-    private Map<String, Aggregate> aggregateRoots = new HashMap<>();
+    private Map<String, Aggregate> aggregates = new HashMap<>();
 
-    public Optional<Aggregate> aggregateRoot(String name) {
-        return Optional.ofNullable(aggregateRoots.get(name));
+    public Optional<Aggregate> aggregate(String name) {
+        return Optional.ofNullable(aggregates.get(name));
     }
 
     public Optional<ProcessModel> process(String name) {
@@ -29,9 +32,7 @@ public class Model {
 
     public void addProcess(ProcessModel source) {
         String name = source.name();
-        if(processes.containsKey(name)) {
-            throw new IllegalArgumentException("A process named " + name + " already exists in file " + source.filePath());
-        } else {
+        if(!processes.containsKey(name)) {
             processes.put(name, source);
         }
     }
@@ -57,5 +58,25 @@ public class Model {
 
     public List<MessageListener> messageListeners() {
         return unmodifiableList(listeners);
+    }
+
+    public void addCommand(String commandName) {
+        commands.add(commandName);
+    }
+
+    private Set<String> commands = new HashSet<>();
+
+    public Set<String> commands() {
+        return Collections.unmodifiableSet(commands);
+    }
+
+    public void addEvent(String eventName) {
+        events.add(eventName);
+    }
+
+    private Set<String> events = new HashSet<>();
+
+    public Set<String> events() {
+        return Collections.unmodifiableSet(events);
     }
 }
