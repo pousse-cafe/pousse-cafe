@@ -1,8 +1,21 @@
 package poussecafe.source.emil;
 
+import java.util.Optional;
+
 public class FormattedEmilTokenStreamBuilder {
 
     private StringBuilder builder = new StringBuilder();
+
+    public void appendHeader(Optional<String> processName) {
+        builder.append("process ");
+        if(processName.isPresent()) {
+            builder.append(processName.get());
+        } else {
+            builder.append('*');
+        }
+        appendNewLine();
+        appendNewLine();
+    }
 
     public void resetIndent() {
         indent = "";

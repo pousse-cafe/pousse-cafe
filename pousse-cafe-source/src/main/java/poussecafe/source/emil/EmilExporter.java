@@ -34,6 +34,7 @@ public class EmilExporter {
 
     private void generateEmil() {
         builder = new FormattedEmilTokenStreamBuilder();
+        builder.appendHeader(processName);
         while(!targetListeners.isEmpty()) {
             MessageListener next = next();
             appendTopListener(next);

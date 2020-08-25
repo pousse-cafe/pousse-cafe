@@ -1,3 +1,5 @@
+process Process1
+
 Command1? -> F{Aggregate1Factory}[process1Listener0]
     @Aggregate1[onAdd]:
         :Event5! -> .
