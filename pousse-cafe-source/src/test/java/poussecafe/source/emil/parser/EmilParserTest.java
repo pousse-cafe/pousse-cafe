@@ -13,58 +13,49 @@ public class EmilParserTest {
 
     @Test
     public void parseValidString() {
-        givenParser();
         whenParsingString("process Test Command? -> .");
         thenParseSuccess(1);
     }
 
-    private void givenParser() {
-        parser = new TreeParser();
-    }
-
-    private TreeParser parser;
-
     private void whenParsingString(String emil) {
-        parser.parseString(emil);
+        tree = TreeParser.parseString(emil);
     }
+
+    private Tree tree;
 
     private void thenParseSuccess(int expectedConsumptions) {
-        assertTrue(parser.errors().stream().collect(joining("\n")), parser.success());
-        assertThat(parser.consumptions(), equalTo(expectedConsumptions));
+        assertTrue(tree.errors().stream().collect(joining("\n")), tree.isValid());
+        assertThat(tree.processContext().consumptions().getChildCount(), equalTo(expectedConsumptions));
     }
 
     @Test
     public void parseInvalidString() {
-        givenParser();
         whenParsingString("Command -> .");
         thenParseFailure();
     }
 
     private void thenParseFailure() {
-        assertFalse(parser.success());
+        assertFalse(tree.isValid());
     }
 
     @Test
     public void parseValidProcessInputStream() throws IOException {
-        givenParser();
         whenParsingResource("Process1.emil");
         thenParseSuccess(6);
     }
 
     private void whenParsingResource(String resourceName) throws IOException {
-        parser.parseInputStream(getClass().getResourceAsStream("/" + resourceName));
+        tree = TreeParser.parseInputStream(getClass().getResourceAsStream("/" + resourceName));
     }
 
     @Test
     public void parseInvalidInputStream() throws IOException {
-        givenParser();
         whenParsingResource("invalid.emil");
         thenParseFailure();
     }
 
     @Test
     public void parseValidAllInputStream() throws IOException {
-        givenParser();
         whenParsingResource("all.emil");
         thenParseSuccess(6);
     }
