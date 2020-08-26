@@ -11,6 +11,10 @@ import static java.util.Objects.requireNonNull;
 
 public class MethodDeclarationEditor {
 
+    public void setName(String name) {
+        rewrite.set(MethodDeclaration.NAME_PROPERTY, rewrite.ast().newSimpleName(name));
+    }
+
     public ModifiersEditor modifiers() {
         return new ModifiersEditor(rewrite, MethodDeclaration.MODIFIERS2_PROPERTY);
     }
@@ -53,4 +57,8 @@ public class MethodDeclarationEditor {
     }
 
     private boolean isNewNode;
+
+    public AstWrapper ast() {
+        return new AstWrapper(rewrite.node().getAST());
+    }
 }

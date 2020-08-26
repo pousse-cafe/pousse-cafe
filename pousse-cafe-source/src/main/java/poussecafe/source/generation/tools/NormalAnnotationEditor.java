@@ -38,6 +38,17 @@ public class NormalAnnotationEditor implements AnnotationEditor {
         return attribute;
     }
 
+    public boolean hasAttribute(String name) {
+        return findAttribute(name).isPresent();
+    }
+
+    public void removeAttribute(String name) {
+        var attribute = findAttribute(name);
+        if(attribute.isPresent()) {
+            rewrite.listRewrite(NormalAnnotation.VALUES_PROPERTY).remove(attribute.get(), null);
+        }
+    }
+
     public NormalAnnotationEditor(NodeRewrite rewrite) {
         requireNonNull(rewrite);
         this.rewrite = rewrite;

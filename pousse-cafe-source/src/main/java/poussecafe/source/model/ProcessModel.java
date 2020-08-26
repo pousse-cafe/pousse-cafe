@@ -10,17 +10,29 @@ public class ProcessModel {
         return name;
     }
 
+    private String packageName;
+
+    public String packageName() {
+        return packageName;
+    }
+
     public static class Builder {
 
         private ProcessModel source = new ProcessModel();
 
         public ProcessModel build() {
             requireNonNull(source.name);
+            requireNonNull(source.packageName);
             return source;
         }
 
         public Builder name(String name) {
             source.name = name;
+            return this;
+        }
+
+        public Builder packageName(String packageName) {
+            source.packageName = packageName;
             return this;
         }
     }

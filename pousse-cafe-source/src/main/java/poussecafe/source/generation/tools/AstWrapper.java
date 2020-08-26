@@ -1,10 +1,13 @@
 package poussecafe.source.generation.tools;
 
+import java.util.Collection;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
@@ -14,6 +17,7 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.TypeParameter;
 import poussecafe.source.analysis.Name;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("unchecked")
@@ -78,6 +82,10 @@ public class AstWrapper {
         return ast.newParameterizedType(newSimpleType(typeClass));
     }
 
+    public ParameterizedType newParameterizedType(String typeClass) {
+        return ast.newParameterizedType(newSimpleType(typeClass));
+    }
+
     public ParameterizedType newParameterizedType(Name typeName) {
         return ast.newParameterizedType(newSimpleType(typeName));
     }
@@ -103,15 +111,20 @@ public class AstWrapper {
             singleString.setLiteralValue(value[0]);
             annotation.setValue(singleString);
         } else if(value.length > 1) {
-            var stringArray = ast.newArrayInitializer();
-            for(String string : value) {
-                var singleString = ast.newStringLiteral();
-                singleString.setLiteralValue(string);
-                stringArray.expressions().add(singleString);
-            }
+            var stringArray = newStringArrayInitializer(asList(value));
             annotation.setValue(stringArray);
         }
         return annotation;
+    }
+
+    public ArrayInitializer newStringArrayInitializer(Collection<String> values) {
+        var stringArray = ast.newArrayInitializer();
+        for(String string : values) {
+            var singleString = ast.newStringLiteral();
+            singleString.setLiteralValue(string);
+            stringArray.expressions().add(singleString);
+        }
+        return stringArray;
     }
 
     public SimpleName newSimpleName(Name name) {
@@ -122,5 +135,11 @@ public class AstWrapper {
         var literal = ast.newStringLiteral();
         literal.setLiteralValue(string);
         return literal;
+    }
+
+    public ReturnStatement newReturnNullStatement() {
+        var statement = ast.newReturnStatement();
+        statement.setExpression(ast.newNullLiteral());
+        return statement;
     }
 }

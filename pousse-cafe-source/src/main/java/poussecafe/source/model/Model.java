@@ -1,13 +1,12 @@
 package poussecafe.source.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
@@ -60,23 +59,35 @@ public class Model {
         return unmodifiableList(listeners);
     }
 
-    public void addCommand(String commandName) {
-        commands.add(commandName);
+    public void addCommand(Command command) {
+        commands.put(command.simpleName(), command);
     }
 
-    private Set<String> commands = new HashSet<>();
+    private Map<String, Command> commands = new HashMap<>();
 
-    public Set<String> commands() {
-        return Collections.unmodifiableSet(commands);
+    public Collection<Command> commands() {
+        return Collections.unmodifiableCollection(commands.values());
     }
 
-    public void addEvent(String eventName) {
-        events.add(eventName);
+    public Optional<Command> command(String name) {
+        return Optional.ofNullable(commands.get(name));
     }
 
-    private Set<String> events = new HashSet<>();
+    public void addEvent(DomainEvent event) {
+        events.put(event.simpleName(), event);
+    }
 
-    public Set<String> events() {
-        return Collections.unmodifiableSet(events);
+    private Map<String, DomainEvent> events = new HashMap<>();
+
+    public Collection<DomainEvent> events() {
+        return Collections.unmodifiableCollection(events.values());
+    }
+
+    public Optional<DomainEvent> event(String name) {
+        return Optional.ofNullable(events.get(name));
+    }
+
+    public Collection<Aggregate> aggregates() {
+        return Collections.unmodifiableCollection(aggregates.values());
     }
 }

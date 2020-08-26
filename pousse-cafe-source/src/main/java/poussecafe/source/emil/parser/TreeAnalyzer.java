@@ -20,6 +20,8 @@ import poussecafe.source.emil.parser.EmilParser.ProcessContext;
 import poussecafe.source.emil.parser.EmilParser.RepositoryConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.SingleMessageConsumptionContext;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Command;
+import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
@@ -39,6 +41,7 @@ public class TreeAnalyzer {
             processName = process.header().NAME().getText();
             model.addProcess(new ProcessModel.Builder()
                     .name(processName)
+                    .packageName(basePackage + ".process")
                     .build());
         }
 
@@ -65,7 +68,10 @@ public class TreeAnalyzer {
 
     private void analyzeCommandConsumption(CommandConsumptionContext context) {
         var commandName = context.command().NAME().getText();
-        model.addCommand(commandName);
+        model.addCommand(new Command.Builder()
+                .name(commandName)
+                .packageName(basePackage + ".commands")
+                .build());
         analyzeMessageConsumptions(Optional.empty(), Message.command(commandName), context.messageConsumptions());
     }
 
@@ -222,8 +228,15 @@ public class TreeAnalyzer {
 
     private void analyzeEventProduction(EventProductionContext eventProduction) {
         var message = Message.domainEvent(eventProduction.event().NAME().getText());
-        model.addEvent(message.name());
+        model.addEvent(event(message.name()));
         analyzeMessageConsumptions(Optional.empty(), message, eventProduction.messageConsumptions());
+    }
+
+    private DomainEvent event(String name) {
+        return new DomainEvent.Builder()
+                .name(name)
+                .packageName(basePackage + ".model.events")
+                .build();
     }
 
     private void analyzeAggregateRootConsumption(Optional<String> consumesFromExternal,
@@ -309,6 +322,7 @@ public class TreeAnalyzer {
     private void analyzeProcessConsumption(ProcessConsumptionContext processConsumption) {
         model.addProcess(new ProcessModel.Builder()
                 .name(processConsumption.NAME().getText())
+                .packageName(basePackage + ".process")
                 .build());
     }
 
@@ -322,7 +336,7 @@ public class TreeAnalyzer {
 
     private void analyzeEventConsumption(EventConsumptionContext context) {
         var eventName = context.event().NAME().getText();
-        model.addEvent(eventName);
+        model.addEvent(event(eventName));
         Optional<String> consumesFromExternal = Optional.ofNullable(context.external())
                 .map(ExternalContext::NAME)
                 .map(TerminalNode::getText);

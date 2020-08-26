@@ -2,6 +2,8 @@ package poussecafe.source;
 
 import java.util.Optional;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Command;
+import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
@@ -128,11 +130,11 @@ public class ModelAssertions {
     }
 
     public void thenHasEvent(String name) {
-        assertTrue(model.events().contains(name));
+        assertTrue(model.events().stream().map(DomainEvent::simpleName).anyMatch(name::equals));
     }
 
     public void thenHasCommand(String name) {
-        assertTrue(model.commands().contains(name));
+        assertTrue(model.commands().stream().map(Command::simpleName).anyMatch(name::equals));
     }
 
     public ModelAssertions(Model model) {

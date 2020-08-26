@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.AST;
@@ -36,9 +38,11 @@ public class ComilationUnitEditor {
 
     private ComilationUnitRewrite rewrite;
 
-    public AST ast() {
-        return rewrite.ast();
+    public AstWrapper ast() {
+        return ast;
     }
+
+    private AstWrapper ast;
 
     public void addImportLast(String name) {
         if(!alreadyImported(name)) {
@@ -51,7 +55,7 @@ public class ComilationUnitEditor {
     }
 
     private boolean alreadyImported(String name) {
-        return rewrite.comilationUnit().imports().stream()
+        return rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY).getRewrittenList().stream()
                 .anyMatch(importDeclaration -> alreadyImports(importDeclaration, name));
     }
 
@@ -97,25 +101,23 @@ public class ComilationUnitEditor {
     }
 
     public TypeDeclarationEditor typeDeclaration() {
-        var type = existingOrNewType();
-        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), type);
-        return new TypeDeclarationEditor(nodeRewriter);
-    }
-
-    private TypeDeclaration existingOrNewType() {
-        var type = rewrite.comilationUnit().types().stream()
+        var existingType = rewrite.comilationUnit().types().stream()
                 .findFirst();
-        if(type.isPresent()) {
-            return (TypeDeclaration) type.get();
+        if(existingType.isPresent()) {
+            var type = (TypeDeclaration) existingType.get();
+            var nodeRewriter = new NodeRewrite(rewrite.rewrite(), type);
+            return new TypeDeclarationEditor(nodeRewriter, false);
         } else {
             var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
+            var nodeRewriter = new NodeRewrite(rewrite.rewrite(), newTypeDeclaration);
             rewrite.listRewrite(CompilationUnit.TYPES_PROPERTY).insertLast(newTypeDeclaration, null);
-            return newTypeDeclaration;
+            return new TypeDeclarationEditor(nodeRewriter, true);
         }
     }
 
     public void flush() {
         try {
+            organizeImports();
             rewrite.rewrite(document);
             formatCode();
         } catch (BadLocationException e) {
@@ -123,6 +125,23 @@ public class ComilationUnitEditor {
         }
 
         writeDocumentToFile();
+    }
+
+    private void organizeImports() {
+        var importNames = listImportNamesAndClearImports();
+        importNames.sort(null);
+        importNames.forEach(this::addImportLast);
+    }
+
+    private List<String> listImportNamesAndClearImports() {
+        var importNames = new ArrayList<String>();
+        ListRewrite listRewrite = rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY);
+        for(Object importObject : listRewrite.getRewrittenList()) {
+            ImportDeclaration declaration = (ImportDeclaration) importObject;
+            importNames.add(declaration.getName().getFullyQualifiedName());
+            listRewrite.remove(declaration, null);
+        }
+        return importNames;
     }
 
     private void formatCode() throws BadLocationException {
@@ -225,6 +244,7 @@ public class ComilationUnitEditor {
         parser.setSource(document.get().toCharArray());
 
         rewrite = new ComilationUnitRewrite((CompilationUnit) parser.createAST(null));
+        ast = new AstWrapper(rewrite.ast());
     }
 
     private Document document() {

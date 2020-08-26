@@ -36,16 +36,17 @@ public class TypeDeclarationEditor {
     public InnerTypeDeclarationEditor declaredType(String name) {
         var existingTypeDeclaration = findTypeDeclarationByName(name);
         if(existingTypeDeclaration.isPresent()) {
-            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), existingTypeDeclaration.get()), this);
+            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), existingTypeDeclaration.get()),
+                    this, false);
         } else {
             var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
             newTypeDeclaration.setName(rewrite.ast().newSimpleName(name));
             rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newTypeDeclaration, null);
-            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), newTypeDeclaration), this);
+            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), newTypeDeclaration), this, true);
         }
     }
 
-    private Optional<TypeDeclaration> findTypeDeclarationByName(String name) {
+    public Optional<TypeDeclaration> findTypeDeclarationByName(String name) {
         for(Object declaration : typeDeclaration.bodyDeclarations()) {
             if(declaration instanceof TypeDeclaration) {
                 TypeDeclaration typeDeclaration = (TypeDeclaration) declaration;
@@ -111,8 +112,12 @@ public class TypeDeclarationEditor {
         var methods = findMethods(methodName);
         var newMethod = createMethodIfAbsent(methodName, methods);
         return methods.stream()
-                .map(method -> new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), method), method == newMethod))
+                .map(method -> editMethod(method, method == newMethod))
                 .collect(toList());
+    }
+
+    public MethodDeclarationEditor editMethod(MethodDeclaration methodDeclaration, boolean newMethod) {
+        return new MethodDeclarationEditor(new NodeRewrite(rewrite.rewrite(), methodDeclaration), newMethod);
     }
 
     private MethodDeclaration createMethodIfAbsent(String methodName, List<MethodDeclaration> methods) {
@@ -126,7 +131,31 @@ public class TypeDeclarationEditor {
         return newMethod;
     }
 
-    private List<MethodDeclaration> findMethods(String methodName) {
+    public MethodDeclarationEditor insertNewMethodBefore(TypeDeclaration referenceNode) {
+        MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertBefore(newMethod, referenceNode, null);
+        return editMethod(newMethod, true);
+    }
+
+    public MethodDeclarationEditor insertNewMethodAfter(ASTNode referenceNode) {
+        MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertAfter(newMethod, referenceNode, null);
+        return editMethod(newMethod, true);
+    }
+
+    public MethodDeclarationEditor insertNewMethodFirst() {
+        MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertFirst(newMethod, null);
+        return editMethod(newMethod, true);
+    }
+
+    public MethodDeclarationEditor insertNewMethodLast() {
+        MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newMethod, null);
+        return editMethod(newMethod, true);
+    }
+
+    public List<MethodDeclaration> findMethods(String methodName) {
         var methods = new ArrayList<MethodDeclaration>();
         for(Object declaration : typeDeclaration.bodyDeclarations()) {
             if(declaration instanceof MethodDeclaration) {
@@ -210,12 +239,20 @@ public class TypeDeclarationEditor {
         return methods;
     }
 
-    public TypeDeclarationEditor(NodeRewrite rewrite) {
+    public TypeDeclarationEditor(NodeRewrite rewrite, boolean newType) {
         requireNonNull(rewrite);
         this.rewrite = rewrite;
 
         typeDeclaration = (TypeDeclaration) rewrite.node();
+
+        this.newType = newType;
     }
 
     private NodeRewrite rewrite;
+
+    public boolean isNewType() {
+        return newType;
+    }
+
+    private boolean newType;
 }

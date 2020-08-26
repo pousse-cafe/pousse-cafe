@@ -88,7 +88,7 @@ public class AggregateRepositoryEditor {
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.aggregate);
 
-            editor.ast = new AstWrapper(editor.compilationUnitEditor.ast());
+            editor.ast = editor.compilationUnitEditor.ast();
 
             return editor;
         }

@@ -75,6 +75,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
         } else if(resolvedTypeDeclaration.implementsInterface(CompilationUnitResolver.PROCESS_INTERFACE)) {
             model.addProcess(new ProcessModel.Builder()
                     .name(resolvedTypeDeclaration.name().simpleName())
+                    .packageName(compilationUnit.getPackage().getName().getFullyQualifiedName())
                     .build());
             return false;
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {

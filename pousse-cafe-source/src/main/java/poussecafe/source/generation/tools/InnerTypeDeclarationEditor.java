@@ -10,8 +10,8 @@ public class InnerTypeDeclarationEditor extends TypeDeclarationEditor {
 
     private TypeDeclarationEditor parent;
 
-    public InnerTypeDeclarationEditor(NodeRewrite rewrite, TypeDeclarationEditor parent) {
-        super(rewrite);
+    public InnerTypeDeclarationEditor(NodeRewrite rewrite, TypeDeclarationEditor parent, boolean isNew) {
+        super(rewrite, isNew);
 
         requireNonNull(parent);
         this.parent = parent;

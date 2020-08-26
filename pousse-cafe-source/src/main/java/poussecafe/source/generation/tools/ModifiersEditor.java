@@ -164,7 +164,7 @@ public class ModifiersEditor {
             Function<Name, Annotation> factory,
             Function<Annotation, E> editorFactory,
             Predicate<Annotation> isExpectedType) {
-        var annotations = findAnnotation(annotationClass);
+        var annotations = findAnnotations(annotationClass);
         if(annotations.isEmpty()) {
             Optional<Modifier> firstModifier = actualModifiers().stream().findFirst();
 
@@ -194,6 +194,12 @@ public class ModifiersEditor {
         return editors;
     }
 
+    public NormalAnnotationEditor insertNewNormalAnnotationFirst(Name annotationClass) {
+        var newNormalAnnotation = newNormalAnnotation(annotationClass);
+        listRewrite().insertFirst(newNormalAnnotation, null);
+        return normalAnnotationEditor(newNormalAnnotation);
+    }
+
     private NormalAnnotation newNormalAnnotation(Name annotationClass) {
         var newNormalAnnotation = rewrite.ast().newNormalAnnotation();
         newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
@@ -204,7 +210,11 @@ public class ModifiersEditor {
         return new NormalAnnotationEditor(new NodeRewrite(rewrite.rewrite(), a));
     }
 
-    private List<Annotation> findAnnotation(Name annotationClass) {
+    public List<Annotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return findAnnotations(new Name(annotationClass.getCanonicalName()));
+    }
+
+    public List<Annotation> findAnnotations(Name annotationClass) {
         var annotations = new ArrayList<Annotation>();
         for(Object annotationObject : modifiers()) {
             if(annotationObject instanceof Annotation) {
@@ -216,6 +226,10 @@ public class ModifiersEditor {
             }
         }
         return annotations;
+    }
+
+    public boolean hasAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return !findAnnotations(annotationClass).isEmpty();
     }
 
     public List<SingleMemberAnnotationEditor> singleMemberAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
@@ -265,9 +279,14 @@ public class ModifiersEditor {
     }
 
     public void removeAnnotations(Name annotationClass) {
-        var nodes = findAnnotation(annotationClass);
+        var nodes = findAnnotations(annotationClass);
         ListRewrite listRewrite = listRewrite();
         nodes.forEach(node -> listRewrite.remove(node, null));
+    }
+
+    public void removeAnnotation(Annotation annotation) {
+        ListRewrite listRewrite = listRewrite();
+        listRewrite.remove(annotation, null);
     }
 
     public ModifiersEditor(NodeRewrite rewrite, ChildListPropertyDescriptor property) {
