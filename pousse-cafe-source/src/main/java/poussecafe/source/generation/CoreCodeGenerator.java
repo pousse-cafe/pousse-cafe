@@ -9,12 +9,17 @@ import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.Model;
+import poussecafe.source.model.ProcessModel;
 
 import static java.util.Objects.requireNonNull;
 
 public class CoreCodeGenerator extends AbstractCodeGenerator {
 
     public void generate(Model model) {
+        for(ProcessModel process : model.processes()) {
+            generateProcess(process);
+        }
+
         for(Aggregate aggregate : model.aggregates()) {
             generate(Optional.of(model), aggregate);
         }
@@ -28,6 +33,16 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         }
 
         generateMessageListeners(model);
+    }
+
+    private void generateProcess(ProcessModel process) {
+        var typeName = process.name();
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var aggregateRootEditor = new ProcessEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .process(process)
+                .build();
+        aggregateRootEditor.edit();
     }
 
     public void generate(Aggregate aggregate) {
@@ -157,36 +172,65 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     private void generateMessageListeners(Model model) {
         for(MessageListener listener : model.messageListeners()) {
             MessageListenerContainerType containerType = listener.container().type();
+            var aggregate = model.aggregate(listener.container().aggregateName().orElseThrow()).orElseThrow();
             if(containerType == MessageListenerContainerType.ROOT) {
-                var aggregate = model.aggregate(listener.container().aggregateName().orElseThrow()).orElseThrow();
-
-                var typeName = AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate);
-                var compilationUnitEditor = compilationUnitEditor(typeName);
-                var editor = new AggregateRootMessageListenerEditor.Builder()
-                        .compilationUnitEditor(compilationUnitEditor)
-                        .model(model)
-                        .messageListener(listener)
-                        .build();
-                editor.edit();
-
-                var runnerTypeName = new Name(CodeGenerationConventions.runnerPackage(aggregate),
-                        listener.runnerName().orElseThrow());
-                var runnerCompilationUnitEditor = compilationUnitEditor(runnerTypeName);
-                var runnerEditor = new RunnerEditor.Builder()
-                        .compilationUnitEditor(runnerCompilationUnitEditor)
-                        .model(model)
-                        .aggregate(aggregate)
-                        .messageListener(listener)
-                        .build();
-                runnerEditor.edit();
+                generateAggregateRootListeners(model, listener, aggregate);
+                generateRunner(model, listener, aggregate);
             } else if(containerType == MessageListenerContainerType.FACTORY) {
-                // TODO
+                generateFactoryListeners(model, listener, aggregate);
             } else if(containerType == MessageListenerContainerType.REPOSITORY) {
-                // TODO
+                generateRepositoryListeners(model, listener, aggregate);
             } else {
                 throw new UnsupportedOperationException("Unsupported container type " + containerType);
             }
         }
+    }
+
+    private void generateAggregateRootListeners(Model model, MessageListener listener, Aggregate aggregate) {
+        var typeName = AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate);
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var editor = new AggregateRootMessageListenerEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .model(model)
+                .messageListener(listener)
+                .build();
+        editor.edit();
+    }
+
+    private void generateRunner(Model model, MessageListener listener, Aggregate aggregate) {
+        var runnerTypeName = new Name(CodeGenerationConventions.runnerPackage(aggregate),
+                listener.runnerName().orElseThrow());
+        var runnerCompilationUnitEditor = compilationUnitEditor(runnerTypeName);
+        var runnerEditor = new RunnerEditor.Builder()
+                .compilationUnitEditor(runnerCompilationUnitEditor)
+                .model(model)
+                .aggregate(aggregate)
+                .messageListener(listener)
+                .build();
+        runnerEditor.edit();
+    }
+
+    private void generateFactoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
+        var typeName = AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate);
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var editor = new AggregateFactoryMessageListenerEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .model(model)
+                .messageListener(listener)
+                .aggregate(aggregate)
+                .build();
+        editor.edit();
+    }
+
+    private void generateRepositoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
+        var typeName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var editor = new AggregateRepositoryMessageListenerEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .model(model)
+                .messageListener(listener)
+                .build();
+        editor.edit();
     }
 
     public static class Builder {

@@ -23,17 +23,21 @@ public class Model {
         return Optional.ofNullable(aggregates.get(name));
     }
 
-    public Optional<ProcessModel> process(String name) {
-        return Optional.ofNullable(processes.get(name));
+    public void addProcess(ProcessModel source) {
+        String name = source.simpleName();
+        if(!processes.containsKey(name)) {
+            processes.put(name, source);
+        }
     }
 
     private Map<String, ProcessModel> processes = new HashMap<>();
 
-    public void addProcess(ProcessModel source) {
-        String name = source.name();
-        if(!processes.containsKey(name)) {
-            processes.put(name, source);
-        }
+    public Optional<ProcessModel> process(String name) {
+        return Optional.ofNullable(processes.get(name));
+    }
+
+    public Collection<ProcessModel> processes() {
+        return Collections.unmodifiableCollection(processes.values());
     }
 
     public void addMessageListener(MessageListener source) {
