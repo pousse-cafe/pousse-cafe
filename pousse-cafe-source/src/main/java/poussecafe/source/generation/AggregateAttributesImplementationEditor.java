@@ -18,29 +18,31 @@ import static java.util.Objects.requireNonNull;
 public class AggregateAttributesImplementationEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate));
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate));
 
-        compilationUnitEditor.addImport(Attribute.class.getCanonicalName());
-        compilationUnitEditor.addImport(AttributeBuilder.class.getCanonicalName());
-        compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
-        compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
+            compilationUnitEditor.addImport(Attribute.class.getCanonicalName());
+            compilationUnitEditor.addImport(AttributeBuilder.class.getCanonicalName());
+            compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
+            compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
 
-        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.setName(typeName.getIdentifier().toString());
+            var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.setName(typeName.getIdentifier().toString());
 
-        var attributesType = ast.newSimpleType(
-                NamingConventions.aggregateAttributesQualifiedTypeName(aggregate));
-        typeEditor.addSuperinterface(attributesType);
+            var attributesType = ast.newSimpleType(
+                    NamingConventions.aggregateAttributesQualifiedTypeName(aggregate));
+            typeEditor.addSuperinterface(attributesType);
 
-        var modifiers = typeEditor.modifiers();
-        modifiers.setVisibility(Visibility.PUBLIC);
+            var modifiers = typeEditor.modifiers();
+            modifiers.setVisibility(Visibility.PUBLIC);
 
-        editIdentifierAttribute(typeEditor.method(IDENTIFIER_FIELD_NAME).get(0));
-        editIdentifierField(typeEditor.field(IDENTIFIER_FIELD_NAME).get(0));
-        editVersionField(typeEditor.field(VERSION_FIELD_NAME).get(0));
+            editIdentifierAttribute(typeEditor.method(IDENTIFIER_FIELD_NAME).get(0));
+            editIdentifierField(typeEditor.field(IDENTIFIER_FIELD_NAME).get(0));
+            editVersionField(typeEditor.field(VERSION_FIELD_NAME).get(0));
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private void editIdentifierAttribute(MethodDeclarationEditor editor) {

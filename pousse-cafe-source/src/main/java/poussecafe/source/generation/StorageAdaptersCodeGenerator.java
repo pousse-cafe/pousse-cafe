@@ -21,7 +21,9 @@ public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator
     private void addDataAccessImplementation(Aggregate aggregate) {
         var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate, storageName());
         var compilationUnitEditor = compilationUnitEditor(typeName);
-        addDataAccessImplementation(aggregate, compilationUnitEditor);
+        if(compilationUnitEditor.isNew()) {
+            addDataAccessImplementation(aggregate, compilationUnitEditor);
+        }
     }
 
     protected abstract void addDataAccessImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor);

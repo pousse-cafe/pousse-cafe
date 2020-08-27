@@ -13,34 +13,36 @@ import static java.util.Objects.requireNonNull;
 public class CommandImplementationEditor {
 
     public void edit() {
-        var commandImplenentationTypeName = NamingConventions.commandImplementationTypeName(command);
-        compilationUnitEditor.setPackage(commandImplenentationTypeName.getQualifier().toString());
+        if(compilationUnitEditor.isNew()) {
+            var commandImplenentationTypeName = NamingConventions.commandImplementationTypeName(command);
+            compilationUnitEditor.setPackage(commandImplenentationTypeName.getQualifier().toString());
 
-        compilationUnitEditor.addImport(Serializable.class.getCanonicalName());
-        compilationUnitEditor.addImport(MessageImplementation.class.getCanonicalName());
-        compilationUnitEditor.addImport(command.name());
+            compilationUnitEditor.addImport(Serializable.class.getCanonicalName());
+            compilationUnitEditor.addImport(MessageImplementation.class.getCanonicalName());
+            compilationUnitEditor.addImport(command.name());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
+            var typeEditor = compilationUnitEditor.typeDeclaration();
 
-        var suppressWarningsEditor = new SuppressWarningsEditor(
-                typeEditor.modifiers().singleMemberAnnotation(SuppressWarnings.class).get(0));
-        suppressWarningsEditor.addWarning("serial");
+            var suppressWarningsEditor = new SuppressWarningsEditor(
+                    typeEditor.modifiers().singleMemberAnnotation(SuppressWarnings.class).get(0));
+            suppressWarningsEditor.addWarning("serial");
 
-        var messageImplementationEditor = typeEditor.modifiers().normalAnnotation(
-                MessageImplementation.class).get(0);
-        var commandDefinitionType = ast.newTypeLiteral(command.name());
-        messageImplementationEditor.setAttribute("message", commandDefinitionType);
+            var messageImplementationEditor = typeEditor.modifiers().normalAnnotation(
+                    MessageImplementation.class).get(0);
+            var commandDefinitionType = ast.newTypeLiteral(command.name());
+            messageImplementationEditor.setAttribute("message", commandDefinitionType);
 
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        var simpleTypeName = commandImplenentationTypeName.getIdentifier();
-        typeEditor.setName(simpleTypeName);
+            var simpleTypeName = commandImplenentationTypeName.getIdentifier();
+            typeEditor.setName(simpleTypeName);
 
-        var serializableType = ast.newSimpleType(Serializable.class);
-        typeEditor.addSuperinterface(serializableType);
-        typeEditor.addSuperinterface(ast.newSimpleType(command.name().getIdentifier()));
+            var serializableType = ast.newSimpleType(Serializable.class);
+            typeEditor.addSuperinterface(serializableType);
+            typeEditor.addSuperinterface(ast.newSimpleType(command.name().getIdentifier()));
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Command command;

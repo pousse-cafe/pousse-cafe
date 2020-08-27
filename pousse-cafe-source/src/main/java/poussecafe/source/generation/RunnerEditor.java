@@ -1,14 +1,10 @@
 package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import poussecafe.listeners.UpdateOneRunner;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
-import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
@@ -21,31 +17,27 @@ public class RunnerEditor {
 
     @SuppressWarnings("unchecked")
     public void edit() {
-        compilationUnitEditor.setPackage(NamingConventions.runnerPackage(aggregate));
-
-        compilationUnitEditor.addImport(UpdateOneRunner.class);
-        compilationUnitEditor.addImport(messageName());
-
         var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(messageListener.runnerName().orElseThrow());
-
-        var idName = NamingConventions.aggregateIdentifierTypeName(aggregate);
-        Name messageTypeName = new Name(messageListener.consumedMessage().name());
         if(typeEditor.isNewType()) {
+            compilationUnitEditor.setPackage(NamingConventions.runnerPackage(aggregate));
+
+            compilationUnitEditor.addImport(UpdateOneRunner.class);
+            compilationUnitEditor.addImport(messageName());
+
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setName(messageListener.runnerName().orElseThrow());
+
             var supertype = ast.newParameterizedType(UpdateOneRunner.class);
+
+            var messageTypeName = new Name(messageListener.consumedMessage().name());
             supertype.typeArguments().add(ast.newSimpleType(messageTypeName));
+
+            var idName = NamingConventions.aggregateIdentifierTypeName(aggregate);
             supertype.typeArguments().add(ast.newSimpleType(idName.getIdentifier()));
             supertype.typeArguments().add(ast.newSimpleType(new Name(aggregate.name())));
             typeEditor.setSuperclass(supertype);
-        }
 
-        var existingIdExtractorMethod = typeEditor.findMethods("aggregateId").stream()
-                .filter(this::consumesEvent)
-                .findFirst();
-        MethodDeclarationEditor idExtractorEditor;
-        if(!existingIdExtractorMethod.isPresent()) {
-            idExtractorEditor = typeEditor.insertNewMethodFirst();
+            var idExtractorEditor = typeEditor.insertNewMethodFirst();
             idExtractorEditor.setName("aggregateId");
             idExtractorEditor.modifiers().setVisibility(Visibility.PROTECTED);
             idExtractorEditor.modifiers().markerAnnotation(Override.class);
@@ -56,9 +48,9 @@ public class RunnerEditor {
             Block block = ast.ast().newBlock();
             block.statements().add(ast.newReturnNullStatement());
             idExtractorEditor.setBody(block);
-        }
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Name messageName() {
@@ -69,20 +61,6 @@ public class RunnerEditor {
             return model.event(message.name()).orElseThrow().name();
         } else {
             throw new UnsupportedOperationException("Unsupported message type " + message.type());
-        }
-    }
-
-    private boolean consumesEvent(MethodDeclaration method) {
-        return method.parameters().size() == 1
-                && isListenerEvent((SingleVariableDeclaration) method.parameters().get(0));
-    }
-
-    private boolean isListenerEvent(SingleVariableDeclaration parameter) {
-        if(parameter.getType().isSimpleType()) {
-            SimpleType simpleType = (SimpleType) parameter.getType();
-            return simpleType.getName().getFullyQualifiedName().equals(messageListener.consumedMessage().name());
-        } else {
-            return false;
         }
     }
 

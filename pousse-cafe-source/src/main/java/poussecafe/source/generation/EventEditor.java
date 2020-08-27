@@ -10,21 +10,23 @@ import static java.util.Objects.requireNonNull;
 public class EventEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(event.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(event.packageName());
 
-        compilationUnitEditor.addImport(poussecafe.domain.DomainEvent.class.getCanonicalName());
+            compilationUnitEditor.addImport(poussecafe.domain.DomainEvent.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setInterface(true);
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setInterface(true);
 
-        var simpleTypeName = event.simpleName();
-        typeEditor.setName(simpleTypeName);
+            var simpleTypeName = event.simpleName();
+            typeEditor.setName(simpleTypeName);
 
-        var valueObjectType = ast.newSimpleType(poussecafe.domain.DomainEvent.class);
-        typeEditor.addSuperinterface(valueObjectType);
+            var valueObjectType = ast.newSimpleType(poussecafe.domain.DomainEvent.class);
+            typeEditor.addSuperinterface(valueObjectType);
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private DomainEvent event;

@@ -10,21 +10,23 @@ import static java.util.Objects.requireNonNull;
 public class CommandEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(command.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(command.packageName());
 
-        compilationUnitEditor.addImport(poussecafe.runtime.Command.class.getCanonicalName());
+            compilationUnitEditor.addImport(poussecafe.runtime.Command.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setInterface(true);
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setInterface(true);
 
-        var simpleTypeName = command.simpleName();
-        typeEditor.setName(simpleTypeName);
+            var simpleTypeName = command.simpleName();
+            typeEditor.setName(simpleTypeName);
 
-        var valueObjectType = ast.newSimpleType(poussecafe.runtime.Command.class);
-        typeEditor.addSuperinterface(valueObjectType);
+            var valueObjectType = ast.newSimpleType(poussecafe.runtime.Command.class);
+            typeEditor.addSuperinterface(valueObjectType);
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Command command;

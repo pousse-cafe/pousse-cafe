@@ -10,21 +10,23 @@ import static java.util.Objects.requireNonNull;
 public class ProcessEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(process.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(process.packageName());
 
-        compilationUnitEditor.addImport(poussecafe.domain.Process.class.getCanonicalName());
+            compilationUnitEditor.addImport(poussecafe.domain.Process.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setInterface(true);
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setInterface(true);
 
-        var simpleTypeName = process.simpleName();
-        typeEditor.setName(simpleTypeName);
+            var simpleTypeName = process.simpleName();
+            typeEditor.setName(simpleTypeName);
 
-        var processType = ast.newSimpleType(poussecafe.domain.Process.class);
-        typeEditor.addSuperinterface(processType);
+            var processType = ast.newSimpleType(poussecafe.domain.Process.class);
+            typeEditor.addSuperinterface(processType);
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private ProcessModel process;

@@ -27,30 +27,32 @@ import static java.util.stream.Collectors.toList;
 public class AggregateRootEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(aggregate.packageName());
+        var typeEditor = compilationUnitEditor.typeDeclaration();
 
-        compilationUnitEditor.addImport(poussecafe.discovery.Aggregate.class.getCanonicalName());
-        compilationUnitEditor.addImport(poussecafe.discovery.DefaultModule.class.getCanonicalName());
-        compilationUnitEditor.addImport(AggregateRoot.class.getCanonicalName());
-        compilationUnitEditor.addImport(poussecafe.domain.EntityAttributes.class.getCanonicalName());
+        if(typeEditor.isNewType()) {
+            compilationUnitEditor.setPackage(aggregate.packageName());
+
+            compilationUnitEditor.addImport(poussecafe.discovery.Aggregate.class.getCanonicalName());
+            compilationUnitEditor.addImport(poussecafe.discovery.DefaultModule.class.getCanonicalName());
+            compilationUnitEditor.addImport(AggregateRoot.class.getCanonicalName());
+            compilationUnitEditor.addImport(poussecafe.domain.EntityAttributes.class.getCanonicalName());
+
+            var modifiers = typeEditor.modifiers();
+            var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
+            editAggregateAnnotation(annotationEditor.get(0));
+
+            modifiers.setVisibility(Visibility.PUBLIC);
+            typeEditor.setName(aggregate.name());
+
+            var aggregateRootSupertype = aggregateRootSupertype();
+            typeEditor.setSuperclass(aggregateRootSupertype);
+
+            var attributesType = typeEditor.declaredType(NamingConventions.ATTRIBUTES_CLASS_NAME);
+            editAttributesType(attributesType);
+        }
 
         importProducedEvents(aggregate.onAddProducedEvents());
         importProducedEvents(aggregate.onDeleteProducedEvents());
-
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-
-        var modifiers = typeEditor.modifiers();
-        var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
-        editAggregateAnnotation(annotationEditor.get(0));
-
-        modifiers.setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(aggregate.name());
-
-        var aggregateRootSupertype = aggregateRootSupertype();
-        typeEditor.setSuperclass(aggregateRootSupertype);
-
-        var attributesType = typeEditor.declaredType(NamingConventions.ATTRIBUTES_CLASS_NAME);
-        editAttributesType(attributesType);
 
         if(!aggregate.onDeleteProducedEvents().isEmpty()) {
             editOnDeleteMethod(typeEditor);

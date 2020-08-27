@@ -232,13 +232,21 @@ public class CompilationUnitEditor {
     private Document document() {
         File file = filePath.toFile();
         if(file.exists()) {
+            isNew = false;
             try {
                 return new Document(TextFiles.readContent(file));
             } catch (IOException e) {
                 throw new CodeGenerationException("Unable to load document content", e);
             }
         } else {
+            isNew = true;
             return new Document();
         }
+    }
+
+    private boolean isNew;
+
+    public boolean isNew() {
+        return isNew;
     }
 }

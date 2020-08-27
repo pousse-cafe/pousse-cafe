@@ -13,21 +13,23 @@ import static java.util.Objects.requireNonNull;
 public class AggregateDataAccessEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(aggregate.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImport(EntityDataAccess.class.getCanonicalName());
+            compilationUnitEditor.addImport(EntityDataAccess.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setInterface(true);
-        typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate));
-        typeEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
-                NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setInterface(true);
+            typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate));
+            typeEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
+                    NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
 
-        var entityDataAccessType = entityDataAccessType();
-        typeEditor.addSuperinterface(entityDataAccessType);
+            var entityDataAccessType = entityDataAccessType();
+            typeEditor.addSuperinterface(entityDataAccessType);
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Aggregate aggregate;

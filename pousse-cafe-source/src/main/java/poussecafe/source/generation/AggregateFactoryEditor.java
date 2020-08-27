@@ -14,18 +14,20 @@ import static java.util.Objects.requireNonNull;
 public class AggregateFactoryEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(aggregate.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImport(Factory.class.getCanonicalName());
+            compilationUnitEditor.addImport(Factory.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(NamingConventions.aggregateFactoryTypeName(aggregate));
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setName(NamingConventions.aggregateFactoryTypeName(aggregate));
 
-        var factorySupertype = factorySupertype();
-        typeEditor.setSuperclass(factorySupertype);
+            var factorySupertype = factorySupertype();
+            typeEditor.setSuperclass(factorySupertype);
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Aggregate aggregate;

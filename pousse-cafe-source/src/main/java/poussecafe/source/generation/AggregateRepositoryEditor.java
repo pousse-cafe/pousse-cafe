@@ -15,20 +15,22 @@ import static java.util.Objects.requireNonNull;
 public class AggregateRepositoryEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(aggregate.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImport(Repository.class.getCanonicalName());
+            compilationUnitEditor.addImport(Repository.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(NamingConventions.aggregateRepositoryTypeName(aggregate));
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            typeEditor.setName(NamingConventions.aggregateRepositoryTypeName(aggregate));
 
-        var repositoryType = repositoryType();
-        typeEditor.setSuperclass(repositoryType);
+            var repositoryType = repositoryType();
+            typeEditor.setSuperclass(repositoryType);
 
-        editDataAccessMethod(typeEditor.method(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
+            editDataAccessMethod(typeEditor.method(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     private Aggregate aggregate;

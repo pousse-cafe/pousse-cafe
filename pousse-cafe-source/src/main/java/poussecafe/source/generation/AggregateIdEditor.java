@@ -14,27 +14,29 @@ import static java.util.Objects.requireNonNull;
 public class AggregateIdEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(aggregate.packageName());
+        if(compilationUnitEditor.isNew()) {
+            compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImport(ValueObject.class.getCanonicalName());
-        compilationUnitEditor.addImport(StringId.class.getCanonicalName());
+            compilationUnitEditor.addImport(ValueObject.class.getCanonicalName());
+            compilationUnitEditor.addImport(StringId.class.getCanonicalName());
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-        typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            var typeEditor = compilationUnitEditor.typeDeclaration();
+            typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        var typeName = NamingConventions.aggregateIdentifierTypeName(aggregate);
-        var simpleTypeName = typeName.getIdentifier().toString();
-        typeEditor.setName(simpleTypeName);
+            var typeName = NamingConventions.aggregateIdentifierTypeName(aggregate);
+            var simpleTypeName = typeName.getIdentifier().toString();
+            typeEditor.setName(simpleTypeName);
 
-        var idSupertype = ast.newSimpleType(StringId.class);
-        typeEditor.setSuperclass(idSupertype);
+            var idSupertype = ast.newSimpleType(StringId.class);
+            typeEditor.setSuperclass(idSupertype);
 
-        var valueObjectType = ast.newSimpleType(ValueObject.class);
-        typeEditor.addSuperinterface(valueObjectType);
+            var valueObjectType = ast.newSimpleType(ValueObject.class);
+            typeEditor.addSuperinterface(valueObjectType);
 
-        constructor(typeEditor.constructors(simpleTypeName).get(0));
+            constructor(typeEditor.constructors(simpleTypeName).get(0));
 
-        compilationUnitEditor.flush();
+            compilationUnitEditor.flush();
+        }
     }
 
     @SuppressWarnings("unchecked")
