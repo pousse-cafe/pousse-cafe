@@ -3,7 +3,7 @@ package poussecafe.source.generation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
@@ -15,14 +15,14 @@ public class AggregateDataAccessEditor {
     public void edit() {
         compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImportLast(EntityDataAccess.class.getCanonicalName());
+        compilationUnitEditor.addImport(EntityDataAccess.class.getCanonicalName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
         typeEditor.setInterface(true);
-        typeEditor.setName(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate));
+        typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate));
         typeEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
-            AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+                NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
 
         var entityDataAccessType = entityDataAccessType();
         typeEditor.addSuperinterface(entityDataAccessType);
@@ -36,7 +36,7 @@ public class AggregateDataAccessEditor {
         var parametrizedType = ast.newParameterizedType(EntityDataAccess.class);
 
         var aggregateIdentifierType = ast.newSimpleType(
-                AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
+                NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
         parametrizedType.typeArguments().add(aggregateIdentifierType);
 
         parametrizedType.typeArguments().add(ast.newSimpleType("D"));
@@ -57,7 +57,7 @@ public class AggregateDataAccessEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -72,7 +72,7 @@ public class AggregateDataAccessEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

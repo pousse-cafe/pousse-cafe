@@ -3,7 +3,7 @@ package poussecafe.source.generation;
 import java.io.Serializable;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.SuppressWarningsEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.DomainEvent;
@@ -13,12 +13,12 @@ import static java.util.Objects.requireNonNull;
 public class EventImplementationEditor {
 
     public void edit() {
-        var eventImplenentationTypeName = CodeGenerationConventions.eventImplementationTypeName(event);
+        var eventImplenentationTypeName = NamingConventions.eventImplementationTypeName(event);
         compilationUnitEditor.setPackage(eventImplenentationTypeName.getQualifier().toString());
 
-        compilationUnitEditor.addImportLast(Serializable.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(MessageImplementation.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(event.name());
+        compilationUnitEditor.addImport(Serializable.class.getCanonicalName());
+        compilationUnitEditor.addImport(MessageImplementation.class.getCanonicalName());
+        compilationUnitEditor.addImport(event.name());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
 
@@ -58,7 +58,7 @@ public class EventImplementationEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -73,7 +73,7 @@ public class EventImplementationEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

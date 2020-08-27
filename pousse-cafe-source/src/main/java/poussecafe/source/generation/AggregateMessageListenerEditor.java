@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.NormalAnnotationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
@@ -26,13 +26,13 @@ import static java.util.stream.Collectors.toList;
 public abstract class AggregateMessageListenerEditor {
 
     public void edit() {
-        compilationUnitEditor.addImportFirst(poussecafe.discovery.MessageListener.class);
+        compilationUnitEditor.addImport(poussecafe.discovery.MessageListener.class);
         if(!messageListener.producedEvents().isEmpty()) {
-            compilationUnitEditor.addImportFirst(ProducesEvent.class);
+            compilationUnitEditor.addImport(ProducesEvent.class);
         }
         for(String processName : messageListener.processNames()) {
             var process = model.process(processName).orElseThrow();
-            compilationUnitEditor.addImportFirst(process.name());
+            compilationUnitEditor.addImport(process.name());
         }
         var events = messageListener.producedEvents().stream()
                 .map(ProducedEvent::message)
@@ -41,7 +41,7 @@ public abstract class AggregateMessageListenerEditor {
                 .map(Optional::get)
                 .collect(toList());
         for(DomainEvent event : events) {
-            compilationUnitEditor.addImportFirst(event.name());
+            compilationUnitEditor.addImport(event.name());
         }
 
         var consumedMessage = messageListener.consumedMessage();
@@ -51,7 +51,7 @@ public abstract class AggregateMessageListenerEditor {
         } else {
             consumedMessageClassName = model.event(consumedMessage.name()).orElseThrow().name();
         }
-        compilationUnitEditor.addImportFirst(consumedMessageClassName);
+        compilationUnitEditor.addImport(consumedMessageClassName);
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
 
@@ -173,7 +173,7 @@ public abstract class AggregateMessageListenerEditor {
 
     protected MessageListener messageListener;
 
-    protected ComilationUnitEditor compilationUnitEditor;
+    protected CompilationUnitEditor compilationUnitEditor;
 
     protected AstWrapper ast;
 }

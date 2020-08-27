@@ -6,7 +6,7 @@ import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.FieldDeclarationEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
@@ -18,19 +18,19 @@ import static java.util.Objects.requireNonNull;
 public class AggregateAttributesImplementationEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(AggregateCodeGenerationConventions.adaptersPackageName(aggregate));
+        compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate));
 
-        compilationUnitEditor.addImportLast(Attribute.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(AttributeBuilder.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate));
-        compilationUnitEditor.addImportLast(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate));
+        compilationUnitEditor.addImport(Attribute.class.getCanonicalName());
+        compilationUnitEditor.addImport(AttributeBuilder.class.getCanonicalName());
+        compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
+        compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
 
-        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.setName(typeName.getIdentifier().toString());
 
         var attributesType = ast.newSimpleType(
-                AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate));
+                NamingConventions.aggregateAttributesQualifiedTypeName(aggregate));
         typeEditor.addSuperinterface(attributesType);
 
         var modifiers = typeEditor.modifiers();
@@ -64,7 +64,7 @@ public class AggregateAttributesImplementationEditor {
     public static final String VERSION_FIELD_NAME = "version";
 
     private Name identifierSimpleName() {
-        return AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier();
+        return NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier();
     }
 
     private ReturnStatement returnAttribute() {
@@ -153,7 +153,7 @@ public class AggregateAttributesImplementationEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -168,7 +168,7 @@ public class AggregateAttributesImplementationEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

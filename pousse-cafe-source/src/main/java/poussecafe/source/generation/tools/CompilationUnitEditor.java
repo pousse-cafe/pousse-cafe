@@ -28,7 +28,7 @@ import poussecafe.source.analysis.Name;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("unchecked")
-public class ComilationUnitEditor {
+public class CompilationUnitEditor {
 
     public void setPackage(String packageName) {
         PackageDeclaration packageDeclaration = rewrite.ast().newPackageDeclaration();
@@ -36,7 +36,7 @@ public class ComilationUnitEditor {
         rewrite.set(CompilationUnit.PACKAGE_PROPERTY, packageDeclaration);
     }
 
-    private ComilationUnitRewrite rewrite;
+    private CompilationUnitRewrite rewrite;
 
     public AstWrapper ast() {
         return ast;
@@ -44,7 +44,7 @@ public class ComilationUnitEditor {
 
     private AstWrapper ast;
 
-    public void addImportLast(String name) {
+    public void addImport(String name) {
         if(!alreadyImported(name)) {
             ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
             importDeclaration.setName(rewrite.ast().newName(name));
@@ -64,30 +64,12 @@ public class ComilationUnitEditor {
         return importDeclaration.getName().getFullyQualifiedName().equals(name);
     }
 
-    public void addImportLast(Name name) {
-        addImportLast(name.toString());
+    public void addImport(Name name) {
+        addImport(name.toString());
     }
 
-    public void addImportLast(Class<?> importedClass) {
-        addImportLast(importedClass.getCanonicalName());
-    }
-
-    public void addImportFirst(Class<?> importedClass) {
-        addImportFirst(importedClass.getCanonicalName());
-    }
-
-    public void addImportFirst(Name importedClass) {
-        addImportFirst(importedClass.toString());
-    }
-
-    public void addImportFirst(String name) {
-        if(!alreadyImported(name)) {
-            ImportDeclaration importDeclaration = rewrite.ast().newImportDeclaration();
-            importDeclaration.setName(rewrite.ast().newName(name));
-
-            ListRewrite listRewrite = rewrite.listRewrite(CompilationUnit.IMPORTS_PROPERTY);
-            listRewrite.insertFirst(importDeclaration, null);
-        }
+    public void addImport(Class<?> importedClass) {
+        addImport(importedClass.getCanonicalName());
     }
 
     public void setDeclaredType(TypeDeclaration typeDeclaration) {
@@ -130,7 +112,7 @@ public class ComilationUnitEditor {
     private void organizeImports() {
         var importNames = listImportNamesAndClearImports();
         importNames.sort(null);
-        importNames.forEach(this::addImportLast);
+        importNames.forEach(this::addImport);
     }
 
     private List<String> listImportNamesAndClearImports() {
@@ -192,9 +174,9 @@ public class ComilationUnitEditor {
 
     public static class Builder {
 
-        private ComilationUnitEditor editor = new ComilationUnitEditor();
+        private CompilationUnitEditor editor = new CompilationUnitEditor();
 
-        public ComilationUnitEditor build() {
+        public CompilationUnitEditor build() {
             requireNonNull(sourceDirectory);
             requireNonNull(packageName);
             requireNonNull(className);
@@ -234,7 +216,7 @@ public class ComilationUnitEditor {
         private String className;
     }
 
-    private ComilationUnitEditor() {
+    private CompilationUnitEditor() {
 
     }
 
@@ -243,7 +225,7 @@ public class ComilationUnitEditor {
         ASTParser parser = ASTParser.newParser(AST.JLS14);
         parser.setSource(document.get().toCharArray());
 
-        rewrite = new ComilationUnitRewrite((CompilationUnit) parser.createAST(null));
+        rewrite = new CompilationUnitRewrite((CompilationUnit) parser.createAST(null));
         ast = new AstWrapper(rewrite.ast());
     }
 

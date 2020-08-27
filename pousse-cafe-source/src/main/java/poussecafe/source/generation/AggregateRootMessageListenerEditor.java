@@ -2,7 +2,7 @@ package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.NormalAnnotationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
@@ -17,7 +17,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
     protected MethodDeclarationEditor insertNewListener(TypeDeclarationEditor typeEditor) {
         MethodDeclarationEditor methodEditor;
         TypeDeclaration attributesType = typeEditor.findTypeDeclarationByName(
-                AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME).orElseThrow();
+                NamingConventions.ATTRIBUTES_CLASS_NAME).orElseThrow();
         methodEditor = typeEditor.insertNewMethodBefore(attributesType);
         return methodEditor;
     }
@@ -42,7 +42,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }

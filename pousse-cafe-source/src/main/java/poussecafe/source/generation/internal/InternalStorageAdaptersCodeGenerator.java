@@ -2,7 +2,7 @@ package poussecafe.source.generation.internal;
 
 import java.nio.file.Path;
 import poussecafe.source.generation.StorageAdaptersCodeGenerator;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;
@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 public class InternalStorageAdaptersCodeGenerator extends StorageAdaptersCodeGenerator {
 
     @Override
-    protected void updateDefaultAttributesImplementation(Aggregate aggregate, ComilationUnitEditor compilationUnitEditor) {
+    protected void updateDefaultAttributesImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor) {
         var aggregateFactoryEditor = new InternalAttributesImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
@@ -19,7 +19,7 @@ public class InternalStorageAdaptersCodeGenerator extends StorageAdaptersCodeGen
     }
 
     @Override
-    protected void addDataAccessImplementation(Aggregate aggregate, ComilationUnitEditor compilationUnitEditor) {
+    protected void addDataAccessImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor) {
         var aggregateFactoryEditor = new InternalDataAccessImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)

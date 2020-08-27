@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.Factory;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
@@ -16,11 +16,11 @@ public class AggregateFactoryEditor {
     public void edit() {
         compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImportLast(Factory.class.getCanonicalName());
+        compilationUnitEditor.addImport(Factory.class.getCanonicalName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate));
+        typeEditor.setName(NamingConventions.aggregateFactoryTypeName(aggregate));
 
         var factorySupertype = factorySupertype();
         typeEditor.setSuperclass(factorySupertype);
@@ -36,17 +36,17 @@ public class AggregateFactoryEditor {
         parametrizedType.typeArguments().add(aggregateIdentifierType());
 
         var aggregateRootType = ast.newSimpleType(
-                AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate).getIdentifier());
+                NamingConventions.aggregateRootTypeName(aggregate).getIdentifier());
         parametrizedType.typeArguments().add(aggregateRootType);
 
-        var attributesType = ast.newSimpleType(AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate));
+        var attributesType = ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate));
         parametrizedType.typeArguments().add(attributesType);
 
         return parametrizedType;
     }
 
     private SimpleType aggregateIdentifierType() {
-        return ast.newSimpleType(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
+        return ast.newSimpleType(NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
     }
 
     public static class Builder {
@@ -62,7 +62,7 @@ public class AggregateFactoryEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -77,7 +77,7 @@ public class AggregateFactoryEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

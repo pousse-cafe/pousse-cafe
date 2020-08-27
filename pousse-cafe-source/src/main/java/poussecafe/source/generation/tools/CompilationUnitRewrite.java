@@ -6,7 +6,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
 
-public class ComilationUnitRewrite extends NodeRewrite {
+public class CompilationUnitRewrite extends NodeRewrite {
 
     public void rewrite(Document document) throws BadLocationException {
         TextEdit rewriterEdits = rewrite().rewriteAST(document, null);
@@ -17,7 +17,7 @@ public class ComilationUnitRewrite extends NodeRewrite {
         return (CompilationUnit) node();
     }
 
-    public ComilationUnitRewrite(CompilationUnit unit) {
+    public CompilationUnitRewrite(CompilationUnit unit) {
         super(ASTRewrite.create(unit.getAST()), unit);
     }
 }

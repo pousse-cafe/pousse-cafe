@@ -2,7 +2,7 @@ package poussecafe.source.generation.internal;
 
 import java.io.Serializable;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.SuppressWarningsEditor;
 import poussecafe.source.model.Aggregate;
 
@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 public class InternalAttributesImplementationEditor {
 
     public void edit() {
-        compilationUnitEditor.addImportFirst(Serializable.class);
+        compilationUnitEditor.addImport(Serializable.class);
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
 
@@ -39,7 +39,7 @@ public class InternalAttributesImplementationEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -54,7 +54,7 @@ public class InternalAttributesImplementationEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

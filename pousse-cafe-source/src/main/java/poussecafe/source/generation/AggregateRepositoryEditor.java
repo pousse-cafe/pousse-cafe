@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.Repository;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
@@ -17,16 +17,16 @@ public class AggregateRepositoryEditor {
     public void edit() {
         compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImportLast(Repository.class.getCanonicalName());
+        compilationUnitEditor.addImport(Repository.class.getCanonicalName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        typeEditor.setName(AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate));
+        typeEditor.setName(NamingConventions.aggregateRepositoryTypeName(aggregate));
 
         var repositoryType = repositoryType();
         typeEditor.setSuperclass(repositoryType);
 
-        editDataAccessMethod(typeEditor.method(AggregateCodeGenerationConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
+        editDataAccessMethod(typeEditor.method(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
 
         compilationUnitEditor.flush();
     }
@@ -37,12 +37,12 @@ public class AggregateRepositoryEditor {
         var parametrizedType = ast.newParameterizedType(Repository.class);
 
         SimpleType aggregateRootType = ast.newSimpleType(
-                AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate).getIdentifier());
+                NamingConventions.aggregateRootTypeName(aggregate).getIdentifier());
         parametrizedType.typeArguments().add(aggregateRootType);
 
         parametrizedType.typeArguments().add(aggregateIdentifierType());
 
-        var attributesTypeName = AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate);
+        var attributesTypeName = NamingConventions.aggregateAttributesQualifiedTypeName(aggregate);
         var attributesType = ast.newSimpleType(attributesTypeName);
         parametrizedType.typeArguments().add(attributesType);
 
@@ -50,7 +50,7 @@ public class AggregateRepositoryEditor {
     }
 
     private SimpleType aggregateIdentifierType() {
-        return ast.newSimpleType(AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
+        return ast.newSimpleType(NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
     }
 
     private void editDataAccessMethod(MethodDeclarationEditor editor) {
@@ -58,8 +58,8 @@ public class AggregateRepositoryEditor {
             editor.modifiers().markerAnnotation(Override.class);
             editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-            var returnType = ast.newParameterizedType(AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
-            returnType.typeArguments().add(ast.newSimpleType(AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+            var returnType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
+            returnType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
             editor.setReturnType(returnType);
 
             var body = ast.ast().newBlock();
@@ -67,8 +67,8 @@ public class AggregateRepositoryEditor {
             var returnStatement = ast.ast().newReturnStatement();
             var castedDataAccess = ast.ast().newCastExpression();
             var parametrizedDataAccessType = ast.newParameterizedType(
-                    AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
-            parametrizedDataAccessType.typeArguments().add(ast.newSimpleType(AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+                    NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
+            parametrizedDataAccessType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
             castedDataAccess.setType(parametrizedDataAccessType);
             var dataAccessInvocation = ast.ast().newSuperMethodInvocation();
             dataAccessInvocation.setName(ast.ast().newSimpleName("dataAccess"));
@@ -93,7 +93,7 @@ public class AggregateRepositoryEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -108,7 +108,7 @@ public class AggregateRepositoryEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

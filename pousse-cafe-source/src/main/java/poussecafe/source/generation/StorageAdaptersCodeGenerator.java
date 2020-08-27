@@ -1,6 +1,6 @@
 package poussecafe.source.generation;
 
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.model.Aggregate;
 
 public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator {
@@ -11,20 +11,20 @@ public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator
     }
 
     private void updateDefaultAttributesImplementation(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         updateDefaultAttributesImplementation(aggregate, compilationUnitEditor);
     }
 
-    protected abstract void updateDefaultAttributesImplementation(Aggregate aggregate, ComilationUnitEditor compilationUnitEditor);
+    protected abstract void updateDefaultAttributesImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor);
 
     private void addDataAccessImplementation(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateDataAccessImplementationTypeName(aggregate, storageName());
+        var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate, storageName());
         var compilationUnitEditor = compilationUnitEditor(typeName);
         addDataAccessImplementation(aggregate, compilationUnitEditor);
     }
 
-    protected abstract void addDataAccessImplementation(Aggregate aggregate, ComilationUnitEditor compilationUnitEditor);
+    protected abstract void addDataAccessImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor);
 
     protected abstract String storageName();
 }

@@ -1,7 +1,7 @@
 package poussecafe.source.generation;
 
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.ProcessModel;
 
@@ -12,7 +12,7 @@ public class ProcessEditor {
     public void edit() {
         compilationUnitEditor.setPackage(process.packageName());
 
-        compilationUnitEditor.addImportLast(poussecafe.domain.Process.class.getCanonicalName());
+        compilationUnitEditor.addImport(poussecafe.domain.Process.class.getCanonicalName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
@@ -42,7 +42,7 @@ public class ProcessEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -57,7 +57,7 @@ public class ProcessEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

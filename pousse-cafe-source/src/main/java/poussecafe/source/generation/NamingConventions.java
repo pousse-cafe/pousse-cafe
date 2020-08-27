@@ -2,8 +2,10 @@ package poussecafe.source.generation;
 
 import poussecafe.source.analysis.Name;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Command;
+import poussecafe.source.model.DomainEvent;
 
-public class AggregateCodeGenerationConventions {
+public class NamingConventions {
 
     public static Name aggregateIdentifierTypeName(Aggregate aggregate) {
         return new Name(aggregate.packageName(), aggregate.name() + "Id");
@@ -47,7 +49,27 @@ public class AggregateCodeGenerationConventions {
         return new Name(adaptersPackageName(aggregate), aggregate.name() + storageName + "DataAccess");
     }
 
-    private AggregateCodeGenerationConventions() {
+    public static Name commandTypeName(Command command) {
+        return new Name(command.packageName(), command.simpleName());
+    }
+
+    public static Name commandImplementationTypeName(Command command) {
+        return new Name(command.packageName() + "." + ADAPTERS_PACKAGE_NAME, command.simpleName() + "Data");
+    }
+
+    public static Name eventTypeName(DomainEvent event) {
+        return new Name(event.packageName(), event.simpleName());
+    }
+
+    public static Name eventImplementationTypeName(DomainEvent event) {
+        return new Name(event.packageName() + "." + ADAPTERS_PACKAGE_NAME, event.simpleName() + "Data");
+    }
+
+    public static String runnerPackage(Aggregate aggregate) {
+        return aggregate.packageName();
+    }
+
+    private NamingConventions() {
 
     }
 }

@@ -1,6 +1,6 @@
 package poussecafe.source.generation;
 
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.MessageListener;
@@ -29,7 +29,7 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }

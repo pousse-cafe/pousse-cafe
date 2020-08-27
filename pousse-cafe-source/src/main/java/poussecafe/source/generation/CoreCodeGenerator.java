@@ -59,7 +59,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateId(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
+        var typeName = NamingConventions.aggregateIdentifierTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateRootEditor = new AggregateIdEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -69,7 +69,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateRoot(Optional<Model> model, Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate);
+        var typeName = NamingConventions.aggregateRootTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateRootEditor = new AggregateRootEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -80,7 +80,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateDataAccess(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateDataAccessTypeName(aggregate);
+        var typeName = NamingConventions.aggregateDataAccessTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateRootEditor = new AggregateDataAccessEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -90,7 +90,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateFactory(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate);
+        var typeName = NamingConventions.aggregateFactoryTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateFactoryEditor = new AggregateFactoryEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -100,7 +100,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateRepository(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
+        var typeName = NamingConventions.aggregateRepositoryTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateFactoryEditor = new AggregateRepositoryEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -110,7 +110,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAttributesDefaultImplementation(Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateFactoryEditor = new AggregateAttributesImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -135,7 +135,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateCommandImplementation(Command command) {
-        var typeName = CodeGenerationConventions.commandImplementationTypeName(command);
+        var typeName = NamingConventions.commandImplementationTypeName(command);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var commandEditor = new CommandImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -160,7 +160,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateEventImplementation(DomainEvent event) {
-        var typeName = CodeGenerationConventions.eventImplementationTypeName(event);
+        var typeName = NamingConventions.eventImplementationTypeName(event);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var commandEditor = new EventImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -187,7 +187,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateAggregateRootListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateRootTypeName(aggregate);
+        var typeName = NamingConventions.aggregateRootTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var editor = new AggregateRootMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -198,7 +198,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateRunner(Model model, MessageListener listener, Aggregate aggregate) {
-        var runnerTypeName = new Name(CodeGenerationConventions.runnerPackage(aggregate),
+        var runnerTypeName = new Name(NamingConventions.runnerPackage(aggregate),
                 listener.runnerName().orElseThrow());
         var runnerCompilationUnitEditor = compilationUnitEditor(runnerTypeName);
         var runnerEditor = new RunnerEditor.Builder()
@@ -211,7 +211,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateFactoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate);
+        var typeName = NamingConventions.aggregateFactoryTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var editor = new AggregateFactoryMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -223,7 +223,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateRepositoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
+        var typeName = NamingConventions.aggregateRepositoryTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var editor = new AggregateRepositoryMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)

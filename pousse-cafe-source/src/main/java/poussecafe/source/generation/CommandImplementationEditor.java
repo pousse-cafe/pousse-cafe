@@ -3,7 +3,7 @@ package poussecafe.source.generation;
 import java.io.Serializable;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.SuppressWarningsEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Command;
@@ -13,12 +13,12 @@ import static java.util.Objects.requireNonNull;
 public class CommandImplementationEditor {
 
     public void edit() {
-        var commandImplenentationTypeName = CodeGenerationConventions.commandImplementationTypeName(command);
+        var commandImplenentationTypeName = NamingConventions.commandImplementationTypeName(command);
         compilationUnitEditor.setPackage(commandImplenentationTypeName.getQualifier().toString());
 
-        compilationUnitEditor.addImportLast(Serializable.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(MessageImplementation.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(command.name());
+        compilationUnitEditor.addImport(Serializable.class.getCanonicalName());
+        compilationUnitEditor.addImport(MessageImplementation.class.getCanonicalName());
+        compilationUnitEditor.addImport(command.name());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
 
@@ -58,7 +58,7 @@ public class CommandImplementationEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -73,7 +73,7 @@ public class CommandImplementationEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

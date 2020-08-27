@@ -3,7 +3,7 @@ package poussecafe.source.generation;
 import java.util.Collection;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.Block;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.Aggregate;
@@ -27,12 +27,12 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
                 || messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
             methodEditor.setReturnType(ast.newSimpleType(aggregate.name()));
         } else if(messageListener.productionType().orElse(null) == ProductionType.OPTIONAL) {
-            compilationUnitEditor.addImportLast(Optional.class);
+            compilationUnitEditor.addImport(Optional.class);
             var optionalType = ast.newParameterizedType(Optional.class);
             optionalType.typeArguments().add(ast.newSimpleType(aggregate.name()));
             methodEditor.setReturnType(optionalType);
         } else if(messageListener.productionType().orElse(null) == ProductionType.SEVERAL) {
-            compilationUnitEditor.addImportLast(Collection.class);
+            compilationUnitEditor.addImport(Collection.class);
             var collectionType = ast.newParameterizedType(Collection.class);
             collectionType.typeArguments().add(ast.newSimpleType(aggregate.name()));
             methodEditor.setReturnType(collectionType);
@@ -64,7 +64,7 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }

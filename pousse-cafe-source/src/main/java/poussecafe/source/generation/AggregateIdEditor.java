@@ -3,7 +3,7 @@ package poussecafe.source.generation;
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
@@ -16,13 +16,13 @@ public class AggregateIdEditor {
     public void edit() {
         compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImportLast(ValueObject.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(StringId.class.getCanonicalName());
+        compilationUnitEditor.addImport(ValueObject.class.getCanonicalName());
+        compilationUnitEditor.addImport(StringId.class.getCanonicalName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
-        var typeName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
+        var typeName = NamingConventions.aggregateIdentifierTypeName(aggregate);
         var simpleTypeName = typeName.getIdentifier().toString();
         typeEditor.setName(simpleTypeName);
 
@@ -68,7 +68,7 @@ public class AggregateIdEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -83,7 +83,7 @@ public class AggregateIdEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import poussecafe.listeners.UpdateOneRunner;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
@@ -21,16 +21,16 @@ public class RunnerEditor {
 
     @SuppressWarnings("unchecked")
     public void edit() {
-        compilationUnitEditor.setPackage(CodeGenerationConventions.runnerPackage(aggregate));
+        compilationUnitEditor.setPackage(NamingConventions.runnerPackage(aggregate));
 
-        compilationUnitEditor.addImportFirst(UpdateOneRunner.class);
-        compilationUnitEditor.addImportFirst(messageName());
+        compilationUnitEditor.addImport(UpdateOneRunner.class);
+        compilationUnitEditor.addImport(messageName());
 
         var typeEditor = compilationUnitEditor.typeDeclaration();
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
         typeEditor.setName(messageListener.runnerName().orElseThrow());
 
-        var idName = AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate);
+        var idName = NamingConventions.aggregateIdentifierTypeName(aggregate);
         Name messageTypeName = new Name(messageListener.consumedMessage().name());
         if(typeEditor.isNewType()) {
             var supertype = ast.newParameterizedType(UpdateOneRunner.class);
@@ -106,7 +106,7 @@ public class RunnerEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -131,7 +131,7 @@ public class RunnerEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

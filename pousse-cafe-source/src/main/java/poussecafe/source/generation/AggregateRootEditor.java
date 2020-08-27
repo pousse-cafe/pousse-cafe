@@ -9,7 +9,7 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.NormalAnnotationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
@@ -29,10 +29,10 @@ public class AggregateRootEditor {
     public void edit() {
         compilationUnitEditor.setPackage(aggregate.packageName());
 
-        compilationUnitEditor.addImportLast(poussecafe.discovery.Aggregate.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(poussecafe.discovery.DefaultModule.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(AggregateRoot.class.getCanonicalName());
-        compilationUnitEditor.addImportLast(poussecafe.domain.EntityAttributes.class.getCanonicalName());
+        compilationUnitEditor.addImport(poussecafe.discovery.Aggregate.class.getCanonicalName());
+        compilationUnitEditor.addImport(poussecafe.discovery.DefaultModule.class.getCanonicalName());
+        compilationUnitEditor.addImport(AggregateRoot.class.getCanonicalName());
+        compilationUnitEditor.addImport(poussecafe.domain.EntityAttributes.class.getCanonicalName());
 
         importProducedEvents(aggregate.onAddProducedEvents());
         importProducedEvents(aggregate.onDeleteProducedEvents());
@@ -49,7 +49,7 @@ public class AggregateRootEditor {
         var aggregateRootSupertype = aggregateRootSupertype();
         typeEditor.setSuperclass(aggregateRootSupertype);
 
-        var attributesType = typeEditor.declaredType(AggregateCodeGenerationConventions.ATTRIBUTES_CLASS_NAME);
+        var attributesType = typeEditor.declaredType(NamingConventions.ATTRIBUTES_CLASS_NAME);
         editAttributesType(attributesType);
 
         if(!aggregate.onDeleteProducedEvents().isEmpty()) {
@@ -71,7 +71,7 @@ public class AggregateRootEditor {
                 .map(Optional::get)
                 .collect(toList());
         for(DomainEvent event : events) {
-            compilationUnitEditor.addImportFirst(event.name());
+            compilationUnitEditor.addImport(event.name());
         }
     }
 
@@ -80,11 +80,11 @@ public class AggregateRootEditor {
     private Aggregate aggregate;
 
     private void editAggregateAnnotation(NormalAnnotationEditor editor) {
-        var factoryClassName = AggregateCodeGenerationConventions.aggregateFactoryTypeName(aggregate);
+        var factoryClassName = NamingConventions.aggregateFactoryTypeName(aggregate);
         var factoryType = ast.newTypeLiteral(factoryClassName.getIdentifier());
         editor.setAttribute("factory", factoryType);
 
-        var repositoryClassName = AggregateCodeGenerationConventions.aggregateRepositoryTypeName(aggregate);
+        var repositoryClassName = NamingConventions.aggregateRepositoryTypeName(aggregate);
         var repositoryType = ast.newTypeLiteral(repositoryClassName.getIdentifier());
         editor.setAttribute("repository", repositoryType);
 
@@ -96,7 +96,7 @@ public class AggregateRootEditor {
         var parametrizedRootType = ast.newParameterizedType(new Name(AggregateRoot.class.getSimpleName()));
         parametrizedRootType.typeArguments().add(aggregateIdentifierType());
 
-        var attributesTypeName = AggregateCodeGenerationConventions.aggregateAttributesQualifiedTypeName(aggregate);
+        var attributesTypeName = NamingConventions.aggregateAttributesQualifiedTypeName(aggregate);
         var attributesType = ast.newSimpleType(attributesTypeName);
         parametrizedRootType.typeArguments().add(attributesType);
         return parametrizedRootType;
@@ -104,7 +104,7 @@ public class AggregateRootEditor {
 
     private SimpleType aggregateIdentifierType() {
         return ast.newSimpleType(
-                AggregateCodeGenerationConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
+                NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
     }
 
     private void editAttributesType(TypeDeclarationEditor editor) {
@@ -166,7 +166,7 @@ public class AggregateRootEditor {
             return editor;
         }
 
-        public Builder compilationUnitEditor(ComilationUnitEditor compilationUnitEditor) {
+        public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
             return this;
         }
@@ -186,7 +186,7 @@ public class AggregateRootEditor {
 
     }
 
-    private ComilationUnitEditor compilationUnitEditor;
+    private CompilationUnitEditor compilationUnitEditor;
 
     private AstWrapper ast;
 }

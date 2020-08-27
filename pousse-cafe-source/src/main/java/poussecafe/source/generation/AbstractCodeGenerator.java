@@ -2,12 +2,12 @@ package poussecafe.source.generation;
 
 import java.nio.file.Path;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.generation.tools.ComilationUnitEditor;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
 
 public abstract class AbstractCodeGenerator {
 
-    protected ComilationUnitEditor compilationUnitEditor(Name className) {
-        return new ComilationUnitEditor.Builder()
+    protected CompilationUnitEditor compilationUnitEditor(Name className) {
+        return new CompilationUnitEditor.Builder()
                 .sourceDirectory(sourceDirectory)
                 .packageName(className.getQualifier().toString())
                 .className(className.getIdentifier().toString())
