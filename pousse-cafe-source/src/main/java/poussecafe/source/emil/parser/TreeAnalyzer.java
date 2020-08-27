@@ -19,6 +19,7 @@ import poussecafe.source.emil.parser.EmilParser.ProcessConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.ProcessContext;
 import poussecafe.source.emil.parser.EmilParser.RepositoryConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.SingleMessageConsumptionContext;
+import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
@@ -41,7 +42,7 @@ public class TreeAnalyzer {
             processName = process.header().NAME().getText();
             model.addProcess(new ProcessModel.Builder()
                     .name(processName)
-                    .packageName(basePackage + ".process")
+                    .packageName(NamingConventions.processesPackageName(basePackage))
                     .build());
         }
 
@@ -70,7 +71,7 @@ public class TreeAnalyzer {
         var commandName = context.command().NAME().getText();
         model.addCommand(new Command.Builder()
                 .name(commandName)
-                .packageName(basePackage + ".commands")
+                .packageName(NamingConventions.commandsPackageName(basePackage))
                 .build());
         analyzeMessageConsumptions(Optional.empty(), Message.command(commandName), context.messageConsumptions());
     }
@@ -115,11 +116,10 @@ public class TreeAnalyzer {
             FactoryConsumptionContext factoryConsumption) {
         var factoryListener = factoryConsumption.factoryListener();
         var factoryName = factoryListener.factoryName.getText();
-        if(!factoryName.endsWith(FACTORY_NAME_SUFFIX)) {
-            throw new IllegalStateException("Unexpected factory name " + factoryName + " (does not end with "
-                    + FACTORY_NAME_SUFFIX + ")");
+        if(!NamingConventions.isAggregateFactoryName(factoryName)) {
+            throw new IllegalStateException("Unexpected factory name " + factoryName);
         }
-        var aggregateName = factoryName.substring(0, factoryName.length() - FACTORY_NAME_SUFFIX.length());
+        var aggregateName = NamingConventions.aggregateNameFromFactory(factoryName);
 
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
@@ -156,8 +156,6 @@ public class TreeAnalyzer {
 
         analyzeEventProductions(factoryConsumption.eventProductions());
     }
-
-    private static final String FACTORY_NAME_SUFFIX = "Factory";
 
     private List<ProducedEvent> producedEvents(EventProductionsContext eventProductions) {
         var producedEvents = new ArrayList<ProducedEvent>();
@@ -243,12 +241,7 @@ public class TreeAnalyzer {
             Message consumedMessage,
             AggregateRootConsumptionContext aggregateRootConsumption) {
         var aggregateRootName = aggregateRootConsumption.aggregateRoot().NAME().getText();
-        String aggregateName;
-        if(aggregateRootName.endsWith(ROOT_NAME_SUFFIX)) {
-            aggregateName = aggregateRootName.substring(0, aggregateRootName.length() - ROOT_NAME_SUFFIX.length());
-        } else {
-            aggregateName = aggregateRootName;
-        }
+        String aggregateName = aggregateRootName;
 
         ensureAggregateExists(aggregateName);
 
@@ -277,17 +270,14 @@ public class TreeAnalyzer {
         analyzeEventProductions(aggregateRootConsumption.eventProductions());
     }
 
-    private static final String ROOT_NAME_SUFFIX = "Root";
-
     private void analyzeRepositoryConsumption(Optional<String> consumesFromExternal,
             Message consumedMessage,
             RepositoryConsumptionContext repositoryConsumption) {
         var repositoryName = repositoryConsumption.repositoryName.getText();
-        if(!repositoryName.endsWith(REPOSITORY_NAME_SUFFIX)) {
-            throw new IllegalStateException("Unexpected repository name " + repositoryName + " (does not end with "
-                    + REPOSITORY_NAME_SUFFIX + ")");
+        if(!NamingConventions.isAggregateRepositoryName(repositoryName)) {
+            throw new IllegalStateException("Unexpected repository name " + repositoryName);
         }
-        var aggregateName = repositoryName.substring(0, repositoryName.length() - REPOSITORY_NAME_SUFFIX.length());
+        var aggregateName = NamingConventions.aggregateNameFromRepository(repositoryName);
 
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
@@ -316,8 +306,6 @@ public class TreeAnalyzer {
 
         analyzeEventProductions(repositoryConsumption.eventProductions());
     }
-
-    private static final String REPOSITORY_NAME_SUFFIX = "Repository";
 
     private void analyzeProcessConsumption(ProcessConsumptionContext processConsumption) {
         model.addProcess(new ProcessModel.Builder()

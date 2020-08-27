@@ -16,11 +16,44 @@ public class NamingConventions {
     }
 
     public static Name aggregateFactoryTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.name() + "Factory");
+        return new Name(aggregate.packageName(), aggregate.name() + FACTORY_NAME_SUFFIX);
+    }
+
+    private static final String FACTORY_NAME_SUFFIX = "Factory";
+
+    public static boolean isAggregateFactoryName(String typeName) {
+        return typeName.endsWith(FACTORY_NAME_SUFFIX);
+    }
+
+    public static String aggregateNameFromFactory(String factoryName) {
+        if(!isAggregateFactoryName(factoryName)) {
+            throw new IllegalArgumentException("Given type name is not a factory name");
+        }
+        return nameWithoutSuffix(factoryName, FACTORY_NAME_SUFFIX);
+    }
+
+    public static String nameWithoutSuffix(String typeName, String suffix) {
+        if(!typeName.endsWith(suffix)) {
+            throw new IllegalArgumentException("Given type name must end with " + suffix);
+        }
+        return typeName.substring(0, typeName.length() - suffix.length());
     }
 
     public static Name aggregateRepositoryTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.name() + "Repository");
+        return new Name(aggregate.packageName(), aggregate.name() + REPOSITORY_NAME_SUFFIX);
+    }
+
+    private static final String REPOSITORY_NAME_SUFFIX = "Repository";
+
+    public static boolean isAggregateRepositoryName(String typeName) {
+        return typeName.endsWith(REPOSITORY_NAME_SUFFIX);
+    }
+
+    public static String aggregateNameFromRepository(String repositoryName) {
+        if(!isAggregateRepositoryName(repositoryName)) {
+            throw new IllegalArgumentException("Given type name is not a repository name");
+        }
+        return nameWithoutSuffix(repositoryName, REPOSITORY_NAME_SUFFIX);
     }
 
     public static Name aggregateDataAccessTypeName(Aggregate aggregate) {
@@ -67,6 +100,14 @@ public class NamingConventions {
 
     public static String runnerPackage(Aggregate aggregate) {
         return aggregate.packageName();
+    }
+
+    public static String processesPackageName(String basePackage) {
+        return basePackage + ".process";
+    }
+
+    public static String commandsPackageName(String basePackage) {
+        return basePackage + ".commands";
     }
 
     private NamingConventions() {
