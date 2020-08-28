@@ -9,38 +9,41 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import poussecafe.storage.Page;
 import poussecafe.storage.SortDirection;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 public class StreamBuilder<T> {
 
+    /**
+     * @deprecated use StreamBuilder constructor
+     */
+    @Deprecated(since = "0.23")
     public static class Builder<U> {
 
-        private StreamBuilder<U> streamBuilder = new StreamBuilder<>();
+        private StreamBuilder<U> streamBuilder;
 
         public Builder<U> dataClass(Class<U> dataClass) {
-            streamBuilder.dataClass = dataClass;
             return this;
         }
 
         public Builder<U> stream(Stream<U> stream) {
-            streamBuilder.stream = stream;
+            streamBuilder = new StreamBuilder<>(stream);
             return this;
         }
 
         public StreamBuilder<U> build() {
-            Objects.requireNonNull(streamBuilder.dataClass);
-            Objects.requireNonNull(streamBuilder.stream);
+            Objects.requireNonNull(streamBuilder);
             return streamBuilder;
         }
     }
 
-    private StreamBuilder() {
-
+    public StreamBuilder(Stream<T> stream) {
+        requireNonNull(stream);
+        this.stream = stream;
     }
-
-    private Class<T> dataClass;
 
     private Stream<T> stream;
 
@@ -127,8 +130,23 @@ public class StreamBuilder<T> {
 
     private List<Order<T, ?>> orders = new ArrayList<>();
 
+    public StreamBuilder<T> page(Page page) {
+        optionalPage(Optional.of(page));
+        return this;
+    }
+
+    public StreamBuilder<T> optionalPage(Optional<Page> page) {
+        this.page = page;
+        return this;
+    }
+
+    private Optional<Page> page = Optional.empty();
+
     public Stream<T> build() {
+        requireNonNull(page);
+
         orderStream();
+        pageStream();
         return stream;
     }
 
@@ -159,6 +177,13 @@ public class StreamBuilder<T> {
             Comparable c2 = valueSupplier.apply(data2);
             return c2.compareTo(c1);
         };
+    }
+
+    private void pageStream() {
+        if(page.isPresent()) {
+            stream = stream.skip(page.get().offset());
+            stream = stream.limit(page.get().size());
+        }
     }
 
     public List<T> buildAndCollect() {
