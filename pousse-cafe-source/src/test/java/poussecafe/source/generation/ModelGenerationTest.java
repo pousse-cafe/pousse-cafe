@@ -12,13 +12,17 @@ public class ModelGenerationTest extends GenerationTest {
     public void newModel() throws IOException { // NOSONAR - add assert - see parent
         givenCoreGenerator();
         givenStorageGenerator();
-        givenModel();
+        givenModel("Process1.emil");
         whenGeneratingCode();
         thenGeneratedCodeMatchesExpected();
     }
 
     protected void givenModel() throws IOException {
-        var tree = TreeParser.parseInputStream(getClass().getResourceAsStream("/Process1.emil"));
+        givenModel("Process1.emil");
+    }
+
+    protected void givenModel(String emilFile) throws IOException {
+        var tree = TreeParser.parseInputStream(getClass().getResourceAsStream("/" + emilFile));
         var analyzer = new TreeAnalyzer.Builder()
                 .tree(tree)
                 .basePackage("poussecafe.source.generation.generatedfull")
@@ -42,7 +46,7 @@ public class ModelGenerationTest extends GenerationTest {
     public void updateExistingModel() throws IOException { // NOSONAR - add assert - see parent
         givenCoreGenerator();
         givenStorageGenerator();
-        givenModel();
+        givenModel("Process1.emil");
         givenExisingCode();
         whenGeneratingCode();
         thenGeneratedCodeMatchesExpected();
@@ -61,5 +65,20 @@ public class ModelGenerationTest extends GenerationTest {
     @Override
     protected String[] packageNameSegments() {
         return new String[] { "poussecafe", "source", "generation", "generatedfull" };
+    }
+
+    @Test
+    public void modelUpdate() throws IOException { // NOSONAR - add assert - see parent
+        givenCoreGenerator();
+        givenStorageGenerator();
+        givenCodeFragment();
+        givenModel();
+        whenGeneratingCode();
+        thenGeneratedCodeMatchesExpected();
+    }
+
+    private void givenCodeFragment() throws IOException {
+        givenModel("Process1Fragment.emil");
+        whenGeneratingCode();
     }
 }
