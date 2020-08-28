@@ -22,7 +22,8 @@ public class ClassHierarchyTypeArgumentsValidator {
 
     private void validOrThrow(Class runnerClass, Type runnerType, Type[] runnerInterfaces) {
         if(runnerClass == null) {
-            throw new IllegalArgumentException("All expected type argument values were not found");
+            throw new IllegalArgumentException("Invalid runner for listener " + listenerId +
+                    ": all expected type argument values were not found");
         } else {
             considerType(runnerType);
             for(Type runnerInterface : runnerInterfaces) {
