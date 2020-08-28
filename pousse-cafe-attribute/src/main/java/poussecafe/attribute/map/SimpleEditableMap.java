@@ -7,9 +7,9 @@ import poussecafe.collection.MapEditor;
 
 import static java.util.Objects.requireNonNull;
 
-class SimpleEditableMap<K, V> implements EditableMap<K, V> {
+public class SimpleEditableMap<K, V> implements EditableMap<K, V> {
 
-    SimpleEditableMap(Map<K, V> map) {
+    public SimpleEditableMap(Map<K, V> map) {
         requireNonNull(map);
         this.map = map;
     }
