@@ -148,6 +148,7 @@ public class CompilationUnitEditor {
         options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_METHOD, "1");
 
         options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, "1");
+        options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, JavaCore.INSERT);
 
         CodeFormatter codeFormatter = ToolFactory.createCodeFormatter(options);
         String code = document.get();

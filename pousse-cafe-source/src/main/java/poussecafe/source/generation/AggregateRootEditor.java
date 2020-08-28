@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.discovery.DefaultModule;
+import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.analysis.Name;
@@ -135,6 +136,10 @@ public class AggregateRootEditor {
         } else {
             methodEditor = editor.insertNewMethodFirst();
             methodEditor.setName(hookName);
+
+            if(!producedEvents.isEmpty()) {
+                compilationUnitEditor.addImport(ProducesEvent.class);
+            }
         }
 
         var producesEventEditor = new ProducesEventsEditor.Builder()
