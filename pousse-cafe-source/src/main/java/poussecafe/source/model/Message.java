@@ -2,8 +2,8 @@ package poussecafe.source.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.CompilationUnitResolver;
+import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;

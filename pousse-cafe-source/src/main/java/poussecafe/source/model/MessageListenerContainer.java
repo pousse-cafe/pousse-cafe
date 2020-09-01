@@ -22,11 +22,11 @@ public class MessageListenerContainer {
 
     private MessageListenerContainerType type;
 
-    public String className() {
-        return className;
+    public String containerIdentifier() {
+        return containerIdentifier;
     }
 
-    private String className;
+    private String containerIdentifier;
 
     public static class Builder {
 
@@ -35,7 +35,7 @@ public class MessageListenerContainer {
         public MessageListenerContainer build() {
             requireNonNull(container.aggregateName);
             requireNonNull(container.type);
-            requireNonNull(container.className);
+            requireNonNull(container.containerIdentifier);
 
             if((container.type == MessageListenerContainerType.FACTORY
                         || container.type == MessageListenerContainerType.REPOSITORY
@@ -57,8 +57,8 @@ public class MessageListenerContainer {
             return this;
         }
 
-        public Builder className(String className) {
-            container.className = className;
+        public Builder containerIdentifier(String containerIdentifier) {
+            container.containerIdentifier = containerIdentifier;
             return this;
         }
     }
@@ -73,7 +73,7 @@ public class MessageListenerContainer {
         } else if(type == MessageListenerContainerType.ROOT) {
             builder.append("@");
         }
-        builder.append(className);
+        builder.append(containerIdentifier);
         if(type == MessageListenerContainerType.FACTORY
                 || type == MessageListenerContainerType.REPOSITORY) {
             builder.append("}");

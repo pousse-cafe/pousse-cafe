@@ -4,10 +4,10 @@ import poussecafe.source.analysis.Name;
 
 class ComponentWithType {
 
-    String simpleName;
+    String name;
 
     public String simpleName() {
-        return simpleName;
+        return name;
     }
 
     String packageName;
@@ -17,7 +17,7 @@ class ComponentWithType {
     }
 
     public Name name() {
-        return new Name(packageName, simpleName);
+        return new Name(packageName, name);
     }
 
     ComponentWithType() {

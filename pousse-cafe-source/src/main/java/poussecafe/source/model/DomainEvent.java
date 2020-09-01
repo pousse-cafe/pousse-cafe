@@ -9,13 +9,13 @@ public class DomainEvent extends ComponentWithType {
         private DomainEvent source = new DomainEvent();
 
         public DomainEvent build() {
-            requireNonNull(source.simpleName);
+            requireNonNull(source.name);
             requireNonNull(source.packageName);
             return source;
         }
 
         public Builder name(String name) {
-            source.simpleName = name;
+            source.name = name;
             return this;
         }
 

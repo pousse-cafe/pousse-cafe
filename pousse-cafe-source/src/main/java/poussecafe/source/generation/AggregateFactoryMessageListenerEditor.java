@@ -25,16 +25,16 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
     protected void setReturnType(MethodDeclarationEditor methodEditor) {
         if(messageListener.productionType().isEmpty()
                 || messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
-            methodEditor.setReturnType(ast.newSimpleType(aggregate.name()));
+            methodEditor.setReturnType(ast.newSimpleType(aggregate.simpleName()));
         } else if(messageListener.productionType().orElse(null) == ProductionType.OPTIONAL) {
             compilationUnitEditor.addImport(Optional.class);
             var optionalType = ast.newParameterizedType(Optional.class);
-            optionalType.typeArguments().add(ast.newSimpleType(aggregate.name()));
+            optionalType.typeArguments().add(ast.newSimpleType(aggregate.simpleName()));
             methodEditor.setReturnType(optionalType);
         } else if(messageListener.productionType().orElse(null) == ProductionType.SEVERAL) {
             compilationUnitEditor.addImport(Collection.class);
             var collectionType = ast.newParameterizedType(Collection.class);
-            collectionType.typeArguments().add(ast.newSimpleType(aggregate.name()));
+            collectionType.typeArguments().add(ast.newSimpleType(aggregate.simpleName()));
             methodEditor.setReturnType(collectionType);
         }
     }

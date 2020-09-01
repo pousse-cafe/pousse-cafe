@@ -9,13 +9,13 @@ public class Command extends ComponentWithType {
         private Command source = new Command();
 
         public Command build() {
-            requireNonNull(source.simpleName);
+            requireNonNull(source.name);
             requireNonNull(source.packageName);
             return source;
         }
 
         public Builder name(String name) {
-            source.simpleName = name;
+            source.name = name;
             return this;
         }
 

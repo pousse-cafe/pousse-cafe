@@ -23,7 +23,7 @@ public class EmilExporterTest {
     }
 
     private void givenModel() throws IOException {
-        var scanner = new Scanner.Builder().build();
+        var scanner = new Scanner();
         scanner.includeTree(DiscoveryTest.testModelDirectory);
         model = scanner.model();
     }

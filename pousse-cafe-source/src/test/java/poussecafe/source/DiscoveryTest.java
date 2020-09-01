@@ -7,7 +7,7 @@ import poussecafe.source.model.Model;
 public abstract class DiscoveryTest {
 
     protected void givenScanner() {
-        scanner = new Scanner.Builder().build();
+        scanner = new Scanner();
     }
 
     private Scanner scanner;
@@ -24,5 +24,9 @@ public abstract class DiscoveryTest {
 
     protected Model model() {
         return scanner.model();
+    }
+
+    protected String basePackage() {
+        return "poussecafe.source.testmodel";
     }
 }

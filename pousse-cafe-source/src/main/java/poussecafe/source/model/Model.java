@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class Model {
 
     public void putAggregate(Aggregate source) {
-        aggregates.put(source.name(), source);
+        aggregates.put(source.simpleName(), source);
     }
 
     private Map<String, Aggregate> aggregates = new HashMap<>();
@@ -64,6 +64,12 @@ public class Model {
     }
 
     public void addCommand(Command command) {
+        var existingCommand = commands.get(command.simpleName());
+        if(existingCommand != null
+                && !existingCommand.name().equals(command.name())) {
+            throw new IllegalArgumentException("A command with this name already exists but qualifiers do not match: "
+                    + existingCommand.name().getQualifier() + " <> " + command.name().getQualifier());
+        }
         commands.put(command.simpleName(), command);
     }
 
@@ -78,6 +84,12 @@ public class Model {
     }
 
     public void addEvent(DomainEvent event) {
+        var existingEvent = events.get(event.simpleName());
+        if(existingEvent != null
+                && !existingEvent.name().equals(event.name())) {
+            throw new IllegalArgumentException("An event with this name already exists but qualifiers do not match: "
+                    + existingEvent.name().getQualifier() + " <> " + event.name().getQualifier());
+        }
         events.put(event.simpleName(), event);
     }
 
@@ -93,5 +105,63 @@ public class Model {
 
     public Collection<Aggregate> aggregates() {
         return Collections.unmodifiableCollection(aggregates.values());
+    }
+
+    /**
+     * Fixing package names implies the copy of all components of a given model but keeping
+     * the package names as defined in this model. Only the components in given modal are kept in the
+     * result.
+     *
+     * @param newModel The new model to fix with current model.
+     *
+     * @return A new Model instance being the result of fixing given model if needed with this one.
+     */
+    public Model fixPackageNames(Model newModel) {
+        var fixedModel = new Model();
+        newModel.events.values().stream().map(this::fixEvent).forEach(fixedModel::addEvent);
+        newModel.commands.values().stream().map(this::fixCommand).forEach(fixedModel::addCommand);
+        newModel.processes.values().stream().map(this::fixProcess).forEach(fixedModel::addProcess);
+        newModel.aggregates.values().stream().map(this::fixAggregate).forEach(fixedModel::putAggregate);
+        fixedModel.listeners.addAll(newModel.listeners);
+        return fixedModel;
+    }
+
+    private DomainEvent fixEvent(DomainEvent event) {
+        var thisEvent = events.get(event.name);
+        if(thisEvent != null) {
+            return thisEvent;
+        } else {
+            return event;
+        }
+    }
+
+    private Command fixCommand(Command command) {
+        var thisCommand = commands.get(command.name);
+        if(thisCommand != null) {
+            return thisCommand;
+        } else {
+            return command;
+        }
+    }
+
+    private ProcessModel fixProcess(ProcessModel process) {
+        var thisProcess = processes.get(process.name);
+        if(thisProcess != null) {
+            return thisProcess;
+        } else {
+            return process;
+        }
+    }
+
+    private Aggregate fixAggregate(Aggregate aggregate) {
+        var thisAggregate = aggregates.get(aggregate.simpleName());
+        if(thisAggregate != null) {
+            return new Aggregate.Builder()
+                    .startingFrom(aggregate)
+                    .packageName(thisAggregate.packageName())
+                    .build();
+        } else {
+            return aggregate;
+        }
     }
 }

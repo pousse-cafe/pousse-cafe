@@ -1,20 +1,14 @@
 package poussecafe.source.model;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
 
-public class Aggregate {
-
-    private String name;
-
-    public String name() {
-        return name;
-    }
+public class Aggregate extends ComponentWithType {
 
     public static final String ON_ADD_METHOD_NAME = "onAdd";
 
@@ -31,12 +25,6 @@ public class Aggregate {
     }
 
     private Set<ProducedEvent> onDeleteProducedEvents = new HashSet<>();
-
-    private String packageName;
-
-    public String packageName() {
-        return packageName;
-    }
 
     public static class Builder {
 
@@ -66,7 +54,7 @@ public class Aggregate {
             return this;
         }
 
-        public Builder onAddProducedEvents(List<ProducedEvent> producedEvents) {
+        public Builder onAddProducedEvents(Collection<ProducedEvent> producedEvents) {
             aggregate.onAddProducedEvents.addAll(producedEvents);
             return this;
         }
@@ -76,7 +64,7 @@ public class Aggregate {
             return this;
         }
 
-        public Builder onDeleteProducedEvents(List<ProducedEvent> onDeleteProducedEvents) {
+        public Builder onDeleteProducedEvents(Collection<ProducedEvent> onDeleteProducedEvents) {
             aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
             return this;
         }

@@ -24,9 +24,13 @@ import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.TypeDeclarationResolver;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Command;
+import poussecafe.source.model.DomainEvent;
+import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerContainerType;
+import poussecafe.source.model.MessageType;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
@@ -69,7 +73,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.ROOT)
                     .aggregateName(aggregateRootClass.aggregateName().simpleName())
-                    .className(aggregateRootClass.aggregateName().simpleName())
+                    .containerIdentifier(aggregateRootClass.aggregateName().simpleName())
                     .build();
             return true;
         } else if(resolvedTypeDeclaration.implementsInterface(CompilationUnitResolver.PROCESS_INTERFACE)) {
@@ -85,7 +89,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.FACTORY)
                     .aggregateName(factoryClass.aggregateName().simpleName())
-                    .className(factoryClass.simpleName())
+                    .containerIdentifier(factoryClass.simpleName())
                     .build();
             return true;
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
@@ -95,7 +99,7 @@ public class CompilationUnitVisitor extends ASTVisitor {
             container = new MessageListenerContainer.Builder()
                     .type(MessageListenerContainerType.REPOSITORY)
                     .aggregateName(repositoryClass.aggregateName().simpleName())
-                    .className(repositoryClass.simpleName())
+                    .containerIdentifier(repositoryClass.simpleName())
                     .build();
             return true;
         } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
@@ -181,24 +185,61 @@ public class CompilationUnitVisitor extends ASTVisitor {
     public boolean visit(MethodDeclaration node) {
         if(aggregateBuilder != null) {
             var method = typeDeclarationResolvers.peek().resolve(node);
-            if(MessageListenerAnnotations.isMessageListener(method.asAnnotatedElement())) {
-                model.addMessageListener(new MessageListener.Builder()
+            var annotatedMethod = method.asAnnotatedElement();
+            if(MessageListenerAnnotations.isMessageListener(annotatedMethod)) {
+                var messageListener = new MessageListener.Builder()
                         .withContainer(container)
                         .withMethodDeclaration(typeDeclarationResolvers.peek().resolve(node))
-                        .build());
+                        .build();
+                model.addMessageListener(messageListener);
+
+                registerMessage(messageListener.consumedMessage(),
+                        method.parameterTypeName(0).orElseThrow());
+                registerMessages(messageListener.producedEvents(), annotatedMethod);
             } else if(container.type() == MessageListenerContainerType.ROOT) {
                 if(method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
-                    var annotatedMethod = method.asAnnotatedElement();
                     var producedEvents = producesEvents(annotatedMethod);
                     aggregateBuilder.onAddProducedEvents(producedEvents);
+                    registerMessages(producedEvents, annotatedMethod);
                 } else if(method.name().equals(Aggregate.ON_DELETE_METHOD_NAME)) {
-                    var annotatedMethod = method.asAnnotatedElement();
                     var producedEvents = producesEvents(annotatedMethod);
                     aggregateBuilder.onDeleteProducedEvents(producedEvents);
+                    registerMessages(producedEvents, annotatedMethod);
                 }
             }
         }
         return false;
+    }
+
+    private void registerMessage(Message message, ResolvedTypeName messageTypeName) {
+        if(message.type() == MessageType.COMMAND) {
+            model.addCommand(new Command.Builder()
+                    .name(message.name())
+                    .packageName(messageTypeName.packageName())
+                    .build());
+        } else if(message.type() == MessageType.DOMAIN_EVENT) {
+            model.addEvent(new DomainEvent.Builder()
+                    .name(message.name())
+                    .packageName(messageTypeName.packageName())
+                    .build());
+        } else {
+            throw new UnsupportedOperationException("Unsupported message type " + message.type());
+        }
+    }
+
+    private void registerMessages(List<ProducedEvent> producedEvents,
+            AnnotatedElement<MethodDeclaration> method) {
+        var producedEventAnnotations = method.findAnnotations(
+                CompilationUnitResolver.PRODUCES_EVENT_ANNOTATION_CLASS).stream()
+                .map(ProducedEventAnnotation::new)
+                .map(ProducedEventAnnotation::event)
+                .collect(toList());
+        for(int i = 0; i < producedEvents.size(); ++i) {
+            var producedEvent = producedEvents.get(i);
+            var message = producedEvent.message();
+            var eventType = producedEventAnnotations.get(i);
+            registerMessage(message, eventType);
+        }
     }
 
     private List<ProducedEvent> producesEvents(AnnotatedElement<MethodDeclaration> method) {

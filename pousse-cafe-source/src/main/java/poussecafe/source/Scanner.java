@@ -65,16 +65,7 @@ public class Scanner {
                 .build();
     }
 
-    public static class Builder {
-
-        private Scanner scanner = new Scanner();
-
-        public Scanner build() {
-            return scanner;
-        }
-    }
-
-    private Scanner() {
+    public Scanner() {
 
     }
 }

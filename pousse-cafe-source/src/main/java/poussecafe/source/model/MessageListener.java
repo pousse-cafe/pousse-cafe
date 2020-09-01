@@ -56,7 +56,7 @@ public class MessageListener {
         return consumesFromExternal;
     }
 
-    private Optional<String> consumesFromExternal;
+    private Optional<String> consumesFromExternal = Optional.empty();
 
     public Optional<ProductionType> productionType() {
         return productionType;
@@ -175,5 +175,10 @@ public class MessageListener {
         }
 
         private List<String> processNames = new ArrayList<>();
+
+        public Builder withProcessNames(List<String> processNames) {
+            this.processNames.addAll(processNames);
+            return this;
+        }
     }
 }

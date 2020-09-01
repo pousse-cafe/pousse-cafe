@@ -125,7 +125,7 @@ public class TreeAnalyzer {
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.FACTORY)
-                .className(factoryName)
+                .containerIdentifier(factoryName)
                 .build());
         builder.withMethodName(factoryListener.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
@@ -249,7 +249,7 @@ public class TreeAnalyzer {
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.ROOT)
-                .className(aggregateRootName)
+                .containerIdentifier(aggregateRootName)
                 .build());
         builder.withMethodName(aggregateRootConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
@@ -283,7 +283,7 @@ public class TreeAnalyzer {
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.REPOSITORY)
-                .className(repositoryName)
+                .containerIdentifier(repositoryName)
                 .build());
         builder.withMethodName(repositoryConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);

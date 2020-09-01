@@ -1,7 +1,10 @@
 package poussecafe.source.generation;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Optional;
+import poussecafe.source.Scanner;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
@@ -15,25 +18,32 @@ import static java.util.Objects.requireNonNull;
 
 public class CoreCodeGenerator extends AbstractCodeGenerator {
 
-    public void generate(Model model) {
-        for(ProcessModel process : model.processes()) {
+    public void generate(Model newModel) {
+        var mergedModel = currentModel.fixPackageNames(newModel);
+        generateWithMergedModel(mergedModel);
+    }
+
+    private void generateWithMergedModel(Model mergedModel) {
+        for(ProcessModel process : mergedModel.processes()) {
             generateProcess(process);
         }
 
-        for(Aggregate aggregate : model.aggregates()) {
-            generate(Optional.of(model), aggregate);
+        for(Aggregate aggregate : mergedModel.aggregates()) {
+            generate(Optional.of(mergedModel), aggregate);
         }
 
-        for(Command command : model.commands()) {
+        for(Command command : mergedModel.commands()) {
             generateCommand(command);
         }
 
-        for(DomainEvent command : model.events()) {
+        for(DomainEvent command : mergedModel.events()) {
             generateEvent(command);
         }
 
-        generateMessageListeners(model);
+        generateMessageListeners(mergedModel);
     }
+
+    private Model currentModel;
 
     private void generateProcess(ProcessModel process) {
         var typeName = process.name();
@@ -239,11 +249,30 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
         public CoreCodeGenerator build() {
             requireNonNull(generator.sourceDirectory);
+
+            if(generator.currentModel == null) {
+                try {
+                    var scanner = new Scanner();
+                    scanner.includeTree(generator.sourceDirectory);
+                    generator.currentModel = scanner.model();
+                } catch (NoSuchFileException e) {
+                    generator.currentModel = new Model(); // empty model
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Unable to build model from source directory " +
+                            generator.sourceDirectory);
+                }
+            }
+
             return generator;
         }
 
         public Builder sourceDirectory(Path sourceDirectory) {
             generator.sourceDirectory = sourceDirectory;
+            return this;
+        }
+
+        public Builder currentModel(Model currentModel) {
+            generator.currentModel = currentModel;
             return this;
         }
     }

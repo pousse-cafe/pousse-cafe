@@ -203,7 +203,7 @@ public class EmilExporter {
     }
 
     private void appendFactoryName(MessageListener listener) {
-        builder.appendFactoryIdentifier(listener.container().className());
+        builder.appendFactoryIdentifier(listener.container().containerIdentifier());
         builder.appendInlineNote(listener.methodName());
         ProductionType productionType = listener.productionType().orElseThrow();
         if(productionType == ProductionType.OPTIONAL) {
@@ -254,7 +254,7 @@ public class EmilExporter {
     }
 
     private void appendRepositoryName(MessageListener listener) {
-        builder.appendRepositoryIdentifier(listener.container().className());
+        builder.appendRepositoryIdentifier(listener.container().containerIdentifier());
         builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
     }
