@@ -19,28 +19,36 @@ import static java.util.Objects.requireNonNull;
 public class CoreCodeGenerator extends AbstractCodeGenerator {
 
     public void generate(Model newModel) {
-        var mergedModel = currentModel.fixPackageNames(newModel);
-        generateWithMergedModel(mergedModel);
+        var fixedModel = currentModel.fixPackageNames(newModel);
+        generateWithFixedModel(fixedModel);
     }
 
-    private void generateWithMergedModel(Model mergedModel) {
-        for(ProcessModel process : mergedModel.processes()) {
-            generateProcess(process);
+    private void generateWithFixedModel(Model fixedModel) {
+        for(ProcessModel process : fixedModel.processes()) {
+            if(currentModel.process(process.simpleName()).isEmpty()) {
+                generateProcess(process);
+            }
         }
 
-        for(Aggregate aggregate : mergedModel.aggregates()) {
-            generate(Optional.of(mergedModel), aggregate);
+        for(Aggregate aggregate : fixedModel.aggregates()) {
+            if(currentModel.aggregate(aggregate.simpleName()).isEmpty()) {
+                generate(Optional.of(fixedModel), aggregate);
+            }
         }
 
-        for(Command command : mergedModel.commands()) {
-            generateCommand(command);
+        for(Command command : fixedModel.commands()) {
+            if(currentModel.command(command.simpleName()).isEmpty()) {
+                generateCommand(command);
+            }
         }
 
-        for(DomainEvent command : mergedModel.events()) {
-            generateEvent(command);
+        for(DomainEvent event : fixedModel.events()) {
+            if(currentModel.event(event.simpleName()).isEmpty()) {
+                generateEvent(event);
+            }
         }
 
-        generateMessageListeners(mergedModel);
+        generateMessageListeners(fixedModel);
     }
 
     private Model currentModel;
