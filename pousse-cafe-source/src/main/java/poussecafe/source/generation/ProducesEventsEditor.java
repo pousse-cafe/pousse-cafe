@@ -16,6 +16,8 @@ import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.ModifiersEditor;
+import poussecafe.source.generation.tools.NormalAnnotationEditor;
+import poussecafe.source.generation.tools.SingleMemberAnnotationEditor;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Objects.requireNonNull;
@@ -34,11 +36,14 @@ public class ProducesEventsEditor {
 
     private void editProducesEventAnnotation(MethodDeclarationEditor editor, ProducedEvent producedEvent) {
         Optional<Annotation> producedEventAnnotation = findAnnotationMatching(editor, producedEvent.message().name());
+        var modifiers = editor.modifiers();
         if(producedEventAnnotation.isEmpty()) {
-            addProducesEventAnnotation(editor.modifiers(), producedEvent);
+            addProducesEventAnnotation(modifiers, producedEvent);
         } else if(!annotationMatches(producedEventAnnotation.get(), producedEvent)) {
-            editor.modifiers().removeAnnotation(producedEventAnnotation.get());
-            addProducesEventAnnotation(editor.modifiers(), producedEvent);
+            modifiers.removeAnnotation(producedEventAnnotation.get());
+            addProducesEventAnnotation(modifiers, producedEvent);
+        } else {
+            editProducesEventAnnotation(modifiers, producedEventAnnotation.get(), producedEvent);
         }
     }
 
@@ -106,6 +111,10 @@ public class ProducesEventsEditor {
 
     private void addProducesEventSingleMemberAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
         var annotationEditor = modifiers.singleMemberAnnotation(ProducesEvent.class).get(0);
+        setSingleValue(producedEvent, annotationEditor);
+    }
+
+    private void setSingleValue(ProducedEvent producedEvent, SingleMemberAnnotationEditor annotationEditor) {
         annotationEditor.setValue(ast.newTypeLiteral(new Name(producedEvent.message().name())));
     }
 
@@ -113,6 +122,10 @@ public class ProducesEventsEditor {
 
     private void addProducesEventNormalAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
         var annotationEditor = modifiers.normalAnnotation(ProducesEvent.class).get(0);
+        setAttributes(producedEvent, annotationEditor);
+    }
+
+    private void setAttributes(ProducedEvent producedEvent, NormalAnnotationEditor annotationEditor) {
         annotationEditor.setAttribute("value", ast.newTypeLiteral(new Name(producedEvent.message().name())));
         if(!producedEvent.required()) {
             annotationEditor.setAttribute("required", ast.ast().newBooleanLiteral(false));
@@ -133,6 +146,25 @@ public class ProducesEventsEditor {
         } else {
             return annotation.isNormalAnnotation();
         }
+    }
+
+    private void editProducesEventAnnotation(ModifiersEditor modifiers, Annotation annotation, ProducedEvent producedEvent) {
+        if(producedEvent.required()
+                && producedEvent.consumedByExternal().isEmpty()) {
+            editSingleMemberAnnotation(modifiers, annotation, producedEvent);
+        } else {
+            editNormalAnnotation(modifiers, annotation, producedEvent);
+        }
+    }
+
+    private void editSingleMemberAnnotation(ModifiersEditor modifiers, Annotation annotation, ProducedEvent producedEvent) {
+        var editor = modifiers.singleMemberAnnotationEditor(annotation);
+        setSingleValue(producedEvent, editor);
+    }
+
+    private void editNormalAnnotation(ModifiersEditor modifiers, Annotation annotation, ProducedEvent producedEvent) {
+        var editor = modifiers.normalAnnotationEditor(annotation);
+        setAttributes(producedEvent, editor);
     }
 
     public static class Builder {

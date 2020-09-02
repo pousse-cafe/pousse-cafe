@@ -206,8 +206,15 @@ public class ModifiersEditor {
         return newNormalAnnotation;
     }
 
-    private NormalAnnotationEditor normalAnnotationEditor(Annotation a) {
-        return new NormalAnnotationEditor(new NodeRewrite(rewrite.rewrite(), a));
+    public NormalAnnotationEditor normalAnnotationEditor(Annotation annotation) {
+        if(!(annotation instanceof NormalAnnotation)) {
+            throw unexpectedAnnotation();
+        }
+        return new NormalAnnotationEditor(new NodeRewrite(rewrite.rewrite(), annotation));
+    }
+
+    private IllegalArgumentException unexpectedAnnotation() {
+        return new IllegalArgumentException("Unexpected annotation type");
     }
 
     public List<Annotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
@@ -249,7 +256,10 @@ public class ModifiersEditor {
         return newNormalAnnotation;
     }
 
-    private SingleMemberAnnotationEditor singleMemberAnnotationEditor(Annotation annotation) {
+    public SingleMemberAnnotationEditor singleMemberAnnotationEditor(Annotation annotation) {
+        if(!(annotation instanceof SingleMemberAnnotation)) {
+            throw unexpectedAnnotation();
+        }
         return new SingleMemberAnnotationEditor(new NodeRewrite(rewrite.rewrite(), annotation));
     }
 
@@ -270,7 +280,10 @@ public class ModifiersEditor {
         return newNormalAnnotation;
     }
 
-    private MarkerAnnotationEditor markerAnnotationEditor(Annotation annotation) {
+    public MarkerAnnotationEditor markerAnnotationEditor(Annotation annotation) {
+        if(!(annotation instanceof MarkerAnnotation)) {
+            throw unexpectedAnnotation();
+        }
         return new MarkerAnnotationEditor(new NodeRewrite(rewrite.rewrite(), annotation));
     }
 

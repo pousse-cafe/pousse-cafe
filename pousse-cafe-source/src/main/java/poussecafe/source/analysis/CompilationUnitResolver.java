@@ -39,7 +39,9 @@ public class CompilationUnitResolver implements Resolver {
     private void loadCompilationUnitClass() {
         var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
         var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
-        compilationUnitClass = classResolver.loadClass(new Name(packageName + "." + typeName.getName().getFullyQualifiedName())).orElseThrow();
+        var className = packageName + "." + typeName.getName().getFullyQualifiedName();
+        compilationUnitClass = classResolver.loadClass(new Name(className))
+                .orElseThrow(() -> new ResolutionException("Unable to load class " + className));
     }
 
     private ClassResolver classResolver = new ClassResolver();

@@ -13,7 +13,7 @@ Event1! [External1] -> Ru{Process1Listener1Runner}
         :Event2! ->
             -> Ru{Process1Listener2Runner}
                 @Aggregate2[process1Listener2]:
-                    :Event3!# -> . [External2]
+                    :Event3!# -> .
 
 Event4! -> Ru{Process1Listener6Runner}
     @Aggregate1[process1Listener6]

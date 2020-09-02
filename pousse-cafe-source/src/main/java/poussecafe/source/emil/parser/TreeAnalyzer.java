@@ -120,6 +120,7 @@ public class TreeAnalyzer {
             throw new IllegalStateException("Unexpected factory name " + factoryName);
         }
         var aggregateName = NamingConventions.aggregateNameFromFactory(factoryName);
+        var existingAggregate = ensureAggregateExists(aggregateName);
 
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
@@ -142,8 +143,7 @@ public class TreeAnalyzer {
         }
 
         if(factoryConsumption.eventProductions() != null) {
-            var existingAggregate = ensureAggregateExists(aggregateName);
-            Aggregate.Builder aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
+            var aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
 
             var producedEvents = producedEvents(factoryConsumption.eventProductions());
             aggregateBuilder.onAddProducedEvents(producedEvents);
@@ -278,6 +278,7 @@ public class TreeAnalyzer {
             throw new IllegalStateException("Unexpected repository name " + repositoryName);
         }
         var aggregateName = NamingConventions.aggregateNameFromRepository(repositoryName);
+        var existingAggregate = ensureAggregateExists(aggregateName);
 
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
@@ -292,8 +293,7 @@ public class TreeAnalyzer {
         }
 
         if(repositoryConsumption.eventProductions() != null) {
-            var existingAggregate = ensureAggregateExists(aggregateName);
-            Aggregate.Builder aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
+            var aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
 
             var producedEvents = producedEvents(repositoryConsumption.eventProductions());
             aggregateBuilder.onDeleteProducedEvents(producedEvents);

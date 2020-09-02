@@ -3,7 +3,6 @@ package poussecafe.source.generation;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Optional;
 import poussecafe.source.Scanner;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.model.Aggregate;
@@ -32,7 +31,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
         for(Aggregate aggregate : fixedModel.aggregates()) {
             if(currentModel.aggregate(aggregate.simpleName()).isEmpty()) {
-                generate(Optional.of(fixedModel), aggregate);
+                generate(aggregate);
             }
         }
 
@@ -48,6 +47,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             }
         }
 
+        generateHooks(fixedModel);
         generateMessageListeners(fixedModel);
     }
 
@@ -64,12 +64,8 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     public void generate(Aggregate aggregate) {
-        generate(Optional.empty(), aggregate);
-    }
-
-    public void generate(Optional<Model> model, Aggregate aggregate) {
         addAggregateId(aggregate);
-        addAggregateRoot(model, aggregate);
+        addAggregateRoot(aggregate);
         addAggregateDataAccess(aggregate);
         addAggregateFactory(aggregate);
         addAggregateRepository(aggregate);
@@ -86,13 +82,12 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         aggregateRootEditor.edit();
     }
 
-    private void addAggregateRoot(Optional<Model> model, Aggregate aggregate) {
+    private void addAggregateRoot(Aggregate aggregate) {
         var typeName = NamingConventions.aggregateRootTypeName(aggregate);
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateRootEditor = new AggregateRootEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
-                .model(model)
                 .build();
         aggregateRootEditor.edit();
     }
@@ -187,10 +182,25 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         commandEditor.edit();
     }
 
+    private void generateHooks(Model model) {
+        for(Aggregate aggregate : model.aggregates()) {
+            var typeName = NamingConventions.aggregateRootTypeName(aggregate);
+            var compilationUnitEditor = compilationUnitEditor(typeName);
+            var aggregateRootEditor = new AggregateRootHooksEditor.Builder()
+                    .compilationUnitEditor(compilationUnitEditor)
+                    .aggregate(aggregate)
+                    .model(model)
+                    .build();
+            aggregateRootEditor.edit();
+        }
+    }
+
     private void generateMessageListeners(Model model) {
         for(MessageListener listener : model.messageListeners()) {
-            MessageListenerContainerType containerType = listener.container().type();
-            var aggregate = model.aggregate(listener.container().aggregateName().orElseThrow()).orElseThrow();
+            var containerType = listener.container().type();
+            var aggregateName = listener.container().aggregateName().orElseThrow();
+            var aggregate = model.aggregate(aggregateName)
+                    .orElseThrow(() -> new IllegalStateException("No aggregate with name " + aggregateName));
             if(containerType == MessageListenerContainerType.ROOT) {
                 generateAggregateRootListeners(model, listener, aggregate);
                 generateRunner(model, listener, aggregate);
