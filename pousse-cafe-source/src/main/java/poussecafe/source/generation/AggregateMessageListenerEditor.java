@@ -2,7 +2,6 @@ package poussecafe.source.generation;
 
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -61,7 +60,7 @@ public abstract class AggregateMessageListenerEditor {
             methodEditor = insertNewListener(typeEditor);
             var parameterName = consumedMessage.type() == MessageType.COMMAND ? "command" : "event";
             methodEditor.addParameter(consumedMessageClassName.getIdentifier(), parameterName);
-            methodEditor.setBody(newListenerBody());
+            setBody(methodEditor);
             setReturnType(methodEditor);
         } else {
             methodEditor = typeEditor.editMethod(listenerMethod.get(), false);
@@ -99,8 +98,12 @@ public abstract class AggregateMessageListenerEditor {
         compilationUnitEditor.flush();
     }
 
-    protected Block newListenerBody() {
-        return ast.ast().newBlock();
+    protected void setBody(MethodDeclarationEditor methodEditor) {
+        if(messageListener.producedEvents().isEmpty()) {
+            methodEditor.setEmptyBodyWithComment("TODO: update attributes");
+        } else {
+            methodEditor.setEmptyBodyWithComment("TODO: update attributes and issue expected events");
+        }
     }
 
     protected void setListenerRunner(NormalAnnotationEditor messageListenerAnnotationEditor) {

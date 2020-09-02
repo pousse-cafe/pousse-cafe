@@ -3,6 +3,7 @@ package poussecafe.source.generation.tools;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import poussecafe.source.analysis.Name;
@@ -19,8 +20,26 @@ public class MethodDeclarationEditor {
         return new ModifiersEditor(rewrite, MethodDeclaration.MODIFIERS2_PROPERTY);
     }
 
+    public void setEmptyBodyWithComment(String comment) {
+        setEmptyBody();
+
+        var commentNode = (Statement) rewrite.rewrite().createStringPlaceholder("\n// " + comment + "\n",
+                ASTNode.EMPTY_STATEMENT);
+        appendStatementToBody(commentNode);
+    }
+
+    public void setEmptyBody() {
+        Block newBlock = rewrite.ast().newBlock();
+        setBody(newBlock);
+    }
+
     public void setBody(Block body) {
         rewrite.set(MethodDeclaration.BODY_PROPERTY, body);
+    }
+
+    public void appendStatementToBody(Statement statement) {
+        var body = (Block) rewrite.get(MethodDeclaration.BODY_PROPERTY);
+        rewrite.rewrite().getListRewrite(body, Block.STATEMENTS_PROPERTY).insertLast(statement, null);
     }
 
     public void clearParameters() {

@@ -13,16 +13,19 @@ public class Aggregate1Factory extends Factory<Aggregate1Id, Aggregate1, Aggrega
 
     @MessageListener(processes = Process1.class)
     public Aggregate1 process1Listener0(Command1 command) {
+        // TODO: build aggregate
         return null;
     }
 
     @MessageListener(processes = Process1.class)
     public Optional<Aggregate1> process1Listener4(Command3 command) {
+        // TODO: build optional aggregate
         return null;
     }
 
     @MessageListener(processes = Process1.class)
     public Collection<Aggregate1> process1Listener5(Command4 command) {
+        // TODO: build aggregate(s)
         return null;
     }
 }

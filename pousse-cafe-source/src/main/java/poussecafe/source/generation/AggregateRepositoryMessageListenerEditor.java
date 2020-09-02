@@ -15,6 +15,11 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
         return typeEditor.method(messageListener.methodName()).get(0);
     }
 
+    @Override
+    protected void setBody(MethodDeclarationEditor methodEditor) {
+        methodEditor.setEmptyBodyWithComment("TODO: delete aggregate(s)");
+    }
+
     public static class Builder {
 
         private AggregateRepositoryMessageListenerEditor editor = new AggregateRepositoryMessageListenerEditor();

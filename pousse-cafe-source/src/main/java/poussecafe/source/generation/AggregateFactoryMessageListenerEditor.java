@@ -2,7 +2,6 @@ package poussecafe.source.generation;
 
 import java.util.Collection;
 import java.util.Optional;
-import org.eclipse.jdt.core.dom.Block;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
@@ -41,12 +40,16 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
 
     private Aggregate aggregate;
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Block newListenerBody() {
-        var block = ast.ast().newBlock();
-        block.statements().add(ast.newReturnNullStatement());
-        return block;
+    protected void setBody(MethodDeclarationEditor methodEditor) {
+        if(messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
+            methodEditor.setEmptyBodyWithComment("TODO: build aggregate");
+        } else if(messageListener.productionType().orElseThrow() == ProductionType.OPTIONAL) {
+            methodEditor.setEmptyBodyWithComment("TODO: build optional aggregate");
+        } else if(messageListener.productionType().orElseThrow() == ProductionType.SEVERAL) {
+            methodEditor.setEmptyBodyWithComment("TODO: build aggregate(s)");
+        }
+        methodEditor.appendStatementToBody(ast.newReturnNullStatement());
     }
 
     public static class Builder {

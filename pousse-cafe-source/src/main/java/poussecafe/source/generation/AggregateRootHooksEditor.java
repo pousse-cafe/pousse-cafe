@@ -80,7 +80,11 @@ public class AggregateRootHooksEditor {
         methodEditor.modifiers().setVisibility(Visibility.PUBLIC);
 
         if(methodEditor.isNewNode()) {
-            methodEditor.setBody(ast.ast().newBlock());
+            if(!producedEvents.isEmpty()) {
+                methodEditor.setEmptyBodyWithComment("TODO: issue expected events");
+            } else {
+                methodEditor.setEmptyBody();
+            }
         }
     }
 

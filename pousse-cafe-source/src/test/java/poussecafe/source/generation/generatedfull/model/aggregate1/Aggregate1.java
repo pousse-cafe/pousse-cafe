@@ -18,15 +18,18 @@ public class Aggregate1 extends AggregateRoot<Aggregate1Id, Aggregate1.Attribute
     @Override
     @ProducesEvent(Event5.class)
     public void onAdd() {
+        // TODO: issue expected events
     }
 
     @MessageListener(processes = Process1.class, runner = Process1Listener1Runner.class, consumesFromExternal = "External1")
     @ProducesEvent(Event2.class)
     public void process1Listener1(Event1 event) {
+        // TODO: update attributes and issue expected events
     }
 
     @MessageListener(processes = Process1.class, runner = Process1Listener6Runner.class)
     public void process1Listener6(Event4 event) {
+        // TODO: update attributes
     }
 
     public static interface Attributes extends EntityAttributes<Aggregate1Id> {

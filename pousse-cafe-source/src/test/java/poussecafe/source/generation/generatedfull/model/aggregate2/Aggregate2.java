@@ -17,11 +17,13 @@ public class Aggregate2 extends AggregateRoot<Aggregate2Id, Aggregate2.Attribute
     @Override
     @ProducesEvent(Event6.class)
     public void onDelete() {
+        // TODO: issue expected events
     }
 
     @MessageListener(processes = Process1.class, runner = Process1Listener2Runner.class)
     @ProducesEvent(value = Event3.class, required = false, consumedByExternal = "External2")
     public void process1Listener2(Event2 event) {
+        // TODO: update attributes and issue expected events
     }
 
     public static interface Attributes extends EntityAttributes<Aggregate2Id> {

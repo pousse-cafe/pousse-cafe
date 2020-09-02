@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import poussecafe.source.analysis.Name;
 
 import static java.util.Objects.requireNonNull;
@@ -255,4 +256,8 @@ public class TypeDeclarationEditor {
     }
 
     private boolean newType;
+
+    public ASTRewrite rewrite() {
+        return rewrite.rewrite();
+    }
 }

@@ -14,5 +14,6 @@ public class Aggregate2Repository extends Repository<Aggregate2, Aggregate2Id, A
 
     @MessageListener(processes = Process1.class)
     public void process1Listener3(Command2 command) {
+        // TODO: delete aggregate(s)
     }
 }
