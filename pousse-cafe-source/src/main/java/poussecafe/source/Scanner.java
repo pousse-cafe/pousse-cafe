@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.source.analysis.ResolutionException;
 import poussecafe.source.model.Model;
 
 public class Scanner {
@@ -45,7 +46,13 @@ public class Scanner {
                 logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
             }
         } else {
-            unit.accept(compilationUnitVisitor(unit, sourceFilePath));
+            try {
+                var compilationUnitVisitor = compilationUnitVisitor(unit, sourceFilePath);
+                unit.accept(compilationUnitVisitor);
+            } catch (ResolutionException e) {
+                logger.error("Unable to analyze file {}, try to compile the project first", sourceFilePath);
+                throw e;
+            }
         }
     }
 
@@ -63,9 +70,5 @@ public class Scanner {
                 .sourcePath(sourceFilePath)
                 .model(model)
                 .build();
-    }
-
-    public Scanner() {
-
     }
 }

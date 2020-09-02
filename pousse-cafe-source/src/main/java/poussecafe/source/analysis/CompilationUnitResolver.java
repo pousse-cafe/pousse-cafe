@@ -41,7 +41,11 @@ public class CompilationUnitResolver implements Resolver {
         var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
         var className = packageName + "." + typeName.getName().getFullyQualifiedName();
         compilationUnitClass = classResolver.loadClass(new Name(className))
-                .orElseThrow(() -> new ResolutionException("Unable to load class " + className));
+                .orElseThrow(() -> newResolutionException(className));
+    }
+
+    private ResolutionException newResolutionException(String className) {
+        return new ResolutionException("Unable to load class " + className);
     }
 
     private ClassResolver classResolver = new ClassResolver();
@@ -72,7 +76,8 @@ public class CompilationUnitResolver implements Resolver {
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
         Name fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
-        registerClass(classResolver.loadClass(fullyQualifiedName).orElseThrow());
+        registerClass(classResolver.loadClass(fullyQualifiedName)
+                .orElseThrow(() -> newResolutionException(fullyQualifiedName.toString())));
     }
 
     private void registerClass(Class<?> importedClass) {
@@ -106,7 +111,7 @@ public class CompilationUnitResolver implements Resolver {
         } else {
             String simpleName = name.toString();
             return resolvedTypeNames.computeIfAbsent(simpleName, key -> resolveSimpleName(name)
-                    .orElseThrow(() -> new ResolutionException("Unable to resolve " + name)));
+                    .orElseThrow(() -> newResolutionException(name.toString())));
         }
     }
 
@@ -121,7 +126,7 @@ public class CompilationUnitResolver implements Resolver {
             var resolvedTypeName = resolveSimpleName(new Name(simpleName));
             if(resolvedTypeName.isPresent()) {
                 var innerClass = classResolver.loadInnerClass(new Name(resolvedTypeName.get().qualifiedName()),
-                        innerClassPath).orElseThrow();
+                        innerClassPath).orElseThrow(() -> newResolutionException(name.toString()));
                 return new ResolvedTypeName.Builder()
                         .withName(name)
                         .withResolvedClass(innerClass)
