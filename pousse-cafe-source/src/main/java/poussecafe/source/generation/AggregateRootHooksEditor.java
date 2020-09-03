@@ -3,7 +3,6 @@ package poussecafe.source.generation;
 import java.util.Collection;
 import java.util.Optional;
 import poussecafe.discovery.ProducesEvent;
-import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
@@ -100,9 +99,6 @@ public class AggregateRootHooksEditor {
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.aggregate);
             requireNonNull(editor.model);
-
-            editor.ast = editor.compilationUnitEditor.ast();
-
             return editor;
         }
 
@@ -127,6 +123,4 @@ public class AggregateRootHooksEditor {
     }
 
     private CompilationUnitEditor compilationUnitEditor;
-
-    private AstWrapper ast;
 }
