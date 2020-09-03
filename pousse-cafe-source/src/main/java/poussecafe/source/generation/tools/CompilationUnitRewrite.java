@@ -8,9 +8,10 @@ import org.eclipse.text.edits.TextEdit;
 
 public class CompilationUnitRewrite extends NodeRewrite {
 
-    public void rewrite(Document document) throws BadLocationException {
+    public TextEdit rewrite(Document document) throws BadLocationException {
         TextEdit rewriterEdits = rewrite().rewriteAST(document, null);
         rewriterEdits.apply(document);
+        return rewriterEdits;
     }
 
     public CompilationUnit comilationUnit() {
