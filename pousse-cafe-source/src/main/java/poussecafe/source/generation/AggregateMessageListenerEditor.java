@@ -58,16 +58,17 @@ public abstract class AggregateMessageListenerEditor {
         MethodDeclarationEditor methodEditor;
         if(listenerMethod.isEmpty()) {
             methodEditor = insertNewListener(typeEditor);
+            methodEditor.modifiers().setVisibility(Visibility.PUBLIC);
+            methodEditor.setName(messageListener.methodName());
+
             var parameterName = consumedMessage.type() == MessageType.COMMAND ? "command" : "event";
             methodEditor.addParameter(consumedMessageClassName.getIdentifier(), parameterName);
+
             setBody(methodEditor);
             setReturnType(methodEditor);
         } else {
             methodEditor = typeEditor.editMethod(listenerMethod.get(), false);
         }
-
-        methodEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        methodEditor.setName(messageListener.methodName());
 
         var producesEventEditor = new ProducesEventsEditor.Builder()
                 .methodEditor(methodEditor)

@@ -14,7 +14,7 @@ public class CompilationUnitRewrite extends NodeRewrite {
         return rewriterEdits;
     }
 
-    public CompilationUnit comilationUnit() {
+    public CompilationUnit compilationUnit() {
         return (CompilationUnit) node();
     }
 
