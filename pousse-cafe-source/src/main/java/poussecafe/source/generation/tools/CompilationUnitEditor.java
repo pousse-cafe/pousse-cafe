@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.core.JavaCore;
@@ -97,6 +98,7 @@ public class CompilationUnitEditor {
 
     public void flush() {
         var formatterBuilder = new CodeFormatter.Builder()
+                .options(formatterOptions)
                 .document(document)
                 .isDocumentNew(isNew);
         try {
@@ -125,6 +127,8 @@ public class CompilationUnitEditor {
             throw new CodeGenerationException("Unable to apply changes and format code", e);
         }
     }
+
+    private Map<String, String> formatterOptions = new HashMap<>();
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -229,6 +233,11 @@ public class CompilationUnitEditor {
         }
 
         private String fileName;
+
+        public Builder formatterOptions(Map<String, String> formatterOptions) {
+            editor.formatterOptions.putAll(formatterOptions);
+            return this;
+        }
     }
 
     private CompilationUnitEditor() {

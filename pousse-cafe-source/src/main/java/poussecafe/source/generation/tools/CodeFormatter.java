@@ -3,9 +3,7 @@ package poussecafe.source.generation.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
-import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
@@ -16,7 +14,6 @@ import static java.util.Objects.requireNonNull;
 public class CodeFormatter {
 
     public void formatCode() throws BadLocationException {
-        var options = defaultOptions();
         var codeFormatter = ToolFactory.createCodeFormatter(options);
         String code = document.get();
         TextEdit codeFormatEdit;
@@ -31,31 +28,7 @@ public class CodeFormatter {
         codeFormatEdit.apply(document);
     }
 
-    private Map<String, String> defaultOptions() {
-        var options = new HashMap<>(JavaCore.getDefaultOptions());
-
-        options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, JavaCore.SPACE);
-        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGN_WITH_SPACES, "true");
-
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_PACKAGE, "0");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_PACKAGE, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_IMPORTS, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BETWEEN_IMPORT_GROUPS, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_IMPORTS, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BETWEEN_TYPE_DECLARATIONS, "1");
-
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_FIRST_CLASS_BODY_DECLARATION, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_LAST_CLASS_BODY_DECLARATION, "0");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_NEW_CHUNK, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MEMBER_TYPE, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_FIELD, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_ABSTRACT_METHOD, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_METHOD, "1");
-
-        options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, "1");
-        options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, JavaCore.INSERT);
-        return options;
-    }
+    private Map<String, String> options = new HashMap<>();
 
     private TextEdit edits;
 
@@ -87,8 +60,14 @@ public class CodeFormatter {
         private CodeFormatter formatter = new CodeFormatter();
 
         public CodeFormatter build() {
+            requireNonNull(formatter.options);
             requireNonNull(formatter.document);
             return formatter;
+        }
+
+        public Builder options(Map<String, String> options) {
+            formatter.options.putAll(options);
+            return this;
         }
 
         public Builder document(Document document) {

@@ -59,6 +59,7 @@ public abstract class GenerationTest {
     protected void givenCoreGenerator() {
         generator = new CoreCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory())
+                .codeFormatterProfile(getClass().getResourceAsStream("/CodeFormatterProfileSample.xml"))
                 .build();
     }
 

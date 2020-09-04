@@ -8,6 +8,7 @@ public class InternalStorageGeneratorTest extends GeneratorTest {
     protected void givenStorageGenerator() {
         generator = new InternalStorageAdaptersCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory())
+                .codeFormatterProfile(getClass().getResourceAsStream("/CodeFormatterProfileSample.xml"))
                 .build();
     }
 

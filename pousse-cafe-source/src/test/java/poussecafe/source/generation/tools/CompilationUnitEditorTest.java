@@ -37,6 +37,8 @@ public class CompilationUnitEditorTest {
                 .packageName("poussecafe.source.generation.existingcode.myaggregate.adapters")
                 .fileDirectory(sourceFile.getParentFile().toPath())
                 .fileName(sourceFile.getName())
+                .formatterOptions(new CodeFormatterOptionsBuilder()
+                        .build())
                 .build();
         editor.flush();
     }

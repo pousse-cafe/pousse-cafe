@@ -1,5 +1,6 @@
 package poussecafe.source.generation.internal;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import poussecafe.source.generation.StorageAdaptersCodeGenerator;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -40,11 +41,22 @@ public class InternalStorageAdaptersCodeGenerator extends StorageAdaptersCodeGen
 
         public InternalStorageAdaptersCodeGenerator build() {
             requireNonNull(generator.sourceDirectory);
+            requireNonNull(generator.formatterOptions);
             return generator;
         }
 
         public Builder sourceDirectory(Path sourceDirectory) {
             generator.sourceDirectory = sourceDirectory;
+            return this;
+        }
+
+        public Builder codeFormatterProfile(Path profile) {
+            generator.loadProfileFromFile(profile);
+            return this;
+        }
+
+        public Builder codeFormatterProfile(InputStream profile) {
+            generator.loadProfileFromFile(profile);
             return this;
         }
     }

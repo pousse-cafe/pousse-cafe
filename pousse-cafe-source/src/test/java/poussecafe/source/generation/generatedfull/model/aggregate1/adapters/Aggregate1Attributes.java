@@ -9,7 +9,10 @@ public class Aggregate1Attributes implements Aggregate1.Attributes {
 
     @Override
     public Attribute<Aggregate1Id> identifier() {
-        return AttributeBuilder.stringId(Aggregate1Id.class).read(() -> identifier).write((value) -> identifier = value)
+        return AttributeBuilder
+                .stringId(Aggregate1Id.class)
+                .read(() -> identifier)
+                .write((value) -> identifier = value)
                 .build();
     }
 

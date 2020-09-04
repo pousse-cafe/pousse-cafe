@@ -11,8 +11,11 @@ public class MyAggregateAttributes implements Serializable, MyAggregate.Attribut
 
     @Override
     public Attribute<MyAggregateId> identifier() {
-        return AttributeBuilder.stringId(MyAggregateId.class).read(() -> identifier)
-                .write((value) -> identifier = value).build();
+        return AttributeBuilder
+                .stringId(MyAggregateId.class)
+                .read(() -> identifier)
+                .write((value) -> identifier = value)
+                .build();
     }
 
     private String identifier;

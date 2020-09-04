@@ -1,6 +1,7 @@
 package poussecafe.source.generation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import poussecafe.source.Scanner;
@@ -267,6 +268,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
         public CoreCodeGenerator build() {
             requireNonNull(generator.sourceDirectory);
+            requireNonNull(generator.formatterOptions);
 
             if(generator.currentModel == null) {
                 try {
@@ -291,6 +293,16 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
         public Builder currentModel(Model currentModel) {
             generator.currentModel = currentModel;
+            return this;
+        }
+
+        public Builder codeFormatterProfile(Path profile) {
+            generator.loadProfileFromFile(profile);
+            return this;
+        }
+
+        public Builder codeFormatterProfile(InputStream inputStream) {
+            generator.loadProfileFromFile(inputStream);
             return this;
         }
     }
