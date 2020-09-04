@@ -41,6 +41,7 @@ public class CodeFormatterOptionsBuilder {
             var profileKind = profileElement.getAttribute("kind");
             if("CodeFormatterProfile".equals(profileKind)) {
                 options.putAll(getProfileSettings(profileElement));
+                return; // Skip next profiles if any
             }
         }
     }
