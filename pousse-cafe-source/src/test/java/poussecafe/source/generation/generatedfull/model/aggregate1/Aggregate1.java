@@ -18,7 +18,7 @@ public class Aggregate1 extends AggregateRoot<Aggregate1Id, Aggregate1.Attribute
     @Override
     @ProducesEvent(Event5.class)
     public void onAdd() {
-        // TODO: issue expected events
+        // TODO: issue expected event(s)
     }
 
     @MessageListener(
@@ -28,7 +28,7 @@ public class Aggregate1 extends AggregateRoot<Aggregate1Id, Aggregate1.Attribute
     )
     @ProducesEvent(Event2.class)
     public void process1Listener1(Event1 event) {
-        // TODO: update attributes and issue expected events
+        // TODO: update attributes and issue expected event(s)
     }
 
     @MessageListener(processes = Process1.class, runner = Process1Listener6Runner.class)
