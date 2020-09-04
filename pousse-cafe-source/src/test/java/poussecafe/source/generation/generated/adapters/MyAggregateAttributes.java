@@ -12,7 +12,7 @@ public class MyAggregateAttributes implements MyAggregate.Attributes {
         return AttributeBuilder
                 .stringId(MyAggregateId.class)
                 .read(() -> identifier)
-                .write((value) -> identifier = value)
+                .write(value -> identifier = value)
                 .build();
     }
 

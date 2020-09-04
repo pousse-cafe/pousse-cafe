@@ -14,7 +14,7 @@ public class MyAggregateAttributes implements Serializable, MyAggregate.Attribut
         return AttributeBuilder
                 .stringId(MyAggregateId.class)
                 .read(() -> identifier)
-                .write((value) -> identifier = value)
+                .write(value -> identifier = value)
                 .build();
     }
 

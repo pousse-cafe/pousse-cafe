@@ -110,6 +110,7 @@ public class AggregateAttributesImplementationEditor {
         var setterParameter = ast.ast().newVariableDeclarationFragment();
         setterParameter.setName(ast.ast().newSimpleName("value"));
         setter.parameters().add(setterParameter);
+        setter.setParentheses(false);
         var setterAssignment = ast.ast().newAssignment();
         setterAssignment.setLeftHandSide(ast.ast().newSimpleName(IDENTIFIER_FIELD_NAME));
         setterAssignment.setRightHandSide(ast.ast().newSimpleName("value"));
