@@ -187,6 +187,7 @@ public class EmilExporter {
             builder.appendClosingConsumptionToken();
             appendProcess(process);
         }
+        builder.decrementIndent();
     }
 
     private void appendFactoryListener(MessageListener listener) {
@@ -295,6 +296,9 @@ public class EmilExporter {
             Optional<String> note = consumedByExternalNote(producedEvent);
             appendMessageConsumption(Optional.empty(), producedEvent.message(), producedEvent.required(), note);
         }
+        builder.indent();
+        builder.appendEndOfRelations();
+        builder.appendNewLine();
         builder.decrementIndent();
     }
 

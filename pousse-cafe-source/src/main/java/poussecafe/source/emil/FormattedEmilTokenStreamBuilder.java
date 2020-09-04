@@ -131,4 +131,8 @@ public class FormattedEmilTokenStreamBuilder {
     public void decrementIndent() {
         indent = indent.substring(0, indent.length() - TAB.length());
     }
+
+    public void appendEndOfRelations() {
+        builder.append(":.");
+    }
 }

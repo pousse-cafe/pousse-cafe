@@ -3,10 +3,12 @@ process Process1
 Command1? -> F{Aggregate1Factory}[process1Listener0]
     @Aggregate1[onAdd]:
         :Event5! -> .
+        :.
 
 Command3? -> F{Aggregate1Factory}[process1Listener4]#
     @Aggregate1[onAdd]:
         :Event5! -> .
+        :.
 
 Event1! [External1] -> Ru{Process1Listener1Runner}
     @Aggregate1[process1Listener1]:
@@ -14,6 +16,8 @@ Event1! [External1] -> Ru{Process1Listener1Runner}
             -> Ru{Process1Listener2Runner}
                 @Aggregate2[process1Listener2]:
                     :Event3!# -> .
+                    :.
+        :.
 
 Event4! -> Ru{Process1Listener6Runner}
     @Aggregate1[process1Listener6]

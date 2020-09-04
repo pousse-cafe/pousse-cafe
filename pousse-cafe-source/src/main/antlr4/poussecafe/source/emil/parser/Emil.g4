@@ -39,7 +39,7 @@ factoryListener : 'F' '{' factoryName=NAME '}' '[' listenerName=NAME ']' ( optio
 
 aggregateRoot : '@' NAME ;
 
-eventProductions : eventProduction+ ;
+eventProductions : eventProduction+ ':.' ;
 
 eventProduction :
     ':' event optional='#'? '->' messageConsumptions
