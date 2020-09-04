@@ -12,7 +12,10 @@ public class NormalAnnotationEditor implements AnnotationEditor {
     public void setAttribute(String name, Expression value) {
         Optional<MemberValuePair> attribute = findAttribute(name);
         if(attribute.isPresent()) {
-            rewrite.rewrite().set(attribute.get(), MemberValuePair.VALUE_PROPERTY, value, null);
+            Object currentValue = rewrite.rewrite().get(attribute.get(), MemberValuePair.VALUE_PROPERTY);
+            if(currentValue != null && !currentValue.toString().equals(value.toString())) {
+                rewrite.rewrite().set(attribute.get(), MemberValuePair.VALUE_PROPERTY, value, null);
+            }
         } else {
             rewrite.listRewrite(NormalAnnotation.VALUES_PROPERTY).insertLast(newAttribute(name, value), null);
         }

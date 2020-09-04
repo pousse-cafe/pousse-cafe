@@ -80,7 +80,7 @@ public class AggregateRootHooksEditor {
 
         if(methodEditor.isNewNode()) {
             if(!producedEvents.isEmpty()) {
-                methodEditor.setEmptyBodyWithComment("TODO: issue expected events");
+                methodEditor.setEmptyBodyWithComment("TODO: issue expected event(s)");
             } else {
                 methodEditor.setEmptyBody();
             }

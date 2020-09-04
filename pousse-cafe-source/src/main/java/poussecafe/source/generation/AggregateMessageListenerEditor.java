@@ -103,7 +103,7 @@ public abstract class AggregateMessageListenerEditor {
         if(messageListener.producedEvents().isEmpty()) {
             methodEditor.setEmptyBodyWithComment("TODO: update attributes");
         } else {
-            methodEditor.setEmptyBodyWithComment("TODO: update attributes and issue expected events");
+            methodEditor.setEmptyBodyWithComment("TODO: update attributes and issue expected event(s)");
         }
     }
 
