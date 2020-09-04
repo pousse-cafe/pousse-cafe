@@ -8,9 +8,9 @@ import poussecafe.collection.ListEditor;
 
 import static java.util.Objects.requireNonNull;
 
-class SimpleEditableList<T> implements EditableList<T> {
+public class SimpleEditableList<T> implements EditableList<T> {
 
-    SimpleEditableList(List<T> list) {
+    public SimpleEditableList(List<T> list) {
         requireNonNull(list);
         this.list = list;
     }

@@ -9,9 +9,9 @@ import poussecafe.domain.Entity;
 
 import static java.util.Objects.requireNonNull;
 
-class EntityMap<K, E extends Entity<K, ?>> implements EditableEntityMap<K, E> {
+public class SimpleEntityMap<K, E extends Entity<K, ?>> implements EditableEntityMap<K, E> {
 
-    EntityMap(EditableMap<K, E> map) {
+    public SimpleEntityMap(EditableMap<K, E> map) {
         requireNonNull(map);
         this.map = map;
     }

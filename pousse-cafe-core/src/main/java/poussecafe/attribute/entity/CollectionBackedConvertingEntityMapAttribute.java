@@ -15,6 +15,6 @@ implements EntityMapAttribute<K, E> {
 
     @Override
     public EditableEntityMap<K, E> value() {
-        return new EntityMap<>(super.value());
+        return new SimpleEntityMap<>(super.value());
     }
 }

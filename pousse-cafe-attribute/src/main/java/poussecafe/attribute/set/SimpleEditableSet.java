@@ -7,9 +7,9 @@ import poussecafe.collection.SetEditor;
 
 import static java.util.Objects.requireNonNull;
 
-class SimpleEditableSet<T> implements EditableSet<T> {
+public class SimpleEditableSet<T> implements EditableSet<T> {
 
-    SimpleEditableSet(Set<T> list) {
+    public SimpleEditableSet(Set<T> list) {
         requireNonNull(list);
         this.set = list;
     }
