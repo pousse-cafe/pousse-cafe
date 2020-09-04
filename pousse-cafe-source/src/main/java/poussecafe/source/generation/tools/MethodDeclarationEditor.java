@@ -13,7 +13,10 @@ import static java.util.Objects.requireNonNull;
 public class MethodDeclarationEditor {
 
     public void setName(String name) {
-        rewrite.set(MethodDeclaration.NAME_PROPERTY, rewrite.ast().newSimpleName(name));
+        var currentName = rewrite.get(MethodDeclaration.NAME_PROPERTY);
+        if(!currentName.toString().equals(name)) {
+            rewrite.set(MethodDeclaration.NAME_PROPERTY, rewrite.ast().newSimpleName(name));
+        }
     }
 
     public ModifiersEditor modifiers() {

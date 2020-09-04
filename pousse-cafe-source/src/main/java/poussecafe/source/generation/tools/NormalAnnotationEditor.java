@@ -22,16 +22,15 @@ public class NormalAnnotationEditor implements AnnotationEditor {
     }
 
     private Optional<MemberValuePair> findAttribute(String name) {
-        for(Object modifierObject : annotation.values()) {
-            MemberValuePair value = (MemberValuePair) modifierObject;
-            if(value.getName().getIdentifier().equals(name)) {
-                return Optional.of(value);
+        var values = rewrite.listRewrite(NormalAnnotation.VALUES_PROPERTY).getRewrittenList();
+        for(Object attributeValueObject : values) {
+            MemberValuePair attributeValue = (MemberValuePair) attributeValueObject;
+            if(attributeValue.getName().getIdentifier().equals(name)) {
+                return Optional.of(attributeValue);
             }
         }
         return Optional.empty();
     }
-
-    private NormalAnnotation annotation;
 
     private MemberValuePair newAttribute(String name, Expression value) {
         var ast = rewrite.ast();
@@ -52,11 +51,14 @@ public class NormalAnnotationEditor implements AnnotationEditor {
         }
     }
 
+    public Optional<Expression> getAttribute(String name) {
+        Optional<MemberValuePair> attribute = findAttribute(name);
+        return attribute.map(MemberValuePair::getValue);
+    }
+
     public NormalAnnotationEditor(NodeRewrite rewrite) {
         requireNonNull(rewrite);
         this.rewrite = rewrite;
-
-        annotation = (NormalAnnotation) rewrite.node();
     }
 
     private NodeRewrite rewrite;

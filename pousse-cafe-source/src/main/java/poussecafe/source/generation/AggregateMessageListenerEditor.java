@@ -1,10 +1,18 @@
 package poussecafe.source.generation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NameQualifiedType;
+import org.eclipse.jdt.core.dom.QualifiedType;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
@@ -59,7 +67,6 @@ public abstract class AggregateMessageListenerEditor {
         if(listenerMethod.isEmpty()) {
             methodEditor = insertNewListener(typeEditor);
             methodEditor.modifiers().setVisibility(Visibility.PUBLIC);
-            methodEditor.setName(messageListener.methodName());
 
             var parameterName = consumedMessage.type() == MessageType.COMMAND ? "command" : "event";
             methodEditor.addParameter(consumedMessageClassName.getIdentifier(), parameterName);
@@ -69,6 +76,8 @@ public abstract class AggregateMessageListenerEditor {
         } else {
             methodEditor = typeEditor.editMethod(listenerMethod.get(), false);
         }
+
+        methodEditor.setName(messageListener.methodName());
 
         var producesEventEditor = new ProducesEventsEditor.Builder()
                 .methodEditor(methodEditor)
@@ -85,7 +94,7 @@ public abstract class AggregateMessageListenerEditor {
                     new Name(poussecafe.discovery.MessageListener.class.getSimpleName()));
         }
 
-        var processesValue = processesValue();
+        var processesValue = processesValue(messageListenerAnnotationEditor.getAttribute("processes"));
         messageListenerAnnotationEditor.setAttribute("processes", processesValue);
 
         setListenerRunner(messageListenerAnnotationEditor);
@@ -118,7 +127,7 @@ public abstract class AggregateMessageListenerEditor {
     protected abstract MethodDeclarationEditor insertNewListener(TypeDeclarationEditor typeEditor);
 
     private Optional<MethodDeclaration> findMethod(TypeDeclarationEditor typeEditor) {
-        return typeEditor.findMethods(messageListener.methodName()).stream()
+        return typeEditor.methods().stream()
                 .filter(this::isMessageListener)
                 .filter(this::consumes)
                 .findFirst();
@@ -150,17 +159,61 @@ public abstract class AggregateMessageListenerEditor {
     }
 
     @SuppressWarnings("unchecked")
-    private Expression processesValue() {
-        if(messageListener.processNames().isEmpty()) {
-            return ast.ast().newNullLiteral();
-        } else if(messageListener.processNames().size() == 1) {
-            return ast.newTypeLiteral(new Name(messageListener.processNames().get(0)));
+    private Expression processesValue(Optional<Expression> currentValue) {
+        var processNames = mergeCurrentWithNewValue(currentValue);
+        if(processNames.isEmpty()) {
+            return ast.ast().newArrayInitializer();
+        } else if(processNames.size() == 1) {
+            return ast.newTypeLiteral(new Name(processNames.get(0)));
         } else {
             var array = ast.ast().newArrayInitializer();
-            for(String processName : messageListener.processNames()) {
+            for(String processName : processNames) {
                 array.expressions().add(ast.newTypeLiteral(new Name(processName)));
             }
             return array;
+        }
+    }
+
+    private ArrayList<String> mergeCurrentWithNewValue(Optional<Expression> currentValue) {
+        var processNames = new ArrayList<String>();
+        processNames.addAll(processNames(currentValue));
+        for(String name : messageListener.processNames()) {
+            if(!processNames.contains(name)) {
+                processNames.add(name);
+            }
+        }
+        return processNames;
+    }
+
+    private List<String> processNames(Optional<Expression> currentValue) {
+        var processNames = new ArrayList<String>();
+        if(currentValue.isPresent()) {
+            if(currentValue.get() instanceof TypeLiteral) {
+                var singleProcessTypeLiteral = (TypeLiteral) currentValue.get();
+                processNames.add(typeName(singleProcessTypeLiteral.getType()));
+            } else if(currentValue.get() instanceof ArrayInitializer) {
+                var processesArray = (ArrayInitializer) currentValue.get();
+                for(Object singleProcessTypeLiteralObject : processesArray.expressions()) {
+                    var singleProcessTypeLiteral = (TypeLiteral) singleProcessTypeLiteralObject;
+                    processNames.add(typeName(singleProcessTypeLiteral.getType()));
+                }
+            }
+        }
+        return processNames;
+    }
+
+    private String typeName(Type type) {
+        if(type instanceof SimpleType) {
+            var simpleType = (SimpleType) type;
+            return simpleType.getName().getFullyQualifiedName();
+        } else if(type instanceof QualifiedType) {
+            var qualifiedType = (QualifiedType) type;
+            return qualifiedType.getName().getFullyQualifiedName();
+        } else if(type instanceof NameQualifiedType) {
+            var qualifiedType = (NameQualifiedType) type;
+            return qualifiedType.getName().getFullyQualifiedName();
+        } else {
+            throw new UnsupportedOperationException("Cannot get name of type " + type.getClass());
         }
     }
 

@@ -157,16 +157,21 @@ public class TypeDeclarationEditor {
     }
 
     public List<MethodDeclaration> findMethods(String methodName) {
-        var methods = new ArrayList<MethodDeclaration>();
-        for(Object declaration : typeDeclaration.bodyDeclarations()) {
+        return methods().stream()
+                .filter(method -> method.getName().getIdentifier().equals(methodName))
+                .collect(toList());
+    }
+
+    public List<MethodDeclaration> methods() {
+        var rewrittenMethods = new ArrayList<MethodDeclaration>();
+        var objectsList = rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).getRewrittenList();
+        for(Object declaration : objectsList) {
             if(declaration instanceof MethodDeclaration) {
                 MethodDeclaration methodDeclaration = (MethodDeclaration) declaration;
-                if(methodDeclaration.getName().getIdentifier().equals(methodName)) {
-                    methods.add(methodDeclaration);
-                }
+                rewrittenMethods.add(methodDeclaration);
             }
         }
-        return methods;
+        return rewrittenMethods;
     }
 
     public List<FieldDeclarationEditor> field(String fieldName) {
