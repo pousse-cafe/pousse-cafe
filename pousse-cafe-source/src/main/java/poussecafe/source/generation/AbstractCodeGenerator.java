@@ -7,6 +7,8 @@ import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.CodeFormatterOptionsBuilder;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 
+import static java.util.Collections.emptyMap;
+
 public abstract class AbstractCodeGenerator {
 
     protected CompilationUnitEditor compilationUnitEditor(Name className) {
@@ -20,7 +22,7 @@ public abstract class AbstractCodeGenerator {
 
     protected Path sourceDirectory;
 
-    protected Map<String, String> formatterOptions;
+    protected Map<String, String> formatterOptions = emptyMap();
 
     protected void loadProfileFromFile(Path profilesFile) {
         var optionsBuilder = new CodeFormatterOptionsBuilder();
