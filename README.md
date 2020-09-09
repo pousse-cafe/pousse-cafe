@@ -3,17 +3,10 @@
 
 # Pousse-Café
 
-Pousse-Café is a framework that eases the writing of applications following Domain-Driven Design (DDD) methodology.
+Pousse-Café is a Java framework which enables
+- [efficient process design](https://www.pousse-cafe-framework.org/#efficient-process-design),
+- [scalable implementation](https://www.pousse-cafe-framework.org/#scalable-implementation),
+- [pluggable storage and messaging systems](https://www.pousse-cafe-framework.org/#pluggable-storage-messaging).
 
-It works as follows:
-- A Pousse-Café model (i.e. a set of Aggregates and Services) is executed by a Runtime
-- Commands are submitted to the Runtime
-- Commands are handled by Aggregates using Message Listeners
-- Aggregates emit Domain Events
-- The set of Message Listeners executed following the submission of a Command defines a Domain Process
-- Aggregates may be grouped in Modules
-- Domain Events may cross Modules borders
-
-![how it works](https://www.pousse-cafe-framework.org/img/big_picture.svg)
-
-Go to the [web site](https://www.pousse-cafe-framework.org/) for further information.
+Go to the [web site](https://www.pousse-cafe-framework.org/) for further information and follow
+the ["get started"](https://www.pousse-cafe-framework.org/#get-started) section to create your first app.
