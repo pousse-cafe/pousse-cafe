@@ -64,10 +64,10 @@ public class AggregateRootHooksEditor {
         } else {
             methodEditor = editor.insertNewMethodFirst();
             methodEditor.setName(hookName);
+        }
 
-            if(!producedEvents.isEmpty()) {
-                compilationUnitEditor.addImport(ProducesEvent.class);
-            }
+        if(!producedEvents.isEmpty()) {
+            compilationUnitEditor.addImport(ProducesEvent.class);
         }
 
         var producesEventEditor = new ProducesEventsEditor.Builder()

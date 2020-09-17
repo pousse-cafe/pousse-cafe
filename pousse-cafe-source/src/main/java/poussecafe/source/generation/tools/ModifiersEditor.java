@@ -186,7 +186,7 @@ public class ModifiersEditor {
                 var newAnnotation = factory.apply(annotationClass);
                 rewrite.rewrite().replace(annotation, newAnnotation, null);
 
-                var editor = editorFactory.apply(annotation);
+                var editor = editorFactory.apply(newAnnotation);
                 editors.add(editor);
             }
         }
@@ -198,6 +198,26 @@ public class ModifiersEditor {
         var newNormalAnnotation = newNormalAnnotation(annotationClass);
         listRewrite().insertFirst(newNormalAnnotation, null);
         return normalAnnotationEditor(newNormalAnnotation);
+    }
+
+    public NormalAnnotationEditor insertNewNormalAnnotationLast(Name annotationClass) {
+        var newNormalAnnotation = newNormalAnnotation(annotationClass);
+        insertLast(newNormalAnnotation);
+        return normalAnnotationEditor(newNormalAnnotation);
+    }
+
+    private void insertLast(Annotation annotation) {
+        var annotations = annotations();
+        if(annotations.isEmpty()) {
+            var modifiers = actualModifiers();
+            if(modifiers.isEmpty()) {
+                listRewrite().insertFirst(annotation, null);
+            } else {
+                listRewrite().insertBefore(annotation, modifiers.get(0), null);
+            }
+        } else {
+            listRewrite().insertAfter(annotation, annotations.get(annotations.size() -1), null);
+        }
     }
 
     private NormalAnnotation newNormalAnnotation(Name annotationClass) {
@@ -300,6 +320,12 @@ public class ModifiersEditor {
     public void removeAnnotation(Annotation annotation) {
         ListRewrite listRewrite = listRewrite();
         listRewrite.remove(annotation, null);
+    }
+
+    public SingleMemberAnnotationEditor insertNewSingleMemberAnnotationLast(Name annotationClass) {
+        var newAnnotation = newSingleMemberAnnotation(annotationClass);
+        insertLast(newAnnotation);
+        return singleMemberAnnotationEditor(newAnnotation);
     }
 
     public ModifiersEditor(NodeRewrite rewrite, ChildListPropertyDescriptor property) {

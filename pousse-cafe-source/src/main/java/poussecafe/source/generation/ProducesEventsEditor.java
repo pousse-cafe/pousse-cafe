@@ -110,7 +110,7 @@ public class ProducesEventsEditor {
     }
 
     private void addProducesEventSingleMemberAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
-        var annotationEditor = modifiers.singleMemberAnnotation(ProducesEvent.class).get(0);
+        var annotationEditor = modifiers.insertNewSingleMemberAnnotationLast(new Name(ProducesEvent.class.getCanonicalName()));
         setSingleValue(producedEvent, annotationEditor);
     }
 
@@ -121,7 +121,7 @@ public class ProducesEventsEditor {
     private AstWrapper ast;
 
     private void addProducesEventNormalAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
-        var annotationEditor = modifiers.normalAnnotation(ProducesEvent.class).get(0);
+        var annotationEditor = modifiers.insertNewNormalAnnotationLast(new Name(ProducesEvent.class.getCanonicalName()));
         setAttributes(producedEvent, annotationEditor);
     }
 
