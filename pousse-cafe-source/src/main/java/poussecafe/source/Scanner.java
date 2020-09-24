@@ -45,6 +45,8 @@ public class Scanner {
                 Message message = unit.getMessages()[i];
                 logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
             }
+        } else if(unit.types().size() != 1) {
+            logger.info("Skipping {} because it contains unexptected number of types ({})", sourceFilePath, unit.types().size());
         } else {
             try {
                 var compilationUnitVisitor = compilationUnitVisitor(unit, sourceFilePath);
