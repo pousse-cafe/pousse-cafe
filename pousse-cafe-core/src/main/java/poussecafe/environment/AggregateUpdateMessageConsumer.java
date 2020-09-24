@@ -1,11 +1,14 @@
 package poussecafe.environment;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateRoot;
+import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Repository;
 import poussecafe.exception.NotFoundException;
 import poussecafe.exception.RetryOperationException;
@@ -15,6 +18,9 @@ import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.TransactionRunner;
 import poussecafe.util.MethodInvoker;
 import poussecafe.util.MethodInvokerException;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class AggregateUpdateMessageConsumer implements MessageConsumer {
@@ -53,12 +59,23 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
             return this;
         }
 
+        public Builder expectedEvents(List<ExpectedEvent> expectedEvents) {
+            consumer.expectedEvents = expectedEvents;
+            return this;
+        }
+
+        public Builder hasExpectedEvents(boolean hasExpectedEvents) {
+            consumer.hasExpectedEvents = hasExpectedEvents;
+            return this;
+        }
+
         public AggregateUpdateMessageConsumer build() {
             Objects.requireNonNull(consumer.listenerId);
             Objects.requireNonNull(consumer.transactionRunnerLocator);
             Objects.requireNonNull(consumer.aggregateServices);
             Objects.requireNonNull(consumer.method);
             Objects.requireNonNull(consumer.applicationPerformanceMonitoring);
+            Objects.requireNonNull(consumer.expectedEvents);
             return consumer;
         }
     }
@@ -122,6 +139,9 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
                     .rethrow(RetryOperationException.class)
                     .build();
             invoker.invoke(message);
+            if(hasExpectedEvents) {
+                checkProducedEvents(id, targetAggregateRoot);
+            }
             repository.update(targetAggregateRoot);
 
             reference.aggregate = targetAggregateRoot;
@@ -138,6 +158,32 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         }
     }
 
+    private void checkProducedEvents(Object id, AggregateRoot root) {
+        Set<ExpectedEvent> requiredEvents = expectedEvents.stream()
+                .filter(ExpectedEvent::required)
+                .collect(toSet());
+        for(Message producedEvent : root.messageCollection().getMessages()) {
+            Optional<ExpectedEvent> match = expectedEvents.stream()
+                    .filter(expectedEvent -> expectedEvent.matches((DomainEvent) producedEvent))
+                    .findFirst();
+            if(match.isPresent()) {
+                requiredEvents.remove(match.get());
+            } else {
+                throw new IllegalStateException("Produced event with class " + producedEvent.getClass().getCanonicalName()
+                        + " does not match any expected event of listener " + listenerId + " with aggregate "
+                        + id);
+            }
+        }
+        if(!requiredEvents.isEmpty()) {
+            throw new IllegalStateException("Required events where not produced by listener "
+                    + listenerId + " with aggregate " + id + ": "
+                    + requiredEvents.stream()
+                        .map(ExpectedEvent::producedEventClass)
+                        .map(Class::getCanonicalName)
+                        .collect(joining(", ")));
+        }
+    }
+
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
 
     private AggregateMessageListenerRunner runner;
@@ -151,4 +197,8 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
     private TransactionRunnerLocator transactionRunnerLocator;
 
     private AggregateServices aggregateServices;
+
+    private List<ExpectedEvent> expectedEvents;
+
+    private boolean hasExpectedEvents;
 }

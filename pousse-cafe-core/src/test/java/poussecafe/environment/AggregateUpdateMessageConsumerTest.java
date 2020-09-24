@@ -1,5 +1,7 @@
 package poussecafe.environment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
 import poussecafe.processing.MessageListenersGroup;
+import poussecafe.runtime.NoOpMessageValidator;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.storage.DefaultMessageCollection;
@@ -43,6 +46,7 @@ public class AggregateUpdateMessageConsumerTest {
     private void givenAggregate() {
         aggregateRoot = new Aggregate();
         aggregateRoot.messageCollection(new DefaultMessageCollection());
+        aggregateRoot.messageValidator(NoOpMessageValidator.instance());
     }
 
     private Aggregate aggregateRoot;
@@ -59,6 +63,22 @@ public class AggregateUpdateMessageConsumerTest {
 
         public void retryOrSkipByRunner(Message message) {
 
+        }
+
+        public void listenerProducingExpectedEvents(Message message) {
+            var event = new SampleEventData();
+            issue(event);
+            event = new SampleEventData();
+            issue(event);
+        }
+
+        public void listenerProducingNoEvent(Message message) {
+
+        }
+
+        public void listenerProducingUnexpectedEvent(Message message) {
+            var event = new SampleEventData2();
+            issue(event);
         }
     }
 
@@ -90,6 +110,8 @@ public class AggregateUpdateMessageConsumerTest {
                     .method(aggregateRoot.getClass().getDeclaredMethod(methodName, Message.class))
                     .runner(runner)
                     .transactionRunnerLocator(transactionRunnerLocator)
+                    .hasExpectedEvents(hasExpectedEvents)
+                    .expectedEvents(expectedEvents)
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -203,5 +225,70 @@ public class AggregateUpdateMessageConsumerTest {
 
     private void givenRunnerSkips() {
         doThrow(SameOperationException.class).when(runner).validChronologyOrElseThrow(message, "id", Optional.of(aggregateRoot));
+    }
+
+    @Test
+    public void producedEventsCheckSkippedIfHasNone() {
+        givenAggregate();
+        givenNoExpectedEvents();
+        givenAggregateUpdateMessageConsumerForMethod("listenerProducingNoEvent");
+        givenMessage();
+        whenConsume();
+        thenReportSuccess();
+    }
+
+    private void givenNoExpectedEvents() {
+        // Default case
+    }
+
+    private boolean hasExpectedEvents = false;
+
+    private List<ExpectedEvent> expectedEvents = new ArrayList<>();
+
+    private void thenReportSuccess() {
+        assertTrue(report.isSuccess());
+    }
+
+    @Test
+    public void expectedEventsProducedSucceeds() {
+        givenAggregate();
+        givenExpectedEvents();
+        givenAggregateUpdateMessageConsumerForMethod("listenerProducingExpectedEvents");
+        givenMessage();
+        whenConsume();
+        thenReportSuccess();
+    }
+
+    private void givenExpectedEvents() {
+        hasExpectedEvents = true;
+        var expectedEvent = new ExpectedEvent.Builder()
+                .producedEventClass(SampleEvent.class)
+                .required(true)
+                .build();
+        expectedEvents.add(expectedEvent);
+    }
+
+    @Test
+    public void missingEventsFails() {
+        givenAggregate();
+        givenExpectedEvents();
+        givenAggregateUpdateMessageConsumerForMethod("listenerProducingNoEvent");
+        givenMessage();
+        whenConsume();
+        thenReportFailure();
+    }
+
+    private void thenReportFailure() {
+        assertTrue(report.isFailed());
+    }
+
+    @Test
+    public void unexpectedEventFails() {
+        givenAggregate();
+        givenExpectedEvents();
+        givenAggregateUpdateMessageConsumerForMethod("listenerProducingUnexpectedEvent");
+        givenMessage();
+        whenConsume();
+        thenReportFailure();
     }
 }

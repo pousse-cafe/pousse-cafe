@@ -82,10 +82,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
             Iterable<AggregateRoot> aggregates = (Iterable<AggregateRoot>) invoker.invoke(message);
             for(AggregateRoot aggregate : aggregates) {
                 Object identifier = state.messageListenersGroup().aggregateId(aggregate);
-                reportBuilder.runAndReport(state, identifier, () -> {
-                    addCreatedAggregate(transactionRunner, repository, aggregate);
-                    return aggregate;
-                });
+                reportBuilder.runAndReport(state, identifier, () -> addCreatedAggregate(transactionRunner, repository, aggregate));
             }
         } catch(SameOperationException | RetryOperationException e) {
             throw e;

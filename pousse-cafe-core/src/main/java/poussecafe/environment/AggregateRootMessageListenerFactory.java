@@ -70,6 +70,8 @@ public class AggregateRootMessageListenerFactory {
                 .method(method)
                 .runner(runner)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .expectedEvents(definition.expectedEvents())
+                .hasExpectedEvents(definition.withExpectedEvents())
                 .build();
     }
 

@@ -3,23 +3,17 @@ package poussecafe.environment;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.DomainEvent;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.runtime.DuplicateKeyException;
 import poussecafe.runtime.OptimisticLockingException;
 import poussecafe.util.MethodInvokerException;
-
-import static java.util.stream.Collectors.toList;
 
 public class MessageListenerConsumptionReport {
 
@@ -104,11 +98,6 @@ public class MessageListenerConsumptionReport {
             return this;
         }
 
-        public Builder producedEvents(Object aggregateId, List<DomainEvent> producedEvents) {
-            report.producedEventsByAggregate.put(aggregateId, producedEvents);
-            return this;
-        }
-
         public MessageListenerConsumptionReport build() {
             if(!report.allAggregatesIds.isEmpty()
                     && report.aggregateType.isEmpty()) {
@@ -143,14 +132,12 @@ public class MessageListenerConsumptionReport {
             return report;
         }
 
-        @SuppressWarnings("rawtypes")
-        public void runAndReport(MessageListenerGroupConsumptionState state, Object id, Supplier<AggregateRoot> runnable) {
+        public void runAndReport(MessageListenerGroupConsumptionState state, Object id, Runnable runnable) {
             aggregateId(id);
             try {
-                AggregateRoot aggregateRoot = runnable.get();
+                runnable.run();
                 logger.debug("Report {} success for ID {}", report.listenerId, id);
                 successfulAggregateId(id);
-                producedEvents(id, aggregateRoot.messageCollection().getMessages().stream().map(message -> (DomainEvent) message).collect(toList()));
             } catch (SameOperationException e) {
                 logger.info("Report {} skip for ID {}", report.listenerId, id, e);
                 skippedAggregateId(id);
@@ -276,10 +263,4 @@ public class MessageListenerConsumptionReport {
     public boolean isFailed() {
         return failure != null || !failures.isEmpty();
     }
-
-    public Map<Object, List<DomainEvent>> producedEventsByAggregate() {
-        return Collections.unmodifiableMap(producedEventsByAggregate);
-    }
-
-    private Map<Object, List<DomainEvent>> producedEventsByAggregate = new HashMap<>();
 }
