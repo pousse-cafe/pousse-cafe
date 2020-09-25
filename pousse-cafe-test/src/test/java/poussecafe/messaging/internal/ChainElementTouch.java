@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.chain1.ChainElementTouchable;
+import poussecafe.test.domain.chain1.ChainElementTouchable;
 
 public class ChainElementTouch<I, D extends ChainElementAttributes<I>> {
 

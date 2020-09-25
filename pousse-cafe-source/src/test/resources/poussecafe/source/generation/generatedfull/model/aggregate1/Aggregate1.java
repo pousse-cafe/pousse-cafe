@@ -12,7 +12,7 @@ import poussecafe.source.generation.generatedfull.model.events.Event4;
 import poussecafe.source.generation.generatedfull.model.events.Event5;
 import poussecafe.source.generation.generatedfull.process.Process1;
 
-@Aggregate(factory = Aggregate1Factory.class, repository = Aggregate1Repository.class, module = DefaultModule.class)
+@Aggregate(factory = Aggregate1Factory.class, repository = Aggregate1Repository.class)
 public class Aggregate1 extends AggregateRoot<Aggregate1Id, Aggregate1.Attributes> {
 
     @Override

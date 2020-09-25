@@ -1,14 +1,12 @@
 package poussecafe.source.generation.existingcode.myaggregate;
 
 import poussecafe.discovery.Aggregate;
-import poussecafe.discovery.DefaultModule;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
     factory = MyAggregateFactory.class,
-    repository = MyAggregateRepository.class,
-    module = DefaultModule.class
+    repository = MyAggregateRepository.class
 )
 public class MyAggregate
 extends AggregateRoot<MyAggregateId, MyAggregate.Attributes> {

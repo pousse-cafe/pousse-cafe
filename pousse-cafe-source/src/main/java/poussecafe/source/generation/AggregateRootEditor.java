@@ -2,7 +2,6 @@ package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
-import poussecafe.discovery.DefaultModule;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.analysis.Name;
@@ -55,9 +54,6 @@ public class AggregateRootEditor {
         var repositoryClassName = NamingConventions.aggregateRepositoryTypeName(aggregate);
         var repositoryType = ast.newTypeLiteral(repositoryClassName.getIdentifier());
         editor.setAttribute("repository", repositoryType);
-
-        var defaultModuleType = ast.newTypeLiteral(new Name(DefaultModule.class.getSimpleName()));
-        editor.setAttribute("module", defaultModuleType);
     }
 
     private ParameterizedType aggregateRootSupertype() {

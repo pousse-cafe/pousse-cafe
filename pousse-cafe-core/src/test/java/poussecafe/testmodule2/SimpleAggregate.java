@@ -9,7 +9,7 @@ import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 
-@Aggregate(module = TestModule2.class)
+@Aggregate
 public class SimpleAggregate {
 
     public static class SimpleAggregateFactory extends Factory<SimpleAggregateId, SimpleAggregateRoot, SimpleAggregateRoot.Attributes> {

@@ -1,5 +1,5 @@
 {
-    "poussecafe.domain.chain1.Chain1Element": [
+    "poussecafe.test.domain.chain1.Chain1Element": [
         {
             "id": "test"
         }

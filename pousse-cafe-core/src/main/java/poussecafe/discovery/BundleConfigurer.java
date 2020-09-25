@@ -29,25 +29,37 @@ public class BundleConfigurer {
         private Set<String> basePackages = new HashSet<>();
 
         public Builder module(Class<? extends Module> moduleClass) {
-            if(moduleClass == DefaultModule.class) {
-                basePackages.add("");
-            } else {
+            if(configurer.moduleClasses.add(moduleClass)) {
                 basePackages.add(moduleClass.getPackageName());
             }
             return this;
         }
 
         public Builder basePackage(String basePackage) {
+            basePackageOf(basePackage, DefaultModule.class);
+            return this;
+        }
+
+        public Builder basePackageOf(String basePackage, Class<? extends Module> module) {
             basePackages.add(basePackage);
+            configurer.moduleClasses.add(module);
             return this;
         }
 
         public Builder basePackageClass(Class<?> basePackageClass) {
-            basePackage(basePackageClass.getPackageName());
+            basePackageClassOf(basePackageClass, DefaultModule.class);
+            return this;
+        }
+
+        public Builder basePackageClassOf(Class<?> basePackageClass, Class<? extends Module> module) {
+            basePackageOf(basePackageClass.getPackageName(), module);
             return this;
         }
 
         public BundleConfigurer build() {
+            if(basePackages.isEmpty()) {
+                module(DefaultModule.class);
+            }
             configurer.classPathExplorer = new ClassPathExplorer(basePackages);
             return configurer;
         }
@@ -61,13 +73,17 @@ public class BundleConfigurer {
 
     public BundleDefinition define() {
         BundleDefinition.Builder builder = new BundleDefinition.Builder();
-        builder.withAggregateDefinitions(classPathExplorer.discoverAggregates());
-        builder.withDomainProcesses(classPathExplorer.discoverDomainProcesses());
-        builder.withServices(classPathExplorer.discoverServices());
-        builder.withMessages(classPathExplorer.discoverMessages());
-        builder.withMessageListeners(classPathExplorer.discoverListeners());
+        for(Class<? extends Module> moduleClass : moduleClasses) {
+            builder.withAggregateDefinitions(classPathExplorer.discoverAggregates(moduleClass));
+            builder.withDomainProcesses(classPathExplorer.discoverDomainProcesses(moduleClass));
+            builder.withServices(classPathExplorer.discoverServices(moduleClass));
+            builder.withMessages(classPathExplorer.discoverMessages(moduleClass));
+            builder.withMessageListeners(classPathExplorer.discoverListeners(moduleClass));
+        }
         return builder.build();
     }
+
+    private Set<Class<? extends Module>> moduleClasses = new HashSet<>();
 
     public Bundle.Builder defineAndImplementDefault() {
         return defineThenImplement()
@@ -78,7 +94,9 @@ public class BundleConfigurer {
     public BundleWithoutImplementation defineThenImplement() {
         Bundle.Builder builder = new Bundle.Builder();
         builder.definition(define());
-        builder.serviceImplementations(classPathExplorer.discoverServiceImplementations());
+        for(Class<? extends Module> moduleClass : moduleClasses) {
+            builder.serviceImplementations(classPathExplorer.discoverServiceImplementations(moduleClass));
+        }
         return new BundleWithoutImplementation(builder);
     }
 

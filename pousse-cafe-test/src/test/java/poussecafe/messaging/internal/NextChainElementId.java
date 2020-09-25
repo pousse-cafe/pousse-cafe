@@ -1,8 +1,8 @@
 package poussecafe.messaging.internal;
 
-import poussecafe.domain.chain1.Chain1ElementId;
-import poussecafe.domain.chain2.Chain2ElementId;
-import poussecafe.domain.chain3.Chain3ElementId;
+import poussecafe.test.domain.chain1.Chain1ElementId;
+import poussecafe.test.domain.chain2.Chain2ElementId;
+import poussecafe.test.domain.chain3.Chain3ElementId;
 import poussecafe.util.StringId;
 
 public class NextChainElementId extends StringId {

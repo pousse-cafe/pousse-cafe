@@ -11,7 +11,6 @@ import poussecafe.doc.ProcessDescription;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
-import poussecafe.doc.model.ModuleAnnotationChecker;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainException;
@@ -25,7 +24,6 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
         if(!isDomainProcessDoc(doc)) {
             throw new DomainException("Class " + doc.getQualifiedName() + " is not a domain process");
         }
-        moduleAnnotationChecker.packageMatchOrThrow(doc, moduleDocId);
 
         String name = name(doc);
         DomainProcessDocId id = new DomainProcessDocId(doc.getQualifiedName().toString());
@@ -44,8 +42,6 @@ public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainP
     }
 
     private ClassDocPredicates classDocPredicates;
-
-    private ModuleAnnotationChecker moduleAnnotationChecker;
 
     public String name(TypeElement doc) {
         return doc.getSimpleName().toString();

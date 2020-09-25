@@ -17,5 +17,9 @@ public @interface Aggregate {
 
     Class<? extends Repository> repository() default InnerClassRepository.class;
 
+    /**
+     * @deprecated module's scope is defined by its base package makes this redundant
+     */
+    @Deprecated(since = "0.24")
     Class<? extends Module> module() default DefaultModule.class;
 }

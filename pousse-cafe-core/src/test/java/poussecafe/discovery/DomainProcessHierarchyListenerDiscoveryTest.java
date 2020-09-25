@@ -24,7 +24,7 @@ public class DomainProcessHierarchyListenerDiscoveryTest {
 
     private void whenDiscoveringListeners() {
         listeners = new ClassPathExplorer(asList(packageToExplore))
-                .discoverListeners();
+                .discoverListeners(DefaultModule.class);
     }
 
     private Set<MessageListenerDefinition> listeners;

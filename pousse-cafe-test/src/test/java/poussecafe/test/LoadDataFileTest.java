@@ -2,10 +2,10 @@ package poussecafe.test;
 
 import org.junit.Test;
 import poussecafe.discovery.BundleConfigurer;
-import poussecafe.domain.chain1.Chain1ElementId;
-import poussecafe.domain.chain1.Chain1ElementRepository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.runtime.Runtime.Builder;
+import poussecafe.test.domain.chain1.Chain1ElementId;
+import poussecafe.test.domain.chain1.Chain1ElementRepository;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,10 +23,10 @@ public class LoadDataFileTest extends PousseCafeTest {
     protected Builder runtimeBuilder() {
         return super.runtimeBuilder()
                 .withBundle(new BundleConfigurer.Builder()
-                .module(TestModule.class)
-                .build()
-                .defineAndImplementDefault()
-                .build());
+                        .module(TestModule.class)
+                        .build()
+                    .defineAndImplementDefault()
+                    .build());
     }
 
     @Test(expected = PousseCafeException.class)

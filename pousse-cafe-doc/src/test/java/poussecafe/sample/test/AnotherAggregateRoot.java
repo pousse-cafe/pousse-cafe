@@ -8,8 +8,7 @@ import poussecafe.domain.EntityAttributes;
 
 @Aggregate(
     factory = AnotherAggregateRootFactory.class,
-    repository = AnotherAggregateRootRepository.class,
-    module = Sample.class
+    repository = AnotherAggregateRootRepository.class
 )
 public class AnotherAggregateRoot extends AggregateRoot<AnotherAggregateRootId, AnotherAggregateRoot.Attributes> {
 

@@ -74,19 +74,14 @@ class ClassPathExplorer {
     private Reflections reflections;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List<AggregateDefinition> discoverAggregates() {
-        Set<Class<?>> aggregateClasses = reflections.getTypesAnnotatedWith(Aggregate.class);
+    public List<AggregateDefinition> discoverAggregates(Class<? extends Module> moduleClass) {
+        List<Class<?>> aggregateClasses = reflections.getTypesAnnotatedWith(Aggregate.class).stream()
+                .filter(aggregateClass -> isInModule(aggregateClass, moduleClass))
+                .collect(toList());
 
         List<AggregateDefinition> definitions = new ArrayList<>();
         for(Class<?> aggregateClass : aggregateClasses) {
             Aggregate annotation = aggregateClass.getAnnotation(Aggregate.class);
-            Class<? extends Module> moduleClass = annotation.module();
-            String aggregatePackage = aggregateClass.getPackageName();
-            String moduleClassPackage = annotation.module().getPackageName();
-            if(moduleClass != DefaultModule.class
-                    && !aggregatePackage.startsWith(moduleClassPackage)) {
-                throw new PousseCafeException("Aggregate " + aggregateClass.getName() + " is not in a sub-package of its module class package " + moduleClassPackage);
-            }
 
             var definitionBuilder = new AggregateDefinition.Builder()
                     .withModuleClass(moduleClass);
@@ -118,21 +113,29 @@ class ClassPathExplorer {
         return definitions;
     }
 
+    private boolean isInModule(Class<?> componentClass, Class<? extends Module> moduleClass) {
+        return componentClass.getPackageName().startsWith(moduleClass.getPackageName());
+    }
+
     private Logger logger = LoggerFactory.getLogger(ClassPathExplorer.class);
 
-    public List<Class<? extends Service>> discoverServices() {
+    public List<Class<? extends Service>> discoverServices(Class<? extends Module> module) {
         return getSubTypesOf(Service.class)
                 .filter(serviceClass -> !serviceClass.isAnnotationPresent(ServiceImplementation.class))
+                .filter(serviceClass -> isInModule(serviceClass, module))
                 .collect(toList());
     }
 
-    public List<Class<? extends DomainProcess>> discoverDomainProcesses() {
-        return getSubTypesOf(DomainProcess.class).collect(toList());
+    public List<Class<? extends DomainProcess>> discoverDomainProcesses(Class<? extends Module> module) {
+        return getSubTypesOf(DomainProcess.class)
+                .filter(processClass -> isInModule(processClass, module))
+                .collect(toList());
     }
 
-    public List<Class<? extends Message>> discoverMessages() {
+    public List<Class<? extends Message>> discoverMessages(Class<? extends Module> module) {
         List<Class<? extends Message>> messages = getSubTypesOf(Message.class)
                 .filter(this::isMessageDefinition)
+                .filter(messageClass -> isInModule(messageClass, module))
                 .filter(this::hasNotAbstractMessageAnnotation)
                 .collect(toList());
         if(logger.isDebugEnabled()) {
@@ -215,8 +218,10 @@ class ClassPathExplorer {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<poussecafe.environment.ServiceImplementation> discoverServiceImplementations() {
-        Set<Class<?>> serviceImplementations = reflections.getTypesAnnotatedWith(ServiceImplementation.class);
+    public Set<poussecafe.environment.ServiceImplementation> discoverServiceImplementations(Class<? extends Module> module) {
+        List<Class<?>> serviceImplementations = reflections.getTypesAnnotatedWith(ServiceImplementation.class).stream()
+                .filter(serviceClass -> isInModule(serviceClass, module))
+                .collect(toList());
         Set<poussecafe.environment.ServiceImplementation> implementations = new HashSet<>();
         for(Class<?> serviceImplementationClass : serviceImplementations) {
             ServiceImplementation annotation = serviceImplementationClass.getAnnotation(ServiceImplementation.class);
@@ -229,12 +234,20 @@ class ClassPathExplorer {
         return implementations;
     }
 
-    public Set<MessageListenerDefinition> discoverListeners() {
+    public Set<MessageListenerDefinition> discoverListeners(Class<? extends Module> module) {
         Set<Class<?>> listenersContainers = new HashSet<>();
-        getSubTypesOf(DomainProcess.class).forEach(listenersContainers::add);
-        getSubTypesOf(AggregateRoot.class).forEach(listenersContainers::add);
-        getSubTypesOf(Factory.class).forEach(listenersContainers::add);
-        getSubTypesOf(Repository.class).forEach(listenersContainers::add);
+        getSubTypesOf(DomainProcess.class)
+                .filter(aggregateClass -> isInModule(aggregateClass, module))
+                .forEach(listenersContainers::add);
+        getSubTypesOf(AggregateRoot.class)
+                .filter(aggregateClass -> isInModule(aggregateClass, module))
+                .forEach(listenersContainers::add);
+        getSubTypesOf(Factory.class)
+                .filter(aggregateClass -> isInModule(aggregateClass, module))
+                .forEach(listenersContainers::add);
+        getSubTypesOf(Repository.class)
+                .filter(aggregateClass -> isInModule(aggregateClass, module))
+                .forEach(listenersContainers::add);
 
         Set<MessageListenerDefinition> definitions = new HashSet<>();
         for(Class<?> containerClass : listenersContainers) {

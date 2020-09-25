@@ -39,6 +39,6 @@ public class ClassPathExplorerTest {
     }
 
     private void thenExplorerDiscoversProperly() {
-        assertThat(explorer.discoverAggregates().size(), is(1));
+        assertThat(explorer.discoverAggregates(DefaultModule.class).size(), is(1));
     }
 }
