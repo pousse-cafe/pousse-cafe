@@ -67,6 +67,6 @@ multipleMessageConsumptions : multipleMessageConsumptionsItem+ ;
 
 multipleMessageConsumptionsItem : '->' singleMessageConsumption ;
 
-eventConsumption : event external? '->' messageConsumptions ;
+eventConsumption : external? event '->' messageConsumptions ;
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines

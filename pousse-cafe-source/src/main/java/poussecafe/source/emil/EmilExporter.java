@@ -91,10 +91,10 @@ public class EmilExporter {
         if(message.type() == MessageType.COMMAND) {
             builder.appendCommandIdentifier(message.name());
         } else if(message.type() == MessageType.DOMAIN_EVENT) {
-            builder.appendDomainEventIdentifier(message.name());
             if(consumesFromExternal.isPresent()) {
-                builder.appendClosingNote(consumesFromExternal.get());
+                builder.appendOpeningNote(consumesFromExternal.get());
             }
+            builder.appendDomainEventIdentifier(message.name());
         }
         if(!required) {
             builder.appendOptionalOperator();

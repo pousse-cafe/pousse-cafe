@@ -15,7 +15,7 @@ Command4? -> F{Aggregate1Factory}[process1Listener5]+
         :Event5! -> .
         :.
 
-Event1! [External1] -> Ru{Process1Listener1Runner}
+[External1] Event1! -> Ru{Process1Listener1Runner}
     @Aggregate1[process1Listener1]:
         :Event2! ->
             -> Ru{Process1Listener2Runner}
