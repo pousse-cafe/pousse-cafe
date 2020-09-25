@@ -17,23 +17,14 @@ public class BundleConfigurer {
 
         private BundleConfigurer configurer = new BundleConfigurer();
 
-        /**
-         * @deprecated use module method instead.
-         */
-        @Deprecated(since = "0.17")
-        public Builder moduleBasePackage(String packageName) {
-            basePackages.add(packageName);
-            return this;
-        }
-
-        private Set<String> basePackages = new HashSet<>();
-
         public Builder module(Class<? extends Module> moduleClass) {
             if(configurer.moduleClasses.add(moduleClass)) {
                 basePackages.add(moduleClass.getPackageName());
             }
             return this;
         }
+
+        private Set<String> basePackages = new HashSet<>();
 
         public Builder basePackage(String basePackage) {
             basePackageOf(basePackage, DefaultModule.class);
