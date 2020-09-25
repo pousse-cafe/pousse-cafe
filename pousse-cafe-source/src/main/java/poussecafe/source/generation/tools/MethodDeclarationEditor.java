@@ -26,8 +26,7 @@ public class MethodDeclarationEditor {
     public void setEmptyBodyWithComment(String comment) {
         setEmptyBody();
 
-        var commentNode = (Statement) rewrite.rewrite().createStringPlaceholder("\n// " + comment + "\n",
-                ASTNode.EMPTY_STATEMENT);
+        var commentNode = rewrite.lineCommentStatement(comment);
         appendStatementToBody(commentNode);
     }
 

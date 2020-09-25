@@ -7,6 +7,7 @@ public class Process1Listener2Runner extends UpdateOneRunner<Event2, Aggregate2I
 
     @Override
     protected Aggregate2Id aggregateId(Event2 message) {
+        // TODO: extract id from message
         return null;
     }
 }

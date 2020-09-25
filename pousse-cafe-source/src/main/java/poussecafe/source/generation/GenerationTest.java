@@ -43,7 +43,7 @@ public abstract class GenerationTest {
         var pathSegments = new String[packageSegments.length + 3];
         pathSegments[0] = "src";
         pathSegments[1] = "test";
-        pathSegments[2] = "java";
+        pathSegments[2] = "resources";
         System.arraycopy(packageSegments, 0, pathSegments, 3, packageSegments.length);
         return Tree.path(pathSegments);
     }

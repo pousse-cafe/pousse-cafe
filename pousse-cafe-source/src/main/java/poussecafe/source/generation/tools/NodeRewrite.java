@@ -4,6 +4,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
@@ -38,6 +39,11 @@ public class NodeRewrite {
 
     public Object get(ChildPropertyDescriptor property) {
         return rewrite.get(node, property);
+    }
+
+    public Statement lineCommentStatement(String comment) {
+        return (Statement) rewrite.createStringPlaceholder("\n// " + comment + "\n",
+                ASTNode.EMPTY_STATEMENT);
     }
 
     public NodeRewrite(ASTRewrite rewrite, ASTNode node) {

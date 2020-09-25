@@ -1,6 +1,5 @@
 package poussecafe.source.generation;
 
-import org.eclipse.jdt.core.dom.Block;
 import poussecafe.listeners.UpdateOneRunner;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.AstWrapper;
@@ -45,9 +44,8 @@ public class RunnerEditor {
 
             idExtractorEditor.addParameter(messageTypeName, "message");
 
-            Block block = ast.ast().newBlock();
-            block.statements().add(ast.newReturnNullStatement());
-            idExtractorEditor.setBody(block);
+            idExtractorEditor.setEmptyBodyWithComment("TODO: extract id from message");
+            idExtractorEditor.appendStatementToBody(ast.newReturnNullStatement());
 
             compilationUnitEditor.flush();
         }
