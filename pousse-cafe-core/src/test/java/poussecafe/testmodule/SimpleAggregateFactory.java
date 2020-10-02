@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import poussecafe.discovery.MessageListener;
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
 import static java.util.Arrays.asList;
 
-public class SimpleAggregateFactory extends Factory<SimpleAggregateId, SimpleAggregate, SimpleAggregate.Attributes> {
+public class SimpleAggregateFactory extends AggregateFactory<SimpleAggregateId, SimpleAggregate, SimpleAggregate.Attributes> {
 
     @MessageListener
     public SimpleAggregate newSimpleAggregate(TestDomainEvent event) {

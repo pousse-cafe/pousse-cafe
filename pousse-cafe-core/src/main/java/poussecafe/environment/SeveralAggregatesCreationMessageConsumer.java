@@ -3,8 +3,8 @@ package poussecafe.environment;
 import java.util.Objects;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Repository;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
@@ -77,7 +77,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
         try {
             Class entityClass = aggregateServices.aggregateRootEntityClass();
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
-            Repository repository = aggregateServices.repository();
+            AggregateRepository repository = aggregateServices.repository();
 
             Iterable<AggregateRoot> aggregates = (Iterable<AggregateRoot>) invoker.invoke(message);
             for(AggregateRoot aggregate : aggregates) {
@@ -106,7 +106,7 @@ public class SeveralAggregatesCreationMessageConsumer implements MessageConsumer
     private AggregateServices aggregateServices;
 
     private void addCreatedAggregate(TransactionRunner transactionRunner,
-            Repository repository,
+            AggregateRepository repository,
             AggregateRoot aggregate) {
         transactionRunner.runInTransaction(() -> repository.add(aggregate));
     }

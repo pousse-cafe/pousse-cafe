@@ -2,9 +2,10 @@ package poussecafe.doc.model.moduledoc;
 
 import java.util.List;
 import java.util.Optional;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class ModuleDocRepository extends Repository<ModuleDoc, ModuleDocId, ModuleDoc.Attributes> {
+public class ModuleDocRepository
+extends AggregateRepository<ModuleDoc, ModuleDocId, ModuleDoc.Attributes> {
 
     public List<ModuleDoc> findAll() {
         return wrap(dataAccess().findAll());

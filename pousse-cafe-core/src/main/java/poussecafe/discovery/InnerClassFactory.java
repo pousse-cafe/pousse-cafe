@@ -1,8 +1,8 @@
 package poussecafe.discovery;
 
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
 @SuppressWarnings("rawtypes")
-public class InnerClassFactory extends Factory {
+public class InnerClassFactory extends AggregateFactory {
 
 }

@@ -1,8 +1,8 @@
 package poussecafe.listeners;
 
 import java.util.Objects;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Repository;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.Environment;
 import poussecafe.environment.SecondaryIdentifierHandler;
@@ -21,14 +21,14 @@ implements AggregateMessageListenerRunner<M, K, A> {
 
     private Environment environment;
 
-    protected Repository aggregateRepository() {
+    protected AggregateRepository aggregateRepository() {
         if(repository == null) {
             repository = environment.repositoryOf(aggregateRootClass).orElseThrow();
         }
         return repository;
     }
 
-    private Repository repository;
+    private AggregateRepository repository;
 
     @SuppressWarnings({ "unchecked" })
     protected boolean existsById(K identifier) {

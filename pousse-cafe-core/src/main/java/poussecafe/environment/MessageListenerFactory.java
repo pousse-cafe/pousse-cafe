@@ -2,9 +2,9 @@ package poussecafe.environment;
 
 import java.util.Objects;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
 import poussecafe.process.DomainProcess;
 import poussecafe.runtime.TransactionRunnerLocator;
 
@@ -64,9 +64,9 @@ public class MessageListenerFactory {
         Class<?> declaringClass = definition.method().getDeclaringClass();
         if(DomainProcess.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return domainProcessMessageListenerFactory.buildMessageListener(definition);
-        } else if(Factory.class.isAssignableFrom(definition.method().getDeclaringClass())) {
+        } else if(AggregateFactory.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return factoryMessageListenerFactory.buildMessageListener(definition);
-        } else if(Repository.class.isAssignableFrom(definition.method().getDeclaringClass())) {
+        } else if(AggregateRepository.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return repositoryMessageListenerFactory.buildMessageListener(definition);
         } else if(AggregateRoot.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return aggregateRootMessageListenerFactory.buildMessageListener(definition);

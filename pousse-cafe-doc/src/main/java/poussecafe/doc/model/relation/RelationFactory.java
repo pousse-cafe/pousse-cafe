@@ -1,8 +1,8 @@
 package poussecafe.doc.model.relation;
 
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
-public class RelationFactory extends Factory<RelationId, Relation, Relation.Attributes> {
+public class RelationFactory extends AggregateFactory<RelationId, Relation, Relation.Attributes> {
 
     public Relation newRelation(NewRelationParameters parameters) {
         Relation relation = newAggregateWithId(new RelationId(parameters.fromComponent.className(), parameters.toComponent.className()));

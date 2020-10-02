@@ -7,7 +7,8 @@ public class RepositoryClass {
     public static boolean isRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
         return superclassType.isPresent()
-                && superclassType.get().isClass(CompilationUnitResolver.REPOSITORY_CLASS);
+                && (superclassType.get().isClass(CompilationUnitResolver.REPOSITORY_CLASS)
+                        || superclassType.get().isClass(CompilationUnitResolver.DEPRECATED_REPOSITORY_CLASS));
     }
 
     public RepositoryClass(ResolvedTypeDeclaration resolvedTypeDeclaration) {

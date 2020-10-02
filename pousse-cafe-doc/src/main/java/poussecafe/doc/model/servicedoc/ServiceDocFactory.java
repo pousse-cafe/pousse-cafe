@@ -2,14 +2,14 @@ package poussecafe.doc.model.servicedoc;
 
 import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
-import poussecafe.domain.Factory;
 import poussecafe.domain.Service;
 
-public class ServiceDocFactory extends Factory<ServiceDocId, ServiceDoc, ServiceDoc.Attributes> {
+public class ServiceDocFactory extends AggregateFactory<ServiceDocId, ServiceDoc, ServiceDoc.Attributes> {
 
     public ServiceDoc newServiceDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
         if(!isServiceDoc(classDoc)) {

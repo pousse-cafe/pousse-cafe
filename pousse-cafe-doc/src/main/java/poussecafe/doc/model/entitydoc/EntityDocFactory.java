@@ -7,11 +7,11 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
-import poussecafe.domain.Factory;
 
-public class EntityDocFactory extends Factory<EntityDocId, EntityDoc, EntityDoc.Attributes> {
+public class EntityDocFactory extends AggregateFactory<EntityDocId, EntityDoc, EntityDoc.Attributes> {
 
     public EntityDoc newEntityDoc(ModuleDocId moduleDocId, TypeElement entityClassDoc) {
         if(!isEntityDoc(entityClassDoc)) {

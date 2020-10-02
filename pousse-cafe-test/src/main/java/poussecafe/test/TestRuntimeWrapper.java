@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.domain.Repository;
 import poussecafe.environment.AggregateServices;
 import poussecafe.environment.EntityImplementation;
 import poussecafe.exception.PousseCafeException;
@@ -174,7 +174,7 @@ public class TestRuntimeWrapper {
     @Deprecated(since = "0.18.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
             K id) {
-        Repository<AggregateRoot<K, D>, K, D> repository = (Repository<AggregateRoot<K, D>, K, D>) runtime
+        AggregateRepository<AggregateRoot<K, D>, K, D> repository = (AggregateRepository<AggregateRoot<K, D>, K, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
                 .orElseThrow(PousseCafeException::new);

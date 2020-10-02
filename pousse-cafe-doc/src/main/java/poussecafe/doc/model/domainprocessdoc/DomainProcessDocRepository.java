@@ -2,9 +2,10 @@ package poussecafe.doc.model.domainprocessdoc;
 
 import java.util.List;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class DomainProcessDocRepository extends Repository<DomainProcessDoc, DomainProcessDocId, DomainProcessDoc.Attributes> {
+public class DomainProcessDocRepository
+extends AggregateRepository<DomainProcessDoc, DomainProcessDocId, DomainProcessDoc.Attributes> {
 
     public List<DomainProcessDoc> findAll() {
         return wrap(dataAccess().findAll());

@@ -14,6 +14,8 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Factory;
@@ -23,6 +25,7 @@ import poussecafe.runtime.Command;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("deprecation")
 public class CompilationUnitResolver implements Resolver {
 
     public CompilationUnitResolver(CompilationUnit compilationUnit) {
@@ -197,9 +200,13 @@ public class CompilationUnitResolver implements Resolver {
 
     public static final Class<? extends Annotation> PRODUCES_EVENT_ANNOTATION_CLASS = ProducesEvent.class;
 
-    public static final Class<?> FACTORY_CLASS = Factory.class;
+    public static final Class<?> FACTORY_CLASS = AggregateFactory.class;
 
-    public static final Class<?> REPOSITORY_CLASS = Repository.class;
+    public static final Class<?> DEPRECATED_FACTORY_CLASS = Factory.class;
+
+    public static final Class<?> REPOSITORY_CLASS = AggregateRepository.class;
+
+    public static final Class<?> DEPRECATED_REPOSITORY_CLASS = Repository.class;
 
     public static final Class<?> MESSAGE_CLASS = Message.class;
 

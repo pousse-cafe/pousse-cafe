@@ -3,15 +3,15 @@ package poussecafe.messaging.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Factory;
 import poussecafe.test.domain.chain1.Chain1ElementId;
 import poussecafe.test.domain.chain2.Chain2ElementId;
 import poussecafe.test.domain.chain3.Chain3ElementId;
 import poussecafe.util.StringId;
 
 public abstract class ChainElementFactory<I, D extends ChainElementAttributes<I>, A extends AggregateRoot<I, D>>
-extends Factory<I, A, D> {
+extends AggregateFactory<I, A, D> {
 
     protected ChainElementFactory(int typeNumber) {
         this.typeNumber = typeNumber;

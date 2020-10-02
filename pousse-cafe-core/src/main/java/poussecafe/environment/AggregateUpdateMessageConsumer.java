@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
-import poussecafe.domain.Repository;
 import poussecafe.exception.NotFoundException;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
@@ -95,7 +95,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         reportBuilder.logger(state.processorLogger());
         Class entityClass = aggregateServices.aggregateRootEntityClass();
         reportBuilder.aggregateType(entityClass);
-        Repository repository = aggregateServices.repository();
+        AggregateRepository repository = aggregateServices.repository();
         TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
         reportBuilder.runAndReport(state, aggregateId, () -> updateAggregate(message, repository, transactionRunner, aggregateId));
         return reportBuilder.build();
@@ -103,7 +103,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
 
     private String listenerId;
 
-    private AggregateRoot updateAggregate(Message message, Repository repository, TransactionRunner transactionRunner, Object id) {
+    private AggregateRoot updateAggregate(Message message, AggregateRepository repository, TransactionRunner transactionRunner, Object id) {
         AggregateReference reference = new AggregateReference();
         transactionRunner.runInTransaction(() -> updateInSpan(message, repository, id, reference));
         return reference.aggregate;
@@ -114,7 +114,7 @@ public class AggregateUpdateMessageConsumer implements MessageConsumer {
         AggregateRoot aggregate;
     }
 
-    private void updateInSpan(Message message, Repository repository, Object id, AggregateReference reference) {
+    private void updateInSpan(Message message, AggregateRepository repository, Object id, AggregateReference reference) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName(method.getName());
         try {

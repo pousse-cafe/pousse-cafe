@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.injector.Injector;
@@ -290,10 +290,10 @@ public class EnvironmentBuilder {
     private void registerAggregateServices(AggregateServices entityServices) {
         environment.entityServicesMap.put(entityServices.aggregateRootEntityClass(), entityServices);
 
-        Repository repository = entityServices.repository();
+        AggregateRepository repository = entityServices.repository();
         injector.registerInjectableService(repository);
 
-        Factory factory = entityServices.factory();
+        AggregateFactory factory = entityServices.factory();
         injector.registerInjectableService(factory);
     }
 

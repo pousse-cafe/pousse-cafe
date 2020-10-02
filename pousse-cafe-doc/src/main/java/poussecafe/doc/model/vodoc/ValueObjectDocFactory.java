@@ -5,11 +5,11 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
-import poussecafe.domain.Factory;
 import poussecafe.domain.ValueObject;
 
-public class ValueObjectDocFactory extends Factory<ValueObjectDocId, ValueObjectDoc, ValueObjectDoc.Attributes> {
+public class ValueObjectDocFactory extends AggregateFactory<ValueObjectDocId, ValueObjectDoc, ValueObjectDoc.Attributes> {
 
     public ValueObjectDoc newValueObjectDoc(ModuleDocId moduleDocId, TypeElement doc) {
         if(!isValueObjectDoc(doc)) {

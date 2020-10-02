@@ -7,7 +7,11 @@ import poussecafe.domain.Module;
 public class NamingConvention {
 
     public static String simpleAggregateName(Class<? extends AggregateRoot> aggregateRootClass) {
-        return aggregateRootClass.getSimpleName();
+        if(aggregateRootClass.isMemberClass()) {
+            return aggregateRootClass.getDeclaringClass().getSimpleName();
+        } else {
+            return aggregateRootClass.getSimpleName();
+        }
     }
 
     public static String moduleName(Class<? extends Module> moduleClass) {

@@ -7,10 +7,10 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
@@ -83,9 +83,9 @@ public class AggregateUpdateMessageConsumerTest {
     }
 
     private void givenAggregateUpdateMessageConsumerForMethod(String methodName) {
-        repository = mock(Repository.class);
+        repository = mock(AggregateRepository.class);
         when(repository.getOptional("id")).thenReturn(Optional.of(aggregateRoot));
-        Factory factory = mock(Factory.class);
+        AggregateFactory factory = mock(AggregateFactory.class);
         AggregateServices aggregateServices = new AggregateServices(Aggregate.class, repository, factory);
 
         applicationPerformanceMonitoring = mock(ApplicationPerformanceMonitoring.class);
@@ -121,7 +121,7 @@ public class AggregateUpdateMessageConsumerTest {
         when(messageListenersGroup.aggregateRootClass()).thenReturn(Optional.of(aggregateRoot.getClass()));
     }
 
-    private Repository repository;
+    private AggregateRepository repository;
 
     private MessageListenersGroup messageListenersGroup;
 

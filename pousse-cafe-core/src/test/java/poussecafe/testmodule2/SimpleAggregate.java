@@ -4,15 +4,16 @@ import java.util.List;
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
 
 @Aggregate
 public class SimpleAggregate {
 
-    public static class SimpleAggregateFactory extends Factory<SimpleAggregateId, SimpleAggregateRoot, SimpleAggregateRoot.Attributes> {
+    public static class SimpleAggregateFactory
+    extends AggregateFactory<SimpleAggregateId, SimpleAggregateRoot, SimpleAggregateRoot.Attributes> {
 
         @MessageListener
         public SimpleAggregateRoot newSimpleAggregate(CreateSimpleAggregate command) {
@@ -35,7 +36,8 @@ public class SimpleAggregate {
         }
     }
 
-    public static class SimpleAggregateRepository extends Repository<SimpleAggregateRoot, SimpleAggregateId, SimpleAggregateRoot.Attributes> {
+    public static class SimpleAggregateRepository
+    extends AggregateRepository<SimpleAggregateRoot, SimpleAggregateId, SimpleAggregateRoot.Attributes> {
 
         public List<SimpleAggregateRoot> findByData(String data) {
             return wrap(dataAccess().findByData(data));

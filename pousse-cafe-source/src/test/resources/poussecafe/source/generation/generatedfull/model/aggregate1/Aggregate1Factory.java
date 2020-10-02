@@ -3,13 +3,13 @@ package poussecafe.source.generation.generatedfull.model.aggregate1;
 import java.util.Collection;
 import java.util.Optional;
 import poussecafe.discovery.MessageListener;
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.source.generation.generatedfull.commands.Command1;
 import poussecafe.source.generation.generatedfull.commands.Command3;
 import poussecafe.source.generation.generatedfull.commands.Command4;
 import poussecafe.source.generation.generatedfull.process.Process1;
 
-public class Aggregate1Factory extends Factory<Aggregate1Id, Aggregate1, Aggregate1.Attributes> {
+public class Aggregate1Factory extends AggregateFactory<Aggregate1Id, Aggregate1, Aggregate1.Attributes> {
 
     @MessageListener(processes = Process1.class)
     public Aggregate1 process1Listener0(Command1 command) {

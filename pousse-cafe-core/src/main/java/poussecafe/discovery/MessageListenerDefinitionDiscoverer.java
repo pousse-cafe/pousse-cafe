@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.environment.ExpectedEvent;
 import poussecafe.environment.MessageListenerDefinition;
@@ -51,8 +51,8 @@ class MessageListenerDefinitionDiscoverer {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void configureExpectedEvents(Class<?> containerClass, Method method, MessageListenerDefinition.Builder definitionBuilder) {
         List<ProducesEvent> producesEventAnnotations = producesEventAnnotationsOf(method);
-        if(Factory.class.isAssignableFrom(containerClass)) {
-            producesEventAnnotations.addAll(producesEventAnnotationsOfAggregateRootOnAdd((Class<? extends Factory>) containerClass));
+        if(AggregateFactory.class.isAssignableFrom(containerClass)) {
+            producesEventAnnotations.addAll(producesEventAnnotationsOfAggregateRootOnAdd((Class<? extends AggregateFactory>) containerClass));
         }
         boolean withExpectedEvents = !producesEventAnnotations.isEmpty();
         if(withExpectedEvents) {
@@ -83,9 +83,9 @@ class MessageListenerDefinitionDiscoverer {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private List<ProducesEvent> producesEventAnnotationsOfAggregateRootOnAdd(Class<? extends Factory> factoryClass) {
+    private List<ProducesEvent> producesEventAnnotationsOfAggregateRootOnAdd(Class<? extends AggregateFactory> factoryClass) {
         ParameterizedType factoryParametrizedType = (ParameterizedType) factoryClass.getGenericSuperclass();
-        Class<? extends Factory> aggregateRootClass = (Class<? extends Factory>) factoryParametrizedType.getActualTypeArguments()[1];
+        Class<? extends AggregateFactory> aggregateRootClass = (Class<? extends AggregateFactory>) factoryParametrizedType.getActualTypeArguments()[1];
         try {
             Method onAddMethod = aggregateRootClass.getDeclaredMethod("onAdd");
             return producesEventAnnotationsOf(onAddMethod);
@@ -96,8 +96,8 @@ class MessageListenerDefinitionDiscoverer {
 
     private boolean isAggregateRootOrAggregateService(Class<?> containerClass) {
         return (AggregateRoot.class.isAssignableFrom(containerClass)
-                || Factory.class.isAssignableFrom(containerClass)
-                || Repository.class.isAssignableFrom(containerClass));
+                || AggregateFactory.class.isAssignableFrom(containerClass)
+                || AggregateRepository.class.isAssignableFrom(containerClass));
     }
 
     private Optional<String> customId(String id) {

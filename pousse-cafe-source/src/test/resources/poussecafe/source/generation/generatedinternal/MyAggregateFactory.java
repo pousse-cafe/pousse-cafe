@@ -1,6 +1,6 @@
 package poussecafe.source.generation.generatedinternal;
 
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
-public class MyAggregateFactory extends Factory<MyAggregateId, MyAggregate, MyAggregate.Attributes> {
+public class MyAggregateFactory extends AggregateFactory<MyAggregateId, MyAggregate, MyAggregate.Attributes> {
 }

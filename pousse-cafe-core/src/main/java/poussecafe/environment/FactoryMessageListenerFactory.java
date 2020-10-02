@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
@@ -43,7 +43,7 @@ public class FactoryMessageListenerFactory {
     }
 
     public MessageListener buildMessageListener(MessageListenerDefinition definition) {
-        Factory target = environment.factory(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
+        AggregateFactory target = environment.factory(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         Optional<String> collisionSpace = definition.collisionSpace();
         if(collisionSpace.isEmpty()) {
             collisionSpace = Optional.of(target.entityClass().getName());
@@ -58,7 +58,7 @@ public class FactoryMessageListenerFactory {
 
     private Environment environment;
 
-    private MessageConsumer buildFactoryListenerConsumer(Factory factory, MessageListenerDefinition definition) {
+    private MessageConsumer buildFactoryListenerConsumer(AggregateFactory factory, MessageListenerDefinition definition) {
         Class entityClass = factory.entityClass();
         AggregateServices aggregateServices = environment.aggregateServicesOf(entityClass).orElseThrow(PousseCafeException::new);
         Method method = definition.method();

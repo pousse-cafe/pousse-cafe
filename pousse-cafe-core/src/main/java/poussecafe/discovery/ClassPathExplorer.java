@@ -14,13 +14,13 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
-import poussecafe.domain.Factory;
 import poussecafe.domain.Module;
-import poussecafe.domain.Repository;
 import poussecafe.domain.Service;
 import poussecafe.environment.AggregateDefinition;
 import poussecafe.environment.MessageListenerDefinition;
@@ -242,10 +242,10 @@ class ClassPathExplorer {
         getSubTypesOf(AggregateRoot.class)
                 .filter(aggregateClass -> isInModule(aggregateClass, module))
                 .forEach(listenersContainers::add);
-        getSubTypesOf(Factory.class)
+        getSubTypesOf(AggregateFactory.class)
                 .filter(aggregateClass -> isInModule(aggregateClass, module))
                 .forEach(listenersContainers::add);
-        getSubTypesOf(Repository.class)
+        getSubTypesOf(AggregateRepository.class)
                 .filter(aggregateClass -> isInModule(aggregateClass, module))
                 .forEach(listenersContainers::add);
 

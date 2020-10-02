@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
@@ -230,19 +230,19 @@ public class Environment {
         return messageListenerRegistrar.getListeners(messageClass);
     }
 
-    public <F extends Factory<?, ?, ?>> Optional<F> factoryOf(Class<?> aggregateRootClass) {
+    public <F extends AggregateFactory<?, ?, ?>> Optional<F> factoryOf(Class<?> aggregateRootClass) {
         return aggregateServicesOf(aggregateRootClass).map(AggregateServices::factory);
     }
 
-    public <F extends Factory<?, ?, ?>> Optional<F> factory(Class<?> factoryClass) {
+    public <F extends AggregateFactory<?, ?, ?>> Optional<F> factory(Class<?> factoryClass) {
         return factoryOf(entityOfFactoryOrRepository(factoryClass));
     }
 
-    public <R extends Repository<?, ?, ?>> Optional<R> repositoryOf(Class<?> aggregateRootClass) {
+    public <R extends AggregateRepository<?, ?, ?>> Optional<R> repositoryOf(Class<?> aggregateRootClass) {
         return aggregateServicesOf(aggregateRootClass).map(AggregateServices::repository);
     }
 
-    public <R extends Repository<?, ?, ?>> Optional<R> repository(Class<?> repositoryClass) {
+    public <R extends AggregateRepository<?, ?, ?>> Optional<R> repository(Class<?> repositoryClass) {
         return repositoryOf(entityOfFactoryOrRepository(repositoryClass));
     }
 

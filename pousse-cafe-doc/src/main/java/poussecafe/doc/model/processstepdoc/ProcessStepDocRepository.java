@@ -4,9 +4,10 @@ import java.util.List;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc.Attributes;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class ProcessStepDocRepository extends Repository<ProcessStepDoc, ProcessStepDocId, ProcessStepDoc.Attributes> {
+public class ProcessStepDocRepository
+extends AggregateRepository<ProcessStepDoc, ProcessStepDocId, ProcessStepDoc.Attributes> {
 
     public List<ProcessStepDoc> findByDomainProcess(ModuleDocId moduleDocId,
             String processName) {

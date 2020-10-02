@@ -1,7 +1,7 @@
 package poussecafe.sample.test;
 
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
-public class AnAggregateRootFactory extends Factory<AnAggregateRootId, AnAggregateRoot, AnAggregateRoot.Attributes> {
+public class AnAggregateRootFactory extends AggregateFactory<AnAggregateRootId, AnAggregateRoot, AnAggregateRoot.Attributes> {
 
 }

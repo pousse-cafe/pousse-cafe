@@ -2,7 +2,7 @@ package poussecafe.source.generation;
 
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
@@ -18,7 +18,7 @@ public class AggregateRepositoryEditor {
         if(compilationUnitEditor.isNew()) {
             compilationUnitEditor.setPackage(aggregate.packageName());
 
-            compilationUnitEditor.addImport(Repository.class.getCanonicalName());
+            compilationUnitEditor.addImport(AggregateRepository.class.getCanonicalName());
 
             var typeEditor = compilationUnitEditor.typeDeclaration();
             typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
@@ -36,7 +36,7 @@ public class AggregateRepositoryEditor {
     private Aggregate aggregate;
 
     private ParameterizedType repositoryType() {
-        var parametrizedType = ast.newParameterizedType(Repository.class);
+        var parametrizedType = ast.newParameterizedType(AggregateRepository.class);
 
         SimpleType aggregateRootType = ast.newSimpleType(
                 NamingConventions.aggregateRootTypeName(aggregate).getIdentifier());

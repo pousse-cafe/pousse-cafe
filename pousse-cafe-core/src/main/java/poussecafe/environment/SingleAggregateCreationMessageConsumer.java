@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Repository;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
 import poussecafe.messaging.Message;
@@ -80,7 +80,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
             AggregateRoot aggregate = newAggregate(message);
             if(aggregate != null) {
                 Class entityClass = aggregateServices.aggregateRootEntityClass();
-                Repository repository = aggregateServices.repository();
+                AggregateRepository repository = aggregateServices.repository();
                 TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
                 Object identifier = state.messageListenersGroup().aggregateId(aggregate);
                 reportBuilder.runAndReport(state, identifier, () -> addCreatedAggregate(transactionRunner, repository, aggregate));
@@ -119,7 +119,7 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
     private AggregateServices aggregateServices;
 
     private void addCreatedAggregate(TransactionRunner transactionRunner,
-            Repository repository,
+            AggregateRepository repository,
             AggregateRoot aggregate) {
         transactionRunner.runInTransaction(() -> repository.add(aggregate));
     }

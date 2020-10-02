@@ -1,9 +1,9 @@
 package poussecafe.doc.model.processstepdoc;
 
 import poussecafe.doc.model.ModuleComponentDoc;
-import poussecafe.domain.Factory;
+import poussecafe.domain.AggregateFactory;
 
-public class ProcessStepDocFactory extends Factory<ProcessStepDocId, ProcessStepDoc, ProcessStepDoc.Attributes> {
+public class ProcessStepDocFactory extends AggregateFactory<ProcessStepDocId, ProcessStepDoc, ProcessStepDoc.Attributes> {
 
     public ProcessStepDoc createMessageListenerDoc(
             ProcessStepDocId id,

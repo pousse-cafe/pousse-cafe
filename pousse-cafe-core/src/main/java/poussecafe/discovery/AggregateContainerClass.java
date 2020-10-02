@@ -3,9 +3,9 @@ package poussecafe.discovery;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import poussecafe.domain.AggregateFactory;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.domain.Factory;
-import poussecafe.domain.Repository;
 
 import static java.util.stream.Collectors.toList;
 
@@ -39,10 +39,10 @@ public class AggregateContainerClass {
     }
 
     public Class<?> factoryClass() {
-        return innerClassAssignableFrom(Factory.class);
+        return innerClassAssignableFrom(AggregateFactory.class);
     }
 
     public Class<?> repositoryClass() {
-        return innerClassAssignableFrom(Repository.class);
+        return innerClassAssignableFrom(AggregateRepository.class);
     }
 }

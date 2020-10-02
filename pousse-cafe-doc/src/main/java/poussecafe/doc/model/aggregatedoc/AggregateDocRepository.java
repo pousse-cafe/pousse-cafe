@@ -2,9 +2,10 @@ package poussecafe.doc.model.aggregatedoc;
 
 import java.util.List;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class AggregateDocRepository extends Repository<AggregateDoc, AggregateDocId, AggregateDoc.Attributes> {
+public class AggregateDocRepository
+extends AggregateRepository<AggregateDoc, AggregateDocId, AggregateDoc.Attributes> {
 
     public List<AggregateDoc> findByModule(ModuleDocId id) {
         return wrap(dataAccess().findByModuleId(id));

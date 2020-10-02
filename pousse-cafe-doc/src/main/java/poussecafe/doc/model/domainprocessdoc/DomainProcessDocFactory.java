@@ -13,12 +13,12 @@ import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
-import poussecafe.domain.Factory;
 import poussecafe.domain.Process;
 import poussecafe.process.DomainProcess;
 
-public class DomainProcessDocFactory extends Factory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
+public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
     public DomainProcessDoc newDomainProcessDoc(ModuleDocId moduleDocId, TypeElement doc) {
         if(!isDomainProcessDoc(doc)) {

@@ -5,11 +5,11 @@ import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.ComponentDocFactory;
+import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
-import poussecafe.domain.Factory;
 import poussecafe.domain.Module;
 
-public class ModuleDocFactory extends Factory<ModuleDocId, ModuleDoc, ModuleDoc.Attributes> {
+public class ModuleDocFactory extends AggregateFactory<ModuleDocId, ModuleDoc, ModuleDoc.Attributes> {
 
     @Deprecated(since = "0.17")
     public ModuleDoc newModuleDoc(PackageElement packageDoc) {

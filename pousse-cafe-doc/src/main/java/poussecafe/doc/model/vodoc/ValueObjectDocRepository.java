@@ -1,9 +1,9 @@
 package poussecafe.doc.model.vodoc;
 
 import java.util.List;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class ValueObjectDocRepository extends Repository<ValueObjectDoc, ValueObjectDocId, ValueObjectDoc.Attributes> {
+public class ValueObjectDocRepository extends AggregateRepository<ValueObjectDoc, ValueObjectDocId, ValueObjectDoc.Attributes> {
 
     public List<ValueObjectDoc> findAll() {
         return wrap(dataAccess().findAll());

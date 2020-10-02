@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import poussecafe.apm.ApmSpan;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.exception.RetryOperationException;
 import poussecafe.exception.SameOperationException;
@@ -50,7 +50,7 @@ public class RepositoryMessageListenerFactory {
 
     public MessageListener buildMessageListener(MessageListenerDefinition definition) {
         Method method = definition.method();
-        Repository repository = environment.repository(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
+        AggregateRepository repository = environment.repository(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         Class<?> entityClass = repository.entityClass();
         MethodInvoker invoker = new MethodInvoker.Builder()
                 .method(method)

@@ -1,7 +1,8 @@
 package poussecafe.sample.test;
 
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class AnotherAggregateRootRepository extends Repository<AnotherAggregateRoot, AnotherAggregateRootId, AnotherAggregateRoot.Attributes> {
+public class AnotherAggregateRootRepository
+extends AggregateRepository<AnotherAggregateRoot, AnotherAggregateRootId, AnotherAggregateRoot.Attributes> {
 
 }

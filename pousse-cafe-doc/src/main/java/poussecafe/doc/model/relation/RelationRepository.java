@@ -1,9 +1,9 @@
 package poussecafe.doc.model.relation;
 
 import java.util.List;
-import poussecafe.domain.Repository;
+import poussecafe.domain.AggregateRepository;
 
-public class RelationRepository extends Repository<Relation, RelationId, Relation.Attributes> {
+public class RelationRepository extends AggregateRepository<Relation, RelationId, Relation.Attributes> {
 
     public List<Relation> findWithFromClassName(String className) {
         return wrap(dataAccess().findWithFromClass(className));
