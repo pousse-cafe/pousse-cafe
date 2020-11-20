@@ -5,7 +5,7 @@ import java.util.Optional;
 import poussecafe.domain.AggregateRepository;
 
 public class ModuleDocRepository
-extends AggregateRepository<ModuleDoc, ModuleDocId, ModuleDoc.Attributes> {
+extends AggregateRepository<ModuleDocId, ModuleDoc, ModuleDoc.Attributes> {
 
     public List<ModuleDoc> findAll() {
         return wrap(dataAccess().findAll());

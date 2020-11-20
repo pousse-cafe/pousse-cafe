@@ -35,9 +35,11 @@ factoryConsumption :
         ( aggregateRoot '[' 'onAdd' ']' ':' eventProductions )?
     ;
 
-factoryListener : 'F' '{' factoryName=NAME '}' '[' listenerName=NAME ']' ( optional='#' | serveral='+' )? ;
+factoryListener : 'F' '{' ( simpleFactoryName=NAME | qualifiedFactoryName=qualifiedName ) '}' '[' listenerName=NAME ']' ( optional='#' | serveral='+' )? ;
 
-aggregateRoot : '@' NAME ;
+qualifiedName : qualifier=NAME '.' name=NAME ;
+
+aggregateRoot : '@' ( simpleRootName=NAME | qualifiedRootName=qualifiedName ) ;
 
 eventProductions : eventProduction+ ':.' ;
 
@@ -53,7 +55,7 @@ aggregateRootConsumption :
     ;
 
 repositoryConsumption :
-    'Re' '{' repositoryName=NAME '}' '[' listenerName=NAME ']'
+    'Re' '{' ( simpleRepositoryName=NAME | qualifiedRepositoryName=qualifiedName ) '}' '[' listenerName=NAME ']'
         ( aggregateRoot '[' 'onDelete' ']' ':' eventProductions )?
     ;
 

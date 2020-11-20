@@ -4,10 +4,8 @@ import java.util.List;
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRepository;
 
-import static org.apache.commons.lang3.StringUtils.wrap;
-
 public class SimpleAggregateRepository
-extends AggregateRepository<SimpleAggregate, SimpleAggregateId, SimpleAggregate.Attributes> {
+extends AggregateRepository<SimpleAggregateId, SimpleAggregate, SimpleAggregate.Attributes> {
 
     @MessageListener
     public void delete(TestDomainEvent4 event) {

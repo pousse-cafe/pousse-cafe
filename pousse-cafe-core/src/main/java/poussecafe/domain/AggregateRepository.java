@@ -13,7 +13,7 @@ import poussecafe.storage.MessageCollection;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class AggregateRepository<A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> {
+public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D extends EntityAttributes<K>> {
 
     @SuppressWarnings("unchecked")
     public void setEntityClass(Class<?> entityClass) {

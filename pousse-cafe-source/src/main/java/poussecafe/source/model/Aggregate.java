@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import poussecafe.source.analysis.ResolvedTypeName;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +25,24 @@ public class Aggregate extends ComponentWithType {
 
     private Set<ProducedEvent> onDeleteProducedEvents = new HashSet<>();
 
+    public boolean innerFactory() {
+        return innerFactory;
+    }
+
+    private boolean innerFactory;
+
+    public boolean innerRoot() {
+        return innerRoot;
+    }
+
+    private boolean innerRoot;
+
+    public boolean innerRepository() {
+        return innerRepository;
+    }
+
+    private boolean innerRepository;
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
@@ -33,13 +50,12 @@ public class Aggregate extends ComponentWithType {
         public Aggregate build() {
             requireNonNull(aggregate.name);
             requireNonNull(aggregate.packageName);
-            return aggregate;
-        }
 
-        public Builder name(ResolvedTypeName name) {
-            aggregate.name = name.simpleName();
-            aggregate.packageName = name.packageName();
-            return this;
+            aggregate.innerFactory = innerFactory.orElseThrow().booleanValue();
+            aggregate.innerRoot = innerRoot.orElseThrow().booleanValue();
+            aggregate.innerRepository = innerRepository.orElseThrow().booleanValue();
+
+            return aggregate;
         }
 
         public Optional<String> name() {
@@ -51,6 +67,11 @@ public class Aggregate extends ComponentWithType {
             aggregate.packageName = other.packageName;
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
             aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
+
+            innerFactory = Optional.of(other.innerFactory);
+            innerRoot = Optional.of(other.innerRoot);
+            innerRepository = Optional.of(other.innerRepository);
+
             return this;
         }
 
@@ -76,6 +97,51 @@ public class Aggregate extends ComponentWithType {
 
         public Builder packageName(String packageName) {
             aggregate.packageName = packageName;
+            return this;
+        }
+
+        public Builder innerFactory(boolean inner) {
+            consistentLocationOrElseThrow(innerFactory, inner, "factory");
+            innerFactory = Optional.of(inner);
+            return this;
+        }
+
+        private void consistentLocationOrElseThrow(Optional<Boolean> inner, boolean newValue, String componentName) {
+            if(inner.isPresent()
+                    && inner.get().booleanValue() != newValue) {
+                throw new IllegalArgumentException("Inconsistent " + componentName + " location for aggregate "
+                    + aggregate.name + ": must be in a container or not");
+            }
+        }
+
+        private Optional<Boolean> innerFactory = Optional.empty();
+
+        public Builder innerRoot(boolean inner) {
+            consistentLocationOrElseThrow(innerRoot, inner, "root");
+            innerRoot = Optional.of(inner);
+            return this;
+        }
+
+        private Optional<Boolean> innerRoot = Optional.empty();
+
+        public Builder innerRepository(boolean inner) {
+            consistentLocationOrElseThrow(innerRepository, inner, "repository");
+            innerRepository = Optional.of(inner);
+            return this;
+        }
+
+        private Optional<Boolean> innerRepository = Optional.empty();
+
+        public Builder ensureDefaultLocations() {
+            if(innerFactory.isEmpty()) {
+                innerFactory(false);
+            }
+            if(innerRoot.isEmpty()) {
+                innerRoot(false);
+            }
+            if(innerRepository.isEmpty()) {
+                innerRepository(false);
+            }
             return this;
         }
     }

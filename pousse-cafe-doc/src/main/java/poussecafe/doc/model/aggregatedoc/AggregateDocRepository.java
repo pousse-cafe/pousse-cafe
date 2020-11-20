@@ -5,7 +5,7 @@ import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.AggregateRepository;
 
 public class AggregateDocRepository
-extends AggregateRepository<AggregateDoc, AggregateDocId, AggregateDoc.Attributes> {
+extends AggregateRepository<AggregateDocId, AggregateDoc, AggregateDoc.Attributes> {
 
     public List<AggregateDoc> findByModule(ModuleDocId id) {
         return wrap(dataAccess().findByModuleId(id));

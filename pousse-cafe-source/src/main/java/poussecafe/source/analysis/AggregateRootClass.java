@@ -19,7 +19,11 @@ public class AggregateRootClass {
 
     private ResolvedTypeName name;
 
-    public ResolvedTypeName aggregateName() {
-        return name;
+    public String aggregateName() {
+        if(name.resolvedClass().getDeclaringClass() == null) {
+            return name.simpleName();
+        } else {
+            return name.resolvedClass().getDeclaringClass().getSimpleName();
+        }
     }
 }

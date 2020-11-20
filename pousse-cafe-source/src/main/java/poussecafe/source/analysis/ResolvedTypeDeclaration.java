@@ -77,6 +77,10 @@ public class ResolvedTypeDeclaration {
                 .build();
     }
 
+    public TypeDeclaration typeDeclaration() {
+        return declaration;
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();

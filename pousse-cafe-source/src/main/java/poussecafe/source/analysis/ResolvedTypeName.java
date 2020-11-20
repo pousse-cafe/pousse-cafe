@@ -10,6 +10,10 @@ public class ResolvedTypeName {
 
     private Class<?> resolvedClass;
 
+    public Class<?> resolvedClass() {
+        return resolvedClass;
+    }
+
     public boolean isClass(Class<?> expectedClass) {
         return expectedClass.equals(resolvedClass);
     }

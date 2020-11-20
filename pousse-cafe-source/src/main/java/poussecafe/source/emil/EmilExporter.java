@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
@@ -204,7 +205,8 @@ public class EmilExporter {
     }
 
     private void appendFactoryName(MessageListener listener) {
-        builder.appendFactoryIdentifier(listener.container().containerIdentifier());
+        var factoryIdentifier = listener.container().containerIdentifier();
+        builder.appendFactoryIdentifier(factoryIdentifier);
         builder.appendInlineNote(listener.methodName());
         ProductionType productionType = listener.productionType().orElseThrow();
         if(productionType == ProductionType.OPTIONAL) {
@@ -223,7 +225,12 @@ public class EmilExporter {
             builder.indent();
 
             var aggregateName = listener.container().aggregateName().orElseThrow();
-            builder.appendAggregateIdentifier(aggregateName);
+            if(listener.container().isQualifiedIdentifier()) {
+                builder.appendAggregateIdentifier(aggregateName + "." + NamingConventions.innerRootClassName());
+            } else {
+                builder.appendAggregateIdentifier(aggregateName);
+            }
+
             builder.appendInlineNote(hookName);
             appendAggregateMessageConsumptions(hookProducedEvents);
 
@@ -232,13 +239,11 @@ public class EmilExporter {
     }
 
     private Optional<String> consumedByExternalNote(ProducedEvent producedEvent) {
-        Optional<String> note;
         if(producedEvent.consumedByExternal().isEmpty()) {
-            note = Optional.empty();
+            return Optional.empty();
         } else {
-            note = Optional.of(producedEvent.consumedByExternal().stream().collect(joining(", ")));
+            return Optional.of(producedEvent.consumedByExternal().stream().collect(joining(", ")));
         }
-        return note;
     }
 
     private void appendRepositoryListener(MessageListener listener) {
@@ -255,7 +260,8 @@ public class EmilExporter {
     }
 
     private void appendRepositoryName(MessageListener listener) {
-        builder.appendRepositoryIdentifier(listener.container().containerIdentifier());
+        var repositoryIdentifier = listener.container().containerIdentifier();
+        builder.appendRepositoryIdentifier(repositoryIdentifier);
         builder.appendInlineNote(listener.methodName());
         builder.appendNewLine();
     }
@@ -282,7 +288,8 @@ public class EmilExporter {
         builder.appendNewLine();
         builder.incrementIndent();
         builder.indent();
-        builder.appendAggregateIdentifier(listener.container().aggregateName().orElseThrow());
+        var aggregateName = listener.container().containerIdentifier();
+        builder.appendAggregateIdentifier(aggregateName);
         builder.appendInlineNote(listener.methodName());
     }
 

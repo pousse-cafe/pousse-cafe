@@ -3,10 +3,8 @@ package poussecafe.doc.model.entitydoc;
 import java.util.List;
 import poussecafe.domain.AggregateRepository;
 
-import static org.apache.commons.lang3.StringUtils.wrap;
-
 public class EntityDocRepository
-extends AggregateRepository<EntityDoc, EntityDocId, EntityDoc.Attributes> {
+extends AggregateRepository<EntityDocId, EntityDoc, EntityDoc.Attributes> {
 
     public List<EntityDoc> findAll() {
         return wrap(dataAccess().findAll());

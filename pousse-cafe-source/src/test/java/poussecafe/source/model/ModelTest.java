@@ -41,15 +41,16 @@ public class ModelTest {
                 .name("Event1")
                 .packageName(packageName)
                 .build());
-        currentModel.putAggregate(new Aggregate.Builder()
+        currentModel.addAggregate(new Aggregate.Builder()
                 .name("Aggregate1")
                 .packageName(packageName)
+                .ensureDefaultLocations()
                 .build());
         currentModel.addMessageListener(new MessageListener.Builder()
                 .withContainer(new MessageListenerContainer.Builder()
                         .type(MessageListenerContainerType.ROOT)
                         .aggregateName("Aggregate1")
-                        .containerIdentifier("Aggregate1")
+                        .containerIdentifier("Aggregate1Factory")
                         .build())
                 .withMethodName("method")
                 .withConsumedMessage(new Message.Builder()

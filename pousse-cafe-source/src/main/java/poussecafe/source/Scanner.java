@@ -13,14 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.source.analysis.ResolutionException;
 import poussecafe.source.model.Model;
+import poussecafe.source.model.ModelBuilder;
 
 public class Scanner {
 
     public Model model() {
-        return model;
+        return model.build();
     }
 
-    private Model model = new Model();
+    private ModelBuilder model = new ModelBuilder();
 
     public void includeTree(Path sourceDirectory) throws IOException {
         Files.walkFileTree(sourceDirectory, new JavaSourceFileVisitor(this));

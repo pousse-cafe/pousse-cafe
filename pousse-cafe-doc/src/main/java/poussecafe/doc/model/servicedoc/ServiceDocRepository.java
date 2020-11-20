@@ -4,7 +4,7 @@ import java.util.List;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.AggregateRepository;
 
-public class ServiceDocRepository extends AggregateRepository<ServiceDoc, ServiceDocId, ServiceDoc.Attributes> {
+public class ServiceDocRepository extends AggregateRepository<ServiceDocId, ServiceDoc, ServiceDoc.Attributes> {
 
     public List<ServiceDoc> findByModuleId(ModuleDocId id) {
         return wrap(dataAccess().findByModuleDocId(id));

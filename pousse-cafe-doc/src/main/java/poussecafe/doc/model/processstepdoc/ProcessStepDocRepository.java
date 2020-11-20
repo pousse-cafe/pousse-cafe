@@ -7,7 +7,7 @@ import poussecafe.doc.model.processstepdoc.ProcessStepDoc.Attributes;
 import poussecafe.domain.AggregateRepository;
 
 public class ProcessStepDocRepository
-extends AggregateRepository<ProcessStepDoc, ProcessStepDocId, ProcessStepDoc.Attributes> {
+extends AggregateRepository<ProcessStepDocId, ProcessStepDoc, ProcessStepDoc.Attributes> {
 
     public List<ProcessStepDoc> findByDomainProcess(ModuleDocId moduleDocId,
             String processName) {

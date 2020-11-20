@@ -28,6 +28,10 @@ public class MessageListenerContainer {
 
     private String containerIdentifier;
 
+    public boolean isQualifiedIdentifier() {
+        return containerIdentifier.indexOf('.', 0) != -1;
+    }
+
     public static class Builder {
 
         private MessageListenerContainer container = new MessageListenerContainer();
@@ -73,7 +77,9 @@ public class MessageListenerContainer {
         } else if(type == MessageListenerContainerType.ROOT) {
             builder.append("@");
         }
+
         builder.append(containerIdentifier);
+
         if(type == MessageListenerContainerType.FACTORY
                 || type == MessageListenerContainerType.REPOSITORY) {
             builder.append("}");

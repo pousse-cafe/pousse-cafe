@@ -174,7 +174,7 @@ public class TestRuntimeWrapper {
     @Deprecated(since = "0.18.0")
     public <T extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>> Optional<T> getOptional(Class<T> entityClass,
             K id) {
-        AggregateRepository<AggregateRoot<K, D>, K, D> repository = (AggregateRepository<AggregateRoot<K, D>, K, D>) runtime
+        AggregateRepository<K, AggregateRoot<K, D>, D> repository = (AggregateRepository<K, AggregateRoot<K, D>, D>) runtime
                 .environment()
                 .repositoryOf(entityClass)
                 .orElseThrow(PousseCafeException::new);

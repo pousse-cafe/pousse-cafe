@@ -5,7 +5,7 @@ import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.AggregateRepository;
 
 public class DomainProcessDocRepository
-extends AggregateRepository<DomainProcessDoc, DomainProcessDocId, DomainProcessDoc.Attributes> {
+extends AggregateRepository<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
     public List<DomainProcessDoc> findAll() {
         return wrap(dataAccess().findAll());

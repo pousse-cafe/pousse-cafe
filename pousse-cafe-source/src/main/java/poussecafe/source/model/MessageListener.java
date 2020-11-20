@@ -64,6 +64,14 @@ public class MessageListener {
 
     private Optional<ProductionType> productionType;
 
+    public boolean isLinkedToAggregate() {
+        return container().aggregateName().isPresent();
+    }
+
+    public String aggregateName() {
+        return container().aggregateName().orElseThrow();
+    }
+
     public static class Builder {
 
         private MessageListener messageListener = new MessageListener();

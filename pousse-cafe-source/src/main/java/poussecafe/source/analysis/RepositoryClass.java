@@ -15,14 +15,18 @@ public class RepositoryClass {
         if(!isRepository(resolvedTypeDeclaration)) {
             throw new IllegalArgumentException();
         }
-        aggregateName = resolvedTypeDeclaration.typeParameter(0);
+        aggregateName = resolvedTypeDeclaration.typeParameter(1);
         className = resolvedTypeDeclaration.name();
     }
 
     private ResolvedTypeName aggregateName;
 
-    public ResolvedTypeName aggregateName() {
-        return aggregateName;
+    public String aggregateName() {
+        if(aggregateName.resolvedClass().getDeclaringClass() == null) {
+            return aggregateName.simpleName();
+        } else {
+            return aggregateName.resolvedClass().getDeclaringClass().getSimpleName();
+        }
     }
 
     private ResolvedTypeName className;

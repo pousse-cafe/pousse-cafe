@@ -5,7 +5,7 @@ package poussecafe.domain;
  */
 @Deprecated(since = "0.24")
 public abstract class Repository<A extends AggregateRoot<K, D>, K, D extends EntityAttributes<K>>
-extends AggregateRepository<A, K, D> {
+extends AggregateRepository<K, A, D> {
 
     /**
      * @deprecated use getOptional instead.

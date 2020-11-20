@@ -7,7 +7,7 @@ import poussecafe.testmodule.TestDomainEvent2;
 import poussecafe.testmodule.TestDomainEvent3;
 
 public class RepositoryWithSingleListener
-extends AggregateRepository<AggregateRootWithSingleListener, String, EntityAttributes<String>> {
+extends AggregateRepository<String, AggregateRootWithSingleListener, EntityAttributes<String>> {
 
     @MessageListener
     @ProducesEvent(value = TestDomainEvent2.class, required = false)

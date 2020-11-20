@@ -1,9 +1,8 @@
 package poussecafe.source.testmodel.model.aggregate3;
 
 import poussecafe.attribute.Attribute;
-import poussecafe.source.testmodel.model.aggregate3.Aggregate3.Aggregate3Root;
 
-public class Aggregate3Attributes implements Aggregate3Root.Attributes {
+public class Aggregate3Attributes implements Aggregate3.Root.Attributes {
 
     @Override
     public Attribute<String> identifier() {

@@ -21,11 +21,15 @@ public class NamingConventions {
 
     private static final String FACTORY_NAME_SUFFIX = "Factory";
 
+    public static String innerFactoryClassName() {
+        return FACTORY_NAME_SUFFIX;
+    }
+
     public static boolean isAggregateFactoryName(String typeName) {
         return typeName.endsWith(FACTORY_NAME_SUFFIX);
     }
 
-    public static String aggregateNameFromFactory(String factoryName) {
+    public static String aggregateNameFromSimpleFactoryName(String factoryName) {
         if(!isAggregateFactoryName(factoryName)) {
             throw new IllegalArgumentException("Given type name is not a factory name");
         }
@@ -45,11 +49,15 @@ public class NamingConventions {
 
     private static final String REPOSITORY_NAME_SUFFIX = "Repository";
 
+    public static String innerRepositoryClassName() {
+        return REPOSITORY_NAME_SUFFIX;
+    }
+
     public static boolean isAggregateRepositoryName(String typeName) {
         return typeName.endsWith(REPOSITORY_NAME_SUFFIX);
     }
 
-    public static String aggregateNameFromRepository(String repositoryName) {
+    public static String aggregateNameFromSimpleRepository(String repositoryName) {
         if(!isAggregateRepositoryName(repositoryName)) {
             throw new IllegalArgumentException("Given type name is not a repository name");
         }
@@ -113,6 +121,12 @@ public class NamingConventions {
     public static String eventsPackageName(String basePackage) {
         return basePackage + ".model.events";
     }
+
+    public static String innerRootClassName() {
+        return ROOT_SUFFIX;
+    }
+
+    private static final String ROOT_SUFFIX = "Root";
 
     private NamingConventions() {
 

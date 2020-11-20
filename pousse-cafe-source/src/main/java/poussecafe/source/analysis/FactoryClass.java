@@ -21,8 +21,12 @@ public class FactoryClass {
 
     private ResolvedTypeName aggregateName;
 
-    public ResolvedTypeName aggregateName() {
-        return aggregateName;
+    public String aggregateName() {
+        if(aggregateName.resolvedClass().getDeclaringClass() == null) {
+            return aggregateName.simpleName();
+        } else {
+            return aggregateName.resolvedClass().getDeclaringClass().getSimpleName();
+        }
     }
 
     private ResolvedTypeName className;

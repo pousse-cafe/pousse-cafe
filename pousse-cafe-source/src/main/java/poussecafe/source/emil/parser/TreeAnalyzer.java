@@ -28,6 +28,7 @@ import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.Model;
+import poussecafe.source.model.ModelBuilder;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.ProductionType;
@@ -61,10 +62,10 @@ public class TreeAnalyzer {
 
     private String processName;
 
-    private Model model = new Model();
+    private ModelBuilder model = new ModelBuilder();
 
     public Model model() {
-        return model;
+        return model.build();
     }
 
     private void analyzeCommandConsumption(CommandConsumptionContext context) {
@@ -115,18 +116,31 @@ public class TreeAnalyzer {
             Message consumedMessage,
             FactoryConsumptionContext factoryConsumption) {
         var factoryListener = factoryConsumption.factoryListener();
-        var factoryName = factoryListener.factoryName.getText();
-        if(!NamingConventions.isAggregateFactoryName(factoryName)) {
-            throw new IllegalStateException("Unexpected factory name " + factoryName);
-        }
-        var aggregateName = NamingConventions.aggregateNameFromFactory(factoryName);
-        var existingAggregate = ensureAggregateExists(aggregateName);
+        var simpleFactoryName = factoryListener.simpleFactoryName;
+        var qualifiedFactoryName = factoryListener.qualifiedFactoryName;
 
+        String aggregateName;
+        String containerIdentifier;
+        if(simpleFactoryName != null) {
+            var simpleFactoryNameString = simpleFactoryName.getText();
+            containerIdentifier = simpleFactoryNameString;
+            if(!NamingConventions.isAggregateFactoryName(simpleFactoryNameString)) {
+                throw new IllegalStateException("Unexpected factory name " + simpleFactoryNameString);
+            }
+            aggregateName = NamingConventions.aggregateNameFromSimpleFactoryName(simpleFactoryNameString);
+        } else if(qualifiedFactoryName != null) {
+            aggregateName = qualifiedFactoryName.qualifier.getText();
+            containerIdentifier = qualifiedFactoryName.getText();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        var existingAggregate = ensureAggregateExists(aggregateName);
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.FACTORY)
-                .containerIdentifier(factoryName)
+                .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(factoryListener.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
@@ -143,11 +157,8 @@ public class TreeAnalyzer {
         }
 
         if(factoryConsumption.eventProductions() != null) {
-            var aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
-
             var producedEvents = producedEvents(factoryConsumption.eventProductions());
-            aggregateBuilder.onAddProducedEvents(producedEvents);
-            model.putAggregate(aggregateBuilder.build());
+            existingAggregate.onAddProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);
@@ -196,18 +207,8 @@ public class TreeAnalyzer {
         }
     }
 
-    private Aggregate ensureAggregateExists(String aggregateName) {
-        var existingAggregate = model.aggregate(aggregateName);
-        if(existingAggregate.isEmpty()) {
-            var aggregate = new Aggregate.Builder()
-                    .name(aggregateName)
-                    .packageName(packageName(aggregateName))
-                    .build();
-            model.putAggregate(aggregate);
-            return aggregate;
-        } else {
-            return existingAggregate.get();
-        }
+    private Aggregate.Builder ensureAggregateExists(String aggregateName) {
+        return model.getAndCreateIfAbsent(aggregateName, packageName(aggregateName));
     }
 
     private String packageName(String aggregateName) {
@@ -240,8 +241,20 @@ public class TreeAnalyzer {
     private void analyzeAggregateRootConsumption(Optional<String> consumesFromExternal,
             Message consumedMessage,
             AggregateRootConsumptionContext aggregateRootConsumption) {
-        var aggregateRootName = aggregateRootConsumption.aggregateRoot().NAME().getText();
-        String aggregateName = aggregateRootName;
+        var simpleName = aggregateRootConsumption.aggregateRoot().simpleRootName;
+        var qualifiedName = aggregateRootConsumption.aggregateRoot().qualifiedRootName;
+
+        String aggregateName;
+        String containerIdentifier;
+        if(simpleName != null) {
+            aggregateName = simpleName.getText();
+            containerIdentifier = simpleName.getText();
+        } else if(qualifiedName != null) {
+            aggregateName = qualifiedName.qualifier.getText();
+            containerIdentifier = qualifiedName.getText();
+        } else {
+            throw new UnsupportedOperationException();
+        }
 
         ensureAggregateExists(aggregateName);
 
@@ -249,7 +262,7 @@ public class TreeAnalyzer {
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.ROOT)
-                .containerIdentifier(aggregateRootName)
+                .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(aggregateRootConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
@@ -273,18 +286,33 @@ public class TreeAnalyzer {
     private void analyzeRepositoryConsumption(Optional<String> consumesFromExternal,
             Message consumedMessage,
             RepositoryConsumptionContext repositoryConsumption) {
-        var repositoryName = repositoryConsumption.repositoryName.getText();
-        if(!NamingConventions.isAggregateRepositoryName(repositoryName)) {
-            throw new IllegalStateException("Unexpected repository name " + repositoryName);
+
+        var simpleRepositoryName = repositoryConsumption.simpleRepositoryName;
+        var qualifiedRepositoryName = repositoryConsumption.qualifiedRepositoryName;
+
+        String aggregateName;
+        String containerIdentifier;
+        if(simpleRepositoryName != null) {
+            var simpleRepositoryNameString = simpleRepositoryName.getText();
+            if(!NamingConventions.isAggregateRepositoryName(simpleRepositoryNameString)) {
+                throw new IllegalStateException("Unexpected repository name " + simpleRepositoryName);
+            }
+            aggregateName = NamingConventions.aggregateNameFromSimpleRepository(simpleRepositoryNameString);
+            containerIdentifier = simpleRepositoryName.getText();
+        } else if(qualifiedRepositoryName != null) {
+            aggregateName = qualifiedRepositoryName.qualifier.getText();
+            containerIdentifier = qualifiedRepositoryName.getText();
+        } else {
+            throw new UnsupportedOperationException();
         }
-        var aggregateName = NamingConventions.aggregateNameFromRepository(repositoryName);
+
         var existingAggregate = ensureAggregateExists(aggregateName);
 
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
                 .type(MessageListenerContainerType.REPOSITORY)
-                .containerIdentifier(repositoryName)
+                .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(repositoryConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
@@ -293,11 +321,8 @@ public class TreeAnalyzer {
         }
 
         if(repositoryConsumption.eventProductions() != null) {
-            var aggregateBuilder = new Aggregate.Builder().startingFrom(existingAggregate);
-
             var producedEvents = producedEvents(repositoryConsumption.eventProductions());
-            aggregateBuilder.onDeleteProducedEvents(producedEvents);
-            model.putAggregate(aggregateBuilder.build());
+            existingAggregate.onDeleteProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);

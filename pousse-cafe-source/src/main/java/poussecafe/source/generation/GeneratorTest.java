@@ -21,6 +21,7 @@ public abstract class GeneratorTest extends GenerationTest {
         aggregate = new Aggregate.Builder()
                 .name("MyAggregate")
                 .packageName(Arrays.stream(packageNameSegments()).collect(joining(".")))
+                .ensureDefaultLocations()
                 .build();
     }
 

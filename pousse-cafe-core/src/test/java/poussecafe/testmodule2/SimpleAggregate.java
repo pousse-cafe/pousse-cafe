@@ -37,7 +37,7 @@ public class SimpleAggregate {
     }
 
     public static class SimpleAggregateRepository
-    extends AggregateRepository<SimpleAggregateRoot, SimpleAggregateId, SimpleAggregateRoot.Attributes> {
+    extends AggregateRepository<SimpleAggregateId, SimpleAggregateRoot, SimpleAggregateRoot.Attributes> {
 
         public List<SimpleAggregateRoot> findByData(String data) {
             return wrap(dataAccess().findByData(data));

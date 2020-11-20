@@ -11,19 +11,31 @@ import java.util.Optional;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
-public class Model {
+public class ModelBuilder {
 
-    void addAggregate(Aggregate source) {
-        aggregates.put(source.simpleName(), source);
+    public Aggregate.Builder getAndCreateIfAbsent(String name, String packageName) {
+        return aggregates.computeIfAbsent(name, key -> newBuilder(key, packageName));
     }
 
-    private Map<String, Aggregate> aggregates = new HashMap<>();
+    private Aggregate.Builder newBuilder(String name, String packageName) {
+        var aggregateBuilder = new Aggregate.Builder();
+        aggregateBuilder.name(name);
+        aggregateBuilder.packageName(packageName);
+        return aggregateBuilder;
+    }
 
-    public Optional<Aggregate> aggregate(String name) {
+    public ModelBuilder putAggregate(Aggregate.Builder source) {
+        aggregates.put(source.name().orElseThrow(), source);
+        return this;
+    }
+
+    private Map<String, Aggregate.Builder> aggregates = new HashMap<>();
+
+    public Optional<Aggregate.Builder> aggregate(String name) {
         return Optional.ofNullable(aggregates.get(name));
     }
 
-    void addProcess(ProcessModel source) {
+    public void addProcess(ProcessModel source) {
         String name = source.simpleName();
         if(!processes.containsKey(name)) {
             processes.put(name, source);
@@ -40,7 +52,7 @@ public class Model {
         return Collections.unmodifiableCollection(processes.values());
     }
 
-    void addMessageListener(MessageListener source) {
+    public void addMessageListener(MessageListener source) {
         listeners.add(source);
     }
 
@@ -63,7 +75,7 @@ public class Model {
         return unmodifiableList(listeners);
     }
 
-    void addCommand(Command command) {
+    public void addCommand(Command command) {
         var existingCommand = commands.get(command.simpleName());
         if(existingCommand != null
                 && !existingCommand.name().equals(command.name())) {
@@ -83,7 +95,7 @@ public class Model {
         return Optional.ofNullable(commands.get(name));
     }
 
-    void addEvent(DomainEvent event) {
+    public void addEvent(DomainEvent event) {
         var existingEvent = events.get(event.simpleName());
         if(existingEvent != null
                 && !existingEvent.name().equals(event.name())) {
@@ -103,65 +115,37 @@ public class Model {
         return Optional.ofNullable(events.get(name));
     }
 
-    public Collection<Aggregate> aggregates() {
-        return Collections.unmodifiableCollection(aggregates.values());
+    public Model build() {
+        var model = new Model();
+        processes.values().forEach(model::addProcess);
+        commands.values().forEach(model::addCommand);
+        events.values().forEach(model::addEvent);
+        setInnerClassFlags();
+        aggregates.values().stream().map(Aggregate.Builder::build).forEach(model::addAggregate);
+        listeners.forEach(model::addMessageListener);
+        return model;
     }
 
-    /**
-     * Fixing package names implies the copy of all components of a given model but keeping
-     * the package names as defined in this model. Only the components in given modal are kept in the
-     * result.
-     *
-     * @param newModel The new model to fix with current model.
-     *
-     * @return A new Model instance being the result of fixing given model if needed with this one.
-     */
-    public Model fixPackageNames(Model newModel) {
-        var fixedModel = new Model();
-        newModel.events.values().stream().map(this::fixEvent).forEach(fixedModel::addEvent);
-        newModel.commands.values().stream().map(this::fixCommand).forEach(fixedModel::addCommand);
-        newModel.processes.values().stream().map(this::fixProcess).forEach(fixedModel::addProcess);
-        newModel.aggregates.values().stream().map(this::fixAggregate).forEach(fixedModel::addAggregate);
-        fixedModel.listeners.addAll(newModel.listeners);
-        return fixedModel;
-    }
-
-    private DomainEvent fixEvent(DomainEvent event) {
-        var thisEvent = events.get(event.name);
-        if(thisEvent != null) {
-            return thisEvent;
-        } else {
-            return event;
+    private void setInnerClassFlags() {
+        for(MessageListener listener : listeners) {
+            if(listener.isLinkedToAggregate()) {
+                var aggregateName = listener.aggregateName();
+                var builder = aggregates.get(aggregateName);
+                if(builder == null) {
+                    throw new IllegalStateException("Listener " + listener.methodName() + " refers to missing aggregate "
+                            + aggregateName);
+                }
+                if(listener.container().type() == MessageListenerContainerType.FACTORY) {
+                    builder.innerFactory(listener.container().isQualifiedIdentifier());
+                } else if(listener.container().type() == MessageListenerContainerType.ROOT) {
+                    builder.innerRoot(listener.container().isQualifiedIdentifier());
+                } else if(listener.container().type() == MessageListenerContainerType.REPOSITORY) {
+                    builder.innerRepository(listener.container().isQualifiedIdentifier());
+                }
+            }
         }
-    }
-
-    private Command fixCommand(Command command) {
-        var thisCommand = commands.get(command.name);
-        if(thisCommand != null) {
-            return thisCommand;
-        } else {
-            return command;
-        }
-    }
-
-    private ProcessModel fixProcess(ProcessModel process) {
-        var thisProcess = processes.get(process.name);
-        if(thisProcess != null) {
-            return thisProcess;
-        } else {
-            return process;
-        }
-    }
-
-    private Aggregate fixAggregate(Aggregate aggregate) {
-        var thisAggregate = aggregates.get(aggregate.simpleName());
-        if(thisAggregate != null) {
-            return new Aggregate.Builder()
-                    .startingFrom(aggregate)
-                    .packageName(thisAggregate.packageName())
-                    .build();
-        } else {
-            return aggregate;
+        for(Aggregate.Builder builder : aggregates.values()) {
+            builder.ensureDefaultLocations();
         }
     }
 }
