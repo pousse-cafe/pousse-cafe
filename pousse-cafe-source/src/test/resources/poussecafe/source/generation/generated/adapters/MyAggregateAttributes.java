@@ -2,10 +2,10 @@ package poussecafe.source.generation.generated.adapters;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.source.generation.generated.MyAggregate;
 import poussecafe.source.generation.generated.MyAggregateId;
+import poussecafe.source.generation.generated.MyAggregateRoot;
 
-public class MyAggregateAttributes implements MyAggregate.Attributes {
+public class MyAggregateAttributes implements MyAggregateRoot.Attributes {
 
     @Override
     public Attribute<MyAggregateId> identifier() {

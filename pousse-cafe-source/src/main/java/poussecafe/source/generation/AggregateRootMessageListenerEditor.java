@@ -1,6 +1,5 @@
 package poussecafe.source.generation;
 
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
@@ -16,7 +15,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
     @Override
     protected MethodDeclarationEditor insertNewListener(TypeDeclarationEditor typeEditor) {
         MethodDeclarationEditor methodEditor;
-        TypeDeclaration attributesType = typeEditor.findTypeDeclarationByName(
+        var attributesType = typeEditor.findTypeDeclarationByName(
                 NamingConventions.ATTRIBUTES_CLASS_NAME).orElseThrow();
         methodEditor = typeEditor.insertNewMethodBefore(attributesType);
         return methodEditor;
@@ -36,6 +35,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.model);
             requireNonNull(editor.messageListener);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -54,6 +54,11 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
 
         public Builder messageListener(MessageListener messageListener) {
             editor.messageListener = messageListener;
+            return this;
+        }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
             return this;
         }
     }

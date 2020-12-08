@@ -2,10 +2,11 @@ package poussecafe.source.generation.generated;
 
 import poussecafe.domain.AggregateRepository;
 
-public class MyAggregateRepository extends AggregateRepository<MyAggregate, MyAggregateId, MyAggregate.Attributes> {
+public class MyAggregateRepository extends
+        AggregateRepository<MyAggregateId, MyAggregateRoot, MyAggregateRoot.Attributes> {
 
     @Override
-    public MyAggregateDataAccess<MyAggregate.Attributes> dataAccess() {
-        return (MyAggregateDataAccess<MyAggregate.Attributes>) super.dataAccess();
+    public MyAggregateDataAccess<MyAggregateRoot.Attributes> dataAccess() {
+        return (MyAggregateDataAccess<MyAggregateRoot.Attributes>) super.dataAccess();
     }
 }

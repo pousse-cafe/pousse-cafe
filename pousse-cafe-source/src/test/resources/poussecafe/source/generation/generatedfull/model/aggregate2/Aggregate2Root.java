@@ -1,7 +1,6 @@
 package poussecafe.source.generation.generatedfull.model.aggregate2;
 
 import poussecafe.discovery.Aggregate;
-import poussecafe.discovery.DefaultModule;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
@@ -12,7 +11,7 @@ import poussecafe.source.generation.generatedfull.model.events.Event6;
 import poussecafe.source.generation.generatedfull.process.Process1;
 
 @Aggregate(factory = Aggregate2Factory.class, repository = Aggregate2Repository.class)
-public class Aggregate2 extends AggregateRoot<Aggregate2Id, Aggregate2.Attributes> {
+public class Aggregate2Root extends AggregateRoot<Aggregate2Id, Aggregate2Root.Attributes> {
 
     @Override
     @ProducesEvent(Event6.class)

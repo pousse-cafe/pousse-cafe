@@ -67,19 +67,9 @@ public class ModifierInsertor {
 
     private Function<ASTNode, InsertionMode> pivotInsertionModeProvider;
 
-    public enum InsertionMode {
-        AFTER,
-        BEFORE
-    }
-
     private ListRewrite listRewrite;
 
     private DefaultInsertionMode defaultInsertionMode;
-
-    public enum DefaultInsertionMode {
-        FIRST,
-        LAST
-    }
 
     private void removeModifiers(List<Modifier> modifiersToReplace) {
         for(Modifier modifier : modifiersToReplace) {

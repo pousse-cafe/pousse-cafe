@@ -22,18 +22,19 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
     @SuppressWarnings("unchecked")
     @Override
     protected void setReturnType(MethodDeclarationEditor methodEditor) {
+        var aggregateRootSimpleTypeName = NamingConventions.aggregateRootTypeName(aggregate).getIdentifier().toString();
         if(messageListener.productionType().isEmpty()
                 || messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
-            methodEditor.setReturnType(ast.newSimpleType(aggregate.simpleName()));
+            methodEditor.setReturnType(ast.newSimpleType(aggregateRootSimpleTypeName));
         } else if(messageListener.productionType().orElse(null) == ProductionType.OPTIONAL) {
             compilationUnitEditor.addImport(Optional.class);
             var optionalType = ast.newParameterizedType(Optional.class);
-            optionalType.typeArguments().add(ast.newSimpleType(aggregate.simpleName()));
+            optionalType.typeArguments().add(ast.newSimpleType(aggregateRootSimpleTypeName));
             methodEditor.setReturnType(optionalType);
         } else if(messageListener.productionType().orElse(null) == ProductionType.SEVERAL) {
             compilationUnitEditor.addImport(Collection.class);
             var collectionType = ast.newParameterizedType(Collection.class);
-            collectionType.typeArguments().add(ast.newSimpleType(aggregate.simpleName()));
+            collectionType.typeArguments().add(ast.newSimpleType(aggregateRootSimpleTypeName));
             methodEditor.setReturnType(collectionType);
         }
     }
@@ -61,6 +62,7 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
             requireNonNull(editor.model);
             requireNonNull(editor.messageListener);
             requireNonNull(editor.aggregate);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -84,6 +86,11 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
 
         public Builder messageListener(MessageListener messageListener) {
             editor.messageListener = messageListener;
+            return this;
+        }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
             return this;
         }
     }

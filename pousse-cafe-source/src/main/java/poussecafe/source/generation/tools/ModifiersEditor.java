@@ -17,8 +17,6 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.generation.tools.ModifierInsertor.DefaultInsertionMode;
-import poussecafe.source.generation.tools.ModifierInsertor.InsertionMode;
 
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;

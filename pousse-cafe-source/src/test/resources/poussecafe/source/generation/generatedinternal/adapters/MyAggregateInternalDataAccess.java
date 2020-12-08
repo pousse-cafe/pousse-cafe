@@ -1,14 +1,14 @@
 package poussecafe.source.generation.generatedinternal.adapters;
 
 import poussecafe.discovery.DataAccessImplementation;
-import poussecafe.source.generation.generatedinternal.MyAggregate;
 import poussecafe.source.generation.generatedinternal.MyAggregateDataAccess;
 import poussecafe.source.generation.generatedinternal.MyAggregateId;
+import poussecafe.source.generation.generatedinternal.MyAggregateRoot;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
 
 @DataAccessImplementation(
-    aggregateRoot = MyAggregate.class,
+    aggregateRoot = MyAggregateRoot.class,
     dataImplementation = MyAggregateAttributes.class,
     storageName = InternalStorage.NAME
 )

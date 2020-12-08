@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import poussecafe.source.Scanner;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.tools.CompilationUnitEditor;
+import poussecafe.source.generation.tools.DefaultInsertionMode;
+import poussecafe.source.generation.tools.InsertionMode;
+import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
@@ -65,12 +71,25 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     public void generate(Aggregate aggregate) {
+        if(aggregate.requiresContainer()) {
+            addAggregateContainer(aggregate);
+        }
         addAggregateId(aggregate);
         addAggregateRoot(aggregate);
         addAggregateDataAccess(aggregate);
         addAggregateFactory(aggregate);
         addAggregateRepository(aggregate);
         addAttributesDefaultImplementation(aggregate);
+    }
+
+    private void addAggregateContainer(Aggregate aggregate) {
+        var typeName = NamingConventions.aggregateContainerTypeName(aggregate);
+        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var aggregateRootEditor = new AggregateContainerEditor.Builder()
+                .compilationUnitEditor(compilationUnitEditor)
+                .aggregate(aggregate)
+                .build();
+        aggregateRootEditor.edit();
     }
 
     private void addAggregateId(Aggregate aggregate) {
@@ -84,13 +103,87 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateRoot(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateRootTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerRoot(),
+                NamingConventions.aggregateRootTypeName(aggregate));
+
+        var pivots = new ArrayList<PivotType>();
+        pivots.add(new PivotType(NamingConventions.innerFactoryClassName(), InsertionMode.AFTER));
+        pivots.add(new PivotType(NamingConventions.innerRepositoryClassName(), InsertionMode.BEFORE));
+
+        var typeEditor = containerOrStanaloneTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerRoot(),
+                NamingConventions.innerRootClassName(),
+                pivots);
+
         var aggregateRootEditor = new AggregateRootEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
+                .typeEditor(typeEditor)
                 .build();
         aggregateRootEditor.edit();
+    }
+
+    private CompilationUnitEditor containerOrStandaloneCompilationUnitEditor(Aggregate aggregate,
+            boolean innerType,
+            Name standaloneTypeName) {
+        if(innerType) {
+            var typeName = NamingConventions.aggregateContainerTypeName(aggregate);
+            return compilationUnitEditor(typeName);
+        } else {
+            return compilationUnitEditor(standaloneTypeName);
+        }
+    }
+
+    private TypeDeclarationEditor containerOrStanaloneTypeDeclarationEditor(
+            CompilationUnitEditor compilationUnitEditor,
+            boolean innerType,
+            String innertTypeName,
+            List<PivotType> pivots) {
+        if(innerType) {
+            var containerClass = compilationUnitEditor.typeDeclaration();
+            return insertNewInnerType(containerClass,
+                    innertTypeName,
+                    pivots);
+        } else {
+            return compilationUnitEditor.typeDeclaration();
+        }
+    }
+
+    private TypeDeclarationEditor insertNewInnerType(
+            TypeDeclarationEditor containerClass,
+            String typeName,
+            List<PivotType> pivots) {
+        var existingRoot = containerClass.findTypeDeclarationByName(typeName);
+        if(existingRoot.isPresent()) {
+            return containerClass.editExistingType(existingRoot.get());
+        } else {
+            for(PivotType pivot : pivots) {
+                var pivotType = containerClass.findTypeDeclarationByName(pivot.name);
+                if(pivotType.isPresent()) {
+                    if(pivot.insertionMode == InsertionMode.AFTER) {
+                        return containerClass.newTypeDeclarationAfter(typeName, pivotType.get());
+                    } else if(pivot.insertionMode == InsertionMode.BEFORE) {
+                        return containerClass.newTypeDeclarationBefore(typeName, pivotType.get());
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            }
+            return containerClass.declaredType(typeName, DefaultInsertionMode.FIRST);
+        }
+    }
+
+    private class PivotType {
+
+        String name;
+
+        InsertionMode insertionMode;
+
+        PivotType(String name, InsertionMode insertionMode) {
+            this.name = name;
+            this.insertionMode = insertionMode;
+        }
     }
 
     private void addAggregateDataAccess(Aggregate aggregate) {
@@ -104,23 +197,47 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateFactory(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateFactoryTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerFactory(),
+                NamingConventions.aggregateFactoryTypeName(aggregate));
+
+        var pivots = new ArrayList<PivotType>();
+        pivots.add(new PivotType(NamingConventions.innerRootClassName(), InsertionMode.BEFORE));
+        pivots.add(new PivotType(NamingConventions.innerRepositoryClassName(), InsertionMode.BEFORE));
+
+        var typeEditor = containerOrStanaloneTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerFactory(),
+                NamingConventions.innerFactoryClassName(),
+                pivots);
+
         var aggregateFactoryEditor = new AggregateFactoryEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
+                .typeEditor(typeEditor)
                 .build();
         aggregateFactoryEditor.edit();
     }
 
     private void addAggregateRepository(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateRepositoryTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
-        var aggregateFactoryEditor = new AggregateRepositoryEditor.Builder()
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerRepository(),
+                NamingConventions.aggregateRepositoryTypeName(aggregate));
+
+        var pivots = new ArrayList<PivotType>();
+        pivots.add(new PivotType(NamingConventions.innerRootClassName(), InsertionMode.AFTER));
+        pivots.add(new PivotType(NamingConventions.innerFactoryClassName(), InsertionMode.AFTER));
+
+        var typeEditor = containerOrStanaloneTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerRepository(),
+                NamingConventions.innerRepositoryClassName(),
+                pivots);
+
+        var aggregateRepositoryEditor = new AggregateRepositoryEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .aggregate(aggregate)
+                .typeEditor(typeEditor)
                 .build();
-        aggregateFactoryEditor.edit();
+        aggregateRepositoryEditor.edit();
     }
 
     private void addAttributesDefaultImplementation(Aggregate aggregate) {
@@ -185,12 +302,17 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
     private void generateHooks(Model model) {
         for(Aggregate aggregate : model.aggregates()) {
-            var typeName = NamingConventions.aggregateRootTypeName(aggregate);
-            var compilationUnitEditor = compilationUnitEditor(typeName);
+            var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                    aggregate.innerRoot(),
+                    NamingConventions.aggregateRootTypeName(aggregate));
+            var typeEditor = stanaloneOrInnerTypeDeclarationEditor(compilationUnitEditor,
+                    aggregate.innerRoot(),
+                    NamingConventions.innerRootClassName());
             var aggregateRootEditor = new AggregateRootHooksEditor.Builder()
                     .compilationUnitEditor(compilationUnitEditor)
                     .aggregate(aggregate)
                     .model(model)
+                    .typeEditor(typeEditor)
                     .build();
             aggregateRootEditor.edit();
         }
@@ -216,14 +338,37 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateAggregateRootListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateRootTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerRoot(),
+                NamingConventions.aggregateRootTypeName(aggregate));
+        var typeEditor = stanaloneOrInnerTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerRoot(),
+                NamingConventions.innerRootClassName());
         var editor = new AggregateRootMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .model(model)
                 .messageListener(listener)
+                .typeEditor(typeEditor)
                 .build();
         editor.edit();
+    }
+
+    private TypeDeclarationEditor stanaloneOrInnerTypeDeclarationEditor(
+            CompilationUnitEditor compilationUnitEditor,
+            boolean innerType,
+            String innertTypeName) {
+        if(innerType) {
+            var containerClass = compilationUnitEditor.typeDeclaration();
+            return innerType(containerClass,
+                    innertTypeName);
+        } else {
+            return compilationUnitEditor.typeDeclaration();
+        }
+    }
+
+    private TypeDeclarationEditor innerType(TypeDeclarationEditor containerClass, String innertTypeName) {
+        var existingRoot = containerClass.findTypeDeclarationByName(innertTypeName);
+        return containerClass.editExistingType(existingRoot.orElseThrow());
     }
 
     private void generateRunner(Model model, MessageListener listener, Aggregate aggregate) {
@@ -240,24 +385,34 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void generateFactoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateFactoryTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerFactory(),
+                NamingConventions.aggregateFactoryTypeName(aggregate));
+        var typeEditor = stanaloneOrInnerTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerFactory(),
+                NamingConventions.innerFactoryClassName());
         var editor = new AggregateFactoryMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .model(model)
                 .messageListener(listener)
                 .aggregate(aggregate)
+                .typeEditor(typeEditor)
                 .build();
         editor.edit();
     }
 
     private void generateRepositoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateRepositoryTypeName(aggregate);
-        var compilationUnitEditor = compilationUnitEditor(typeName);
+        var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
+                aggregate.innerRepository(),
+                NamingConventions.aggregateRepositoryTypeName(aggregate));
+        var typeEditor = stanaloneOrInnerTypeDeclarationEditor(compilationUnitEditor,
+                aggregate.innerRepository(),
+                NamingConventions.innerRepositoryClassName());
         var editor = new AggregateRepositoryMessageListenerEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
                 .model(model)
                 .messageListener(listener)
+                .typeEditor(typeEditor)
                 .build();
         editor.edit();
     }

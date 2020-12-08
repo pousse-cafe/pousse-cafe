@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
+import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
@@ -14,14 +15,16 @@ import static java.util.Objects.requireNonNull;
 public class AggregateFactoryEditor {
 
     public void edit() {
-        if(compilationUnitEditor.isNew()) {
-            compilationUnitEditor.setPackage(aggregate.packageName());
-
+        if(typeEditor.isNewType()) {
             compilationUnitEditor.addImport(AggregateFactory.class.getCanonicalName());
-
-            var typeEditor = compilationUnitEditor.typeDeclaration();
             typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-            typeEditor.setName(NamingConventions.aggregateFactoryTypeName(aggregate));
+
+            if(aggregate.innerFactory()) {
+                typeEditor.modifiers().setStatic(true);
+            } else {
+                compilationUnitEditor.setPackage(aggregate.packageName());
+                typeEditor.setName(NamingConventions.aggregateFactoryTypeName(aggregate));
+            }
 
             var factorySupertype = factorySupertype();
             typeEditor.setSuperclass(factorySupertype);
@@ -58,6 +61,7 @@ public class AggregateFactoryEditor {
         public AggregateFactoryEditor build() {
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.aggregate);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -73,6 +77,11 @@ public class AggregateFactoryEditor {
             editor.aggregate = aggregate;
             return this;
         }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
+            return this;
+        }
     }
 
     private AggregateFactoryEditor() {
@@ -80,6 +89,8 @@ public class AggregateFactoryEditor {
     }
 
     private CompilationUnitEditor compilationUnitEditor;
+
+    private TypeDeclarationEditor typeEditor;
 
     private AstWrapper ast;
 }

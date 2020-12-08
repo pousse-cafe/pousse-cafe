@@ -12,6 +12,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
@@ -82,18 +83,24 @@ public class CompilationUnitEditor {
     }
 
     public TypeDeclarationEditor typeDeclaration() {
-        var existingType = rewrite.compilationUnit().types().stream()
-                .findFirst();
-        if(existingType.isPresent()) {
-            var type = (TypeDeclaration) existingType.get();
-            var nodeRewriter = new NodeRewrite(rewrite.rewrite(), type);
-            return new TypeDeclarationEditor(nodeRewriter, false);
+        if(!rewrite.compilationUnit().types().isEmpty()) {
+            var existingType = (AbstractTypeDeclaration) rewrite.compilationUnit().types().get(0);
+            return editExistingType(existingType);
         } else {
             var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
-            var nodeRewriter = new NodeRewrite(rewrite.rewrite(), newTypeDeclaration);
-            rewrite.listRewrite(CompilationUnit.TYPES_PROPERTY).insertLast(newTypeDeclaration, null);
-            return new TypeDeclarationEditor(nodeRewriter, true);
+            rewrite.listRewrite(CompilationUnit.TYPES_PROPERTY).insertFirst(newTypeDeclaration, null);
+            return editNewType(newTypeDeclaration);
         }
+    }
+
+    private TypeDeclarationEditor editExistingType(AbstractTypeDeclaration existingType) {
+        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), existingType);
+        return new TypeDeclarationEditor(nodeRewriter, false);
+    }
+
+    private TypeDeclarationEditor editNewType(AbstractTypeDeclaration newTypeDeclaration) {
+        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), newTypeDeclaration);
+        return new TypeDeclarationEditor(nodeRewriter, true);
     }
 
     public void flush() {

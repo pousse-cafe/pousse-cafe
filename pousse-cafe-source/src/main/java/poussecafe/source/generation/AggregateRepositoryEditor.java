@@ -6,6 +6,7 @@ import poussecafe.domain.AggregateRepository;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
+import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
@@ -15,14 +16,18 @@ import static java.util.Objects.requireNonNull;
 public class AggregateRepositoryEditor {
 
     public void edit() {
-        if(compilationUnitEditor.isNew()) {
-            compilationUnitEditor.setPackage(aggregate.packageName());
+        if(typeEditor.isNewType()) {
+            if(aggregate.innerRepository()) {
+                typeEditor.modifiers().setStatic(true);
+                typeEditor.setName(NamingConventions.innerRepositoryClassName());
+            } else {
+                compilationUnitEditor.setPackage(aggregate.packageName());
+                typeEditor.setName(NamingConventions.aggregateRepositoryTypeName(aggregate));
+            }
 
             compilationUnitEditor.addImport(AggregateRepository.class.getCanonicalName());
 
-            var typeEditor = compilationUnitEditor.typeDeclaration();
             typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-            typeEditor.setName(NamingConventions.aggregateRepositoryTypeName(aggregate));
 
             var repositoryType = repositoryType();
             typeEditor.setSuperclass(repositoryType);
@@ -38,11 +43,11 @@ public class AggregateRepositoryEditor {
     private ParameterizedType repositoryType() {
         var parametrizedType = ast.newParameterizedType(AggregateRepository.class);
 
+        parametrizedType.typeArguments().add(aggregateIdentifierType());
+
         SimpleType aggregateRootType = ast.newSimpleType(
                 NamingConventions.aggregateRootTypeName(aggregate).getIdentifier());
         parametrizedType.typeArguments().add(aggregateRootType);
-
-        parametrizedType.typeArguments().add(aggregateIdentifierType());
 
         var attributesTypeName = NamingConventions.aggregateAttributesQualifiedTypeName(aggregate);
         var attributesType = ast.newSimpleType(attributesTypeName);
@@ -89,6 +94,7 @@ public class AggregateRepositoryEditor {
         public AggregateRepositoryEditor build() {
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.aggregate);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -104,6 +110,11 @@ public class AggregateRepositoryEditor {
             editor.aggregate = aggregate;
             return this;
         }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
+            return this;
+        }
     }
 
     private AggregateRepositoryEditor() {
@@ -111,6 +122,8 @@ public class AggregateRepositoryEditor {
     }
 
     private CompilationUnitEditor compilationUnitEditor;
+
+    private TypeDeclarationEditor typeEditor;
 
     private AstWrapper ast;
 }

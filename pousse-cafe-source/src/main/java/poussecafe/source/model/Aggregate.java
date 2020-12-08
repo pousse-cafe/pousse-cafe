@@ -43,6 +43,12 @@ public class Aggregate extends ComponentWithType {
 
     private boolean innerRepository;
 
+    public boolean requiresContainer() {
+        return innerFactory
+                || innerRoot
+                || innerRepository;
+    }
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
@@ -133,14 +139,20 @@ public class Aggregate extends ComponentWithType {
         private Optional<Boolean> innerRepository = Optional.empty();
 
         public Builder ensureDefaultLocations() {
+            boolean aPrioriInnerFactory = innerFactory.isPresent() && innerFactory.get().booleanValue();
+            boolean aPrioriInnerRoot = innerRoot.isPresent() && innerRoot.get().booleanValue();
+            boolean aPrioriInnerRepository = innerRepository.isPresent() && innerRepository.get().booleanValue();
+            boolean noAPriori = innerFactory.isEmpty()
+                    && innerRoot.isEmpty()
+                    && !innerRepository.isEmpty();
             if(innerFactory.isEmpty()) {
-                innerFactory(false);
+                innerFactory(noAPriori || (aPrioriInnerRoot || aPrioriInnerRepository));
             }
             if(innerRoot.isEmpty()) {
-                innerRoot(false);
+                innerRoot(noAPriori || (aPrioriInnerFactory || aPrioriInnerRepository));
             }
             if(innerRepository.isEmpty()) {
-                innerRepository(false);
+                innerRepository(noAPriori || (aPrioriInnerFactory || aPrioriInnerRoot));
             }
             return this;
         }

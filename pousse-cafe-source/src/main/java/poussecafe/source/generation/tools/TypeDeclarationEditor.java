@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
@@ -35,28 +36,59 @@ public class TypeDeclarationEditor {
     }
 
     public InnerTypeDeclarationEditor declaredType(String name) {
+        return declaredType(name, DefaultInsertionMode.LAST);
+    }
+
+    public InnerTypeDeclarationEditor declaredType(String name, DefaultInsertionMode insertionMode) {
         var existingTypeDeclaration = findTypeDeclarationByName(name);
         if(existingTypeDeclaration.isPresent()) {
-            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), existingTypeDeclaration.get()),
-                    this, false);
+            return editExistingType(existingTypeDeclaration.get());
         } else {
             var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
-            newTypeDeclaration.setName(rewrite.ast().newSimpleName(name));
-            rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newTypeDeclaration, null);
-            return new InnerTypeDeclarationEditor(new NodeRewrite(rewrite.rewrite(), newTypeDeclaration), this, true);
+            if(insertionMode == DefaultInsertionMode.LAST) {
+                rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newTypeDeclaration, null);
+            } else if(insertionMode == DefaultInsertionMode.FIRST) {
+                rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertFirst(newTypeDeclaration, null);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+            return editNewType(name, newTypeDeclaration);
         }
     }
 
-    public Optional<TypeDeclaration> findTypeDeclarationByName(String name) {
-        for(Object declaration : typeDeclaration.bodyDeclarations()) {
-            if(declaration instanceof TypeDeclaration) {
-                TypeDeclaration typeDeclaration = (TypeDeclaration) declaration;
-                if(typeDeclaration.getName().getIdentifier().equals(name)) {
-                    return Optional.of(typeDeclaration);
+    public Optional<AbstractTypeDeclaration> findTypeDeclarationByName(String name) {
+        for(Object declarationObject : typeDeclaration.bodyDeclarations()) {
+            if(declarationObject instanceof TypeDeclaration) {
+                TypeDeclaration declaration = (TypeDeclaration) declarationObject;
+                if(declaration.getName().getIdentifier().equals(name)) {
+                    return Optional.of(declaration);
                 }
             }
         }
         return Optional.empty();
+    }
+
+    public InnerTypeDeclarationEditor editExistingType(AbstractTypeDeclaration existingType) {
+        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), existingType);
+        return new InnerTypeDeclarationEditor(nodeRewriter, this, false);
+    }
+
+    private InnerTypeDeclarationEditor editNewType(String typeName, AbstractTypeDeclaration newTypeDeclaration) {
+        newTypeDeclaration.setName(rewrite.ast().newSimpleName(typeName));
+        var nodeRewriter = new NodeRewrite(rewrite.rewrite(), newTypeDeclaration);
+        return new InnerTypeDeclarationEditor(nodeRewriter, this, true);
+    }
+
+    public InnerTypeDeclarationEditor newTypeDeclarationBefore(String typeName, AbstractTypeDeclaration nextType) {
+        var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertBefore(newTypeDeclaration, nextType, null);
+        return editNewType(typeName, newTypeDeclaration);
+    }
+
+    public InnerTypeDeclarationEditor newTypeDeclarationAfter(String typeName, AbstractTypeDeclaration nextType) {
+        var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertAfter(newTypeDeclaration, nextType, null);
+        return editNewType(typeName, newTypeDeclaration);
     }
 
     public TypeDeclarationEditor setInterface(boolean isInterface) {
@@ -132,7 +164,7 @@ public class TypeDeclarationEditor {
         return newMethod;
     }
 
-    public MethodDeclarationEditor insertNewMethodBefore(TypeDeclaration referenceNode) {
+    public MethodDeclarationEditor insertNewMethodBefore(AbstractTypeDeclaration referenceNode) {
         MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
         rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertBefore(newMethod, referenceNode, null);
         return editMethod(newMethod, true);

@@ -28,6 +28,7 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.model);
             requireNonNull(editor.messageListener);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -46,6 +47,11 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
 
         public Builder messageListener(MessageListener messageListener) {
             editor.messageListener = messageListener;
+            return this;
+        }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
             return this;
         }
     }

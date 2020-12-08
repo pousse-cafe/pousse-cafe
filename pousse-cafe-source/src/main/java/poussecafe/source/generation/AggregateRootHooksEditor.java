@@ -19,8 +19,6 @@ import static java.util.stream.Collectors.toList;
 public class AggregateRootHooksEditor {
 
     public void edit() {
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-
         importProducedEvents(aggregate.onAddProducedEvents());
         importProducedEvents(aggregate.onDeleteProducedEvents());
 
@@ -116,6 +114,11 @@ public class AggregateRootHooksEditor {
             editor.model = model;
             return this;
         }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
+            return this;
+        }
     }
 
     private AggregateRootHooksEditor() {
@@ -123,4 +126,6 @@ public class AggregateRootHooksEditor {
     }
 
     private CompilationUnitEditor compilationUnitEditor;
+
+    private TypeDeclarationEditor typeEditor;
 }

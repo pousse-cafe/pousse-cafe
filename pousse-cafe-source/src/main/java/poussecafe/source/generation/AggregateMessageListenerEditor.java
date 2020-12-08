@@ -60,8 +60,6 @@ public abstract class AggregateMessageListenerEditor {
         }
         compilationUnitEditor.addImport(consumedMessageClassName);
 
-        var typeEditor = compilationUnitEditor.typeDeclaration();
-
         var listenerMethod = findMethod(typeEditor);
         MethodDeclarationEditor methodEditor;
         if(listenerMethod.isEmpty()) {
@@ -231,6 +229,8 @@ public abstract class AggregateMessageListenerEditor {
     protected MessageListener messageListener;
 
     protected CompilationUnitEditor compilationUnitEditor;
+
+    protected TypeDeclarationEditor typeEditor;
 
     protected AstWrapper ast;
 }

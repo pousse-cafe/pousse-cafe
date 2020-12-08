@@ -11,9 +11,19 @@ public class NamingConventions {
         return new Name(aggregate.packageName(), aggregate.simpleName() + "Id");
     }
 
-    public static Name aggregateRootTypeName(Aggregate aggregate) {
+    public static Name aggregateContainerTypeName(Aggregate aggregate) {
         return new Name(aggregate.packageName(), aggregate.simpleName());
     }
+
+    public static Name aggregateRootTypeName(Aggregate aggregate) {
+        if(aggregate.innerRoot()) {
+            return new Name(aggregateContainerTypeName(aggregate).toString(), ROOT_SUFFIX);
+        } else {
+            return new Name(aggregate.packageName(), aggregate.simpleName() + ROOT_SUFFIX);
+        }
+    }
+
+    private static final String ROOT_SUFFIX = "Root";
 
     public static Name aggregateFactoryTypeName(Aggregate aggregate) {
         return new Name(aggregate.packageName(), aggregate.simpleName() + FACTORY_NAME_SUFFIX);
@@ -69,7 +79,11 @@ public class NamingConventions {
     }
 
     public static Name aggregateAttributesQualifiedTypeName(Aggregate aggregate) {
-        return new Name(aggregate.simpleName(), ATTRIBUTES_CLASS_NAME);
+        if(aggregate.innerRoot()) {
+            return new Name(innerRootClassName(), ATTRIBUTES_CLASS_NAME);
+        } else {
+            return new Name(aggregateRootTypeName(aggregate).getIdentifier().toString(), ATTRIBUTES_CLASS_NAME);
+        }
     }
 
     public static final String ATTRIBUTES_CLASS_NAME = "Attributes";
@@ -125,8 +139,6 @@ public class NamingConventions {
     public static String innerRootClassName() {
         return ROOT_SUFFIX;
     }
-
-    private static final String ROOT_SUFFIX = "Root";
 
     private NamingConventions() {
 

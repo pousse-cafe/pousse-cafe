@@ -22,6 +22,9 @@ public class AggregateDataAccessEditor {
             typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
             typeEditor.setInterface(true);
             typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate));
+            if(aggregate.innerRoot()) {
+                compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
+            }
             typeEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
                     NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
 

@@ -3,11 +3,11 @@ package poussecafe.source.generation.generatedinternal.adapters;
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.source.generation.generatedinternal.MyAggregate;
 import poussecafe.source.generation.generatedinternal.MyAggregateId;
+import poussecafe.source.generation.generatedinternal.MyAggregateRoot;
 
 @SuppressWarnings("serial")
-public class MyAggregateAttributes implements Serializable, MyAggregate.Attributes {
+public class MyAggregateAttributes implements Serializable, MyAggregateRoot.Attributes {
 
     @Override
     public Attribute<MyAggregateId> identifier() {

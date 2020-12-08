@@ -18,21 +18,24 @@ import static java.util.Objects.requireNonNull;
 public class AggregateRootEditor {
 
     public void edit() {
-        var typeEditor = compilationUnitEditor.typeDeclaration();
         if(typeEditor.isNewType()) {
-            compilationUnitEditor.setPackage(aggregate.packageName());
-
-            compilationUnitEditor.addImport(poussecafe.discovery.Aggregate.class.getCanonicalName());
-            compilationUnitEditor.addImport(poussecafe.discovery.DefaultModule.class.getCanonicalName());
             compilationUnitEditor.addImport(AggregateRoot.class.getCanonicalName());
             compilationUnitEditor.addImport(poussecafe.domain.EntityAttributes.class.getCanonicalName());
 
             var modifiers = typeEditor.modifiers();
-            var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
-            editAggregateAnnotation(annotationEditor.get(0));
-
             modifiers.setVisibility(Visibility.PUBLIC);
-            typeEditor.setName(aggregate.name());
+
+            if(aggregate.innerRoot()) {
+                modifiers.setStatic(true);
+                typeEditor.setName(NamingConventions.innerRootClassName());
+            } else {
+                compilationUnitEditor.addImport(poussecafe.discovery.Aggregate.class.getCanonicalName());
+                compilationUnitEditor.setPackage(aggregate.packageName());
+
+                var annotationEditor = modifiers.normalAnnotation(poussecafe.discovery.Aggregate.class);
+                editAggregateAnnotation(annotationEditor.get(0));
+                typeEditor.setName(NamingConventions.aggregateRootTypeName(aggregate));
+            }
 
             var aggregateRootSupertype = aggregateRootSupertype();
             typeEditor.setSuperclass(aggregateRootSupertype);
@@ -91,6 +94,7 @@ public class AggregateRootEditor {
         public AggregateRootEditor build() {
             requireNonNull(editor.compilationUnitEditor);
             requireNonNull(editor.aggregate);
+            requireNonNull(editor.typeEditor);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -99,6 +103,11 @@ public class AggregateRootEditor {
 
         public Builder compilationUnitEditor(CompilationUnitEditor compilationUnitEditor) {
             editor.compilationUnitEditor = compilationUnitEditor;
+            return this;
+        }
+
+        public Builder typeEditor(TypeDeclarationEditor typeEditor) {
+            editor.typeEditor = typeEditor;
             return this;
         }
 
@@ -113,6 +122,8 @@ public class AggregateRootEditor {
     }
 
     private CompilationUnitEditor compilationUnitEditor;
+
+    private TypeDeclarationEditor typeEditor;
 
     private AstWrapper ast;
 }
