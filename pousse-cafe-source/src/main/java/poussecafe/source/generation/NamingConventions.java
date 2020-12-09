@@ -140,6 +140,14 @@ public class NamingConventions {
         return ROOT_SUFFIX;
     }
 
+    public static Name aggregateRootQualifiedIdentifier(Aggregate aggregate) {
+        if(aggregate.innerRoot()) {
+            return new Name(aggregateContainerTypeName(aggregate).getIdentifier().toString(), ROOT_SUFFIX);
+        } else {
+            return aggregateRootTypeName(aggregate).getIdentifier();
+        }
+    }
+
     private NamingConventions() {
 
     }
