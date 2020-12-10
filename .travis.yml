@@ -8,7 +8,7 @@ addons:
 jdk:
 - oraclejdk11
 
-install: []
+install: skip
 
 script:
 - mvn verify -B -U -Dmaven.javadoc.skip=true
