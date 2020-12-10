@@ -1,6 +1,5 @@
 package poussecafe.source;
 
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -48,8 +47,6 @@ public class CompilationUnitVisitor extends ASTVisitor {
     private CompilationUnitResolver resolver;
 
     private CompilationUnit compilationUnit;
-
-    private Path sourcePath;
 
     @Override
     public boolean visit(TypeDeclaration node) {
@@ -292,7 +289,6 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
         public CompilationUnitVisitor build() {
             requireNonNull(visitor.compilationUnit);
-            requireNonNull(visitor.sourcePath);
             requireNonNull(visitor.model);
 
             visitor.resolver = new CompilationUnitResolver(visitor.compilationUnit);
@@ -302,11 +298,6 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
         public Builder compilationUnit(CompilationUnit compilationUnit) {
             visitor.compilationUnit = compilationUnit;
-            return this;
-        }
-
-        public Builder sourcePath(Path sourcePath) {
-            visitor.sourcePath = sourcePath;
             return this;
         }
 

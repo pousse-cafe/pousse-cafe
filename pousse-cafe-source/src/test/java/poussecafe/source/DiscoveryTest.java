@@ -7,8 +7,11 @@ import poussecafe.source.model.Model;
 public abstract class DiscoveryTest {
 
     protected void givenScanner() {
-        scanner = new Scanner();
+        modelVisitor = new ModelBuildingVisitor();
+        scanner = new Scanner(modelVisitor);
     }
+
+    private ModelBuildingVisitor modelVisitor;
 
     private Scanner scanner;
 
@@ -23,7 +26,7 @@ public abstract class DiscoveryTest {
     public static final Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
 
     protected Model model() {
-        return scanner.model();
+        return modelVisitor.buildModel();
     }
 
     protected String basePackage() {

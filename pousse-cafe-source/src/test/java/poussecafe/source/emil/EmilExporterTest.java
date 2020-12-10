@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
+import poussecafe.source.ModelBuildingVisitor;
 import poussecafe.source.Scanner;
 import poussecafe.source.model.Model;
 
@@ -23,9 +24,10 @@ public class EmilExporterTest {
     }
 
     private void givenModel() throws IOException {
-        var scanner = new Scanner();
+        var modelVisitor = new ModelBuildingVisitor();
+        var scanner = new Scanner(modelVisitor);
         scanner.includeTree(DiscoveryTest.testModelDirectory);
-        model = scanner.model();
+        model = modelVisitor.buildModel();
     }
 
     private Model model;
