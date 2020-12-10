@@ -7,11 +7,11 @@ import poussecafe.source.model.Model;
 public abstract class DiscoveryTest {
 
     protected void givenScanner() {
-        modelVisitor = new ModelBuildingVisitor();
+        modelVisitor = new ModelBuildingProjectVisitor();
         scanner = new Scanner(modelVisitor);
     }
 
-    private ModelBuildingVisitor modelVisitor;
+    private ModelBuildingProjectVisitor modelVisitor;
 
     private Scanner scanner;
 

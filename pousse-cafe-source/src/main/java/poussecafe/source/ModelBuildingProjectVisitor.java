@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ModelBuilder;
 
-public class ModelBuildingVisitor implements SourceFileVisitor {
+public class ModelBuildingProjectVisitor implements SourceFileVisitor {
 
     @Override
     public void visitFile(SourceFile sourceFile) {
@@ -15,7 +15,7 @@ public class ModelBuildingVisitor implements SourceFileVisitor {
     }
 
     private ASTVisitor compilationUnitVisitor(CompilationUnit compilationUnit) {
-        return new CompilationUnitVisitor.Builder()
+        return new ModelBuildingCompilationUnitVisitor.Builder()
                 .compilationUnit(compilationUnit)
                 .model(model)
                 .build();

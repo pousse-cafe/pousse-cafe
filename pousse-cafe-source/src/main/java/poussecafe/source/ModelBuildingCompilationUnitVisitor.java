@@ -1,12 +1,7 @@
 package poussecafe.source;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.AggregateContainerClass;
@@ -15,12 +10,12 @@ import poussecafe.source.analysis.AnnotatedElement;
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.ProducedEventAnnotation;
 import poussecafe.source.analysis.RepositoryClass;
-import poussecafe.source.analysis.ResolutionException;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
-import poussecafe.source.analysis.TypeDeclarationResolver;
+import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
@@ -36,145 +31,102 @@ import poussecafe.source.model.ProducedEvent;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
-public class CompilationUnitVisitor extends ASTVisitor {
+public class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVisitor {
 
     @Override
-    public boolean visit(ImportDeclaration node) {
-        resolver.tryRegister(node);
-        return false;
-    }
-
-    private CompilationUnitResolver resolver;
-
-    private CompilationUnit compilationUnit;
-
-    @Override
-    public boolean visit(TypeDeclaration node) {
-        ++typeLevel;
-        pushResolver(node);
-        return visitListenersContainerOrSkip(node);
-    }
-
-    private int typeLevel = -1;
-
-    private void pushResolver(TypeDeclaration node) {
-        TypeDeclarationResolver typeDeclarationResolver;
-        if(typeDeclarationResolvers.isEmpty()) {
-            typeDeclarationResolver = new TypeDeclarationResolver.Builder()
-                    .parent(resolver)
-                    .typeDeclaration(node)
-                    .containerClass(getRootClass(node))
-                    .build();
-        } else {
-            typeDeclarationResolver = new TypeDeclarationResolver.Builder()
-                    .parent(resolver)
-                    .typeDeclaration(node)
-                    .containerClass(getInnerClass(typeDeclarationResolvers.peek().containerClass(), node))
-                    .build();
-        }
-        typeDeclarationResolvers.push(typeDeclarationResolver);
-    }
-
-    private Deque<TypeDeclarationResolver> typeDeclarationResolvers = new ArrayDeque<>();
-
-    private Class<?> getRootClass(TypeDeclaration typeDeclaration) {
-        var className = compilationUnit.getPackage().getName().getFullyQualifiedName()
-                + "."
-                + typeDeclaration.getName().getFullyQualifiedName();
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new ResolutionException("Unable to resolve root class " + className);
-        }
-    }
-
-    private Class<?> getInnerClass(Class<?> containerClass, TypeDeclaration node) {
-        var innerClassName = node.getName().getFullyQualifiedName();
-        return getDeclaredClass(containerClass, innerClassName);
-    }
-
-    private Class<?> getDeclaredClass(Class<?> containerClass, String innerClassName) {
-        return Arrays.stream(containerClass.getDeclaredClasses())
-                .filter(innerClass -> innerClass.getSimpleName().equals(innerClassName))
-                .findFirst().orElseThrow();
-    }
-
-    private boolean visitListenersContainerOrSkip(TypeDeclaration node) {
+    protected boolean visitTypeDeclarationOrSkip(TypeDeclaration node) {
         ResolvedTypeDeclaration resolvedTypeDeclaration = new ResolvedTypeDeclaration.Builder()
-                .withResolver(typeDeclarationResolvers.peek())
+                .withResolver(currentResolver())
                 .withDeclaration(node)
                 .build();
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
-            AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
-            containerLevel = typeLevel;
-            String identifier;
-            String aggregateName;
-            if(typeLevel == 0) {
-                aggregateName = aggregateRootClass.aggregateName();
-                identifier = resolvedTypeDeclaration.name().simpleName();
-            } else {
-                aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
-                identifier = innerClassQualifiedName(resolvedTypeDeclaration);
-            }
-            createOrUpdateAggregate(aggregateName);
-            container = new MessageListenerContainer.Builder()
-                    .type(MessageListenerContainerType.ROOT)
-                    .aggregateName(aggregateName)
-                    .containerIdentifier(identifier)
-                    .build();
+            visitAggregateRoot(resolvedTypeDeclaration);
             return true;
-        } else if(resolvedTypeDeclaration.implementsInterface(CompilationUnitResolver.PROCESS_INTERFACE)) {
-            model.addProcess(new ProcessModel.Builder()
-                    .name(resolvedTypeDeclaration.name().simpleName())
-                    .packageName(compilationUnit.getPackage().getName().getFullyQualifiedName())
-                    .build());
-            return false;
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
-            FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
-            containerLevel = typeLevel;
-            String identifier;
-            String aggregateName;
-            if(typeLevel == 0) {
-                aggregateName = factoryClass.aggregateName();
-                identifier = factoryClass.simpleName();
-            } else {
-                aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
-                identifier = innerClassQualifiedName(resolvedTypeDeclaration);
-            }
-            createOrUpdateAggregate(aggregateName);
-            container = new MessageListenerContainer.Builder()
-                    .type(MessageListenerContainerType.FACTORY)
-                    .aggregateName(aggregateName)
-                    .containerIdentifier(identifier)
-                    .build();
+            visitFactory(resolvedTypeDeclaration);
             return true;
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
-            RepositoryClass repositoryClass = new RepositoryClass(resolvedTypeDeclaration);
-            containerLevel = typeLevel;
-            String identifier;
-            String aggregateName;
-            if(typeLevel == 0) {
-                aggregateName = repositoryClass.aggregateName();
-                identifier = repositoryClass.simpleName();
-            } else {
-                aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
-                identifier = innerClassQualifiedName(resolvedTypeDeclaration);
-            }
-            createOrUpdateAggregate(aggregateName);
-            container = new MessageListenerContainer.Builder()
-                    .type(MessageListenerContainerType.REPOSITORY)
-                    .aggregateName(aggregateName)
-                    .containerIdentifier(identifier)
-                    .build();
+            visitRepository(resolvedTypeDeclaration);
             return true;
+        } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
+            visitProcessDefinition(resolvedTypeDeclaration);
+            return false;
         } else {
             return AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration);
         }
     }
 
+    private void visitAggregateRoot(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        AggregateRootClass aggregateRootClass = new AggregateRootClass(resolvedTypeDeclaration);
+        containerLevel = typeLevel();
+        String identifier;
+        String aggregateName;
+        if(typeLevel() == 0) {
+            aggregateName = aggregateRootClass.aggregateName();
+            identifier = resolvedTypeDeclaration.name().simpleName();
+        } else {
+            aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
+            identifier = innerClassQualifiedName(resolvedTypeDeclaration);
+        }
+        createOrUpdateAggregate(aggregateName);
+        container = new MessageListenerContainer.Builder()
+                .type(MessageListenerContainerType.ROOT)
+                .aggregateName(aggregateName)
+                .containerIdentifier(identifier)
+                .build();
+    }
+
+    private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var processDefinition = new ProcessDefinitionType(resolvedTypeDeclaration);
+        model.addProcess(new ProcessModel.Builder()
+                .name(processDefinition.processName())
+                .packageName(compilationUnit().getPackage().getName().getFullyQualifiedName())
+                .build());
+    }
+
+    private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
+        containerLevel = typeLevel();
+        String identifier;
+        String aggregateName;
+        if(typeLevel() == 0) {
+            aggregateName = factoryClass.aggregateName();
+            identifier = factoryClass.simpleName();
+        } else {
+            aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
+            identifier = innerClassQualifiedName(resolvedTypeDeclaration);
+        }
+        createOrUpdateAggregate(aggregateName);
+        container = new MessageListenerContainer.Builder()
+                .type(MessageListenerContainerType.FACTORY)
+                .aggregateName(aggregateName)
+                .containerIdentifier(identifier)
+                .build();
+    }
+
+    private void visitRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        RepositoryClass repositoryClass = new RepositoryClass(resolvedTypeDeclaration);
+        containerLevel = typeLevel();
+        String identifier;
+        String aggregateName;
+        if(typeLevel() == 0) {
+            aggregateName = repositoryClass.aggregateName();
+            identifier = repositoryClass.simpleName();
+        } else {
+            aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
+            identifier = innerClassQualifiedName(resolvedTypeDeclaration);
+        }
+        createOrUpdateAggregate(aggregateName);
+        container = new MessageListenerContainer.Builder()
+                .type(MessageListenerContainerType.REPOSITORY)
+                .aggregateName(aggregateName)
+                .containerIdentifier(identifier)
+                .build();
+    }
+
     private void createOrUpdateAggregate(String name) {
         aggregateBuilder = model.getAndCreateIfAbsent(name,
-                compilationUnit.getPackage().getName().getFullyQualifiedName());
+                compilationUnit().getPackage().getName().getFullyQualifiedName());
     }
 
     private Aggregate.Builder aggregateBuilder;
@@ -202,14 +154,12 @@ public class CompilationUnitVisitor extends ASTVisitor {
     }
 
     @Override
-    public void endVisit(TypeDeclaration node) {
-        if(typeLevel == containerLevel
+    protected void endTypeDeclarationVisit(TypeDeclaration node) {
+        if(typeLevel() == containerLevel
                 && aggregateBuilder != null) {
             aggregateBuilder = null;
             container = null;
         }
-        typeDeclarationResolvers.pop();
-        --typeLevel;
     }
 
     private ModelBuilder model;
@@ -217,12 +167,12 @@ public class CompilationUnitVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
         if(aggregateBuilder != null) {
-            var method = typeDeclarationResolvers.peek().resolve(node);
+            var method = currentResolver().resolve(node);
             var annotatedMethod = method.asAnnotatedElement();
             if(MessageListenerAnnotations.isMessageListener(annotatedMethod)) {
                 var messageListener = new MessageListener.Builder()
                         .withContainer(container)
-                        .withMethodDeclaration(typeDeclarationResolvers.peek().resolve(node))
+                        .withMethodDeclaration(currentResolver().resolve(node))
                         .build();
                 model.addMessageListener(messageListener);
 
@@ -285,29 +235,30 @@ public class CompilationUnitVisitor extends ASTVisitor {
 
     public static class Builder {
 
-        private CompilationUnitVisitor visitor = new CompilationUnitVisitor();
+        public ModelBuildingCompilationUnitVisitor build() {
+            requireNonNull(model);
 
-        public CompilationUnitVisitor build() {
-            requireNonNull(visitor.compilationUnit);
-            requireNonNull(visitor.model);
-
-            visitor.resolver = new CompilationUnitResolver(visitor.compilationUnit);
-
+            var visitor = new ModelBuildingCompilationUnitVisitor(compilationUnit);
+            visitor.model = model;
             return visitor;
         }
 
         public Builder compilationUnit(CompilationUnit compilationUnit) {
-            visitor.compilationUnit = compilationUnit;
+            this.compilationUnit = compilationUnit;
             return this;
         }
 
-        public Builder model(ModelBuilder registry) {
-            visitor.model = registry;
+        private CompilationUnit compilationUnit;
+
+        public Builder model(ModelBuilder model) {
+            this.model = model;
             return this;
         }
+
+        private ModelBuilder model;
     }
 
-    private CompilationUnitVisitor() {
-
+    private ModelBuildingCompilationUnitVisitor(CompilationUnit compilationUnit) {
+        super(compilationUnit);
     }
 }
