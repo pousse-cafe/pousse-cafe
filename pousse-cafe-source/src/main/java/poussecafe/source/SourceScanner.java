@@ -14,8 +14,9 @@ import poussecafe.source.analysis.ResolutionException;
 
 import static java.util.Objects.requireNonNull;
 
-public class Scanner {
+public class SourceScanner implements SourceConsumer {
 
+    @Override
     public void includeFile(Path sourceFilePath) throws IOException {
         if(!sourceFilePath.toFile().isFile()) {
             throw new IllegalArgumentException(sourceFilePath + " does not point to a file");
@@ -58,11 +59,12 @@ public class Scanner {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public void includeTree(Path sourceDirectory) throws IOException {
         Files.walkFileTree(sourceDirectory, new JavaSourceFileVisitor(this));
     }
 
-    public Scanner(SourceFileVisitor fileVisitor) {
+    public SourceScanner(SourceFileVisitor fileVisitor) {
         requireNonNull(fileVisitor);
         this.fileVisitor = fileVisitor;
     }

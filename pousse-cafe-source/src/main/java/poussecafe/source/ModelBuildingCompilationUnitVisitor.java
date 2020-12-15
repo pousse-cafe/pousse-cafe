@@ -31,14 +31,11 @@ import poussecafe.source.model.ProducedEvent;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
-public class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVisitor {
+class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVisitor {
 
     @Override
     protected boolean visitTypeDeclarationOrSkip(TypeDeclaration node) {
-        ResolvedTypeDeclaration resolvedTypeDeclaration = new ResolvedTypeDeclaration.Builder()
-                .withResolver(currentResolver())
-                .withDeclaration(node)
-                .build();
+        var resolvedTypeDeclaration = resolve(node);
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
             visitAggregateRoot(resolvedTypeDeclaration);
             return true;

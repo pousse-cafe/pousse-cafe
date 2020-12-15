@@ -6,8 +6,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import poussecafe.source.ModelBuildingProjectVisitor;
-import poussecafe.source.Scanner;
+import poussecafe.source.SourceModelBuilder;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.DefaultInsertionMode;
@@ -428,10 +427,9 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
             if(generator.currentModel == null) {
                 try {
-                    var modelVisitor = new ModelBuildingProjectVisitor();
-                    var scanner = new Scanner(modelVisitor);
-                    scanner.includeTree(generator.sourceDirectory);
-                    generator.currentModel = modelVisitor.buildModel();
+                    var modelBuilder = new SourceModelBuilder();
+                    modelBuilder.includeTree(generator.sourceDirectory);
+                    generator.currentModel = modelBuilder.build();
                 } catch (NoSuchFileException e) {
                     generator.currentModel = new Model(); // empty model
                 } catch (IOException e) {

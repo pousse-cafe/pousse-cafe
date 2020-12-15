@@ -11,7 +11,9 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import poussecafe.discovery.AbstractMessage;
 import poussecafe.discovery.Aggregate;
+import poussecafe.discovery.MessageImplementation;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateFactory;
@@ -215,4 +217,8 @@ public class CompilationUnitResolver implements Resolver {
     public static final Class<?> COMMAND_INTERFACE = Command.class;
 
     public static final Class<? extends Annotation> AGGREGATE_ANNOTATION_CLASS = Aggregate.class;
+
+    public static final Class<? extends Annotation> MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS = MessageImplementation.class;
+
+    public static final Class<? extends Annotation> ABSTRACT_MESSAGE_ANNOTATION_CLASS = AbstractMessage.class;
 }

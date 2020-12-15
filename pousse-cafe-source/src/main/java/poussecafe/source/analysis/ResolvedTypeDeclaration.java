@@ -1,6 +1,8 @@
 package poussecafe.source.analysis;
 
 import java.util.Optional;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
@@ -79,6 +81,19 @@ public class ResolvedTypeDeclaration {
 
     public TypeDeclaration typeDeclaration() {
         return declaration;
+    }
+
+    public boolean isAbstract() {
+        for(Object modifierObject : declaration.modifiers()) {
+            IExtendedModifier modifierOrAnnotation = (IExtendedModifier) modifierObject;
+            if(modifierOrAnnotation.isModifier()) {
+                Modifier modifier = (Modifier) modifierOrAnnotation;
+                if(modifier.isAbstract()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static class Builder {

@@ -8,12 +8,12 @@ public abstract class DiscoveryTest {
 
     protected void givenScanner() {
         modelVisitor = new ModelBuildingProjectVisitor();
-        scanner = new Scanner(modelVisitor);
+        scanner = new SourceScanner(modelVisitor);
     }
 
     private ModelBuildingProjectVisitor modelVisitor;
 
-    private Scanner scanner;
+    private SourceScanner scanner;
 
     protected void whenIncludingTree(Path sourceTreePath) throws IOException {
         scanner.includeTree(sourceTreePath);

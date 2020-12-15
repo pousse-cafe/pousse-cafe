@@ -7,8 +7,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
-import poussecafe.source.ModelBuildingProjectVisitor;
-import poussecafe.source.Scanner;
+import poussecafe.source.SourceModelBuilder;
 import poussecafe.source.model.Model;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -24,10 +23,9 @@ public class EmilExporterTest {
     }
 
     private void givenModel() throws IOException {
-        var modelVisitor = new ModelBuildingProjectVisitor();
-        var scanner = new Scanner(modelVisitor);
-        scanner.includeTree(DiscoveryTest.testModelDirectory);
-        model = modelVisitor.buildModel();
+        var builder = new SourceModelBuilder();
+        builder.includeTree(DiscoveryTest.testModelDirectory);
+        model = builder.build();
     }
 
     private Model model;

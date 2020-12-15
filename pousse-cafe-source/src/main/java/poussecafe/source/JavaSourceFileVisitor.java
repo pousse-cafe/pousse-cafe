@@ -19,9 +19,9 @@ class JavaSourceFileVisitor extends SimpleFileVisitor<Path> {
         return FileVisitResult.CONTINUE;
     }
 
-    private Scanner scanner;
+    private SourceScanner scanner;
 
-    public JavaSourceFileVisitor(Scanner scanner) {
+    public JavaSourceFileVisitor(SourceScanner scanner) {
         requireNonNull(scanner);
         this.scanner = scanner;
     }

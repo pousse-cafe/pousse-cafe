@@ -3,6 +3,7 @@ package poussecafe.source.analysis;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -87,6 +88,13 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
 
     protected abstract boolean visitTypeDeclarationOrSkip(TypeDeclaration node);
 
+    public ResolvedTypeDeclaration resolve(TypeDeclaration node) {
+        return new ResolvedTypeDeclaration.Builder()
+                .withResolver(currentResolver())
+                .withDeclaration(node)
+                .build();
+    }
+
     @Override
     public void endVisit(TypeDeclaration node) {
         endTypeDeclarationVisit(node);
@@ -94,7 +102,13 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
         --typeLevel;
     }
 
-    protected abstract void endTypeDeclarationVisit(TypeDeclaration node);
+    protected void endTypeDeclarationVisit(TypeDeclaration node) {
+
+    }
+
+    public int lineNumber(ASTNode node) {
+        return compilationUnit.getLineNumber(node.getStartPosition());
+    }
 
     protected TypeResolvingCompilationUnitVisitor(CompilationUnit compilationUnit) {
         requireNonNull(compilationUnit);
