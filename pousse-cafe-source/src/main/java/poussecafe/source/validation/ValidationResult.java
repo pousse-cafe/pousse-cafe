@@ -16,4 +16,16 @@ public class ValidationResult {
     public List<ValidationMessage> messages() {
         return messages;
     }
+
+    public boolean hasError() {
+        return hasType(ValidationMessageType.ERROR);
+    }
+
+    private boolean hasType(ValidationMessageType type) {
+        return messages.stream().anyMatch(message -> message.type() == type);
+    }
+
+    public boolean hasWarning() {
+        return hasType(ValidationMessageType.WARNING);
+    }
 }
