@@ -89,7 +89,7 @@ public class Validator implements SourceConsumer {
             for(MessageImplementation implementation : messageValidationModel.implementations()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(implementation.sourceFileLine())
-                        .type(ValidationMessageType.WARNING)
+                        .type(ValidationMessageType.ERROR)
                         .message("Conflicting implementations for message " + messageValidationModel.messageIdentifier())
                         .build());
             }
