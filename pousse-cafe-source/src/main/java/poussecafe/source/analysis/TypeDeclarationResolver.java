@@ -19,11 +19,11 @@ public class TypeDeclarationResolver implements Resolver {
     }
 
     private Name relativeInnerClassName(Name name) {
-        if(!name.toString().equals(containerClass.getSimpleName())
-                && name.toString().startsWith(containerClass.getSimpleName())) { // Simple name
-            return new Name(name.toString().substring(containerClass.getSimpleName().length() + 1));
-        } else if(name.toString().startsWith(containerClass.getCanonicalName())) { // Canonical name
-            return new Name(name.toString().substring(containerClass.getCanonicalName().length() + 1));
+        if(!name.toString().equals(containerClass.name().simple())
+                && name.toString().startsWith(containerClass.name().simple())) { // Simple name
+            return new Name(name.toString().substring(containerClass.name().simple().length() + 1));
+        } else if(name.toString().startsWith(containerClass.name().qualified())) { // Canonical name
+            return new Name(name.toString().substring(containerClass.name().qualified().length() + 1));
         } else { // No prefix
             return name;
         }
@@ -75,15 +75,15 @@ public class TypeDeclarationResolver implements Resolver {
 
     private TypeDeclaration typeDeclaration;
 
-    private Class<?> containerClass;
+    private ResolvedClass containerClass;
 
-    public Class<?> containerClass() {
+    public ResolvedClass containerClass() {
         return containerClass;
     }
 
-    private Optional<Class<?>> findInnerClassByName(String simpleName) {
-        for(Class<?> innerClass : containerClass.getDeclaredClasses()) {
-            if(innerClass.getSimpleName().equals(simpleName)) {
+    private Optional<ResolvedClass> findInnerClassByName(String simpleName) {
+        for(ResolvedClass innerClass : containerClass.innerClasses()) {
+            if(innerClass.name().simple().equals(simpleName)) {
                 return Optional.of(innerClass);
             }
         }
@@ -117,7 +117,7 @@ public class TypeDeclarationResolver implements Resolver {
             return this;
         }
 
-        public Builder containerClass(Class<?> typeClass) {
+        public Builder containerClass(ResolvedClass typeClass) {
             resolver.containerClass = typeClass;
             return this;
         }
@@ -125,5 +125,10 @@ public class TypeDeclarationResolver implements Resolver {
 
     private TypeDeclarationResolver() {
 
+    }
+
+    @Override
+    public ClassResolver classResolver() {
+        return parent.classResolver();
     }
 }

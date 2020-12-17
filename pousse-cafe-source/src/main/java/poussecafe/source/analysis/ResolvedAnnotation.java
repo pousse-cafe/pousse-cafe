@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 public class ResolvedAnnotation {
 
-    public boolean isClass(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    public boolean isClass(String annotationClass) {
         return resolver.resolve(new Name(annotation.getTypeName())).isClass(annotationClass);
     }
 

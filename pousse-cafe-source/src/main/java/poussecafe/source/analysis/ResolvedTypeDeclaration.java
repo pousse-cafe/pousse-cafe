@@ -47,7 +47,7 @@ public class ResolvedTypeDeclaration {
         return resolver.resolve(new Name(declaration.getName()));
     }
 
-    public boolean implementsInterface(Class<?> interfaceClass) {
+    public boolean implementsInterface(String interfaceClass) {
         for(Object object : declaration.superInterfaceTypes()) {
             Optional<ResolvedTypeName> typeName = typeName((Type) object);
             if(typeName.isPresent() && typeName.get().isClass(interfaceClass)) {

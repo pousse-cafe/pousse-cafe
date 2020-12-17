@@ -1,17 +1,16 @@
 package poussecafe.source;
 
-import java.nio.file.Path;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import static java.util.Objects.requireNonNull;
 
 public class SourceFile {
 
-    public Path path() {
-        return path;
+    public String id() {
+        return id;
     }
 
-    private Path path;
+    private String id;
 
     public CompilationUnit tree() {
         return tree;
@@ -22,15 +21,15 @@ public class SourceFile {
     public static class Builder {
 
         public SourceFile build() {
-            requireNonNull(sourceFileTree.path);
+            requireNonNull(sourceFileTree.id);
             requireNonNull(sourceFileTree.tree);
             return sourceFileTree;
         }
 
         private SourceFile sourceFileTree = new SourceFile();
 
-        public Builder path(Path path) {
-            sourceFileTree.path = path;
+        public Builder id(String id) {
+            sourceFileTree.id = id;
             return this;
         }
 

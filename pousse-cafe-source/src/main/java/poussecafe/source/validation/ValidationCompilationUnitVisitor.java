@@ -1,9 +1,10 @@
 package poussecafe.source.validation;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.SourceFile;
+import poussecafe.source.analysis.ClassResolver;
+import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
@@ -59,8 +60,12 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         public ValidationCompilationUnitVisitor build() {
             requireNonNull(model);
             requireNonNull(sourceFile);
+            requireNonNull(classResolver);
 
-            var visitor = new ValidationCompilationUnitVisitor(sourceFile.tree());
+            var visitor = new ValidationCompilationUnitVisitor(new CompilationUnitResolver.Builder()
+                    .classResolver(classResolver)
+                    .compilationUnit(sourceFile.tree())
+                    .build());
             visitor.model = model;
             visitor.sourceFile = sourceFile;
             return visitor;
@@ -79,9 +84,16 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         }
 
         private ValidationModel model;
+
+        public Builder classResolver(ClassResolver classResolver) {
+            this.classResolver = classResolver;
+            return this;
+        }
+
+        private ClassResolver classResolver;
     }
 
-    private ValidationCompilationUnitVisitor(CompilationUnit compilationUnit) {
+    private ValidationCompilationUnitVisitor(CompilationUnitResolver compilationUnit) {
         super(compilationUnit);
     }
 }

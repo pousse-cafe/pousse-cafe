@@ -1,16 +1,15 @@
 package poussecafe.source.analysis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class ClassResolver {
+public abstract class ClassResolver {
 
-    public Optional<Class<?>> loadClass(Name name) {
+    public Optional<ResolvedClass> loadClass(Name name) {
         try {
-            return Optional.of(getClass().getClassLoader().loadClass(name.toString()));
+            return Optional.of(loadClass(name.toString()));
         } catch (ClassNotFoundException e) {
             var newPath = new ArrayList<String>();
             newPath.add(name.getIdentifier().toString());
@@ -18,9 +17,11 @@ public class ClassResolver {
         }
     }
 
-    public Optional<Class<?>> loadInnerClass(Name rootClassName, List<String> path) {
+    protected abstract ResolvedClass loadClass(String name) throws ClassNotFoundException;
+
+    public Optional<ResolvedClass> loadInnerClass(Name rootClassName, List<String> path) {
         try {
-            Class<?> rootClass = Class.forName(rootClassName.toString());
+            ResolvedClass rootClass = loadClass(rootClassName.toString());
             return locateInnerClass(rootClass, path);
         } catch (ClassNotFoundException e) {
             if(rootClassName.isSimpleName()) {
@@ -33,11 +34,11 @@ public class ClassResolver {
         }
     }
 
-    private Optional<Class<?>> locateInnerClass(Class<?> rootClass, List<String> path) {
-        Class<?> containerClass = rootClass;
+    private Optional<ResolvedClass> locateInnerClass(ResolvedClass rootClass, List<String> path) {
+        ResolvedClass containerClass = rootClass;
         for(String name : path) {
-            var classForName = Arrays.stream(containerClass.getDeclaredClasses())
-                    .filter(declaredClass -> declaredClass.getSimpleName().equals(name))
+            var classForName = containerClass.innerClasses().stream()
+                    .filter(declaredClass -> declaredClass.name().simple().equals(name))
                     .findFirst();
             if(classForName.isEmpty()) {
                 return Optional.empty();

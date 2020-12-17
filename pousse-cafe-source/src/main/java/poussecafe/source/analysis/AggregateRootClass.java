@@ -20,10 +20,11 @@ public class AggregateRootClass {
     private ResolvedTypeName name;
 
     public String aggregateName() {
-        if(name.resolvedClass().getDeclaringClass() == null) {
+        Optional<ResolvedClass> declaringClass = name.resolvedClass().declaringClass();
+        if(declaringClass.isEmpty()) {
             return name.simpleName();
         } else {
-            return name.resolvedClass().getDeclaringClass().getSimpleName();
+            return declaringClass.get().name().simple();
         }
     }
 }

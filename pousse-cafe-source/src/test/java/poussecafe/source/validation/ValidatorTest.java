@@ -3,6 +3,7 @@ package poussecafe.source.validation;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.junit.Test;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -21,7 +22,7 @@ public class ValidatorTest {
     }
 
     private void givenValidator() {
-        validator = new Validator();
+        validator = new Validator(new ClassLoaderClassResolver());
     }
 
     private void givenDefinition() throws IOException {
@@ -61,7 +62,7 @@ public class ValidatorTest {
         assertThat(result.messages().size(), is(1));
         var message = result.messages().get(0);
         assertThat(message.type(), is(ValidationMessageType.WARNING));
-        assertThat(message.location().sourceFile().path(), equalTo(messageDefinitionSourcePath()));
+        assertThat(message.location().sourceFile().id(), equalTo(messageDefinitionSourcePath().toString()));
         assertThat(message.location().line(), is(5));
     }
 }

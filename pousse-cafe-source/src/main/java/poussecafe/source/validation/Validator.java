@@ -5,8 +5,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import poussecafe.source.Source;
 import poussecafe.source.SourceConsumer;
 import poussecafe.source.SourceScanner;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
+import poussecafe.source.analysis.ClassResolver;
 
 public class Validator implements SourceConsumer {
 
@@ -101,11 +104,6 @@ public class Validator implements SourceConsumer {
         return result;
     }
 
-    public Validator() {
-        visitor = new ValidationModelBuildingVisitor();
-        scanner = new SourceScanner(visitor);
-    }
-
     @Override
     public void includeFile(Path sourceFilePath) throws IOException {
         scanner.includeFile(sourceFilePath);
@@ -116,5 +114,19 @@ public class Validator implements SourceConsumer {
     @Override
     public void includeTree(Path sourceDirectory) throws IOException {
         scanner.includeTree(sourceDirectory);
+    }
+
+    @Override
+    public void includeSource(Source source) {
+        scanner.includeSource(source);
+    }
+
+    public Validator() {
+        this(new ClassLoaderClassResolver());
+    }
+
+    public Validator(ClassResolver classResolver) {
+        visitor = new ValidationModelBuildingVisitor(classResolver);
+        scanner = new SourceScanner(visitor);
     }
 }

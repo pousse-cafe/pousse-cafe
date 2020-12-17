@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
 import poussecafe.source.SourceModelBuilder;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.model.Model;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -23,7 +24,7 @@ public class EmilExporterTest {
     }
 
     private void givenModel() throws IOException {
-        var builder = new SourceModelBuilder();
+        var builder = new SourceModelBuilder(new ClassLoaderClassResolver());
         builder.includeTree(DiscoveryTest.testModelDirectory);
         model = builder.build();
     }

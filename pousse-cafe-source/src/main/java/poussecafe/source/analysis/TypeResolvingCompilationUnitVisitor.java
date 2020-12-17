@@ -1,7 +1,6 @@
 package poussecafe.source.analysis;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -21,10 +20,8 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
 
     private CompilationUnitResolver resolver;
 
-    private CompilationUnit compilationUnit;
-
     public CompilationUnit compilationUnit() {
-        return compilationUnit;
+        return resolver.compilationUnit();
     }
 
     @Override
@@ -64,25 +61,25 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
         return typeDeclarationResolvers.peek();
     }
 
-    private Class<?> getRootClass(TypeDeclaration typeDeclaration) {
-        var className = compilationUnit.getPackage().getName().getFullyQualifiedName()
+    private ResolvedClass getRootClass(TypeDeclaration typeDeclaration) {
+        var className = compilationUnit().getPackage().getName().getFullyQualifiedName()
                 + "."
                 + typeDeclaration.getName().getFullyQualifiedName();
         try {
-            return Class.forName(className);
+            return resolver.classResolver().loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new ResolutionException("Unable to resolve root class " + className);
         }
     }
 
-    private Class<?> getInnerClass(Class<?> containerClass, TypeDeclaration node) {
+    private ResolvedClass getInnerClass(ResolvedClass containerClass, TypeDeclaration node) {
         var innerClassName = node.getName().getFullyQualifiedName();
         return getDeclaredClass(containerClass, innerClassName);
     }
 
-    private Class<?> getDeclaredClass(Class<?> containerClass, String innerClassName) {
-        return Arrays.stream(containerClass.getDeclaredClasses())
-                .filter(innerClass -> innerClass.getSimpleName().equals(innerClassName))
+    private ResolvedClass getDeclaredClass(ResolvedClass containerClass, String innerClassName) {
+        return containerClass.innerClasses().stream()
+                .filter(innerClass -> innerClass.name().simple().equals(innerClassName))
                 .findFirst().orElseThrow();
     }
 
@@ -107,12 +104,11 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
     }
 
     public int lineNumber(ASTNode node) {
-        return compilationUnit.getLineNumber(node.getStartPosition());
+        return compilationUnit().getLineNumber(node.getStartPosition());
     }
 
-    protected TypeResolvingCompilationUnitVisitor(CompilationUnit compilationUnit) {
-        requireNonNull(compilationUnit);
-        this.compilationUnit = compilationUnit;
-        resolver = new CompilationUnitResolver(compilationUnit);
+    protected TypeResolvingCompilationUnitVisitor(CompilationUnitResolver compilationUnitResolver) {
+        requireNonNull(compilationUnitResolver);
+        resolver = compilationUnitResolver;
     }
 }

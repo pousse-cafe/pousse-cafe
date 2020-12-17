@@ -240,12 +240,12 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
             return visitor;
         }
 
-        public Builder compilationUnit(CompilationUnit compilationUnit) {
+        public Builder compilationUnitResolver(CompilationUnitResolver compilationUnit) {
             this.compilationUnit = compilationUnit;
             return this;
         }
 
-        private CompilationUnit compilationUnit;
+        private CompilationUnitResolver compilationUnit;
 
         public Builder model(ModelBuilder model) {
             this.model = model;
@@ -255,7 +255,7 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         private ModelBuilder model;
     }
 
-    private ModelBuildingCompilationUnitVisitor(CompilationUnit compilationUnit) {
+    private ModelBuildingCompilationUnitVisitor(CompilationUnitResolver compilationUnit) {
         super(compilationUnit);
     }
 }

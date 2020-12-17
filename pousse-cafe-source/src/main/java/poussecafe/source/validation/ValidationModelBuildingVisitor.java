@@ -3,8 +3,9 @@ package poussecafe.source.validation;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import poussecafe.source.SourceFile;
 import poussecafe.source.SourceFileVisitor;
+import poussecafe.source.analysis.ClassResolver;
 
-public class ValidationModelBuildingVisitor implements SourceFileVisitor {
+class ValidationModelBuildingVisitor implements SourceFileVisitor {
 
     @Override
     public void visitFile(SourceFile sourceFile) {
@@ -16,12 +17,19 @@ public class ValidationModelBuildingVisitor implements SourceFileVisitor {
         return new ValidationCompilationUnitVisitor.Builder()
                 .sourceFile(sourceFile)
                 .model(model)
+                .classResolver(classResolver)
                 .build();
     }
 
     private ValidationModel model = new ValidationModel();
 
+    private ClassResolver classResolver;
+
     public ValidationModel buildModel() {
         return model;
+    }
+
+    ValidationModelBuildingVisitor(ClassResolver classResolver) {
+        this.classResolver = classResolver;
     }
 }

@@ -8,30 +8,38 @@ public class ResolvedTypeName {
 
     private Name name;
 
-    private Class<?> resolvedClass;
+    private ResolvedClass resolvedClass;
 
-    public Class<?> resolvedClass() {
+    public ResolvedClass resolvedClass() {
         return resolvedClass;
     }
 
-    public boolean isClass(Class<?> expectedClass) {
-        return expectedClass.equals(resolvedClass);
+    public boolean isClass(ResolvedClass expectedClass) {
+        return isClass(expectedClass.name().qualified());
+    }
+
+    public boolean isClass(String expectedFullyQualifiedName) {
+        return resolvedClass.name().qualified().equals(expectedFullyQualifiedName);
     }
 
     public String simpleName() {
-        return resolvedClass.getSimpleName();
+        return resolvedClass.name().simple();
     }
 
-    public boolean instanceOf(Class<?> superType) {
-        return superType.isAssignableFrom(resolvedClass);
+    public boolean instanceOf(String superType) {
+        try {
+            return resolvedClass.instanceOf(superType);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     public String qualifiedName() {
-        return resolvedClass.getCanonicalName();
+        return resolvedClass.name().qualified();
     }
 
     public String packageName() {
-        return resolvedClass.getPackageName();
+        return resolvedClass.name().getQualifier().toString();
     }
 
     public static class Builder {
@@ -48,7 +56,7 @@ public class ResolvedTypeName {
             return this;
         }
 
-        public Builder withResolvedClass(Class<?> resolvedClass) {
+        public Builder withResolvedClass(ResolvedClass resolvedClass) {
             resolved.resolvedClass = resolvedClass;
             return this;
         }

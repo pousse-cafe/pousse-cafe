@@ -28,7 +28,7 @@ public class ClassResolverTest {
 
     private Name qualifiedName;
 
-    private Optional<Class<?>> resolved;
+    private Optional<ResolvedClass> resolved;
 
-    private ClassResolver classResolver = new ClassResolver();
+    private ClassResolver classResolver = new ClassLoaderClassResolver();
 }

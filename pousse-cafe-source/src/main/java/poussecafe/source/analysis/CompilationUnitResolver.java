@@ -1,6 +1,5 @@
 package poussecafe.source.analysis;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,16 +29,10 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings("deprecation")
 public class CompilationUnitResolver implements Resolver {
 
-    public CompilationUnitResolver(CompilationUnit compilationUnit) {
-        requireNonNull(compilationUnit);
-        this.compilationUnit = compilationUnit;
+    private void init() { // NOSONAR
         loadCompilationUnitClass();
-        registerInnerClasses(compilationUnitClass);
+        registerInnerClasses();
     }
-
-    private CompilationUnit compilationUnit;
-
-    private Class<?> compilationUnitClass;
 
     private void loadCompilationUnitClass() {
         var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
@@ -49,14 +42,31 @@ public class CompilationUnitResolver implements Resolver {
                 .orElseThrow(() -> newResolutionException(className));
     }
 
+    private CompilationUnit compilationUnit;
+
+    public CompilationUnit compilationUnit() {
+        return compilationUnit;
+    }
+
+    private ResolvedClass compilationUnitClass;
+
+    private ClassResolver classResolver;
+
+    @Override
+    public ClassResolver classResolver() {
+        return classResolver;
+    }
+
     private ResolutionException newResolutionException(String className) {
         return new ResolutionException("Unable to load class " + className);
     }
 
-    private ClassResolver classResolver = new ClassResolver();
+    private void registerInnerClasses() {
+        registerInnerClasses(compilationUnitClass);
+    }
 
-    private void registerInnerClasses(Class<?> containerClass) {
-        for(Class<?> innerClass : containerClass.getDeclaredClasses()) {
+    private void registerInnerClasses(ResolvedClass containerClass) {
+        for(ResolvedClass innerClass : containerClass.innerClasses()) {
             registerClass(innerClass);
             registerInnerClasses(innerClass);
         }
@@ -85,17 +95,18 @@ public class CompilationUnitResolver implements Resolver {
                 .orElseThrow(() -> newResolutionException(fullyQualifiedName.toString())));
     }
 
-    private void registerClass(Class<?> importedClass) {
-        importedClasses.put(importedClass.getCanonicalName(), importedClass);
-        resolvedTypeNames.put(importedClass.getSimpleName(), resolvedTypeName(importedClass));
+    private void registerClass(ResolvedClass importedClass) {
+        var className = importedClass.name();
+        importedClasses.put(className.toString(), importedClass);
+        resolvedTypeNames.put(className.getIdentifier().toString(), resolvedTypeName(importedClass));
     }
 
-    private Map<String, Class<?>> importedClasses = new HashMap<>();
+    private Map<String, ResolvedClass> importedClasses = new HashMap<>();
 
-    private ResolvedTypeName resolvedTypeName(Class<?> resolvedClass) {
+    private ResolvedTypeName resolvedTypeName(ResolvedClass resolvedClass) {
         return new ResolvedTypeName.Builder()
             .withResolver(this)
-            .withName(new Name(resolvedClass.getSimpleName()))
+            .withName(resolvedClass.name().getIdentifier())
             .withResolvedClass(resolvedClass)
             .build();
     }
@@ -157,7 +168,7 @@ public class CompilationUnitResolver implements Resolver {
         }
 
         for(String importedPackage : importedPackages) {
-            Optional<Class<?>> loadedClass = tryResolution(importedPackage, simpleName);
+            Optional<ResolvedClass> loadedClass = tryResolution(importedPackage, simpleName);
             if(loadedClass.isPresent()) {
                 return Optional.of(resolvedTypeName(loadedClass.get()));
             }
@@ -172,7 +183,7 @@ public class CompilationUnitResolver implements Resolver {
         return compilationUnit.getPackage().getName().getFullyQualifiedName();
     }
 
-    private Optional<Class<?>> tryResolution(String packageName, Name simpleName) {
+    private Optional<ResolvedClass> tryResolution(String packageName, Name simpleName) {
         if(simpleName.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
@@ -194,31 +205,57 @@ public class CompilationUnitResolver implements Resolver {
                 .build();
     }
 
-    public static final Class<?> AGGREGATE_ROOT_CLASS = AggregateRoot.class;
+    public static final String AGGREGATE_ROOT_CLASS = AggregateRoot.class.getCanonicalName();
 
-    public static final Class<? extends Annotation> MESSAGE_LISTENER_ANNOTATION_CLASS = MessageListener.class;
+    public static final String MESSAGE_LISTENER_ANNOTATION_CLASS = MessageListener.class.getCanonicalName();
 
-    public static final Class<?> PROCESS_INTERFACE = poussecafe.domain.Process.class;
+    public static final String PROCESS_INTERFACE = poussecafe.domain.Process.class.getCanonicalName();
 
-    public static final Class<? extends Annotation> PRODUCES_EVENT_ANNOTATION_CLASS = ProducesEvent.class;
+    public static final String PRODUCES_EVENT_ANNOTATION_CLASS = ProducesEvent.class.getCanonicalName();
 
-    public static final Class<?> FACTORY_CLASS = AggregateFactory.class;
+    public static final String FACTORY_CLASS = AggregateFactory.class.getCanonicalName();
 
-    public static final Class<?> DEPRECATED_FACTORY_CLASS = Factory.class;
+    public static final String DEPRECATED_FACTORY_CLASS = Factory.class.getCanonicalName();
 
-    public static final Class<?> REPOSITORY_CLASS = AggregateRepository.class;
+    public static final String REPOSITORY_CLASS = AggregateRepository.class.getCanonicalName();
 
-    public static final Class<?> DEPRECATED_REPOSITORY_CLASS = Repository.class;
+    public static final String DEPRECATED_REPOSITORY_CLASS = Repository.class.getCanonicalName();
 
-    public static final Class<?> MESSAGE_CLASS = Message.class;
+    public static final String MESSAGE_CLASS = Message.class.getCanonicalName();
 
-    public static final Class<?> DOMAIN_EVENT_INTERFACE = DomainEvent.class;
+    public static final String DOMAIN_EVENT_INTERFACE = DomainEvent.class.getCanonicalName();
 
-    public static final Class<?> COMMAND_INTERFACE = Command.class;
+    public static final String COMMAND_INTERFACE = Command.class.getCanonicalName();
 
-    public static final Class<? extends Annotation> AGGREGATE_ANNOTATION_CLASS = Aggregate.class;
+    public static final String AGGREGATE_ANNOTATION_CLASS = Aggregate.class.getCanonicalName();
 
-    public static final Class<? extends Annotation> MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS = MessageImplementation.class;
+    public static final String MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS = MessageImplementation.class.getCanonicalName();
 
-    public static final Class<? extends Annotation> ABSTRACT_MESSAGE_ANNOTATION_CLASS = AbstractMessage.class;
+    public static final String ABSTRACT_MESSAGE_ANNOTATION_CLASS = AbstractMessage.class.getCanonicalName();
+
+    public static class Builder {
+
+        public CompilationUnitResolver build() {
+            requireNonNull(resolver.compilationUnit);
+            requireNonNull(resolver.classResolver);
+            resolver.init();
+            return resolver;
+        }
+
+        private CompilationUnitResolver resolver = new CompilationUnitResolver();
+
+        public Builder compilationUnit(CompilationUnit compilationUnit) {
+            resolver.compilationUnit = compilationUnit;
+            return this;
+        }
+
+        public Builder classResolver(ClassResolver classResolver) {
+            resolver.classResolver = classResolver;
+            return this;
+        }
+    }
+
+    private CompilationUnitResolver() {
+
+    }
 }

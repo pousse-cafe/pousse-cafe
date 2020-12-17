@@ -133,9 +133,9 @@ public class MessageListener {
 
         private ProductionType productionType(ResolvedType returnType) {
             ResolvedTypeName typeName = returnType.genericTypeName();
-            if(typeName.instanceOf(Collection.class)) {
+            if(typeName.instanceOf(Collection.class.getCanonicalName())) {
                 return ProductionType.SEVERAL;
-            } else if(typeName.instanceOf(Optional.class)) {
+            } else if(typeName.instanceOf(Optional.class.getCanonicalName())) {
                 return ProductionType.OPTIONAL;
             } else {
                 return ProductionType.SINGLE;

@@ -22,10 +22,11 @@ public class FactoryClass {
     private ResolvedTypeName aggregateName;
 
     public String aggregateName() {
-        if(aggregateName.resolvedClass().getDeclaringClass() == null) {
+        Optional<ResolvedClass> declaringClass = aggregateName.resolvedClass().declaringClass();
+        if(declaringClass.isEmpty()) {
             return aggregateName.simpleName();
         } else {
-            return aggregateName.resolvedClass().getDeclaringClass().getSimpleName();
+            return declaringClass.get().name().simple();
         }
     }
 

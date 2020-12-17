@@ -9,72 +9,36 @@ import static poussecafe.util.Equality.referenceEquals;
 
 public class Name {
 
-    public Name(org.eclipse.jdt.core.dom.Name jdomName) {
-        this(jdomName.getFullyQualifiedName());
+    public Name getIdentifier() {
+        return new Name(identifier);
     }
-
-    private String name;
-
-    public Name(String name) {
-        requireNonNull(name);
-        this.name = name;
-        evaluate();
-    }
-
-    public Name(String qualifier, String identifier) {
-        qualified = true;
-
-        requireNonNull(qualifier);
-        this.qualifier = qualifier;
-
-        requireNonNull(identifier);
-        this.identifier = identifier;
-
-        name = qualifier + "." + identifier;
-    }
-
-    private void evaluate() {
-        int dotIndex = name.lastIndexOf('.');
-        if(dotIndex == -1) {
-            qualified = false;
-            qualifier = "";
-            identifier = name;
-        } else {
-            qualified = true;
-            qualifier = name.substring(0, dotIndex);
-            identifier = name.substring(dotIndex + 1, name.length());
-        }
-    }
-
-    private boolean qualified;
-
-    private String qualifier;
 
     private String identifier;
 
-    public boolean isQualifiedName() {
-        return qualified;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    public Name getIdentifier() {
-        return new Name(identifier);
+    public String simple() {
+        return identifier;
     }
 
     public Name getQualifier() {
         return new Name(qualifier);
     }
 
+    private String qualifier;
+
     public boolean isSimpleName() {
         return !qualified;
     }
 
+    private boolean qualified;
+
     public String[] segments() {
-        return name.split("\\.");
+        return qualifiedName.split("\\.");
+    }
+
+    private String qualifiedName;
+
+    public String qualified() {
+        return qualifiedName;
     }
 
     public Name withoutFirstSegment() {
@@ -95,13 +59,57 @@ public class Name {
         }
     }
 
+    public boolean isQualifiedName() {
+        return qualified;
+    }
+
+    public Name(org.eclipse.jdt.core.dom.Name jdomName) {
+        this(jdomName.getFullyQualifiedName());
+    }
+
+    public Name(String name) {
+        requireNonNull(name);
+        this.qualifiedName = name;
+        evaluate();
+    }
+
+    public Name(String qualifier, String identifier) {
+        qualified = true;
+
+        requireNonNull(qualifier);
+        this.qualifier = qualifier;
+
+        requireNonNull(identifier);
+        this.identifier = identifier;
+
+        qualifiedName = qualifier + "." + identifier;
+    }
+
+    private void evaluate() {
+        int dotIndex = qualifiedName.lastIndexOf('.');
+        if(dotIndex == -1) {
+            qualified = false;
+            qualifier = "";
+            identifier = qualifiedName;
+        } else {
+            qualified = true;
+            qualifier = qualifiedName.substring(0, dotIndex);
+            identifier = qualifiedName.substring(dotIndex + 1, qualifiedName.length());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return qualified();
+    }
+
     @Override
     public boolean equals(Object obj) {
-        return referenceEquals(this, obj).orElse(other -> name.equals(other.name));
+        return referenceEquals(this, obj).orElse(other -> qualifiedName.equals(other.qualifiedName));
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return qualifiedName.hashCode();
     }
 }

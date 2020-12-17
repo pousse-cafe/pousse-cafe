@@ -2,12 +2,13 @@ package poussecafe.source;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.model.Model;
 
 public abstract class DiscoveryTest {
 
     protected void givenScanner() {
-        modelVisitor = new ModelBuildingProjectVisitor();
+        modelVisitor = new ModelBuildingProjectVisitor(new ClassLoaderClassResolver());
         scanner = new SourceScanner(modelVisitor);
     }
 

@@ -7,6 +7,7 @@ import org.junit.Before;
 import poussecafe.files.Difference;
 import poussecafe.files.DifferenceType;
 import poussecafe.files.Tree;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.model.Aggregate;
 
 import static org.junit.Assert.assertTrue;
@@ -60,6 +61,7 @@ public abstract class GenerationTest {
         generator = new CoreCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory())
                 .codeFormatterProfile(getClass().getResourceAsStream("/CodeFormatterProfileSample.xml"))
+                .classResolver(new ClassLoaderClassResolver())
                 .build();
     }
 

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import poussecafe.source.SourceModelBuilder;
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.DefaultInsertionMode;
@@ -427,7 +428,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
             if(generator.currentModel == null) {
                 try {
-                    var modelBuilder = new SourceModelBuilder();
+                    var modelBuilder = new SourceModelBuilder(classResolver);
                     modelBuilder.includeTree(generator.sourceDirectory);
                     generator.currentModel = modelBuilder.build();
                 } catch (NoSuchFileException e) {
@@ -460,6 +461,13 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             generator.loadProfileFromFile(inputStream);
             return this;
         }
+
+        public Builder classResolver(ClassResolver classResolver) {
+            this.classResolver = classResolver;
+            return this;
+        }
+
+        private ClassResolver classResolver;
     }
 
     private CoreCodeGenerator() {

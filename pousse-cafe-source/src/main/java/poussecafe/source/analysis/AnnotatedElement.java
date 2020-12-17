@@ -19,15 +19,15 @@ public class AnnotatedElement<T> {
 
     private T element;
 
-    public Optional<ResolvedAnnotation> findAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    public Optional<ResolvedAnnotation> findAnnotation(String annotationClassName) {
         return annotations.stream()
-                .filter(annotation -> annotation.isClass(annotationClass))
+                .filter(annotation -> annotation.isClass(annotationClassName))
                 .findFirst();
     }
 
     private List<ResolvedAnnotation> annotations = new ArrayList<>();
 
-    public List<ResolvedAnnotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
+    public List<ResolvedAnnotation> findAnnotations(String annotationClass) {
         return annotations.stream()
                 .filter(annotation -> annotation.isClass(annotationClass))
                 .collect(toList());

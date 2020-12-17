@@ -2,6 +2,8 @@ package poussecafe.source;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.model.Model;
 
 public class SourceModelBuilder implements SourceConsumer {
@@ -24,8 +26,17 @@ public class SourceModelBuilder implements SourceConsumer {
         scanner.includeTree(sourceDirectory);
     }
 
+    @Override
+    public void includeSource(Source source) {
+        scanner.includeSource(source);
+    }
+
     public SourceModelBuilder() {
-        visitor = new ModelBuildingProjectVisitor();
+        this(new ClassLoaderClassResolver());
+    }
+
+    public SourceModelBuilder(ClassResolver classResolver) {
+        visitor = new ModelBuildingProjectVisitor(classResolver);
         scanner = new SourceScanner(visitor);
     }
 }
