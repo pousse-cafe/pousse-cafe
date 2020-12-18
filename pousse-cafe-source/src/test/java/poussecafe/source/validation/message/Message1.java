@@ -1,4 +1,4 @@
-package poussecafe.source.validation;
+package poussecafe.source.validation.message;
 
 import poussecafe.domain.DomainEvent;
 

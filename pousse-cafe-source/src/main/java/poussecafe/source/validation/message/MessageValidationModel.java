@@ -1,15 +1,17 @@
-package poussecafe.source.validation;
+package poussecafe.source.validation.message;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import poussecafe.source.validation.model.MessageDefinition;
+import poussecafe.source.validation.model.MessageImplementation;
 
 import static java.util.Objects.requireNonNull;
 
-public class MessageValidationModel {
+class MessageValidationModel {
 
-    public MessageValidationModel(String messageIdentifier) {
+    MessageValidationModel(String messageIdentifier) {
         requireNonNull(messageIdentifier);
         this.messageIdentifier = messageIdentifier;
     }

@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import poussecafe.discovery.AbstractMessage;
 import poussecafe.discovery.Aggregate;
+import poussecafe.discovery.DataImplementation;
 import poussecafe.discovery.MessageImplementation;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
@@ -19,6 +20,8 @@ import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
+import poussecafe.domain.Entity;
+import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.Factory;
 import poussecafe.domain.Repository;
 import poussecafe.messaging.Message;
@@ -232,6 +235,12 @@ public class CompilationUnitResolver implements Resolver {
     public static final String MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS = MessageImplementation.class.getCanonicalName();
 
     public static final String ABSTRACT_MESSAGE_ANNOTATION_CLASS = AbstractMessage.class.getCanonicalName();
+
+    public static final String ENTITY_CLASS = Entity.class.getCanonicalName();
+
+    public static final String ENTITY_ATTRIBUTES_INTERFACE = EntityAttributes.class.getCanonicalName();
+
+    public static final String DATA_IMPLEMENTATION_ANNOTATION_CLASS = DataImplementation.class.getCanonicalName();
 
     public static class Builder {
 

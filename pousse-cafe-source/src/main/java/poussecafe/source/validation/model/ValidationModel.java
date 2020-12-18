@@ -1,4 +1,4 @@
-package poussecafe.source.validation;
+package poussecafe.source.validation.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,5 +24,25 @@ public class ValidationModel {
 
     public List<MessageImplementation> messageImplementations() {
         return Collections.unmodifiableList(messageImplementations);
+    }
+
+    public void addEntityDefinition(EntityDefinition definition) {
+        entityDefinitions.add(definition);
+    }
+
+    private List<EntityDefinition> entityDefinitions = new ArrayList<>();
+
+    public List<EntityDefinition> entityDefinitions() {
+        return Collections.unmodifiableList(entityDefinitions);
+    }
+
+    public void addEntityImplementation(EntityImplementation implementation) {
+        entityImplementations.add(implementation);
+    }
+
+    private List<EntityImplementation> entityImplementations = new ArrayList<>();
+
+    public List<EntityImplementation> entityImplementations() {
+        return entityImplementations;
     }
 }

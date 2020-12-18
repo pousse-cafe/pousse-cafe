@@ -4,6 +4,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import poussecafe.source.SourceFile;
 import poussecafe.source.SourceFileVisitor;
 import poussecafe.source.analysis.ClassResolver;
+import poussecafe.source.validation.model.ValidationModel;
 
 class ValidationModelBuildingVisitor implements SourceFileVisitor {
 

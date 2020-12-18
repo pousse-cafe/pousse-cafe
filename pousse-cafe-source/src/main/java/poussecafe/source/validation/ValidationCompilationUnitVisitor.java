@@ -5,11 +5,18 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.SourceFile;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
+import poussecafe.source.analysis.EntityDefinitionType;
+import poussecafe.source.analysis.EntityImplementationType;
 import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
+import poussecafe.source.validation.model.EntityDefinition;
+import poussecafe.source.validation.model.EntityImplementation;
+import poussecafe.source.validation.model.MessageDefinition;
+import poussecafe.source.validation.model.MessageImplementation;
+import poussecafe.source.validation.model.ValidationModel;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +29,10 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
             visitMessageDefinition(resolvedTypeDeclaration);
         } else if(MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
             visitMessageImplementation(resolvedTypeDeclaration);
+        } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
+            visitEntityDefinition(resolvedTypeDeclaration);
+        } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
+            visitEntityImplementation(resolvedTypeDeclaration);
         }
         return false;
     }
@@ -52,6 +63,24 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .messageDefinitionQualifiedClassName(definitionType.messageName().map(ResolvedTypeName::qualifiedName))
                 .messagingNames(definitionType.messagingNames())
+                .build());
+    }
+
+    private void visitEntityDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new EntityDefinitionType(resolvedTypeDeclaration);
+        model.addEntityDefinition(new EntityDefinition.Builder()
+                .entityName(definitionType.name())
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
+                .build());
+    }
+
+    private void visitEntityImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new EntityImplementationType(resolvedTypeDeclaration);
+        model.addEntityImplementation(new EntityImplementation.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .entityDefinitionQualifiedClassName(definitionType.entity().map(ResolvedTypeName::qualifiedName))
+                .storageNames(definitionType.storageNames())
                 .build());
     }
 

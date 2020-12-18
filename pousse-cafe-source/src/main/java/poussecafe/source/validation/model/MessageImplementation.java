@@ -1,8 +1,9 @@
-package poussecafe.source.validation;
+package poussecafe.source.validation.model;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import poussecafe.source.validation.SourceFileLine;
 
 import static java.util.Objects.requireNonNull;
 

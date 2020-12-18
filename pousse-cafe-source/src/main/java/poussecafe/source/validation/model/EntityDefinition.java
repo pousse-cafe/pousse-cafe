@@ -1,13 +1,15 @@
-package poussecafe.source.validation;
+package poussecafe.source.validation.model;
+
+import poussecafe.source.validation.SourceFileLine;
 
 import static java.util.Objects.requireNonNull;
 
-public class MessageDefinition {
+public class EntityDefinition {
 
-    private String messageName;
+    private String entityName;
 
-    public String messageName() {
-        return messageName;
+    public String entityName() {
+        return entityName;
     }
 
     private SourceFileLine sourceFileLine;
@@ -24,17 +26,17 @@ public class MessageDefinition {
 
     public static class Builder {
 
-        public MessageDefinition build() {
-            requireNonNull(definition.messageName);
+        public EntityDefinition build() {
+            requireNonNull(definition.entityName);
             requireNonNull(definition.sourceFileLine);
             requireNonNull(definition.qualifiedClassName);
             return definition;
         }
 
-        private MessageDefinition definition = new MessageDefinition();
+        private EntityDefinition definition = new EntityDefinition();
 
-        public Builder messageName(String messageName) {
-            definition.messageName = messageName;
+        public Builder entityName(String entityName) {
+            definition.entityName = entityName;
             return this;
         }
 
@@ -49,7 +51,7 @@ public class MessageDefinition {
         }
     }
 
-    private MessageDefinition() {
+    private EntityDefinition() {
 
     }
 }
