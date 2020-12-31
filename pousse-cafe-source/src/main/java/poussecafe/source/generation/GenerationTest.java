@@ -73,11 +73,12 @@ public abstract class GenerationTest {
 
     protected abstract void whenGeneratingCoreCode();
 
+    @SuppressWarnings("java:S5960") // this is no production code
     protected void thenGeneratedCodeMatchesExpected() {
         try {
             assertDifferences(poussecafe.files.Tree.compareTrees(subjectTreeDirectory(), expectedTreeDirectory()));
         } catch (IOException e) {
-            fail();
+            fail(e.toString());
         }
     }
 
