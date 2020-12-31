@@ -2,10 +2,10 @@ package poussecafe.source.generation;
 
 import java.io.Serializable;
 import poussecafe.discovery.MessageImplementation;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.SuppressWarningsEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Command;
 
 import static java.util.Objects.requireNonNull;

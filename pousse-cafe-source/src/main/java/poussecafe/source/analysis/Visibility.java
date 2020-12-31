@@ -1,4 +1,4 @@
-package poussecafe.source.generation.tools;
+package poussecafe.source.analysis;
 
 public enum Visibility {
     PACKAGE,

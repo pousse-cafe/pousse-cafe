@@ -14,4 +14,6 @@ public interface ResolvedClass {
     Optional<ResolvedClass> declaringClass();
 
     ClassResolver resolver();
+
+    Optional<Object> staticFieldValue(String constantName);
 }

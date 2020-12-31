@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.Type;
@@ -14,7 +15,7 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
-public class AnnotationAttribute {
+public class ResolvedExpression {
 
     public List<ResolvedTypeName> asTypes() {
         List<ResolvedTypeName> types = new ArrayList<>();
@@ -62,12 +63,16 @@ public class AnnotationAttribute {
     }
 
     public String asString() {
-        if(value instanceof StringLiteral) {
+        if(isStringLiteral()) {
             StringLiteral literal = (StringLiteral) value;
             return literal.getLiteralValue();
         } else {
             throw new IllegalStateException("Attribute value is not a string literal");
         }
+    }
+
+    public boolean isStringLiteral() {
+        return value instanceof StringLiteral;
     }
 
     public List<String> asStrings() {
@@ -87,11 +92,34 @@ public class AnnotationAttribute {
         }
     }
 
+    public QualifiedName asQualifiedName() {
+        if(isQualifiedName()) {
+            return (QualifiedName) value;
+        } else {
+            throw new IllegalStateException("Attribute value is not a string literal");
+        }
+    }
+
+    public boolean isQualifiedName() {
+        return value instanceof QualifiedName;
+    }
+
+    public Object resolvedConstantValue() {
+        if(isQualifiedName()) {
+            var qualifiedName = asQualifiedName();
+            var containerType = resolver.resolve(new Name(qualifiedName.getQualifier()));
+            String constantName = qualifiedName.getName().getIdentifier();
+            return containerType.resolvedClass().staticFieldValue(constantName).orElse(null);
+        } else {
+            throw new IllegalStateException("Attribute value is not a qualified name");
+        }
+    }
+
     public static class Builder {
 
-        private AnnotationAttribute attribute = new AnnotationAttribute();
+        private ResolvedExpression attribute = new ResolvedExpression();
 
-        public AnnotationAttribute build() {
+        public ResolvedExpression build() {
             requireNonNull(attribute.value);
             requireNonNull(attribute.resolver);
             return attribute;
@@ -108,7 +136,7 @@ public class AnnotationAttribute {
         }
     }
 
-    private AnnotationAttribute() {
+    private ResolvedExpression() {
 
     }
 }

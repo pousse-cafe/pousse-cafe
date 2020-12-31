@@ -10,6 +10,7 @@ import poussecafe.source.SourceScanner;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.validation.entity.EntityValidator;
+import poussecafe.source.validation.listener.MessageListenerValidator;
 import poussecafe.source.validation.message.MessageValidator;
 import poussecafe.source.validation.model.ValidationModel;
 
@@ -32,6 +33,7 @@ public class Validator implements SourceConsumer {
         validators = new ArrayList<>();
         validators.add(new MessageValidator(model));
         validators.add(new EntityValidator(model));
+        validators.add(new MessageListenerValidator(model));
     }
 
     private List<SubValidator> validators;

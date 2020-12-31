@@ -1,23 +1,34 @@
 package poussecafe.source.validation;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.SourceFile;
+import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
+import poussecafe.source.analysis.DataAccessImplementationType;
 import poussecafe.source.analysis.EntityDefinitionType;
 import poussecafe.source.analysis.EntityImplementationType;
+import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
+import poussecafe.source.analysis.MessageListenerMethod;
+import poussecafe.source.analysis.RepositoryClass;
+import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
+import poussecafe.source.analysis.Visibility;
+import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.validation.model.EntityDefinition;
 import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
 import poussecafe.source.validation.model.MessageImplementation;
+import poussecafe.source.validation.model.MessageListener;
 import poussecafe.source.validation.model.ValidationModel;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUnitVisitor {
@@ -31,8 +42,15 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
             visitMessageImplementation(resolvedTypeDeclaration);
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
             visitEntityDefinition(resolvedTypeDeclaration);
+            if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
+                return true; // Visit listeners
+            }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
             visitEntityImplementation(resolvedTypeDeclaration);
+        } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
+            visitDataAccessImplementation(resolvedTypeDeclaration);
+        } else if(MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration)) {
+            return true;
         }
         return false;
     }
@@ -84,11 +102,54 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .build());
     }
 
+    private void visitDataAccessImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new DataAccessImplementationType(resolvedTypeDeclaration);
+        model.addEntityImplementation(new EntityImplementation.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .entityDefinitionQualifiedClassName(definitionType.entity().map(ResolvedTypeName::qualifiedName))
+                .storageNames(asList(definitionType.storageName()))
+                .build());
+    }
+
+    @Override
+    public boolean visit(MethodDeclaration node) {
+        var method = currentResolver().resolve(node);
+        if(MessageListenerMethod.isMessageListener(method)) {
+            visitMessageListener(method);
+        }
+        return false;
+    }
+
+    private void visitMessageListener(ResolvedMethod method) {
+        var messageListenerMethod = new MessageListenerMethod(method);
+        model.addMessageListener(new MessageListener.Builder()
+                .sourceFileLine(sourceFileLine(method.declaration().getName()))
+                .isPublic(method.modifiers().hasVisibility(Visibility.PUBLIC))
+                .runnerQualifiedClassName(messageListenerMethod.runner().map(ResolvedTypeName::qualifiedName))
+                .returnsValue(messageListenerMethod.returnType().isPresent())
+                .consumedMessageQualifiedClassName(messageListenerMethod.consumedMessage().map(ResolvedTypeName::qualifiedName))
+                .parametersCount(method.declaration().parameters().size())
+                .containerType(messageListenerContainerType(method.declaringType()))
+                .build());
+    }
+
+    private MessageListenerContainerType messageListenerContainerType(ResolvedTypeDeclaration declaringType) {
+        if(AggregateRootClass.isAggregateRoot(declaringType)) {
+            return MessageListenerContainerType.ROOT;
+        } else if(FactoryClass.isFactory(declaringType)) {
+            return MessageListenerContainerType.FACTORY;
+        } else if(RepositoryClass.isRepository(declaringType)) {
+            return MessageListenerContainerType.REPOSITORY;
+        } else {
+            return MessageListenerContainerType.OTHER;
+        }
+    }
+
     public static class Builder {
 
         public ValidationCompilationUnitVisitor build() {
-            requireNonNull(model);
             requireNonNull(sourceFile);
+            requireNonNull(model);
             requireNonNull(classResolver);
 
             var visitor = new ValidationCompilationUnitVisitor(new CompilationUnitResolver.Builder()

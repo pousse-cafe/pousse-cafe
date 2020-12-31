@@ -1,10 +1,10 @@
 package poussecafe.source.generation.internal;
 
 import poussecafe.discovery.DataAccessImplementation;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;

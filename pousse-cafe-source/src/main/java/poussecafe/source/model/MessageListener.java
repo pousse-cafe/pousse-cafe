@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import poussecafe.discovery.DefaultProcess;
-import poussecafe.source.analysis.MessageListenerAnnotations;
-import poussecafe.source.analysis.ResolvedMethod;
+import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ResolvedType;
 import poussecafe.source.analysis.ResolvedTypeName;
 
@@ -99,28 +98,23 @@ public class MessageListener {
             return this;
         }
 
-        public Builder withMethodDeclaration(ResolvedMethod method) {
-            var annotatedMethod = method.asAnnotatedElement();
+        public Builder withMethodDeclaration(MessageListenerMethod method) {
             String methodName = method.name();
-            if(!MessageListenerAnnotations.isMessageListener(annotatedMethod)) {
-                throw new IllegalArgumentException("Method " + methodName + " is not a message listener");
-            }
 
             messageListener.methodName = methodName;
-            messageListener.consumedMessage = Message.ofTypeName(method.parameterTypeName(0).orElseThrow());
+            messageListener.consumedMessage = Message.ofTypeName(method.consumedMessage().orElseThrow());
 
-            MessageListenerAnnotations messageListenerAnnotation = new MessageListenerAnnotations(annotatedMethod);
-            messageListener.consumesFromExternal = messageListenerAnnotation.consumesFromExternal();
-            List<ResolvedTypeName> processes = messageListenerAnnotation.processes();
+            messageListener.consumesFromExternal = method.consumesFromExternal();
+            List<ResolvedTypeName> processes = method.processes();
             processes.stream().map(ResolvedTypeName::simpleName).forEach(processNames::add);
 
-            messageListener.producedEvents = messageListenerAnnotation.producedEvents().stream()
+            messageListener.producedEvents = method.producedEvents().stream()
                     .map(annotation -> new ProducedEvent.Builder()
                             .withAnnotation(annotation)
                             .build())
                     .collect(toList());
 
-            messageListener.runnerName = messageListenerAnnotation.runner().map(ResolvedTypeName::simpleName);
+            messageListener.runnerName = method.runner().map(ResolvedTypeName::simpleName);
 
             Optional<ResolvedType> returnType = method.returnType();
             if(returnType.isPresent()

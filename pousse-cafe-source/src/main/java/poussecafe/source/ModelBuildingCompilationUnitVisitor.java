@@ -9,7 +9,7 @@ import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.AnnotatedElement;
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.FactoryClass;
-import poussecafe.source.analysis.MessageListenerAnnotations;
+import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.ProducedEventAnnotation;
 import poussecafe.source.analysis.RepositoryClass;
@@ -166,10 +166,10 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         if(aggregateBuilder != null) {
             var method = currentResolver().resolve(node);
             var annotatedMethod = method.asAnnotatedElement();
-            if(MessageListenerAnnotations.isMessageListener(annotatedMethod)) {
+            if(MessageListenerMethod.isMessageListener(method)) {
                 var messageListener = new MessageListener.Builder()
                         .withContainer(container)
-                        .withMethodDeclaration(currentResolver().resolve(node))
+                        .withMethodDeclaration(new MessageListenerMethod(method))
                         .build();
                 model.addMessageListener(messageListener);
 

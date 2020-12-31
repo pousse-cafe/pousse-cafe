@@ -9,9 +9,9 @@ public class ProducedEventAnnotation {
 
     public ProducedEventAnnotation(ResolvedAnnotation resolvedAnnotation) {
         event = resolvedAnnotation.attribute("value").orElseThrow().asType();
-        required = resolvedAnnotation.attribute("required").map(AnnotationAttribute::asBoolean);
+        required = resolvedAnnotation.attribute("required").map(ResolvedExpression::asBoolean);
         consumedByExternal = resolvedAnnotation.attribute("consumedByExternal")
-                .map(AnnotationAttribute::asStrings)
+                .map(ResolvedExpression::asStrings)
                 .orElse(emptyList());
     }
 

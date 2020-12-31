@@ -2,10 +2,10 @@ package poussecafe.source.generation;
 
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.util.StringId;
 

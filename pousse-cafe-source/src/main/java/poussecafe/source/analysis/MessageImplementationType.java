@@ -14,7 +14,7 @@ public class MessageImplementationType {
 
     private static boolean isConcreteImplementation(ResolvedTypeDeclaration type) {
         return !type.typeDeclaration().isInterface()
-                && !type.isAbstract()
+                && !type.modifiers().isAbstract()
                 && type.asAnnotatedElement().findAnnotation(CompilationUnitResolver.ABSTRACT_MESSAGE_ANNOTATION_CLASS).isEmpty();
     }
 

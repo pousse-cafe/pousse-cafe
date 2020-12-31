@@ -14,13 +14,13 @@ public class ResolvedAnnotation {
         return resolver.resolve(new Name(annotation.getTypeName())).isClass(annotationClass);
     }
 
-    public Optional<AnnotationAttribute> attribute(String attributeName) {
+    public Optional<ResolvedExpression> attribute(String attributeName) {
         if(annotation.isNormalAnnotation()) {
             NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
             for(Object object : normalAnnotation.values()) {
                 MemberValuePair pair = (MemberValuePair) object;
                 if(pair.getName().getIdentifier().equals(attributeName)) {
-                    return Optional.of(new AnnotationAttribute.Builder()
+                    return Optional.of(new ResolvedExpression.Builder()
                             .resolver(resolver)
                             .value(pair.getValue())
                             .build());
@@ -29,7 +29,7 @@ public class ResolvedAnnotation {
         } else if(annotation.isSingleMemberAnnotation()
                 && attributeName.equals("value")) {
             SingleMemberAnnotation singleMemberAnnotation = (SingleMemberAnnotation) annotation;
-            return Optional.of(new AnnotationAttribute.Builder()
+            return Optional.of(new ResolvedExpression.Builder()
                     .resolver(resolver)
                     .value(singleMemberAnnotation.getValue())
                     .build());

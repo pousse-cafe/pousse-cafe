@@ -13,7 +13,8 @@ public class EntityImplementationType {
     }
 
     private static boolean isConcreteImplementation(ResolvedTypeDeclaration type) {
-        return !type.isAbstract();
+        return !type.modifiers().isAbstract()
+                && !type.typeDeclaration().isInterface();
     }
 
     public Optional<ResolvedTypeName> entity() {

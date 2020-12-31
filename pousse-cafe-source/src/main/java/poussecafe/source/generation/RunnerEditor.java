@@ -2,9 +2,9 @@ package poussecafe.source.generation;
 
 import poussecafe.listeners.UpdateOneRunner;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;

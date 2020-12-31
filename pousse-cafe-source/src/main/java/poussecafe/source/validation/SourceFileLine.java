@@ -44,4 +44,9 @@ public class SourceFileLine {
     private SourceFileLine() {
 
     }
+
+    @Override
+    public String toString() {
+        return sourceFile.toString() + " at line " + line;
+    }
 }

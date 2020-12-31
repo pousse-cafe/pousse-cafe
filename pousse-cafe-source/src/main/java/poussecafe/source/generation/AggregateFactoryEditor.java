@@ -3,10 +3,10 @@ package poussecafe.source.generation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.AggregateFactory;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;

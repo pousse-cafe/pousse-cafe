@@ -1,8 +1,8 @@
 package poussecafe.source.generation;
 
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.ProcessModel;
 
 import static java.util.Objects.requireNonNull;

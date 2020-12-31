@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,20 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
     }
 
     private ClassLoaderClassResolver classResolver;
+
+    @Override
+    public Optional<Object> staticFieldValue(String fieldName) {
+        try {
+            var constantField = classObject.getDeclaredField(fieldName);
+            if(Modifier.isStatic(constantField.getModifiers())) {
+                return Optional.ofNullable(constantField.get(null));
+            } else {
+                throw new IllegalArgumentException("Field " + fieldName + " is not static");
+            }
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            return Optional.empty();
+        }
+    }
 
     public static class Builder {
 

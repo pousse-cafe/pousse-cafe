@@ -5,11 +5,11 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.FieldDeclarationEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
-import poussecafe.source.generation.tools.Visibility;
 import poussecafe.source.model.Aggregate;
 
 import static java.util.Objects.requireNonNull;

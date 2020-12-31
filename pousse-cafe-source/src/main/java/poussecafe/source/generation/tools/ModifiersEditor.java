@@ -1,10 +1,8 @@
 package poussecafe.source.generation.tools;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -16,17 +14,18 @@ import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
+import poussecafe.source.analysis.Modifiers;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.Visibility;
 
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 
 public class ModifiersEditor {
 
     public void setVisibility(Visibility visibility) {
         var visibilityInsertor = modifierInsertorBuilder()
-                .toReplace(VISIBILITY_KEYWORDS)
+                .toReplace(Modifiers.VISIBILITY_KEYWORDS)
                 .pivotProvider(this::visibilityPivot)
                 .pivotInsertionModeProvider(this::visibilityInsertionModeProvider)
                 .defaultInsertionMode(DefaultInsertionMode.FIRST)
@@ -36,49 +35,17 @@ public class ModifiersEditor {
 
     private ModifierInsertor.Builder modifierInsertorBuilder() {
         return new ModifierInsertor.Builder()
-                .modifiers(modifiers())
                 .listRewrite(listRewrite())
                 .rewrite(rewrite);
     }
 
-    private static final Set<ModifierKeyword> VISIBILITY_KEYWORDS = visibilityKeywords();
-    private static Set<ModifierKeyword> visibilityKeywords() {
-        var modifiers = new HashSet<ModifierKeyword>();
-        modifiers.add(ModifierKeyword.PRIVATE_KEYWORD);
-        modifiers.add(ModifierKeyword.PROTECTED_KEYWORD);
-        modifiers.add(ModifierKeyword.PUBLIC_KEYWORD);
-        return modifiers;
-    }
-
     private Optional<ASTNode> visibilityPivot() {
-        var annotations = annotations();
+        var annotations = modifiers.annotations();
         if(annotations.isEmpty()) {
-            return actualModifiers().stream().findFirst().map(modifier -> (ASTNode) modifier);
+            return modifiers.actualModifiers().stream().findFirst().map(modifier -> (ASTNode) modifier);
         } else {
             return Optional.of(annotations.get(annotations.size() - 1));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Annotation> annotations() {
-        return (List<Annotation>) modifiers().stream()
-                .filter(this::isAnnotation)
-                .collect(toList());
-    }
-
-    private boolean isAnnotation(Object node) {
-        return node instanceof Annotation;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Modifier> actualModifiers() {
-        return (List<Modifier>) modifiers().stream()
-                .filter(this::isModifier)
-                .collect(toList());
-    }
-
-    private boolean isModifier(Object node) {
-        return node instanceof Modifier;
     }
 
     private InsertionMode visibilityInsertionModeProvider(ASTNode pivot) {
@@ -112,11 +79,11 @@ public class ModifiersEditor {
     }
 
     private Optional<ASTNode> staticPivot() {
-        var visibilityModifier = visibilityModifier();
+        var visibilityModifier = modifiers.visibilityModifier();
         if(visibilityModifier.isPresent()) {
-            return visibilityModifier;
+            return visibilityModifier.map(modifier -> (ASTNode) modifier);
         } else {
-            var annotations = annotations();
+            var annotations = modifiers.annotations();
             if(annotations.isEmpty()) {
                 return Optional.empty();
             } else {
@@ -125,26 +92,11 @@ public class ModifiersEditor {
         }
     }
 
-    private Optional<ASTNode> visibilityModifier() {
-        for(Object modifierObject : modifiers()) {
-            if(modifierObject instanceof Modifier) {
-                Modifier modifier = (Modifier) modifierObject;
-                if(VISIBILITY_KEYWORDS.contains(modifier.getKeyword())) {
-                    return Optional.of(modifier);
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
     private InsertionMode staticInsertionModeProvider(ASTNode pivot) {
         return InsertionMode.AFTER;
     }
 
-    @SuppressWarnings("rawtypes")
-    private List modifiers() {
-        return listRewrite().getRewrittenList();
-    }
+    private Modifiers modifiers;
 
     private ListRewrite listRewrite() {
         return rewrite.listRewrite(property);
@@ -162,9 +114,9 @@ public class ModifiersEditor {
             Function<Name, Annotation> factory,
             Function<Annotation, E> editorFactory,
             Predicate<Annotation> isExpectedType) {
-        var annotations = findAnnotations(annotationClass);
+        var annotations = modifiers.findUnresolvedAnnotationsByIdentifier(annotationClass);
         if(annotations.isEmpty()) {
-            Optional<Modifier> firstModifier = actualModifiers().stream().findFirst();
+            Optional<Modifier> firstModifier = modifiers.actualModifiers().stream().findFirst();
 
             var newNormalAnnotation = factory.apply(annotationClass);
             if(firstModifier.isPresent()) {
@@ -205,13 +157,13 @@ public class ModifiersEditor {
     }
 
     private void insertLast(Annotation annotation) {
-        var annotations = annotations();
+        var annotations = modifiers.annotations();
         if(annotations.isEmpty()) {
-            var modifiers = actualModifiers();
-            if(modifiers.isEmpty()) {
+            var actualModifiers = modifiers.actualModifiers();
+            if(actualModifiers.isEmpty()) {
                 listRewrite().insertFirst(annotation, null);
             } else {
-                listRewrite().insertBefore(annotation, modifiers.get(0), null);
+                listRewrite().insertBefore(annotation, actualModifiers.get(0), null);
             }
         } else {
             listRewrite().insertAfter(annotation, annotations.get(annotations.size() -1), null);
@@ -236,21 +188,7 @@ public class ModifiersEditor {
     }
 
     public List<Annotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return findAnnotations(new Name(annotationClass.getCanonicalName()));
-    }
-
-    public List<Annotation> findAnnotations(Name annotationClass) {
-        var annotations = new ArrayList<Annotation>();
-        for(Object annotationObject : modifiers()) {
-            if(annotationObject instanceof Annotation) {
-                Annotation annotation = (Annotation) annotationObject;
-                Name annotationTypeName = new Name(annotation.getTypeName());
-                if(annotationTypeName.getIdentifier().equals(annotationClass.getIdentifier())) {
-                    annotations.add(annotation);
-                }
-            }
-        }
-        return annotations;
+        return modifiers.findUnresolvedAnnotationsByIdentifier(new Name(annotationClass.getCanonicalName()));
     }
 
     public boolean hasAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
@@ -310,7 +248,7 @@ public class ModifiersEditor {
     }
 
     public void removeAnnotations(Name annotationClass) {
-        var nodes = findAnnotations(annotationClass);
+        var nodes = modifiers.findUnresolvedAnnotationsByIdentifier(annotationClass);
         ListRewrite listRewrite = listRewrite();
         nodes.forEach(node -> listRewrite.remove(node, null));
     }
@@ -332,6 +270,8 @@ public class ModifiersEditor {
 
         requireNonNull(property);
         this.property = property;
+
+        modifiers = new Modifiers.Builder().modifiers(listRewrite().getRewrittenList()).build();
     }
 
     private NodeRewrite rewrite;

@@ -82,19 +82,16 @@ public class ModifierInsertor {
         public ModifierInsertor insertor = new ModifierInsertor();
 
         public ModifierInsertor build() {
-            requireNonNull(insertor.modifiers);
             requireNonNull(insertor.toReplace);
             requireNonNull(insertor.pivotProvider);
             requireNonNull(insertor.rewrite);
             requireNonNull(insertor.pivotInsertionModeProvider);
             requireNonNull(insertor.listRewrite);
             requireNonNull(insertor.defaultInsertionMode);
-            return insertor;
-        }
 
-        public Builder modifiers(List modifiers) {
-            insertor.modifiers = modifiers;
-            return this;
+            insertor.modifiers = insertor.listRewrite.getRewrittenList();
+
+            return insertor;
         }
 
         public Builder toReplace(Set<ModifierKeyword> toReplace) {

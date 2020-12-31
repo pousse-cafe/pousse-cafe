@@ -38,4 +38,9 @@ public class SourceFile {
             return this;
         }
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }
