@@ -15,6 +15,12 @@ public class EntityImplementation {
         return sourceFileLine;
     }
 
+    public Optional<String> entityImplementationQualifiedClassName() {
+        return entityImplementationQualifiedClassName;
+    }
+
+    private Optional<String> entityImplementationQualifiedClassName = Optional.empty();
+
     public Optional<String> entityDefinitionQualifiedClassName() {
         return entityDefinitionQualifiedClassName;
     }
@@ -31,6 +37,7 @@ public class EntityImplementation {
 
         public EntityImplementation build() {
             requireNonNull(implementation.sourceFileLine);
+            requireNonNull(implementation.entityImplementationQualifiedClassName);
             requireNonNull(implementation.entityDefinitionQualifiedClassName);
             return implementation;
         }
@@ -39,6 +46,11 @@ public class EntityImplementation {
 
         public Builder sourceFileLine(SourceFileLine sourceFileLine) {
             implementation.sourceFileLine = sourceFileLine;
+            return this;
+        }
+
+        public Builder entityImplementationQualifiedClassName(Optional<String> entityImplementationQualifiedClassName) {
+            implementation.entityImplementationQualifiedClassName = entityImplementationQualifiedClassName;
             return this;
         }
 

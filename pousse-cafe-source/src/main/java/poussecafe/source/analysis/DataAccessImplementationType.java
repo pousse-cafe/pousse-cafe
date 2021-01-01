@@ -14,13 +14,19 @@ public class DataAccessImplementationType {
                 && !type.typeDeclaration().isInterface();
     }
 
-    public Optional<ResolvedTypeName> entity() {
+    public Optional<ResolvedTypeName> aggregateRoot() {
         var annotation = type.asAnnotatedElement().findAnnotation(
                 CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS);
         return annotation.map(a -> a.attribute("aggregateRoot").orElseThrow().asType());
     }
 
     private ResolvedTypeDeclaration type;
+
+    public Optional<ResolvedTypeName> dataImplementation() {
+        var annotation = type.asAnnotatedElement().findAnnotation(
+                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS);
+        return annotation.map(a -> a.attribute("dataImplementation").orElseThrow().asType());
+    }
 
     public String storageName() {
         var annotation = type.asAnnotatedElement().findAnnotation(

@@ -16,40 +16,39 @@ public class EntityValidator extends SubValidator {
 
     @Override
     public void validate() {
-        var entiyValidations = buildMessageValidationModels();
-        for(EntityValidationModel entiyValidationModel : entiyValidations.values()) {
+        validateDefinitions();
+        validateImplementations();
+    }
+
+    private void validateDefinitions() {
+        var entiyValidations = buildEntityDefinitionValidationModels();
+        for(EntityDefinitionValidationModel entiyValidationModel : entiyValidations.values()) {
             applyConflictingMessageDefinitionsValidation(entiyValidationModel);
-            applyNoMessageImplementationValidation(entiyValidationModel);
+            applyNoImplementationValidation(entiyValidationModel);
             applyConflictingMessageImplementationsValidation(entiyValidationModel);
         }
     }
 
-    private HashMap<String, EntityValidationModel> buildMessageValidationModels() {
-        var entiyValidations = new HashMap<String, EntityValidationModel>();
+    private HashMap<String, EntityDefinitionValidationModel> buildEntityDefinitionValidationModels() {
+        var entiyValidations = new HashMap<String, EntityDefinitionValidationModel>();
         for(EntityDefinition definition : model.entityDefinitions()) {
-            var entiyIdentifier = definition.qualifiedClassName();
-            var entiyValidationModel = entiyValidations.computeIfAbsent(entiyIdentifier,
-                    EntityValidationModel::new);
-            entiyValidationModel.includeDefinition(definition);
+            var definitionIdentifier = definition.qualifiedClassName();
+            var validationModel = entiyValidations.computeIfAbsent(definitionIdentifier,
+                    EntityDefinitionValidationModel::new);
+            validationModel.includeDefinition(definition);
         }
         for(EntityImplementation implementation : model.entityImplementations()) {
             var entiyIdentifier = implementation.entityDefinitionQualifiedClassName();
             if(entiyIdentifier.isPresent()) {
-                var entiyValidationModel = entiyValidations.computeIfAbsent(entiyIdentifier.get(),
-                        EntityValidationModel::new);
-                entiyValidationModel.includeImplementation(implementation);
-            } else {
-                messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceFileLine())
-                        .type(ValidationMessageType.WARNING)
-                        .message("Entity implementation is not linked to a definition, add @DataImplementation annotation")
-                        .build());
+                var validationModel = entiyValidations.computeIfAbsent(entiyIdentifier.get(),
+                        EntityDefinitionValidationModel::new);
+                validationModel.includeImplementation(implementation);
             }
         }
         return entiyValidations;
     }
 
-    private void applyConflictingMessageDefinitionsValidation(EntityValidationModel entiyValidationModel) {
+    private void applyConflictingMessageDefinitionsValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasConflictingDefinitions()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
                 messages.add(new ValidationMessage.Builder()
@@ -61,27 +60,70 @@ public class EntityValidator extends SubValidator {
         }
     }
 
-    private void applyNoMessageImplementationValidation(EntityValidationModel entiyValidationModel) {
+    private void applyNoImplementationValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasNoImplementation()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(definition.sourceFileLine())
                         .type(ValidationMessageType.WARNING)
-                        .message("No implementation found for entiy " + entiyValidationModel.entityIdentifier())
+                        .message("No implementation found for entity " + entiyValidationModel.entityIdentifier())
                         .build());
             }
         }
     }
 
-    private void applyConflictingMessageImplementationsValidation(EntityValidationModel entiyValidationModel) {
+    private void applyConflictingMessageImplementationsValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasConflictingImplementations()) {
             for(EntityImplementation implementation : entiyValidationModel.implementations()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(implementation.sourceFileLine())
                         .type(ValidationMessageType.ERROR)
-                        .message("Conflicting implementations for entiy " + entiyValidationModel.entityIdentifier())
+                        .message("Conflicting implementations for entity " + entiyValidationModel.entityIdentifier())
                         .build());
             }
+        }
+    }
+
+    private void validateImplementations() {
+        var entiyValidations = buildEntityImplementationValidationModels();
+        for(EntityImplementationValidationModel entiyValidationModel : entiyValidations.values()) {
+            applyNoDefinitionValidation(entiyValidationModel);
+        }
+    }
+
+    private HashMap<String, EntityImplementationValidationModel> buildEntityImplementationValidationModels() {
+        var validationModels = new HashMap<String, EntityImplementationValidationModel>();
+
+        for(EntityImplementation implementation : model.entityImplementations()) {
+            var implementationQualifiedName = implementation.entityImplementationQualifiedClassName();
+            if(implementationQualifiedName.isEmpty()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(implementation.sourceFileLine())
+                        .type(ValidationMessageType.WARNING)
+                        .message("Missing @DataAccessImplementation annotation")
+                        .build());
+            } else {
+                var implementationId = EntityImplementationValidationModel.implementationId(implementation);
+                var validationModel = validationModels.computeIfAbsent(implementationId,
+                        id -> new EntityImplementationValidationModel(implementation));
+
+                var definitionId = implementation.entityDefinitionQualifiedClassName();
+                if(definitionId.isPresent()) {
+                    validationModel.includeDefinition(definitionId.get());
+                }
+            }
+        }
+        return validationModels;
+    }
+
+    private void applyNoDefinitionValidation(EntityImplementationValidationModel entiyValidationModel) {
+        if(entiyValidationModel.hasNoDefinition()) {
+            var implementation = entiyValidationModel.implementation();
+            messages.add(new ValidationMessage.Builder()
+                    .location(implementation.sourceFileLine())
+                    .type(ValidationMessageType.WARNING)
+                    .message("Entity implementation is not linked to a definition, add a @DataImplementation annotation or declare a data access implementation annotated with @DataAccessImplementation")
+                    .build());
         }
     }
 }

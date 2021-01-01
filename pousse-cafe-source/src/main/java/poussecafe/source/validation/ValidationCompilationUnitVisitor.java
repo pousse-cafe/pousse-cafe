@@ -1,5 +1,6 @@
 package poussecafe.source.validation;
 
+import java.util.Optional;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -94,20 +95,22 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     }
 
     private void visitEntityImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        var definitionType = new EntityImplementationType(resolvedTypeDeclaration);
+        var implementationType = new EntityImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .entityDefinitionQualifiedClassName(definitionType.entity().map(ResolvedTypeName::qualifiedName))
-                .storageNames(definitionType.storageNames())
+                .entityImplementationQualifiedClassName(Optional.of(resolvedTypeDeclaration.name().qualifiedName()))
+                .entityDefinitionQualifiedClassName(implementationType.entity().map(ResolvedTypeName::qualifiedName))
+                .storageNames(implementationType.storageNames())
                 .build());
     }
 
     private void visitDataAccessImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        var definitionType = new DataAccessImplementationType(resolvedTypeDeclaration);
+        var implementationType = new DataAccessImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .entityDefinitionQualifiedClassName(definitionType.entity().map(ResolvedTypeName::qualifiedName))
-                .storageNames(asList(definitionType.storageName()))
+                .entityImplementationQualifiedClassName(implementationType.dataImplementation().map(ResolvedTypeName::qualifiedName))
+                .entityDefinitionQualifiedClassName(implementationType.aggregateRoot().map(ResolvedTypeName::qualifiedName))
+                .storageNames(asList(implementationType.storageName()))
                 .build());
     }
 

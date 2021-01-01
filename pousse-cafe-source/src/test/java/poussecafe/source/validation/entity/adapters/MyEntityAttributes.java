@@ -1,7 +1,8 @@
-package poussecafe.source.validation.entity;
+package poussecafe.source.validation.entity.adapters;
 
 import poussecafe.attribute.Attribute;
 import poussecafe.discovery.DataImplementation;
+import poussecafe.source.validation.entity.MyEntity;
 
 import static poussecafe.attribute.AttributeBuilder.single;
 

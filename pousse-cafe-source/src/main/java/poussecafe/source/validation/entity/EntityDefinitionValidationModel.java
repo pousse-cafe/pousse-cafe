@@ -9,9 +9,9 @@ import poussecafe.source.validation.model.EntityImplementation;
 
 import static java.util.Objects.requireNonNull;
 
-class EntityValidationModel {
+class EntityDefinitionValidationModel {
 
-    EntityValidationModel(String entityIdentifier) {
+    EntityDefinitionValidationModel(String entityIdentifier) {
         requireNonNull(entityIdentifier);
         this.entityIdentifier = entityIdentifier;
     }
