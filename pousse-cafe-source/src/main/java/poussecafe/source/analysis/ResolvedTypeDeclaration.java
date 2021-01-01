@@ -88,6 +88,11 @@ public class ResolvedTypeDeclaration {
                 .build();
     }
 
+    public boolean isConcrete() {
+        return !declaration.isInterface()
+                && !modifiers().isAbstract();
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();

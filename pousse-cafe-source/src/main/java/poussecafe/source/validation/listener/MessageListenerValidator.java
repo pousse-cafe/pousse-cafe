@@ -5,6 +5,7 @@ import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.model.MessageListener;
+import poussecafe.source.validation.model.Runner;
 import poussecafe.source.validation.model.ValidationModel;
 
 public class MessageListenerValidator extends SubValidator {
@@ -52,12 +53,57 @@ public class MessageListenerValidator extends SubValidator {
         }
 
         if(listener.containerType() == MessageListenerContainerType.ROOT
-            && listener.runnerQualifiedClassName().isEmpty()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(listener.sourceFileLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("An aggregate root message listener must have a runner")
-                        .build());
+                && listener.runnerQualifiedClassName().isEmpty()) {
+            messages.add(new ValidationMessage.Builder()
+                    .location(listener.sourceFileLine())
+                    .type(ValidationMessageType.ERROR)
+                    .message("An aggregate root message listener must have a runner")
+                    .build());
+        }
+
+        if(listener.containerType() != MessageListenerContainerType.ROOT
+                && listener.runnerQualifiedClassName().isPresent()) {
+            messages.add(new ValidationMessage.Builder()
+                    .location(listener.sourceFileLine())
+                    .type(ValidationMessageType.WARNING)
+                    .message("Only aggregate root message listeners need a runner")
+                    .build());
+        }
+
+        if(canValidateRunner(listener)) {
+            validateListenerRunner(listener);
+        }
+    }
+
+    private boolean canValidateRunner(MessageListener listener) {
+        return listener.containerType() == MessageListenerContainerType.ROOT
+                && listener.runnerQualifiedClassName().isPresent()
+                && listener.consumedMessageQualifiedClassName().isPresent()
+                && model.hasMessageDefinition(listener.consumedMessageQualifiedClassName().orElseThrow());
+    }
+
+    private void validateListenerRunner(MessageListener listener) {
+        var runnerClassQualifiedName = listener.runnerQualifiedClassName().orElseThrow();
+        var runner = model.runner(runnerClassQualifiedName);
+        if(runner.isEmpty()) {
+            messages.add(new ValidationMessage.Builder()
+                    .location(listener.sourceFileLine())
+                    .type(ValidationMessageType.ERROR)
+                    .message("Runner class does not implement AggregateMessageListenerRunner interface or is not concrete")
+                    .build());
+        } else {
+            validateConcreteRunner(listener, runner.get());
+        }
+    }
+
+    private void validateConcreteRunner(MessageListener listener, Runner runner) {
+        var messageDefinitionQualifiedName = listener.consumedMessageQualifiedClassName().orElseThrow();
+        if(!runner.typeParametersQualifiedNames().contains(messageDefinitionQualifiedName)) {
+            messages.add(new ValidationMessage.Builder()
+                    .location(runner.sourceFileLine())
+                    .type(ValidationMessageType.WARNING)
+                    .message("Runner does not handle listener's consumed message")
+                    .build());
         }
     }
 

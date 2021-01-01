@@ -3,6 +3,8 @@ package poussecafe.source.validation.listener;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.junit.Test;
+import poussecafe.source.validation.ValidationMessage;
+import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.ValidatorTest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,6 +21,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
         givenMessageImplementations();
         givenContainer();
         givenAggregateImplementation();
+        givenRunner();
         whenValidating();
         thenNoMessage();
     }
@@ -47,6 +50,10 @@ public class MessageListenerValidatorTest extends ValidatorTest {
         validator.includeFile(path("MyAggregateDataAccess"));
     }
 
+    private void givenRunner() throws IOException {
+        validator.includeFile(path("UpdatorRunner"));
+    }
+
     @Test
     public void missingMessageDefinitionError() throws IOException {
         givenValidator();
@@ -65,5 +72,48 @@ public class MessageListenerValidatorTest extends ValidatorTest {
         assertTrue(result.messages().stream().anyMatch(message -> message.location().line() == 16));
         assertTrue(result.messages().stream().anyMatch(message -> message.location().line() == 24));
         assertTrue(result.messages().stream().anyMatch(message -> message.location().line() == 36));
+    }
+
+    @Test
+    public void missingRunnerThenError() throws IOException {
+        givenValidator();
+        givenListenerWithoutRunner();
+        whenValidating();
+        thenAtLeast(this::missingRunnerError);
+    }
+
+    private void givenListenerWithoutRunner() throws IOException {
+        validator.includeFile(path("AggregateRootWithoutRunner"));
+    }
+
+    private boolean missingRunnerError(ValidationMessage message) {
+        return message.location().sourceFile().id().endsWith("/AggregateRootWithoutRunner.java")
+                && message.location().line() == 10
+                && message.type() == ValidationMessageType.ERROR;
+    }
+
+    @Test
+    public void wrongRunnerThenWarning() throws IOException {
+        givenValidator();
+        givenMessageDefinitions();
+        givenMessageImplementations();
+        givenListenerWithWrongRunner();
+        givenWrongRunner();
+        whenValidating();
+        thenAtLeast(this::wrongRunnerWarning);
+    }
+
+    private void givenListenerWithWrongRunner() throws IOException {
+        validator.includeFile(path("AggregateRootWithWrongRunner"));
+    }
+
+    private void givenWrongRunner() throws IOException {
+        validator.includeFile(path("WrongRunner"));
+    }
+
+    private boolean wrongRunnerWarning(ValidationMessage message) {
+        return message.location().sourceFile().id().endsWith("/WrongRunner.java")
+                && message.location().line() == 5
+                && message.type() == ValidationMessageType.WARNING;
     }
 }

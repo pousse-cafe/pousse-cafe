@@ -2,8 +2,11 @@ package poussecafe.source.validation.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class ValidationModel {
@@ -63,5 +66,15 @@ public class ValidationModel {
 
     public List<MessageListener> messageListeners() {
         return Collections.unmodifiableList(listeners);
+    }
+
+    public void addRunner(Runner runner) {
+        runners.put(runner.classQualifiedName(), runner);
+    }
+
+    private Map<String, Runner> runners = new HashMap<>();
+
+    public Optional<Runner> runner(String runnerClassQualifiedName) {
+        return Optional.ofNullable(runners.get(runnerClassQualifiedName));
     }
 }

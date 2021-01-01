@@ -19,6 +19,7 @@ import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
+import poussecafe.source.analysis.RunnerClass;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
@@ -27,6 +28,7 @@ import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
 import poussecafe.source.validation.model.MessageImplementation;
 import poussecafe.source.validation.model.MessageListener;
+import poussecafe.source.validation.model.Runner;
 import poussecafe.source.validation.model.ValidationModel;
 
 import static java.util.Arrays.asList;
@@ -39,21 +41,29 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         var resolvedTypeDeclaration = resolve(node);
         if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)) {
             visitMessageDefinition(resolvedTypeDeclaration);
+            return false;
         } else if(MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
             visitMessageImplementation(resolvedTypeDeclaration);
+            return false;
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
             visitEntityDefinition(resolvedTypeDeclaration);
             if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
                 return true; // Visit listeners
+            } else {
+                return false;
             }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
             visitEntityImplementation(resolvedTypeDeclaration);
+            return false;
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
             visitDataAccessImplementation(resolvedTypeDeclaration);
-        } else if(MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration)) {
-            return true;
+            return false;
+        } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
+            visitRunner(resolvedTypeDeclaration);
+            return false;
+        } else {
+            return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
         }
-        return false;
     }
 
     private void visitMessageDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
@@ -111,6 +121,15 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .entityImplementationQualifiedClassName(implementationType.dataImplementation().map(ResolvedTypeName::qualifiedName))
                 .entityDefinitionQualifiedClassName(implementationType.aggregateRoot().map(ResolvedTypeName::qualifiedName))
                 .storageNames(asList(implementationType.storageName()))
+                .build());
+    }
+
+    private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var runnerClass = new RunnerClass(resolvedTypeDeclaration);
+        model.addRunner(new Runner.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .classQualifiedName(resolvedTypeDeclaration.name().qualifiedName())
+                .typeParametersQualifiedNames(runnerClass.typeParametersQualifiedNames())
                 .build());
     }
 
