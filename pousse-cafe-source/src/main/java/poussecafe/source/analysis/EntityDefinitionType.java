@@ -7,7 +7,12 @@ public class EntityDefinitionType {
     }
 
     public String name() {
-        return typeName.name().simpleName();
+        if(typeName.name().instanceOf(CompilationUnitResolver.AGGREGATE_ROOT_CLASS)
+                && typeName.isInnerClass()) {
+            return typeName.declaringType().name().simpleName();
+        } else {
+            return typeName.name().simpleName();
+        }
     }
 
     private ResolvedTypeDeclaration typeName;

@@ -1,6 +1,7 @@
 package poussecafe.source.validation.model;
 
 import java.util.Optional;
+import poussecafe.source.analysis.ResolvedClass;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.validation.SourceFileLine;
 
@@ -32,11 +33,11 @@ public class MessageListener {
 
     private boolean returnsValue;
 
-    public Optional<String> consumedMessageQualifiedClassName() {
-        return consumedMessageQualifiedClassName;
+    public Optional<ResolvedClass> consumedMessageClass() {
+        return consumedMessageClass;
     }
 
-    private Optional<String> consumedMessageQualifiedClassName = Optional.empty();
+    private Optional<ResolvedClass> consumedMessageClass = Optional.empty();
 
     public int parametersCount() {
         return parametersCount;
@@ -55,7 +56,7 @@ public class MessageListener {
         public MessageListener build() {
             requireNonNull(listener.sourceFileLine);
             requireNonNull(listener.runnerQualifiedClassName);
-            requireNonNull(listener.consumedMessageQualifiedClassName);
+            requireNonNull(listener.consumedMessageClass);
             requireNonNull(listener.containerType);
             return listener;
         }
@@ -82,8 +83,8 @@ public class MessageListener {
             return this;
         }
 
-        public Builder consumedMessageQualifiedClassName(Optional<String> consumedMessageQualifiedClassName) {
-            listener.consumedMessageQualifiedClassName = consumedMessageQualifiedClassName;
+        public Builder consumedMessageClass(Optional<ResolvedClass> consumedMessageQualifiedClassName) {
+            listener.consumedMessageClass = consumedMessageQualifiedClassName;
             return this;
         }
 

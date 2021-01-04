@@ -93,6 +93,17 @@ public class ResolvedTypeDeclaration {
                 && !modifiers().isAbstract();
     }
 
+    public boolean isInnerClass() {
+        return declaration.getParent() instanceof TypeDeclaration;
+    }
+
+    public ResolvedTypeDeclaration declaringType() {
+        return new Builder()
+                .withDeclaration((TypeDeclaration) declaration.getParent())
+                .withResolver(resolver)
+                .build();
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();

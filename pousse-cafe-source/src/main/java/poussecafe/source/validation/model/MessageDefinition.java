@@ -1,19 +1,23 @@
 package poussecafe.source.validation.model;
 
+import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.validation.names.NamedComponent;
 
 import static java.util.Objects.requireNonNull;
 
-public class MessageDefinition {
+public class MessageDefinition implements NamedComponent {
 
     private String messageName;
 
-    public String messageName() {
+    @Override
+    public String name() {
         return messageName;
     }
 
     private SourceFileLine sourceFileLine;
 
+    @Override
     public SourceFileLine sourceFileLine() {
         return sourceFileLine;
     }
@@ -23,6 +27,11 @@ public class MessageDefinition {
     }
 
     private String qualifiedClassName;
+
+    @Override
+    public Name className() {
+        return new Name(qualifiedClassName);
+    }
 
     public static class Builder {
 

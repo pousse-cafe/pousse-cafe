@@ -25,6 +25,7 @@ import poussecafe.domain.Entity;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.domain.EntityDataAccess;
 import poussecafe.domain.Factory;
+import poussecafe.domain.Module;
 import poussecafe.domain.Repository;
 import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.messaging.Message;
@@ -250,6 +251,8 @@ public class CompilationUnitResolver implements Resolver {
     public static final String DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS = DataAccessImplementation.class.getCanonicalName();
 
     public static final String AGGREGATE_MESSAGE_LISTENER_RUNNER_INTERFACE = AggregateMessageListenerRunner.class.getCanonicalName();
+
+    public static final String MODULE_INTERFACE = Module.class.getCanonicalName();
 
     public static class Builder {
 

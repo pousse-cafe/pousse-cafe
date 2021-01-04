@@ -77,4 +77,24 @@ public class ValidationModel {
     public Optional<Runner> runner(String runnerClassQualifiedName) {
         return Optional.ofNullable(runners.get(runnerClassQualifiedName));
     }
+
+    public void addModule(Module module) {
+        modules.add(module);
+    }
+
+    private List<Module> modules = new ArrayList<>();
+
+    public List<Module> modules() {
+        return Collections.unmodifiableList(modules);
+    }
+
+    public void addProcessDefinition(ProcessDefinition processDefinition) {
+        processDefinitions.add(processDefinition);
+    }
+
+    private List<ProcessDefinition> processDefinitions = new ArrayList<>();
+
+    public List<ProcessDefinition> processes() {
+        return Collections.unmodifiableList(processDefinitions);
+    }
 }

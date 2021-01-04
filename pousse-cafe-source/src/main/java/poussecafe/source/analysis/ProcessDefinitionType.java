@@ -18,4 +18,8 @@ public class ProcessDefinitionType {
     public String processName() {
         return resolvedTypeDeclaration.name().simpleName();
     }
+
+    public Name className() {
+        return new Name(resolvedTypeDeclaration.name().qualifiedName());
+    }
 }

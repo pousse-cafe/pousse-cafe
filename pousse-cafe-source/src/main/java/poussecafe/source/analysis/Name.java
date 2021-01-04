@@ -25,6 +25,10 @@ public class Name {
 
     private String qualifier;
 
+    public String qualifier() {
+        return qualifier;
+    }
+
     public boolean isSimpleName() {
         return !qualified;
     }
@@ -69,7 +73,7 @@ public class Name {
 
     public Name(String name) {
         requireNonNull(name);
-        this.qualifiedName = name;
+        qualifiedName = name;
         evaluate();
     }
 

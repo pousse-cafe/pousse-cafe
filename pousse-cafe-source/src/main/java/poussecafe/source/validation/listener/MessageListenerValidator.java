@@ -1,5 +1,7 @@
 package poussecafe.source.validation.listener;
 
+import poussecafe.source.analysis.CompilationUnitResolver;
+import poussecafe.source.analysis.ResolvedClass;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
@@ -34,12 +36,12 @@ public class MessageListenerValidator extends SubValidator {
                     .build());
         }
 
-        if(listener.consumedMessageQualifiedClassName().isEmpty()
-                || !model.hasMessageDefinition(listener.consumedMessageQualifiedClassName().orElseThrow())) {
+        if(listener.consumedMessageClass().isEmpty()
+                || !isMessage(listener.consumedMessageClass().orElseThrow())) {
             messages.add(new ValidationMessage.Builder()
                     .location(listener.sourceFileLine())
                     .type(ValidationMessageType.ERROR)
-                    .message("A message listener must consume a message i.e. have a message definition type as single parameter's type")
+                    .message("A message listener must consume a message i.e. have a subclass of Message as single parameter's type")
                     .build());
         }
 
@@ -75,11 +77,19 @@ public class MessageListenerValidator extends SubValidator {
         }
     }
 
+    private boolean isMessage(ResolvedClass consumedMessageClass) {
+        try {
+            return consumedMessageClass.instanceOf(CompilationUnitResolver.MESSAGE_CLASS);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     private boolean canValidateRunner(MessageListener listener) {
         return listener.containerType() == MessageListenerContainerType.ROOT
                 && listener.runnerQualifiedClassName().isPresent()
-                && listener.consumedMessageQualifiedClassName().isPresent()
-                && model.hasMessageDefinition(listener.consumedMessageQualifiedClassName().orElseThrow());
+                && listener.consumedMessageClass().isPresent()
+                && isMessage(listener.consumedMessageClass().orElseThrow());
     }
 
     private void validateListenerRunner(MessageListener listener) {
@@ -97,7 +107,7 @@ public class MessageListenerValidator extends SubValidator {
     }
 
     private void validateConcreteRunner(MessageListener listener, Runner runner) {
-        var messageDefinitionQualifiedName = listener.consumedMessageQualifiedClassName().orElseThrow();
+        var messageDefinitionQualifiedName = listener.consumedMessageClass().orElseThrow().name().qualified();
         if(!runner.typeParametersQualifiedNames().contains(messageDefinitionQualifiedName)) {
             messages.add(new ValidationMessage.Builder()
                     .location(runner.sourceFileLine())

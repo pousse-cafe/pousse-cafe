@@ -6,21 +6,14 @@ import poussecafe.source.validation.names.NamedComponent;
 
 import static java.util.Objects.requireNonNull;
 
-public class EntityDefinition implements NamedComponent {
-
-    private String entityName;
-
-    @Override
-    public String name() {
-        return entityName;
-    }
-
-    private SourceFileLine sourceFileLine;
+public class ProcessDefinition implements NamedComponent {
 
     @Override
     public SourceFileLine sourceFileLine() {
         return sourceFileLine;
     }
+
+    private SourceFileLine sourceFileLine;
 
     @Override
     public Name className() {
@@ -29,21 +22,23 @@ public class EntityDefinition implements NamedComponent {
 
     private Name className;
 
+    @Override
+    public String name() {
+        return name;
+    }
+
+    private String name;
+
     public static class Builder {
 
-        public EntityDefinition build() {
-            requireNonNull(definition.entityName);
+        public ProcessDefinition build() {
             requireNonNull(definition.sourceFileLine);
             requireNonNull(definition.className);
+            requireNonNull(definition.name);
             return definition;
         }
 
-        private EntityDefinition definition = new EntityDefinition();
-
-        public Builder entityName(String entityName) {
-            definition.entityName = entityName;
-            return this;
-        }
+        private ProcessDefinition definition = new ProcessDefinition();
 
         public Builder sourceFileLine(SourceFileLine sourceFileLine) {
             definition.sourceFileLine = sourceFileLine;
@@ -54,9 +49,14 @@ public class EntityDefinition implements NamedComponent {
             definition.className = className;
             return this;
         }
+
+        public Builder name(String name) {
+            definition.name = name;
+            return this;
+        }
     }
 
-    private EntityDefinition() {
+    private ProcessDefinition() {
 
     }
 }

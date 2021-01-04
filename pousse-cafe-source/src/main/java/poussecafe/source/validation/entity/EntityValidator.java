@@ -32,7 +32,7 @@ public class EntityValidator extends SubValidator {
     private HashMap<String, EntityDefinitionValidationModel> buildEntityDefinitionValidationModels() {
         var entiyValidations = new HashMap<String, EntityDefinitionValidationModel>();
         for(EntityDefinition definition : model.entityDefinitions()) {
-            var definitionIdentifier = definition.qualifiedClassName();
+            var definitionIdentifier = definition.className().qualified();
             var validationModel = entiyValidations.computeIfAbsent(definitionIdentifier,
                     EntityDefinitionValidationModel::new);
             validationModel.includeDefinition(definition);

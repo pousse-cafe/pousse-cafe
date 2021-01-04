@@ -15,6 +15,9 @@ import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.MessageListenerMethod;
+import poussecafe.source.analysis.ModuleClass;
+import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
@@ -28,6 +31,8 @@ import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
 import poussecafe.source.validation.model.MessageImplementation;
 import poussecafe.source.validation.model.MessageListener;
+import poussecafe.source.validation.model.Module;
+import poussecafe.source.validation.model.ProcessDefinition;
 import poussecafe.source.validation.model.Runner;
 import poussecafe.source.validation.model.ValidationModel;
 
@@ -60,6 +65,12 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
             return false;
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
             visitRunner(resolvedTypeDeclaration);
+            return false;
+        } else if(ModuleClass.isModule(resolvedTypeDeclaration)) {
+            visitModule(resolvedTypeDeclaration);
+            return false;
+        } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
+            visitProcessDefinition(resolvedTypeDeclaration);
             return false;
         } else {
             return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
@@ -100,7 +111,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         model.addEntityDefinition(new EntityDefinition.Builder()
                 .entityName(definitionType.name())
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
+                .className(new Name(resolvedTypeDeclaration.name().qualifiedName()))
                 .build());
     }
 
@@ -133,6 +144,23 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .build());
     }
 
+    private void visitModule(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var runnerClass = new ModuleClass(resolvedTypeDeclaration);
+        model.addModule(new Module.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .name(runnerClass.className())
+                .build());
+    }
+
+    private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var processDefinitionClass = new ProcessDefinitionType(resolvedTypeDeclaration);
+        model.addProcessDefinition(new ProcessDefinition.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(processDefinitionClass.className())
+                .name(processDefinitionClass.processName())
+                .build());
+    }
+
     @Override
     public boolean visit(MethodDeclaration node) {
         var method = currentResolver().resolve(node);
@@ -149,7 +177,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .isPublic(method.modifiers().hasVisibility(Visibility.PUBLIC))
                 .runnerQualifiedClassName(messageListenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                 .returnsValue(messageListenerMethod.returnType().isPresent())
-                .consumedMessageQualifiedClassName(messageListenerMethod.consumedMessage().map(ResolvedTypeName::qualifiedName))
+                .consumedMessageClass(messageListenerMethod.consumedMessage().map(ResolvedTypeName::resolvedClass))
                 .parametersCount(method.declaration().parameters().size())
                 .containerType(messageListenerContainerType(method.declaringType()))
                 .build());
