@@ -2,6 +2,7 @@ package poussecafe.source.validation;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.function.Predicate;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.Name;
@@ -12,8 +13,11 @@ import static org.junit.Assert.fail;
 public abstract class ValidatorTest {
 
     protected void givenValidator() {
-        validator = new Validator(new ClassLoaderClassResolver());
+        classPathExplorer = new ClassPathExplorerMock();
+        validator = new Validator(new ClassLoaderClassResolver(), Optional.of(classPathExplorer));
     }
+
+    private ClassPathExplorerMock classPathExplorer;
 
     protected Validator validator;
 
@@ -71,5 +75,9 @@ public abstract class ValidatorTest {
         } catch (IOException e) {
             fail(e.toString());
         }
+    }
+
+    protected void addSubType(Name superTypeName, Name subtype) {
+        classPathExplorer.addSubType(superTypeName, subtype);
     }
 }

@@ -1,5 +1,6 @@
 package poussecafe.source.validation.names;
 
+import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SourceFileLine;
@@ -23,8 +24,8 @@ public class NameResolutionTest {
     private NamedComponent component(Name className, String name) {
         return new NamedComponent() {
             @Override
-            public SourceFileLine sourceFileLine() {
-                return mock(SourceFileLine.class);
+            public Optional<SourceFileLine> sourceFileLine() {
+                return Optional.empty();
             }
 
             @Override

@@ -1,6 +1,8 @@
-package poussecafe.source.validation.namesnomodule;
+package poussecafe.source.validation.namesexternalmodule;
 
 import org.junit.Test;
+import poussecafe.source.analysis.CompilationUnitResolver;
+import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.ValidatorTest;
@@ -46,5 +48,22 @@ public class DefaultModuleWarningTest extends ValidatorTest {
 
     private boolean processWarning(ValidationMessage message) {
         return defaultModuleWarning(message, "/MyProcess.java");
+    }
+
+    @Test
+    public void externalModuleNoMessage() {
+        givenValidator();
+        givenExternalModule();
+        givenComponents();
+        whenValidating();
+        thenNone(this::aggregateWarning);
+        thenNone(this::entityWarning);
+        thenNone(this::messageWarning);
+        thenNone(this::processWarning);
+    }
+
+    private void givenExternalModule() {
+        addSubType(new Name(CompilationUnitResolver.MODULE_INTERFACE),
+                new Name("poussecafe.source.validation.namesexternalmodule.MyModule"));
     }
 }

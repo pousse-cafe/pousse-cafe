@@ -50,17 +50,21 @@ public class NamesValidator extends SubValidator {
             var componentsWithSameName = entry.getValue();
             if(componentsWithSameName.size() > 1) {
                 for(T component : componentsWithSameName) {
-                    messages.add(new ValidationMessage.Builder()
-                            .location(component.sourceFileLine())
-                            .type(ValidationMessageType.ERROR)
-                            .message(componentName + " with same name already exists")
-                            .build());
+                    var sourceFileLine = component.sourceFileLine();
+                    if(sourceFileLine.isPresent()) {
+                        messages.add(new ValidationMessage.Builder()
+                                .location(sourceFileLine.get())
+                                .type(ValidationMessageType.ERROR)
+                                .message(componentName + " with same name already exists")
+                                .build());
+                    }
                 }
             } else {
                 var component = componentsWithSameName.get(0);
-                if(warnIfNotQualified && !name.isQualifiedName()) {
+                var sourceFileLine = component.sourceFileLine();
+                if(warnIfNotQualified && !name.isQualifiedName() && sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
-                            .location(component.sourceFileLine())
+                            .location(sourceFileLine.get())
                             .type(ValidationMessageType.WARNING)
                             .message(componentName + " is in default module")
                             .build());

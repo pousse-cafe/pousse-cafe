@@ -1,6 +1,7 @@
 package poussecafe.source.validation.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.source.analysis.Name;
 
 public class ValidationModel {
 
@@ -79,13 +81,13 @@ public class ValidationModel {
     }
 
     public void addModule(Module module) {
-        modules.add(module);
+        modules.put(module.className(), module);
     }
 
-    private List<Module> modules = new ArrayList<>();
+    private Map<Name, Module> modules = new HashMap<>();
 
-    public List<Module> modules() {
-        return Collections.unmodifiableList(modules);
+    public Collection<Module> modules() {
+        return Collections.unmodifiableCollection(modules.values());
     }
 
     public void addProcessDefinition(ProcessDefinition processDefinition) {
@@ -96,5 +98,11 @@ public class ValidationModel {
 
     public List<ProcessDefinition> processes() {
         return Collections.unmodifiableList(processDefinitions);
+    }
+
+    public void addClassPathModule(Module module) {
+        if(!modules.containsKey(module.className())) {
+            addModule(module);
+        }
     }
 }

@@ -8,10 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.domain.AggregateFactory;
@@ -38,30 +34,8 @@ class ClassPathExplorer {
 
     ClassPathExplorer(Collection<String> basePackages) {
         var completedBasePackages = withPousseCafeBasePackages(basePackages);
-
-        ConfigurationBuilder reflectionsConfigurationBuilder = new ConfigurationBuilder();
-        FilterBuilder filter = new FilterBuilder();
-        ClassLoader[] classLoaders = null;
-        for(String basePackage : completedBasePackages) {
-            validOrThrow(basePackage);
-            String packageRootPrefix = basePackage + ".";
-            filter.includePackage(packageRootPrefix);
-            reflectionsConfigurationBuilder.addUrls(ClasspathHelper.forPackage(packageRootPrefix, classLoaders));
-        }
-        filter.exclude(".*\\.java");
-
-        reflectionsConfigurationBuilder.filterInputsBy(filter);
-        reflectionsConfigurationBuilder.setExpandSuperTypes(false);
-        reflections = new Reflections(reflectionsConfigurationBuilder);
+        reflections = new ReflectionsWrapper(completedBasePackages);
     }
-
-    private void validOrThrow(String basePackage) {
-        if(!basePackage.matches(VALID_PACKAGE_NAME_REGEX)) {
-            throw new IllegalArgumentException("Invalid package name " + basePackage);
-        }
-    }
-
-    private static final String VALID_PACKAGE_NAME_REGEX = "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]$";
 
     private HashSet<String> withPousseCafeBasePackages(Collection<String> basePackages) {
         var completedBasePackages = new HashSet<>(basePackages);
@@ -71,7 +45,7 @@ class ClassPathExplorer {
         return completedBasePackages;
     }
 
-    private Reflections reflections;
+    private ReflectionsWrapper reflections;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<AggregateDefinition> discoverAggregates(Class<? extends Module> moduleClass) {

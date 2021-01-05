@@ -25,9 +25,11 @@ public class Modules {
     public List<ValidationMessage> checkModulesPartition() {
         var messages = new ArrayList<ValidationMessage>();
         for(int i = sortedModules.length - 1; i >= 1; --i) {
-            if(sortedModules[i].basePackage().startsWith(sortedModules[i - 1].basePackage())) {
+            var sourceFileLine = sortedModules[i].sourceFileLine();
+            if(sourceFileLine.isPresent()
+                    && sortedModules[i].basePackage().startsWith(sortedModules[i - 1].basePackage())) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(sortedModules[i].sourceFileLine())
+                        .location(sourceFileLine.get())
                         .type(ValidationMessageType.ERROR)
                         .message("Base package is a subpackage of module " + sortedModules[i - 1].className())
                         .build());

@@ -4,6 +4,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import poussecafe.util.Equality;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -16,6 +18,10 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
     }
 
     private Class<?> classObject;
+
+    public Class<?> classObject() {
+        return classObject;
+    }
 
     @Override
     public List<ResolvedClass> innerClasses() {
@@ -94,5 +100,17 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
 
     private ClassLoaderResolvedClass() {
 
+    }
+
+    @Override
+    public int hashCode() {
+        return classObject.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(classObject, other.classObject)
+                .build());
     }
 }

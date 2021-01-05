@@ -1,5 +1,6 @@
 package poussecafe.source.validation.model;
 
+import java.util.Optional;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SourceFileLine;
 import poussecafe.source.validation.names.NamedComponent;
@@ -15,10 +16,10 @@ public class EntityDefinition implements NamedComponent {
         return entityName;
     }
 
-    private SourceFileLine sourceFileLine;
+    private Optional<SourceFileLine> sourceFileLine;
 
     @Override
-    public SourceFileLine sourceFileLine() {
+    public Optional<SourceFileLine> sourceFileLine() {
         return sourceFileLine;
     }
 
@@ -46,7 +47,7 @@ public class EntityDefinition implements NamedComponent {
         }
 
         public Builder sourceFileLine(SourceFileLine sourceFileLine) {
-            definition.sourceFileLine = sourceFileLine;
+            definition.sourceFileLine = Optional.of(sourceFileLine);
             return this;
         }
 

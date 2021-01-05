@@ -1,4 +1,4 @@
-package poussecafe.source.validation.namesnomodule;
+package poussecafe.source.validation.namesexternalmodule;
 
 import poussecafe.runtime.Command;
 

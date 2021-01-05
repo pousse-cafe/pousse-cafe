@@ -1,5 +1,6 @@
 package poussecafe.source.validation.model;
 
+import java.util.Optional;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SourceFileLine;
 import poussecafe.source.validation.names.NamedComponent;
@@ -9,11 +10,11 @@ import static java.util.Objects.requireNonNull;
 public class ProcessDefinition implements NamedComponent {
 
     @Override
-    public SourceFileLine sourceFileLine() {
+    public Optional<SourceFileLine> sourceFileLine() {
         return sourceFileLine;
     }
 
-    private SourceFileLine sourceFileLine;
+    private Optional<SourceFileLine> sourceFileLine;
 
     @Override
     public Name className() {
@@ -41,7 +42,7 @@ public class ProcessDefinition implements NamedComponent {
         private ProcessDefinition definition = new ProcessDefinition();
 
         public Builder sourceFileLine(SourceFileLine sourceFileLine) {
-            definition.sourceFileLine = sourceFileLine;
+            definition.sourceFileLine = Optional.of(sourceFileLine);
             return this;
         }
 

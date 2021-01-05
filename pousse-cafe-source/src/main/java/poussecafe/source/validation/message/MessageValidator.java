@@ -71,11 +71,14 @@ public class MessageValidator extends SubValidator {
     private void errorConflictingMessageDefinitionsValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasConflictingDefinitions()) {
             for(MessageDefinition definition : messageValidationModel.definitions()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("Conflicting definitions for message " + messageValidationModel.messageIdentifier() + ", make implementations mutually exclusive w.r.t. messaging name")
-                        .build());
+                var sourceFileLine = definition.sourceFileLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.ERROR)
+                            .message("Conflicting definitions for message " + messageValidationModel.messageIdentifier() + ", make implementations mutually exclusive w.r.t. messaging name")
+                            .build());
+                }
             }
         }
     }
@@ -83,11 +86,14 @@ public class MessageValidator extends SubValidator {
     private void errorNoMessageImplementationValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasNoImplementation()) {
             for(MessageDefinition definition : messageValidationModel.definitions()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("No implementation found for message " + messageValidationModel.messageIdentifier())
-                        .build());
+                var sourceFileLine = definition.sourceFileLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.ERROR)
+                            .message("No implementation found for message " + messageValidationModel.messageIdentifier())
+                            .build());
+                }
             }
         }
     }

@@ -56,11 +56,14 @@ public class EntityValidator extends SubValidator {
     private void applyConflictingMessageDefinitionsValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasConflictingDefinitions()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("Conflicting definitions for entity " + entiyValidationModel.entityIdentifier() + ", make implementations mutually exclusive w.r.t. entity name")
-                        .build());
+                var sourceFileLine = definition.sourceFileLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.ERROR)
+                            .message("Conflicting definitions for entity " + entiyValidationModel.entityIdentifier() + ", make implementations mutually exclusive w.r.t. entity name")
+                            .build());
+                }
             }
         }
     }
@@ -68,11 +71,14 @@ public class EntityValidator extends SubValidator {
     private void applyNoImplementationValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasNoImplementation()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine())
-                        .type(ValidationMessageType.WARNING)
-                        .message("No implementation found for entity " + entiyValidationModel.entityIdentifier())
-                        .build());
+                var sourceFileLine = definition.sourceFileLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.WARNING)
+                            .message("No implementation found for entity " + entiyValidationModel.entityIdentifier())
+                            .build());
+                }
             }
         }
     }
