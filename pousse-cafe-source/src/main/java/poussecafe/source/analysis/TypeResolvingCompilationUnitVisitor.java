@@ -5,6 +5,7 @@ import java.util.Deque;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -110,5 +111,10 @@ public abstract class TypeResolvingCompilationUnitVisitor extends ASTVisitor {
     protected TypeResolvingCompilationUnitVisitor(CompilationUnitResolver compilationUnitResolver) {
         requireNonNull(compilationUnitResolver);
         resolver = compilationUnitResolver;
+    }
+
+    @Override
+    public boolean visit(EnumDeclaration node) {
+        return false;
     }
 }

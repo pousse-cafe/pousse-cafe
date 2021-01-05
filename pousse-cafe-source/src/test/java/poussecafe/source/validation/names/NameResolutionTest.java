@@ -49,10 +49,10 @@ public class NameResolutionTest {
         resolved = modules.qualifyName(component);
     }
 
-    private String resolved;
+    private Name resolved;
 
     private void thenResultIs(String expected) {
-        assertThat(resolved, equalTo(expected));
+        assertThat(resolved, equalTo(new Name(expected)));
     }
 
     @Test

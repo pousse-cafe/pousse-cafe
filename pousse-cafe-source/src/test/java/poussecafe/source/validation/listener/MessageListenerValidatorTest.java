@@ -19,7 +19,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
         givenAggregateImplementation();
         givenRunner();
         whenValidating();
-        thenNoMessage();
+        thenNone(this::validContainerListenersMessage);
     }
 
     private void givenMessageDefinitions() {
@@ -48,6 +48,13 @@ public class MessageListenerValidatorTest extends ValidatorTest {
 
     private void givenRunner() throws IOException {
         validator.includeFile(path("UpdatorRunner"));
+    }
+
+    private boolean validContainerListenersMessage(ValidationMessage message) {
+        return message.location().sourceFile().id().endsWith("/MyAggregate.java")
+                && (message.location().line() == 16
+                        || message.location().line() == 24
+                        || message.location().line() == 36);
     }
 
     @Test

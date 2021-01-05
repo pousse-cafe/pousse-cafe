@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Function;
+import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
@@ -25,19 +27,22 @@ public class NamesValidator extends SubValidator {
     }
 
     private void checkModulesUniqueness() {
-        checkNameUniqueness(model.modules(), NamedComponent::name, "Module");
+        checkNameUniqueness(model.modules(), module -> new Name(module.name()), "Module", false);
     }
 
     private <T extends NamedComponent> void checkNameUniqueness(
             Collection<T> items,
-            Function<T, String> nameProvider,
-            String componentName) {
-        var names = new HashMap<String, List<T>>();
+            Function<T, Name> nameProvider,
+            String componentName,
+            boolean warnIfNotQualified) {
+        var names = new HashMap<Name, List<T>>();
         for(T component : items) {
             var componentsWithName = names.computeIfAbsent(nameProvider.apply(component), key -> new ArrayList<>());
             componentsWithName.add(component);
         }
-        for(List<T> componentsWithSameName : names.values()) {
+        for(Entry<Name, List<T>> entry : names.entrySet()) {
+            var name = entry.getKey();
+            var componentsWithSameName = entry.getValue();
             if(componentsWithSameName.size() > 1) {
                 for(T component : componentsWithSameName) {
                     messages.add(new ValidationMessage.Builder()
@@ -46,20 +51,29 @@ public class NamesValidator extends SubValidator {
                             .message(componentName + " with same name already exists")
                             .build());
                 }
+            } else {
+                var component = componentsWithSameName.get(0);
+                if(warnIfNotQualified && !name.isQualifiedName()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(component.sourceFileLine())
+                            .type(ValidationMessageType.WARNING)
+                            .message(componentName + " is in default module")
+                            .build());
+                }
             }
         }
     }
 
     private void checkEntitiesUniqueness(Modules modules) {
-        checkNameUniqueness(model.entityDefinitions(), modules::qualifyName, "Entity");
+        checkNameUniqueness(model.entityDefinitions(), modules::qualifyName, "Entity", true);
     }
 
     private void checkMessagesUniqueness(Modules modules) {
-        checkNameUniqueness(model.messageDefinitions(), modules::qualifyName, "Message");
+        checkNameUniqueness(model.messageDefinitions(), modules::qualifyName, "Message", true);
     }
 
     private void checkProcessesUniqueness(Modules modules) {
-        checkNameUniqueness(model.processes(), modules::qualifyName, "Process");
+        checkNameUniqueness(model.processes(), modules::qualifyName, "Process", true);
     }
 
     public NamesValidator(ValidationModel model) {

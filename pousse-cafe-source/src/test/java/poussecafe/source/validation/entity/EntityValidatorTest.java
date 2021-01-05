@@ -3,12 +3,9 @@ package poussecafe.source.validation.entity;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.junit.Test;
+import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.ValidatorTest;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @SuppressWarnings("squid:S2699") // Assertions in parent class
 public class EntityValidatorTest extends ValidatorTest {
@@ -19,7 +16,7 @@ public class EntityValidatorTest extends ValidatorTest {
         givenDefinition();
         givenImplementation();
         whenValidating();
-        thenNoMessage();
+        thenNone(this::missingImplementationWarning);
     }
 
     private void givenDefinition() throws IOException {
@@ -39,15 +36,14 @@ public class EntityValidatorTest extends ValidatorTest {
         givenValidator();
         givenDefinition();
         whenValidating();
-        thenNoImplementationWarning();
+        thenAtLeast(this::missingImplementationWarning);
     }
 
-    private void thenNoImplementationWarning() {
-        assertThat(result.messages().size(), is(1));
-        var message = result.messages().get(0);
-        assertThat(message.type(), is(ValidationMessageType.WARNING));
-        assertThat(message.location().sourceFile().id(), equalTo(entityDefinitionSourcePath().toString()));
-        assertThat(message.location().line(), is(6));
+    private boolean missingImplementationWarning(ValidationMessage message) {
+        return message.type() == ValidationMessageType.WARNING
+            && message.location().sourceFile().id().equals(entityDefinitionSourcePath().toString())
+            && message.location().line() == 6
+            && message.message().contains("No implementation");
     }
 
     @Test
@@ -57,7 +53,7 @@ public class EntityValidatorTest extends ValidatorTest {
         givenAggregateRootImplementation();
         givenDataAccess();
         whenValidating();
-        thenNoMessage();
+        thenNone(this::missingAggregateRootImplementationWarning);
     }
 
     private void givenAggregateRootDefinition() throws IOException {
@@ -72,6 +68,13 @@ public class EntityValidatorTest extends ValidatorTest {
         validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityDataAccess.java"));
     }
 
+    private boolean missingAggregateRootImplementationWarning(ValidationMessage message) {
+        return message.type() == ValidationMessageType.WARNING
+            && message.location().sourceFile().id().endsWith("/MyAggregateRoot.java")
+            && message.location().line() == 6
+            && message.message().contains("No implementation");
+    }
+
     @Test
     public void aggregateRootWithSeveralDataAccessesNoMessage() throws IOException {
         givenValidator();
@@ -80,7 +83,7 @@ public class EntityValidatorTest extends ValidatorTest {
         givenDataAccess();
         givenDataAccess2();
         whenValidating();
-        thenNoMessage();
+        thenNone(this::missingAggregateRootImplementationWarning);
     }
 
     private void givenDataAccess2() throws IOException {
