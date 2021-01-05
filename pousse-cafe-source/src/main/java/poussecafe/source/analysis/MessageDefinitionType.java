@@ -5,9 +5,14 @@ import poussecafe.source.model.MessageType;
 public class MessageDefinitionType {
 
     public static boolean isMessageDefinition(ResolvedTypeDeclaration type) {
-        return type.name().instanceOf(CompilationUnitResolver.MESSAGE_CLASS)
+        return isCommandOrEvent(type)
                 && (isAbstractDefinition(type)
                         || isDefinitionAndImplementation(type));
+    }
+
+    private static boolean isCommandOrEvent(ResolvedTypeDeclaration type) {
+        return type.name().instanceOf(CompilationUnitResolver.COMMAND_INTERFACE)
+                || type.name().instanceOf(CompilationUnitResolver.DOMAIN_EVENT_INTERFACE);
     }
 
     private static boolean isAbstractDefinition(ResolvedTypeDeclaration type) {

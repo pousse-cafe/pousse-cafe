@@ -16,7 +16,7 @@ public class MessageValidatorTest extends ValidatorTest {
         givenDefinition();
         givenImplementation();
         whenValidating();
-        thenNone(this::missingImplementationWarning);
+        thenNone(this::missingImplementationError);
     }
 
     private void givenDefinition() throws IOException {
@@ -31,17 +31,46 @@ public class MessageValidatorTest extends ValidatorTest {
         validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "message", "Message1Data.java"));
     }
 
-    private boolean missingImplementationWarning(ValidationMessage message) {
-        return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().equals(messageDefinitionSourcePath().toString())
+    private boolean missingImplementationError(ValidationMessage message) {
+        return message.type() == ValidationMessageType.ERROR
                 && message.message().contains("No implementation");
     }
 
     @Test
-    public void messageWithoutImplementationLeadsWarning() throws IOException {
+    public void messageWithoutImplementationLeadsError() throws IOException {
         givenValidator();
         givenDefinition();
         whenValidating();
-        thenAtLeast(this::missingImplementationWarning);
+        thenAtLeast(this::missingImplementationError);
+    }
+
+    @Test
+    public void autoImplementedCommandNoWarning() throws IOException {
+        givenValidator();
+        givenAutoImplementedCommand();
+        whenValidating();
+        thenNone(this::missingImplementationError);
+    }
+
+    private void givenAutoImplementedCommand() {
+        includeClass(AutoImplementedCommand.class);
+    }
+
+    @Test
+    public void autoImplementedEventWarning() throws IOException {
+        givenValidator();
+        givenAutoImplementedEvent();
+        whenValidating();
+        thenAtLeast(this::autoImplementedEventWarning);
+    }
+
+    private void givenAutoImplementedEvent() {
+        includeClass(AutoImplementedEvent.class);
+    }
+
+    private boolean autoImplementedEventWarning(ValidationMessage message) {
+        return message.type() == ValidationMessageType.WARNING
+                && message.location().sourceFile().id().endsWith("/AutoImplementedEvent.java")
+                && message.message().contains("should not implement itself");
     }
 }

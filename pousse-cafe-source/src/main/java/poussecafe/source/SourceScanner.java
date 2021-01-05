@@ -36,7 +36,7 @@ public class SourceScanner implements SourceConsumer {
                 logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
             }
         } else if(unit.types().size() != 1) {
-            logger.info("Skipping {} because it contains unexptected number of types ({})", sourceId, unit.types().size());
+            logger.debug("Skipping {} because it does not contain a single type", sourceId);
         } else {
             try {
                 fileVisitor.visitFile(new SourceFile.Builder()

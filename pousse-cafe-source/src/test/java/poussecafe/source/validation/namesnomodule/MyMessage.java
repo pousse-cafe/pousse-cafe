@@ -1,7 +1,7 @@
 package poussecafe.source.validation.namesnomodule;
 
-import poussecafe.messaging.Message;
+import poussecafe.runtime.Command;
 
-public interface MyMessage extends Message {
+public interface MyMessage extends Command {
 
 }

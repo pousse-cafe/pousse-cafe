@@ -33,6 +33,12 @@ public class MessageDefinition implements NamedComponent {
         return new Name(qualifiedClassName);
     }
 
+    public boolean isEvent() {
+        return domainEvent;
+    }
+
+    private boolean domainEvent;
+
     public static class Builder {
 
         public MessageDefinition build() {
@@ -56,6 +62,11 @@ public class MessageDefinition implements NamedComponent {
 
         public Builder qualifiedClassName(String qualifiedClassName) {
             definition.qualifiedClassName = qualifiedClassName;
+            return this;
+        }
+
+        public Builder domainEvent(boolean domainEvent) {
+            definition.domainEvent = domainEvent;
             return this;
         }
     }

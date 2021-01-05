@@ -104,6 +104,10 @@ public class ResolvedTypeDeclaration {
                 .build();
     }
 
+    public Name className() {
+        return name().resolvedClass().name();
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();

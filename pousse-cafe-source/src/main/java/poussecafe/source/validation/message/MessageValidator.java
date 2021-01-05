@@ -18,9 +18,11 @@ public class MessageValidator extends SubValidator {
     public void validate() {
         var messageValidations = buildMessageValidationModels();
         for(MessageValidationModel messageValidationModel : messageValidations.values()) {
-            applyConflictingMessageDefinitionsValidation(messageValidationModel);
-            applyNoMessageImplementationValidation(messageValidationModel);
-            applyConflictingMessageImplementationsValidation(messageValidationModel);
+            warnNoDefinition(messageValidationModel);
+            errorConflictingMessageDefinitionsValidation(messageValidationModel);
+            errorNoMessageImplementationValidation(messageValidationModel);
+            errorConflictingMessageImplementationsValidation(messageValidationModel);
+            warnAutoImplementedEvent(messageValidationModel);
         }
     }
 
@@ -33,9 +35,9 @@ public class MessageValidator extends SubValidator {
             messageValidationModel.includeDefinition(definition);
         }
         for(MessageImplementation implementation : model.messageImplementations()) {
-            var messageIdentifier = implementation.messageDefinitionQualifiedClassName();
+            var messageIdentifier = implementation.messageDefinitionClassName();
             if(messageIdentifier.isPresent()) {
-                var messageValidationModel = messageValidations.computeIfAbsent(messageIdentifier.get(),
+                var messageValidationModel = messageValidations.computeIfAbsent(messageIdentifier.get().qualified(),
                         MessageValidationModel::new);
                 messageValidationModel.includeImplementation(implementation);
             } else {
@@ -49,7 +51,19 @@ public class MessageValidator extends SubValidator {
         return messageValidations;
     }
 
-    private void applyConflictingMessageDefinitionsValidation(MessageValidationModel messageValidationModel) {
+    private void warnNoDefinition(MessageValidationModel messageValidationModel) {
+        if(messageValidationModel.hasNoDefinition()) {
+            for(MessageImplementation implementation : messageValidationModel.implementations()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(implementation.sourceFileLine())
+                        .type(ValidationMessageType.WARNING)
+                        .message("Missing or wrong message definition " + messageValidationModel.messageIdentifier())
+                        .build());
+            }
+        }
+    }
+
+    private void errorConflictingMessageDefinitionsValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasConflictingDefinitions()) {
             for(MessageDefinition definition : messageValidationModel.definitions()) {
                 messages.add(new ValidationMessage.Builder()
@@ -61,25 +75,41 @@ public class MessageValidator extends SubValidator {
         }
     }
 
-    private void applyNoMessageImplementationValidation(MessageValidationModel messageValidationModel) {
+    private void errorNoMessageImplementationValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasNoImplementation()) {
             for(MessageDefinition definition : messageValidationModel.definitions()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(definition.sourceFileLine())
-                        .type(ValidationMessageType.WARNING)
+                        .type(ValidationMessageType.ERROR)
                         .message("No implementation found for message " + messageValidationModel.messageIdentifier())
                         .build());
             }
         }
     }
 
-    private void applyConflictingMessageImplementationsValidation(MessageValidationModel messageValidationModel) {
+    private void errorConflictingMessageImplementationsValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasConflictingImplementations()) {
             for(MessageImplementation implementation : messageValidationModel.implementations()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(implementation.sourceFileLine())
                         .type(ValidationMessageType.ERROR)
                         .message("Conflicting implementations for message " + messageValidationModel.messageIdentifier())
+                        .build());
+            }
+        }
+    }
+
+    private void warnAutoImplementedEvent(MessageValidationModel messageValidationModel) {
+        if(messageValidationModel.definitions().size() == 1
+                && messageValidationModel.implementations().size() == 1) {
+            var definition = messageValidationModel.definitions().get(0);
+            var implementation = messageValidationModel.implementations().get(0);
+            if(definition.isEvent()
+                    && implementation.isAutoImplementation()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(implementation.sourceFileLine())
+                        .type(ValidationMessageType.WARNING)
+                        .message("A domain event definition should not implement itself")
                         .build());
             }
         }

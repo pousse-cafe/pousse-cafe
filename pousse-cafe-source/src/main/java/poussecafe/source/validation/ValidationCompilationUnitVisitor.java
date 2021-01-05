@@ -16,9 +16,9 @@ import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
-import poussecafe.source.analysis.Name;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
+import poussecafe.source.analysis.ResolvedClass;
 import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
@@ -26,6 +26,7 @@ import poussecafe.source.analysis.RunnerClass;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
+import poussecafe.source.model.MessageType;
 import poussecafe.source.validation.model.EntityDefinition;
 import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
@@ -44,37 +45,28 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     @Override
     protected boolean visitTypeDeclarationOrSkip(TypeDeclaration node) {
         var resolvedTypeDeclaration = resolve(node);
-        if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)) {
-            visitMessageDefinition(resolvedTypeDeclaration);
-            return false;
-        } else if(MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
-            visitMessageImplementation(resolvedTypeDeclaration);
-            return false;
+        if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)
+                || MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
+            if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)) {
+                visitMessageDefinition(resolvedTypeDeclaration);
+            }
+            if(MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
+                visitMessageImplementation(resolvedTypeDeclaration);
+            }
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
             visitEntityDefinition(resolvedTypeDeclaration);
-            if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
-                return true; // Visit listeners
-            } else {
-                return false;
-            }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
             visitEntityImplementation(resolvedTypeDeclaration);
-            return false;
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
             visitDataAccessImplementation(resolvedTypeDeclaration);
-            return false;
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
             visitRunner(resolvedTypeDeclaration);
-            return false;
         } else if(ModuleClass.isModule(resolvedTypeDeclaration)) {
             visitModule(resolvedTypeDeclaration);
-            return false;
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
             visitProcessDefinition(resolvedTypeDeclaration);
-            return false;
-        } else {
-            return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
         }
+        return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
     }
 
     private void visitMessageDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
@@ -83,6 +75,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .messageName(definitionType.name())
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
+                .domainEvent(definitionType.type() == MessageType.DOMAIN_EVENT)
                 .build());
     }
 
@@ -101,8 +94,11 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         var definitionType = new MessageImplementationType(resolvedTypeDeclaration);
         model.addMessageImplementation(new MessageImplementation.Builder()
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .messageDefinitionQualifiedClassName(definitionType.messageName().map(ResolvedTypeName::qualifiedName))
+                .messageDefinitionClassName(definitionType.messageName()
+                        .map(ResolvedTypeName::resolvedClass)
+                        .map(ResolvedClass::name))
                 .messagingNames(definitionType.messagingNames())
+                .className(resolvedTypeDeclaration.className())
                 .build());
     }
 
@@ -111,7 +107,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         model.addEntityDefinition(new EntityDefinition.Builder()
                 .entityName(definitionType.name())
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .className(new Name(resolvedTypeDeclaration.name().qualifiedName()))
+                .className(resolvedTypeDeclaration.className())
                 .build());
     }
 

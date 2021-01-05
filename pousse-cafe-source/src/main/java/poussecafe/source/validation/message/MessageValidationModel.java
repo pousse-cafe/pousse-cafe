@@ -52,6 +52,10 @@ class MessageValidationModel {
         return definitions.size() > 1;
     }
 
+    public boolean hasNoDefinition() {
+        return definitions.isEmpty();
+    }
+
     public boolean hasConflictingImplementations() {
         var namesCounts = new HashMap<String, Integer>();
         for(MessageImplementation implementation : implementations) {
