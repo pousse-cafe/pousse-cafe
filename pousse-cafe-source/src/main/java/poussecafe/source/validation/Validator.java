@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.source.Source;
 import poussecafe.source.SourceConsumer;
 import poussecafe.source.SourceScanner;
@@ -22,7 +24,10 @@ public class Validator implements SourceConsumer {
             model = visitor.buildModel();
             buildValidators();
             for(SubValidator validator : validators) {
+                long startTime = System.currentTimeMillis();
                 runAndIncludeMessages(validator);
+                long endTime = System.currentTimeMillis();
+                logger.debug("{} validation took {} ms", validator.name(), (endTime - startTime));
             }
             result = new ValidationResult(messages);
         }
@@ -71,6 +76,8 @@ public class Validator implements SourceConsumer {
     public void includeSource(Source source) {
         scanner.includeSource(source);
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public Validator() {
         this(new ClassLoaderClassResolver());

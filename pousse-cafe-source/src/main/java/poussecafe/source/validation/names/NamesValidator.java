@@ -26,6 +26,11 @@ public class NamesValidator extends SubValidator {
         checkProcessesUniqueness(modules);
     }
 
+    @Override
+    protected String name() {
+        return "Names";
+    }
+
     private void checkModulesUniqueness() {
         checkNameUniqueness(model.modules(), module -> new Name(module.name()), "Module", false);
     }

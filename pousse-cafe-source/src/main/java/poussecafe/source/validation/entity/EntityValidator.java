@@ -15,6 +15,11 @@ public class EntityValidator extends SubValidator {
     }
 
     @Override
+    protected String name() {
+        return "Entities";
+    }
+
+    @Override
     public void validate() {
         validateDefinitions();
         validateImplementations();

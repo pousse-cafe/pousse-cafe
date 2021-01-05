@@ -15,6 +15,11 @@ public class MessageValidator extends SubValidator {
     }
 
     @Override
+    protected String name() {
+        return "Messages";
+    }
+
+    @Override
     public void validate() {
         var messageValidations = buildMessageValidationModels();
         for(MessageValidationModel messageValidationModel : messageValidations.values()) {

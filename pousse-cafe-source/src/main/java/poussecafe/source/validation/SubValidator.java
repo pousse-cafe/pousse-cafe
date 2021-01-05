@@ -23,4 +23,6 @@ public abstract class SubValidator {
     }
 
     protected List<ValidationMessage> messages = new ArrayList<>();
+
+    protected abstract String name();
 }

@@ -19,6 +19,11 @@ public class MessageListenerValidator extends SubValidator {
         }
     }
 
+    @Override
+    protected String name() {
+        return "Listeners";
+    }
+
     private void validateListener(MessageListener listener) {
         if(!listener.isPublic()) {
             messages.add(new ValidationMessage.Builder()
