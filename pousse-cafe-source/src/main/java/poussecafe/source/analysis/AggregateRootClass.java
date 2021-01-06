@@ -21,11 +21,14 @@ public class AggregateRootClass {
     private ResolvedTypeName name;
 
     public String aggregateName() {
-        Optional<ResolvedClass> declaringClass = name.resolvedClass().declaringClass();
-        if(declaringClass.isEmpty()) {
-            return NamingConventions.aggregateNameFromSimpleRootName(name.simpleName());
+        if(isInnerClass()) {
+            return name.resolvedClass().declaringClass().orElseThrow().name().simple();
         } else {
-            return declaringClass.get().name().simple();
+            return NamingConventions.aggregateNameFromSimpleRootName(name.simpleName());
         }
+    }
+
+    public boolean isInnerClass() {
+        return name.resolvedClass().declaringClass().isPresent();
     }
 }

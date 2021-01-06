@@ -49,4 +49,8 @@ public class RepositoryClass {
     public String simpleName() {
         return className.simpleName();
     }
+
+    public boolean isInnerClass() {
+        return className.resolvedClass().declaringClass().isPresent();
+    }
 }

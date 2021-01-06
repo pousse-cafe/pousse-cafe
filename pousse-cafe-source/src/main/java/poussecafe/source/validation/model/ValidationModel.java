@@ -105,4 +105,34 @@ public class ValidationModel {
             addModule(module);
         }
     }
+
+    public void addAggregateRootDefinition(AggregateComponentDefinition aggregateRoot) {
+        aggregateRoots.add(aggregateRoot);
+    }
+
+    private List<AggregateComponentDefinition> aggregateRoots = new ArrayList<>();
+
+    public List<AggregateComponentDefinition> aggregateRootsDefinitions() {
+        return Collections.unmodifiableList(aggregateRoots);
+    }
+
+    public void addAggregateFactory(AggregateComponentDefinition aggregateFactory) {
+        aggregateFactories.add(aggregateFactory);
+    }
+
+    private List<AggregateComponentDefinition> aggregateFactories = new ArrayList<>();
+
+    public List<AggregateComponentDefinition> aggregateFactories() {
+        return Collections.unmodifiableList(aggregateFactories);
+    }
+
+    public void addAggregateRepository(AggregateComponentDefinition aggregateRepository) {
+        aggregateRepositories.add(aggregateRepository);
+    }
+
+    private List<AggregateComponentDefinition> aggregateRepositories = new ArrayList<>();
+
+    public List<AggregateComponentDefinition> aggregateRepositories() {
+        return Collections.unmodifiableList(aggregateRepositories);
+    }
 }

@@ -159,6 +159,18 @@ public class NamingConventions {
         return typeName.endsWith(ROOT_SUFFIX);
     }
 
+    public static boolean isInnerAggregateRootName(String simpleName) {
+        return innerRootClassName().equals(simpleName);
+    }
+
+    public static boolean isInnerAggregateFactoryName(String simpleName) {
+        return innerFactoryClassName().equals(simpleName);
+    }
+
+    public static boolean isInnerAggregateRepositoryName(String simpleName) {
+        return innerRepositoryClassName().equals(simpleName);
+    }
+
     private NamingConventions() {
 
     }

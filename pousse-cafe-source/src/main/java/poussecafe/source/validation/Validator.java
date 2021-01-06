@@ -21,6 +21,7 @@ import poussecafe.source.validation.message.MessageValidator;
 import poussecafe.source.validation.model.Module;
 import poussecafe.source.validation.model.ValidationModel;
 import poussecafe.source.validation.names.NamesValidator;
+import poussecafe.source.validation.namingconventions.NamingConventionsValidator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -63,6 +64,7 @@ public class Validator implements SourceConsumer {
         validators.add(new EntityValidator(model));
         validators.add(new MessageListenerValidator(model));
         validators.add(new NamesValidator(model));
+        validators.add(new NamingConventionsValidator(model));
     }
 
     private List<SubValidator> validators;

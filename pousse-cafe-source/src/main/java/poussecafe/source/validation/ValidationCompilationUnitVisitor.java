@@ -26,6 +26,7 @@ import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
+import poussecafe.source.validation.model.AggregateComponentDefinition;
 import poussecafe.source.validation.model.EntityDefinition;
 import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
@@ -54,6 +55,9 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
             }
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
             visitEntityDefinition(resolvedTypeDeclaration);
+            if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
+                visitAggregateRootDefinition(resolvedTypeDeclaration);
+            }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
             visitEntityImplementation(resolvedTypeDeclaration);
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
@@ -64,6 +68,10 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
             visitModule(resolvedTypeDeclaration);
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
             visitProcessDefinition(resolvedTypeDeclaration);
+        } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
+            visitFactory(resolvedTypeDeclaration);
+        } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
+            visitRepository(resolvedTypeDeclaration);
         }
         return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
     }
@@ -110,6 +118,15 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .build());
     }
 
+    private void visitAggregateRootDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new AggregateRootClass(resolvedTypeDeclaration);
+        model.addAggregateRootDefinition(new AggregateComponentDefinition.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(resolvedTypeDeclaration.className())
+                .innerClass(definitionType.isInnerClass())
+                .build());
+    }
+
     private void visitEntityImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var implementationType = new EntityImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
@@ -153,6 +170,24 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(processDefinitionClass.className())
                 .name(processDefinitionClass.processName())
+                .build());
+    }
+
+    private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new FactoryClass(resolvedTypeDeclaration);
+        model.addAggregateFactory(new AggregateComponentDefinition.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(resolvedTypeDeclaration.className())
+                .innerClass(definitionType.isInnerClass())
+                .build());
+    }
+
+    private void visitRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var definitionType = new RepositoryClass(resolvedTypeDeclaration);
+        model.addAggregateRepository(new AggregateComponentDefinition.Builder()
+                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(resolvedTypeDeclaration.className())
+                .innerClass(definitionType.isInnerClass())
                 .build());
     }
 
