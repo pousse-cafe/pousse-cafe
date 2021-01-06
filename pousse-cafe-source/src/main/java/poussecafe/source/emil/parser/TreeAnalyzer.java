@@ -247,7 +247,7 @@ public class TreeAnalyzer {
         String aggregateName;
         String containerIdentifier;
         if(simpleName != null) {
-            aggregateName = simpleName.getText();
+            aggregateName = NamingConventions.aggregateNameFromSimpleRootName(simpleName.getText());
             containerIdentifier = simpleName.getText();
         } else if(qualifiedName != null) {
             aggregateName = qualifiedName.qualifier.getText();

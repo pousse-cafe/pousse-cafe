@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
@@ -7,6 +8,7 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 public class ResolvedTypeDeclaration {
 
@@ -23,21 +25,17 @@ public class ResolvedTypeDeclaration {
                 ParameterizedType parametrizedType = (ParameterizedType) type;
                 Type parametrizedTypeType = parametrizedType.getType();
                 if(parametrizedTypeType instanceof SimpleType) {
-                    ResolvedTypeName name = simpleType((SimpleType) parametrizedTypeType);
+                    ResolvedTypeName name = resolver.resolve((SimpleType) parametrizedTypeType);
                     return Optional.of(name);
                 }
             } else if(type instanceof SimpleType) {
-                return Optional.of(simpleType((SimpleType) type));
+                return Optional.of(resolver.resolve((SimpleType) type));
             }
             return Optional.empty();
         }
     }
 
     private TypeDeclaration declaration;
-
-    private ResolvedTypeName simpleType(SimpleType simpleType) {
-        return resolver.resolve(new Name(simpleType.getName()));
-    }
 
     private Resolver resolver;
 
@@ -53,21 +51,6 @@ public class ResolvedTypeDeclaration {
             }
         }
         return false;
-    }
-
-    public ResolvedTypeName typeParameter(int parameter) {
-        Type type = declaration.getSuperclassType();
-        if(type instanceof ParameterizedType) {
-            ParameterizedType parametrizedType = (ParameterizedType) type;
-            Type typeParameter = (Type) parametrizedType.typeArguments().get(parameter);
-            if(typeParameter instanceof SimpleType) {
-                return simpleType((SimpleType) typeParameter);
-            } else {
-                throw new UnsupportedOperationException("Unsupported parameter type " + typeParameter.getClass());
-            }
-        } else {
-            throw new UnsupportedOperationException("Type is not parametrized");
-        }
     }
 
     public AnnotatedElement<TypeDeclaration> asAnnotatedElement() {
@@ -106,6 +89,24 @@ public class ResolvedTypeDeclaration {
 
     public Name className() {
         return name().resolvedClass().name();
+    }
+
+    public ResolvedType superclassType() {
+        return resolveType(declaration.getSuperclassType());
+    }
+
+    private ResolvedType resolveType(Type type) {
+        return new ResolvedType.Builder()
+                .type(type)
+                .resolver(resolver)
+                .build();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ResolvedType> superInterfaceTypes() {
+        return ((List<Type>) declaration.superInterfaceTypes()).stream()
+                .map(this::resolveType)
+                .collect(toList());
     }
 
     public static class Builder {

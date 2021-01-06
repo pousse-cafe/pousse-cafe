@@ -225,10 +225,11 @@ public class EmilExporter {
             builder.indent();
 
             var aggregateName = listener.container().aggregateName().orElseThrow();
-            if(listener.container().isQualifiedIdentifier()) {
-                builder.appendAggregateIdentifier(aggregateName + "." + NamingConventions.innerRootClassName());
+            var aggregate = model.aggregate(aggregateName).orElseThrow();
+            if(aggregate.innerRoot()) {
+                builder.appendAggregateRootIdentifier(NamingConventions.innerAggregateRootIdentifier(aggregate).qualified());
             } else {
-                builder.appendAggregateIdentifier(aggregateName);
+                builder.appendAggregateRootIdentifier(NamingConventions.aggregateRootTypeName(aggregate).simple());
             }
 
             builder.appendInlineNote(hookName);
@@ -288,8 +289,8 @@ public class EmilExporter {
         builder.appendNewLine();
         builder.incrementIndent();
         builder.indent();
-        var aggregateName = listener.container().containerIdentifier();
-        builder.appendAggregateIdentifier(aggregateName);
+        var aggregateRootName = listener.container().containerIdentifier();
+        builder.appendAggregateRootIdentifier(aggregateRootName);
         builder.appendInlineNote(listener.methodName());
     }
 

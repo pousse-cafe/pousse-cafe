@@ -1,30 +1,44 @@
 package poussecafe.source.analysis;
 
-import java.util.Optional;
+import poussecafe.source.generation.NamingConventions;
 
 public class RepositoryClass {
 
     public static boolean isRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
+        return isInstanceOfRepository(resolvedTypeDeclaration)
+                    || isInstanceOfDeprecatedRepository(resolvedTypeDeclaration);
+    }
+
+    private static boolean isInstanceOfDeprecatedRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var superclassType = resolvedTypeDeclaration.superclass();
         return superclassType.isPresent()
-                && (superclassType.get().isClass(CompilationUnitResolver.REPOSITORY_CLASS)
-                        || superclassType.get().isClass(CompilationUnitResolver.DEPRECATED_REPOSITORY_CLASS));
+                && superclassType.get().isClass(CompilationUnitResolver.DEPRECATED_REPOSITORY_CLASS);
+    }
+
+    private static boolean isInstanceOfRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var superclassType = resolvedTypeDeclaration.superclass();
+        return superclassType.isPresent()
+                && superclassType.get().isClass(CompilationUnitResolver.REPOSITORY_CLASS);
     }
 
     public RepositoryClass(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         if(!isRepository(resolvedTypeDeclaration)) {
             throw new IllegalArgumentException();
         }
-        aggregateName = resolvedTypeDeclaration.typeParameter(1);
+        if(isInstanceOfRepository(resolvedTypeDeclaration)) {
+            aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(1).toTypeName();
+        } else {
+            aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(0).toTypeName();
+        }
         className = resolvedTypeDeclaration.name();
     }
 
-    private ResolvedTypeName aggregateName;
+    private ResolvedTypeName aggregateRootName;
 
     public String aggregateName() {
-        var declaringClass = aggregateName.resolvedClass().declaringClass();
+        var declaringClass = aggregateRootName.resolvedClass().declaringClass();
         if(declaringClass.isEmpty()) {
-            return aggregateName.simpleName();
+            return NamingConventions.aggregateNameFromSimpleRootName(aggregateRootName.simpleName());
         } else {
             return declaringClass.get().name().simple();
         }

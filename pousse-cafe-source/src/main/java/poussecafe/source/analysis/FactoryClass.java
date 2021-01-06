@@ -1,11 +1,11 @@
 package poussecafe.source.analysis;
 
-import java.util.Optional;
+import poussecafe.source.generation.NamingConventions;
 
 public class FactoryClass {
 
     public static boolean isFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        Optional<ResolvedTypeName> superclassType = resolvedTypeDeclaration.superclass();
+        var superclassType = resolvedTypeDeclaration.superclass();
         return superclassType.isPresent()
                 && (superclassType.get().isClass(CompilationUnitResolver.FACTORY_CLASS)
                         || superclassType.get().isClass(CompilationUnitResolver.DEPRECATED_FACTORY_CLASS));
@@ -15,16 +15,16 @@ public class FactoryClass {
         if(!isFactory(resolvedTypeDeclaration)) {
             throw new IllegalArgumentException();
         }
-        aggregateName = resolvedTypeDeclaration.typeParameter(1);
+        aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(1).toTypeName();
         className = resolvedTypeDeclaration.name();
     }
 
-    private ResolvedTypeName aggregateName;
+    private ResolvedTypeName aggregateRootName;
 
     public String aggregateName() {
-        Optional<ResolvedClass> declaringClass = aggregateName.resolvedClass().declaringClass();
+        var declaringClass = aggregateRootName.resolvedClass().declaringClass();
         if(declaringClass.isEmpty()) {
-            return aggregateName.simpleName();
+            return NamingConventions.aggregateNameFromSimpleRootName(aggregateRootName.simpleName());
         } else {
             return declaringClass.get().name().simple();
         }

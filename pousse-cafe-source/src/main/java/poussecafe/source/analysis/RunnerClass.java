@@ -1,12 +1,11 @@
 package poussecafe.source.analysis;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.SimpleType;
+
+import static java.util.stream.Collectors.toList;
 
 public class RunnerClass {
 
@@ -23,41 +22,27 @@ public class RunnerClass {
 
     public Set<String> typeParametersQualifiedNames() {
         var names = new HashSet<String>();
-        var declaration = type.typeDeclaration();
 
-        var superclass = declaration.getSuperclassType();
+        var superclass = type.superclassType();
         names.addAll(typeParameters(superclass));
 
-        var interfaces = declaration.superInterfaceTypes();
-        for(Object interfaceObject : interfaces) {
+        var interfaces = type.superInterfaceTypes();
+        for(ResolvedType interfaceObject : interfaces) {
             names.addAll(typeParameters(interfaceObject));
         }
 
         return names;
     }
 
-    private List<String> typeParameters(Object type) {
-        if(type instanceof ParameterizedType) {
-            ParameterizedType superclassParameterizedType = (ParameterizedType) type;
-            return typeParameters(superclassParameterizedType.typeArguments());
+    private List<String> typeParameters(ResolvedType type) {
+        if(type.isParametrized()) {
+            return type.typeParameters().stream()
+                    .filter(ResolvedType::isSimpleType)
+                    .map(ResolvedType::toTypeName)
+                    .map(ResolvedTypeName::qualifiedName)
+                    .collect(toList());
         } else {
             return Collections.emptyList();
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private List<String> typeParameters(List typeParametersObjects) {
-        if(typeParametersObjects.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            var names = new ArrayList<String>();
-            for(int i = 0; i < typeParametersObjects.size(); ++i) {
-                var typeParameterObject = typeParametersObjects.get(i);
-                if(typeParameterObject instanceof SimpleType) {
-                    names.add(type.typeParameter(i).qualifiedName());
-                }
-            }
-            return names;
         }
     }
 }

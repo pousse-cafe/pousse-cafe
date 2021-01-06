@@ -19,7 +19,7 @@ Command4? -> F{Aggregate1.Factory}[process1Listener5]+
     @Aggregate1.Root[process1Listener1]:
         :Event2! ->
             -> Ru{Process1Listener2Runner}
-                @Aggregate2[process1Listener2]:
+                @Aggregate2Root[process1Listener2]:
                     :Event3!# -> . [External2]
                     :.
             -> P{Process2}
@@ -29,6 +29,6 @@ Event4! -> Ru{Process1Listener6Runner}
     @Aggregate1.Root[process1Listener6]
 
 Command2? -> Re{Aggregate2Repository}[process1Listener3]
-    @Aggregate2[onDelete]:
+    @Aggregate2Root[onDelete]:
         :Event6! -> .
         :.

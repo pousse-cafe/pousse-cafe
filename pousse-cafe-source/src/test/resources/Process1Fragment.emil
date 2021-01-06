@@ -14,7 +14,7 @@ Command3? -> F{Aggregate1.Factory}[process1Listener4]#
     @Aggregate1.Root[process1Listener1]:
         :Event2! ->
             -> Ru{Process1Listener2Runner}
-                @Aggregate2[process1Listener2]:
+                @Aggregate2Root[process1Listener2]:
                     :Event3!# -> .
                     :.
         :.

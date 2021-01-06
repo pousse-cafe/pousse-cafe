@@ -102,8 +102,8 @@ public class FormattedEmilTokenStreamBuilder {
         builder.append('}');
     }
 
-    public void appendAggregateIdentifier(String aggregateName) {
-        builder.append("@").append(aggregateName);
+    public void appendAggregateRootIdentifier(String aggregateRootName) {
+        builder.append("@").append(aggregateRootName);
     }
 
     public void appendOpenRelation() {

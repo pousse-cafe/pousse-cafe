@@ -33,7 +33,13 @@ public class RunnerEditor {
 
             var idName = NamingConventions.aggregateIdentifierTypeName(aggregate);
             supertype.typeArguments().add(ast.newSimpleType(idName.getIdentifier()));
-            supertype.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateRootQualifiedIdentifier(aggregate)));
+
+            if(aggregate.innerRoot()) {
+                supertype.typeArguments().add(ast.newSimpleType(NamingConventions.innerAggregateRootIdentifier(aggregate)));
+            } else {
+                supertype.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateRootTypeName(aggregate).getIdentifier()));
+            }
+
             typeEditor.setSuperclass(supertype);
 
             var idExtractorEditor = typeEditor.insertNewMethodFirst();

@@ -140,12 +140,23 @@ public class NamingConventions {
         return ROOT_SUFFIX;
     }
 
-    public static Name aggregateRootQualifiedIdentifier(Aggregate aggregate) {
+    public static Name innerAggregateRootIdentifier(Aggregate aggregate) {
         if(aggregate.innerRoot()) {
             return new Name(aggregateContainerTypeName(aggregate).getIdentifier().toString(), ROOT_SUFFIX);
         } else {
-            return aggregateRootTypeName(aggregate).getIdentifier();
+            throw new UnsupportedOperationException();
         }
+    }
+
+    public static String aggregateNameFromSimpleRootName(String simpleName) {
+        if(!isAggregateRootName(simpleName)) {
+            throw new IllegalArgumentException("Given type name is not a valid root name: " + simpleName);
+        }
+        return nameWithoutSuffix(simpleName, ROOT_SUFFIX);
+    }
+
+    public static boolean isAggregateRootName(String typeName) {
+        return typeName.endsWith(ROOT_SUFFIX);
     }
 
     private NamingConventions() {

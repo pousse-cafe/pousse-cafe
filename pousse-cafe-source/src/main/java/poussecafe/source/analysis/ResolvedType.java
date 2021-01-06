@@ -1,5 +1,7 @@
 package poussecafe.source.analysis;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
@@ -27,6 +29,43 @@ public class ResolvedType {
     }
 
     private Resolver resolver;
+
+    public boolean isParametrized() {
+        return type instanceof ParameterizedType;
+    }
+
+    public List<ResolvedType> typeParameters() {
+        if(isParametrized()) {
+            ParameterizedType parametrizedType = (ParameterizedType) type;
+            return resolveTypeArguments(parametrizedType.typeArguments());
+        } else {
+            throw new UnsupportedOperationException("Type is not parametrized");
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private List<ResolvedType> resolveTypeArguments(List typeArguments) {
+        var resolvedTypes = new ArrayList<ResolvedType>();
+        for(Object typeArgument : typeArguments) {
+            resolvedTypes.add(new ResolvedType.Builder()
+                    .type((Type) typeArgument)
+                    .resolver(resolver)
+                    .build());
+        }
+        return resolvedTypes;
+    }
+
+    public boolean isSimpleType() {
+        return type instanceof SimpleType;
+    }
+
+    public ResolvedTypeName toTypeName() {
+        if(isSimpleType()) {
+            return resolver.resolve((SimpleType) type);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     public static class Builder {
 

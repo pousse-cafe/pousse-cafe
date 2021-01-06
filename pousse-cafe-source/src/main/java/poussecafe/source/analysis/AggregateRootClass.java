@@ -1,6 +1,7 @@
 package poussecafe.source.analysis;
 
 import java.util.Optional;
+import poussecafe.source.generation.NamingConventions;
 
 public class AggregateRootClass {
 
@@ -22,7 +23,7 @@ public class AggregateRootClass {
     public String aggregateName() {
         Optional<ResolvedClass> declaringClass = name.resolvedClass().declaringClass();
         if(declaringClass.isEmpty()) {
-            return name.simpleName();
+            return NamingConventions.aggregateNameFromSimpleRootName(name.simpleName());
         } else {
             return declaringClass.get().name().simple();
         }
