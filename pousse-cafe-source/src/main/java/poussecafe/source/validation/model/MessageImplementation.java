@@ -2,7 +2,6 @@ package poussecafe.source.validation.model;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SourceFileLine;
 
@@ -16,11 +15,11 @@ public class MessageImplementation {
         return sourceFileLine;
     }
 
-    public Optional<Name> messageDefinitionClassName() {
+    public Name messageDefinitionClassName() {
         return messageDefinitionClassName;
     }
 
-    private Optional<Name> messageDefinitionClassName = Optional.empty();
+    private Name messageDefinitionClassName;
 
     public List<String> messagingNames() {
         return Collections.unmodifiableList(messagingNames);
@@ -35,9 +34,20 @@ public class MessageImplementation {
     private Name className;
 
     public boolean isAutoImplementation() {
-        return messageDefinitionClassName.isPresent()
-                && messageDefinitionClassName.get().equals(className);
+        return messageDefinitionClassName.equals(className);
     }
+
+    public boolean isConcrete() {
+        return concrete;
+    }
+
+    private boolean concrete;
+
+    public boolean isMessage() {
+        return message;
+    }
+
+    private boolean message;
 
     public static class Builder {
 
@@ -55,7 +65,7 @@ public class MessageImplementation {
             return this;
         }
 
-        public Builder messageDefinitionClassName(Optional<Name> messageDefinitionClassName) {
+        public Builder messageDefinitionClassName(Name messageDefinitionClassName) {
             implementation.messageDefinitionClassName = messageDefinitionClassName;
             return this;
         }
@@ -67,6 +77,16 @@ public class MessageImplementation {
 
         public Builder className(Name className) {
             implementation.className = className;
+            return this;
+        }
+
+        public Builder concrete(boolean concrete) {
+            implementation.concrete = concrete;
+            return this;
+        }
+
+        public Builder message(boolean message) {
+            implementation.message = message;
             return this;
         }
     }

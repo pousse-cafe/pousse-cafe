@@ -28,6 +28,8 @@ public class MessageValidator extends SubValidator {
             errorNoMessageImplementationValidation(messageValidationModel);
             errorConflictingMessageImplementationsValidation(messageValidationModel);
             warnAutoImplementedEvent(messageValidationModel);
+            errorAbstractMessageImplementation(messageValidationModel);
+            errorMessageImplementationHierarchy(messageValidationModel);
         }
     }
 
@@ -41,17 +43,9 @@ public class MessageValidator extends SubValidator {
         }
         for(MessageImplementation implementation : model.messageImplementations()) {
             var messageIdentifier = implementation.messageDefinitionClassName();
-            if(messageIdentifier.isPresent()) {
-                var messageValidationModel = messageValidations.computeIfAbsent(messageIdentifier.get().qualified(),
-                        MessageValidationModel::new);
-                messageValidationModel.includeImplementation(implementation);
-            } else {
-                messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceFileLine())
-                        .type(ValidationMessageType.WARNING)
-                        .message("Message implementation is not linked to a definition, add @MessageImplementation or @AbstractMessage annotation")
-                        .build());
-            }
+            var messageValidationModel = messageValidations.computeIfAbsent(messageIdentifier.qualified(),
+                    MessageValidationModel::new);
+            messageValidationModel.includeImplementation(implementation);
         }
         return messageValidations;
     }
@@ -121,6 +115,30 @@ public class MessageValidator extends SubValidator {
                         .location(implementation.sourceFileLine())
                         .type(ValidationMessageType.WARNING)
                         .message("A domain event definition should not implement itself")
+                        .build());
+            }
+        }
+    }
+
+    private void errorAbstractMessageImplementation(MessageValidationModel messageValidationModel) {
+        for(MessageImplementation implementation : messageValidationModel.implementations()) {
+            if(!implementation.isConcrete()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(implementation.sourceFileLine())
+                        .type(ValidationMessageType.ERROR)
+                        .message("Message implementation must be concrete")
+                        .build());
+            }
+        }
+    }
+
+    private void errorMessageImplementationHierarchy(MessageValidationModel messageValidationModel) {
+        for(MessageImplementation implementation : messageValidationModel.implementations()) {
+            if(!implementation.isMessage()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(implementation.sourceFileLine())
+                        .type(ValidationMessageType.ERROR)
+                        .message("Message implementation must implement Message interface")
                         .build());
             }
         }

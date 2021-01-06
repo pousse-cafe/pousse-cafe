@@ -1,27 +1,20 @@
 package poussecafe.source.analysis;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
 public class MessageImplementationType {
 
     public static boolean isMessageImplementation(ResolvedTypeDeclaration type) {
-        return type.name().instanceOf(CompilationUnitResolver.MESSAGE_CLASS)
-                && isConcreteImplementation(type);
+        return type.asAnnotatedElement().findAnnotation(
+                CompilationUnitResolver.MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS).isPresent();
     }
 
-    private static boolean isConcreteImplementation(ResolvedTypeDeclaration type) {
-        return !type.typeDeclaration().isInterface()
-                && !type.modifiers().isAbstract()
-                && type.asAnnotatedElement().findAnnotation(CompilationUnitResolver.ABSTRACT_MESSAGE_ANNOTATION_CLASS).isEmpty();
-    }
-
-    public Optional<ResolvedTypeName> messageName() {
+    public ResolvedTypeName messageName() {
         var annotation = type.asAnnotatedElement().findAnnotation(
-                CompilationUnitResolver.MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS);
-        return annotation.map(a -> a.attribute("message").orElseThrow().asType());
+                CompilationUnitResolver.MESSAGE_IMPLEMENTATION_ANNOTATION_CLASS).orElseThrow();
+        return annotation.attribute("message").orElseThrow().asType();
     }
 
     private ResolvedTypeDeclaration type;
@@ -39,6 +32,15 @@ public class MessageImplementationType {
         } else {
             return emptyList();
         }
+    }
+
+    public boolean isConcreteImplementation() {
+        return !type.typeDeclaration().isInterface()
+                && !type.modifiers().isAbstract();
+    }
+
+    public boolean implementsMessageInterface() {
+        return type.name().instanceOf(CompilationUnitResolver.MESSAGE_CLASS);
     }
 
     public MessageImplementationType(ResolvedTypeDeclaration typeName) {

@@ -73,4 +73,40 @@ public class MessageValidatorTest extends ValidatorTest {
                 && message.location().sourceFile().id().endsWith("/AutoImplementedEvent.java")
                 && message.message().contains("should not implement itself");
     }
+
+    @Test
+    public void abstractImplementationError() throws IOException {
+        givenValidator();
+        givenAbstractImplementation();
+        whenValidating();
+        thenAtLeast(this::abstractImplementationError);
+    }
+
+    private void givenAbstractImplementation() {
+        includeClass(AbstractMessage1Data.class);
+    }
+
+    private boolean abstractImplementationError(ValidationMessage message) {
+        return message.type() == ValidationMessageType.ERROR
+                && message.location().sourceFile().id().endsWith("/AbstractMessage1Data.java")
+                && message.message().contains("must be concrete");
+    }
+
+    @Test
+    public void notImplementingMessageError() throws IOException {
+        givenValidator();
+        givenImplementationNotImplementatingMessage();
+        whenValidating();
+        thenAtLeast(this::notImplementingMessageError);
+    }
+
+    private void givenImplementationNotImplementatingMessage() {
+        includeClass(NotImplementingMessage1Data.class);
+    }
+
+    private boolean notImplementingMessageError(ValidationMessage message) {
+        return message.type() == ValidationMessageType.ERROR
+                && message.location().sourceFile().id().endsWith("/NotImplementingMessage1Data.java")
+                && message.message().contains("must implement Message interface");
+    }
 }

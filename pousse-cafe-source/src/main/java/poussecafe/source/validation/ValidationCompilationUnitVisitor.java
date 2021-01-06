@@ -18,7 +18,6 @@ import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
-import poussecafe.source.analysis.ResolvedClass;
 import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
@@ -91,14 +90,14 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private SourceFile sourceFile;
 
     private void visitMessageImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        var definitionType = new MessageImplementationType(resolvedTypeDeclaration);
+        var implementationType = new MessageImplementationType(resolvedTypeDeclaration);
         model.addMessageImplementation(new MessageImplementation.Builder()
                 .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .messageDefinitionClassName(definitionType.messageName()
-                        .map(ResolvedTypeName::resolvedClass)
-                        .map(ResolvedClass::name))
-                .messagingNames(definitionType.messagingNames())
+                .messageDefinitionClassName(implementationType.messageName().resolvedClass().name())
+                .messagingNames(implementationType.messagingNames())
                 .className(resolvedTypeDeclaration.className())
+                .concrete(implementationType.isConcreteImplementation())
+                .message(implementationType.implementsMessageInterface())
                 .build());
     }
 
