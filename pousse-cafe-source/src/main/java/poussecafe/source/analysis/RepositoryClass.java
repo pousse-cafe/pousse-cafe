@@ -26,9 +26,9 @@ public class RepositoryClass {
             throw new IllegalArgumentException();
         }
         if(isInstanceOfRepository(resolvedTypeDeclaration)) {
-            aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(1).toTypeName();
+            aggregateRootName = resolvedTypeDeclaration.superclassType().orElseThrow().typeParameters().get(1).toTypeName();
         } else {
-            aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(0).toTypeName();
+            aggregateRootName = resolvedTypeDeclaration.superclassType().orElseThrow().typeParameters().get(0).toTypeName();
         }
         className = resolvedTypeDeclaration.name();
     }

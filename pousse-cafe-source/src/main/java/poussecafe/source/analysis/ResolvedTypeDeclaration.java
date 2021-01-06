@@ -91,8 +91,8 @@ public class ResolvedTypeDeclaration {
         return name().resolvedClass().name();
     }
 
-    public ResolvedType superclassType() {
-        return resolveType(declaration.getSuperclassType());
+    public Optional<ResolvedType> superclassType() {
+        return Optional.ofNullable(declaration.getSuperclassType()).map(this::resolveType);
     }
 
     private ResolvedType resolveType(Type type) {

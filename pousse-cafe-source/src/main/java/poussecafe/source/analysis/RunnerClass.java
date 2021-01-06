@@ -24,7 +24,9 @@ public class RunnerClass {
         var names = new HashSet<String>();
 
         var superclass = type.superclassType();
-        names.addAll(typeParameters(superclass));
+        if(superclass.isPresent()) {
+            names.addAll(typeParameters(superclass.get()));
+        }
 
         var interfaces = type.superInterfaceTypes();
         for(ResolvedType interfaceObject : interfaces) {

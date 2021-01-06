@@ -15,7 +15,7 @@ public class FactoryClass {
         if(!isFactory(resolvedTypeDeclaration)) {
             throw new IllegalArgumentException();
         }
-        aggregateRootName = resolvedTypeDeclaration.superclassType().typeParameters().get(1).toTypeName();
+        aggregateRootName = resolvedTypeDeclaration.superclassType().orElseThrow().typeParameters().get(1).toTypeName();
         className = resolvedTypeDeclaration.name();
     }
 
