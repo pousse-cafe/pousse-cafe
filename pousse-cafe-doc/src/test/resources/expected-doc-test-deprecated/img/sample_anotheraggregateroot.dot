@@ -1,5 +1,0 @@
-graph {
-splines=spline;
-overlap=false;
-"AnotherAggregateRoot"[shape=box,style=bold];
-}

@@ -1,10 +1,10 @@
 digraph {
 splines=spline;
-"AnotherAggregateRoot.listener(Event2)" -> "To" [style=dotted];
-"AnAggregateRoot.listener(Event1)" -> "AnotherAggregateRoot.listener(Event2)" [style=solid];
-"From" -> "AnAggregateRoot.listener(Event1)" [style=solid];
-"AnotherAggregateRoot.listener(Event2)"[shape=ellipse];
+"AnotherAggregate.listener(Event2)" -> "To" [style=dotted];
+"AnAggregate.listener(Event1)" -> "AnotherAggregate.listener(Event2)" [style=solid];
+"From" -> "AnAggregate.listener(Event1)" [style=solid];
+"AnotherAggregate.listener(Event2)"[shape=ellipse];
 "From"[shape=box,style=dashed];
 "To"[shape=box,style=dashed];
-"AnAggregateRoot.listener(Event1)"[shape=ellipse];
+"AnAggregate.listener(Event1)"[shape=ellipse];
 }

@@ -1,6 +1,5 @@
 graph {
 splines=spline;
 overlap=false;
-"AnAggregate"[shape=box,style=bold];
 "AnotherAggregate"[shape=box,style=bold];
 }

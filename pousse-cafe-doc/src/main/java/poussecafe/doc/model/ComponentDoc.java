@@ -69,4 +69,12 @@ public class ComponentDoc implements ValueObject {
     public boolean hasDescription() {
         return !description.isEmpty();
     }
+
+    public String shortDescriptionOrDefault() {
+        if(shortDescription.isPresent()) {
+            return shortDescription.get();
+        } else {
+            return description.replaceAll("<[a-z\\/]+>", "");
+        }
+    }
 }

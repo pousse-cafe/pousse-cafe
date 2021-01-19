@@ -38,8 +38,8 @@ Pousse-Café Doc Domain Model
         <ol>
           <li><a href="#sample_aggregates">Aggregates</a></li>
           <ol>
-            <li><a href="#sample_anaggregateroot">AnAggregateRoot</a></li>
-            <li><a href="#sample_anotheraggregateroot">AnotherAggregateRoot</a></li>
+            <li><a href="#sample_anaggregate">AnAggregate</a></li>
+            <li><a href="#sample_anotheraggregate">AnotherAggregate</a></li>
           </ol>
           <li><a href="#sample_processes">Domain Processes</a></li>
           <ol>
@@ -104,9 +104,9 @@ producing and/or sending messages.</p>
 <p>Each directed edge represents a message being produced by source node and consumed by destination node.</p>
 
 <p>The section ends with the list of message listeners involved in the process and their description. The naming
-convention for the message listeners is <pre>Component.listenerName(Event)</pre> where <pre>Component</pre> is the
-name of the enclosing component (an Aggregate Root, a Factory, etc.), <pre>listenerName</pre> is the name of the
-listener inside of the component and <pre>Event</pre> is the name of the consumed event.</p>
+convention for the message listeners is <pre>Aggregate.listenerName(Event)</pre> where <pre>Aggregate</pre> is the
+name of the aggregate being created/updated/deleted, <pre>listenerName</pre> is the name of the
+listener inside of the component and <pre>Event</pre> is the name of the consumed event or command.</p>
 
 <h1 id="domain">Pousse-Café Doc Domain</h1>
 
@@ -119,32 +119,32 @@ Sample module.
 
 <h3 id="sample_aggregates">Aggregates</h3>
 
-<h4 id="sample_anaggregateroot">AnAggregateRoot</h4>
-
+<h4 id="sample_anaggregate">AnAggregate</h4>
+<p>AnAggregate description.</p>
 
 <div class="figure">
-  <img src="img/sample_anaggregateroot.png"/>
+  <img src="img/sample_anaggregate.png"/>
 </div>
 
 
 
 <h5>Events</h5>
 <div class="figure">
-  <img src="img/sample_anaggregateroot_events.png"/>
+  <img src="img/sample_anaggregate_events.png"/>
 </div>
 
-<h4 id="sample_anotheraggregateroot">AnotherAggregateRoot</h4>
-
+<h4 id="sample_anotheraggregate">AnotherAggregate</h4>
+<p>AnAggregateRoot description.</p>
 
 <div class="figure">
-  <img src="img/sample_anotheraggregateroot.png"/>
+  <img src="img/sample_anotheraggregate.png"/>
 </div>
 
 
 
 <h5>Events</h5>
 <div class="figure">
-  <img src="img/sample_anotheraggregateroot_events.png"/>
+  <img src="img/sample_anotheraggregate_events.png"/>
 </div>
 
 
@@ -158,15 +158,15 @@ This is the description of Test process.
 </div>
 
 <ul>
-  <li><strong>AnAggregateRoot.listener(Event1):</strong> </li>
-  <li><strong>AnotherAggregateRoot.listener(Event2):</strong> </li>
+  <li><strong>AnAggregate.listener(Event1):</strong> listener(Event1) description.</li>
+  <li><strong>AnotherAggregate.listener(Event2):</strong> listener(Event2) description.</li>
 </ul>
 
 
 <h1 id="ubiquitous_language">Ubiquitous Language</h1>
 <ol class="ubiquitousLanguage">
-<li><span class="entryName">AnAggregateRoot (Sample)</span>, Aggregate, </li>
-<li><span class="entryName">AnotherAggregateRoot (Sample)</span>, Aggregate, </li>
+<li><span class="entryName">AnAggregate (Sample)</span>, Aggregate, AnAggregate description.</li>
+<li><span class="entryName">AnotherAggregate (Sample)</span>, Aggregate, AnAggregateRoot description.</li>
 <li><span class="entryName">Sample</span>, Module, Sample module.</li>
 <li><span class="entryName">Test (Sample)</span>, Domain Process, This is the description of Test process.</li>
 </ol>

@@ -124,9 +124,9 @@ producing and/or sending messages.</p>
 <p>Each directed edge represents a message being produced by source node and consumed by destination node.</p>
 
 <p>The section ends with the list of message listeners involved in the process and their description. The naming
-convention for the message listeners is <pre>Component.listenerName(Event)</pre> where <pre>Component</pre> is the
-name of the enclosing component (an Aggregate Root, a Factory, etc.), <pre>listenerName</pre> is the name of the
-listener inside of the component and <pre>Event</pre> is the name of the consumed event.</p>
+convention for the message listeners is <pre>Aggregate.listenerName(Event)</pre> where <pre>Aggregate</pre> is the
+name of the aggregate being created/updated/deleted, <pre>listenerName</pre> is the name of the
+listener inside of the component and <pre>Event</pre> is the name of the consumed event or command.</p>
 
 <h1 id="domain">${domain.name} Domain</h1>
 

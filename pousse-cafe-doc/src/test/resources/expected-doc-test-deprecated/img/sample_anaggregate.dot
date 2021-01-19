@@ -1,5 +1,5 @@
 graph {
 splines=spline;
 overlap=false;
-"AnAggregateRoot"[shape=box,style=bold];
+"AnAggregate"[shape=box,style=bold];
 }

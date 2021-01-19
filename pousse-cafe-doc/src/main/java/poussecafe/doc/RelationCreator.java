@@ -130,7 +130,14 @@ public class RelationCreator implements Consumer<TypeElement> {
     }
 
     private void tryAttributes(TypeElement classDoc) {
-        DeclaredType superclass = (DeclaredType) classDoc.getSuperclass();
+        TypeElement rootClassDoc;
+        if(aggregateDocFactory.isStandaloneRoot(classDoc)) {
+            rootClassDoc = classDoc;
+        } else {
+            rootClassDoc = aggregateDocFactory.innerRoot(classDoc).orElseThrow();
+        }
+
+        DeclaredType superclass = (DeclaredType) rootClassDoc.getSuperclass();
         TypeElement attributesClassDoc = (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(1));
         CodeExplorer pathFinder = new CodeExplorer.Builder()
                 .rootClassDoc(classDoc)

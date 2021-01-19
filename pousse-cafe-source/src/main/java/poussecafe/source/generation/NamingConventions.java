@@ -67,7 +67,7 @@ public class NamingConventions {
         return typeName.endsWith(REPOSITORY_NAME_SUFFIX);
     }
 
-    public static String aggregateNameFromSimpleRepository(String repositoryName) {
+    public static String aggregateNameFromSimpleRepositoryName(String repositoryName) {
         if(!isAggregateRepositoryName(repositoryName)) {
             throw new IllegalArgumentException("Given type name is not a repository name");
         }

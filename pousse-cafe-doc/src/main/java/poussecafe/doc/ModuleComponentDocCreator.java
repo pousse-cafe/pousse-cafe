@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.doc.model.moduledoc.ModuleDoc;
-import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 
 public abstract class ModuleComponentDocCreator implements Consumer<TypeElement> {
 
@@ -25,7 +25,7 @@ public abstract class ModuleComponentDocCreator implements Consumer<TypeElement>
                     .findByPackageNamePrefixing(classDoc.getQualifiedName().toString());
             if (moduleDoc.isPresent()) {
                 ModuleDocId moduleId = moduleDoc.get().attributes().identifier().value();
-                Logger.debug("Adding " + componentName() + " with class " + classDoc.getQualifiedName().toString() + " to BC " + moduleId);
+                Logger.debug("Adding " + componentName() + " using class " + classDoc.getQualifiedName().toString() + " to BC " + moduleId);
                 addDoc(moduleId, classDoc);
             } else {
                 Logger.warn("Could not add component with missing bounded context: " + classDoc.getQualifiedName().toString());

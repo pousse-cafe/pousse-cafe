@@ -297,7 +297,7 @@ public class TreeAnalyzer {
             if(!NamingConventions.isAggregateRepositoryName(simpleRepositoryNameString)) {
                 throw new IllegalStateException("Unexpected repository name " + simpleRepositoryName);
             }
-            aggregateName = NamingConventions.aggregateNameFromSimpleRepository(simpleRepositoryNameString);
+            aggregateName = NamingConventions.aggregateNameFromSimpleRepositoryName(simpleRepositoryNameString);
             containerIdentifier = simpleRepositoryName.getText();
         } else if(qualifiedRepositoryName != null) {
             aggregateName = qualifiedRepositoryName.qualifier.getText();

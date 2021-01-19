@@ -1,0 +1,13 @@
+digraph {
+splines=spline;
+"AnotherAggregate" -> "Event3" [style=dotted];
+"Event2" -> "AnotherAggregate" [style=solid];
+"Event3" -> "AnAggregate" [style=solid];
+"Event3" -> "To" [style=solid];
+"AnAggregate" -> "Event2" [style=solid];
+"AnAggregate"[shape=box];
+"Event2"[shape=ellipse];
+"Event3"[shape=ellipse];
+"To"[shape=box,style=dashed];
+"AnotherAggregate"[shape=box,style=bold];
+}

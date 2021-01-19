@@ -223,7 +223,7 @@ public class HtmlWriter {
         HashMap<String, Object> view = new HashMap<>();
         view.put("name", entry.qualifiedName());
         view.put("type", entry.getType());
-        view.put("description", entry.componentDoc().shortDescription().orElse(entry.componentDoc().description()));
+        view.put("description", entry.componentDoc().shortDescriptionOrDefault());
         return view;
     }
 

@@ -15,7 +15,7 @@ public class ProcessStepDocCreator extends ModuleComponentDocCreator {
 
     @Override
     protected boolean isComponentDoc(TypeElement classDoc) {
-        return aggregateDocFactory.isAggregateDoc(classDoc) ||
+        return aggregateDocFactory.extendsAggregateRoot(classDoc) ||
                 aggregateDocFactory.isFactoryDoc(classDoc) ||
                 domainProcessDocFactory.isDomainProcessDoc(classDoc) ||
                 aggregateDocFactory.isRepositoryDoc(classDoc);

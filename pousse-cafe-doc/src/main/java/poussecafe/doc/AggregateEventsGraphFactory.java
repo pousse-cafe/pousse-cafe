@@ -14,6 +14,7 @@ import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
+import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
@@ -52,8 +53,9 @@ public class AggregateEventsGraphFactory implements Service {
                 for(ProcessStepDoc fromStep : fromSteps) {
                     Optional<AggregateDocId> optionalAggregateDocId = fromStep.attributes().aggregate().value();
                     if(optionalAggregateDocId.isPresent()) {
-                        AggregateDocId fromAggregate = optionalAggregateDocId.get();
-                        String fromAggregateName = fromAggregate.name();
+                        var fromAggregate = aggregateDocRepository.get(optionalAggregateDocId.get());
+                        String fromAggregateName = fromAggregate.attributes().moduleComponentDoc().value()
+                                .componentDoc().name();
                         Node fromExternalNode = Node.box(fromAggregateName);
                         nodesAndEdges.addNode(fromExternalNode);
                         nodesAndEdges.addEdge(DirectedEdge.solidEdge(fromAggregateName, consumedEvent));
@@ -81,8 +83,9 @@ public class AggregateEventsGraphFactory implements Service {
                     for(ProcessStepDoc toStep : toSteps) {
                         Optional<AggregateDocId> optionalAggregateDocId = toStep.attributes().aggregate().value();
                         if(optionalAggregateDocId.isPresent()) {
-                            AggregateDocId toAggregate = optionalAggregateDocId.get();
-                            String toAggregateName = toAggregate.name();
+                            var toAggregate = aggregateDocRepository.get(optionalAggregateDocId.get());
+                            String toAggregateName = toAggregate.attributes().moduleComponentDoc().value()
+                                    .componentDoc().name();
                             Node fromExternalNode = Node.box(toAggregateName);
                             nodesAndEdges.addNode(fromExternalNode);
                             nodesAndEdges.addEdge(DirectedEdge.solidEdge(producedEvent.name(), toAggregateName));
@@ -123,6 +126,8 @@ public class AggregateEventsGraphFactory implements Service {
 
         return graph;
     }
+
+    private AggregateDocRepository aggregateDocRepository;
 
     private ProcessStepDocRepository processStepDocRepository;
 }

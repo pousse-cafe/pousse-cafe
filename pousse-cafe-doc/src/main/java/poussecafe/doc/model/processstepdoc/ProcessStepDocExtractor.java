@@ -36,6 +36,7 @@ import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.source.generation.NamingConventions;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -299,9 +300,10 @@ public class ProcessStepDocExtractor implements Service {
 
         Optional<String> consumedMessage = consumedMessageExtractor.consumedMessage(methodDoc);
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
+        var componentName = listenerContainerName(enclosingType);
         StepMethodSignature stepMethodSignature = new StepMethodSignature.Builder()
                 .componentMethodName(new ComponentMethodName.Builder()
-                        .componentName(enclosingType.getSimpleName().toString())
+                        .componentName(componentName)
                         .methodName(methodDoc.getSimpleName().toString())
                         .build())
                 .consumedMessageName(consumedMessage)
@@ -343,6 +345,26 @@ public class ProcessStepDocExtractor implements Service {
         return processStepDoc;
     }
 
+    private String listenerContainerName(TypeElement enclosingType) {
+        String componentName;
+        if(aggregateDocFactory.isStandaloneRoot(enclosingType)) {
+            componentName = NamingConventions.aggregateNameFromSimpleRootName(enclosingType.getSimpleName().toString());
+        } else if(aggregateDocFactory.isStandaloneFactory(enclosingType)) {
+            componentName = NamingConventions.aggregateNameFromSimpleFactoryName(enclosingType.getSimpleName().toString());
+        } else if(aggregateDocFactory.isStandaloneRepository(enclosingType)) {
+            componentName = NamingConventions.aggregateNameFromSimpleRepositoryName(enclosingType.getSimpleName().toString());
+        } else {
+            var potentialContainer = enclosingType.getEnclosingElement();
+            if(potentialContainer instanceof TypeElement
+                    && aggregateDocFactory.isContainer((TypeElement) potentialContainer)) {
+                componentName = potentialContainer.getSimpleName().toString();
+            } else {
+                componentName = enclosingType.getSimpleName().toString();
+            }
+        }
+        return componentName;
+    }
+
     private AggregateDocId declaringAggregate(ExecutableElement methodDoc) {
         TypeElement enclosingType = (TypeElement) methodDoc.getEnclosingElement();
         TypeElement aggregateType;
@@ -350,6 +372,8 @@ public class ProcessStepDocExtractor implements Service {
             aggregateType = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
         } else if(aggregateDocFactory.isRepositoryDoc(enclosingType)) {
             aggregateType = aggregateDocFactory.aggregateTypeElementOfRepository(enclosingType);
+        } else if(aggregateDocFactory.extendsAggregateRoot(enclosingType)) {
+            aggregateType = aggregateDocFactory.aggregateTypeElementOfRoot(enclosingType);
         } else {
             aggregateType = enclosingType;
         }

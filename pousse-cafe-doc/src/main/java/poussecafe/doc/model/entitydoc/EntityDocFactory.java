@@ -35,7 +35,8 @@ public class EntityDocFactory extends AggregateFactory<EntityDocId, EntityDoc, E
 
     public String idClassName(TypeElement aggregateClassDoc) {
         DeclaredType superclass = (DeclaredType) aggregateClassDoc.getSuperclass();
-        TypeElement keyType = (TypeElement) docletEnvironment.getTypeUtils().asElement(superclass.getTypeArguments().get(KEY_TYPE_INDEX));
+        TypeElement keyType = (TypeElement) docletEnvironment.getTypeUtils().asElement(
+                superclass.getTypeArguments().get(KEY_TYPE_INDEX));
         return keyType.getQualifiedName().toString();
     }
 
