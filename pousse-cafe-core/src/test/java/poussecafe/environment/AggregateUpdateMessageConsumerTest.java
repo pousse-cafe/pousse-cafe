@@ -1,7 +1,5 @@
 package poussecafe.environment;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,7 @@ import poussecafe.storage.DefaultMessageCollection;
 import poussecafe.storage.NoTransactionRunner;
 import poussecafe.testmodule.SimpleMessage;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -110,8 +109,7 @@ public class AggregateUpdateMessageConsumerTest {
                     .method(aggregateRoot.getClass().getDeclaredMethod(methodName, Message.class))
                     .runner(runner)
                     .transactionRunnerLocator(transactionRunnerLocator)
-                    .hasExpectedEvents(hasExpectedEvents)
-                    .expectedEvents(expectedEvents)
+                    .expectedEvents(emptyList())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -241,54 +239,7 @@ public class AggregateUpdateMessageConsumerTest {
         // Default case
     }
 
-    private boolean hasExpectedEvents = false;
-
-    private List<ExpectedEvent> expectedEvents = new ArrayList<>();
-
     private void thenReportSuccess() {
         assertTrue(report.isSuccess());
-    }
-
-    @Test
-    public void expectedEventsProducedSucceeds() {
-        givenAggregate();
-        givenExpectedEvents();
-        givenAggregateUpdateMessageConsumerForMethod("listenerProducingExpectedEvents");
-        givenMessage();
-        whenConsume();
-        thenReportSuccess();
-    }
-
-    private void givenExpectedEvents() {
-        hasExpectedEvents = true;
-        var expectedEvent = new ExpectedEvent.Builder()
-                .producedEventClass(SampleEvent.class)
-                .required(true)
-                .build();
-        expectedEvents.add(expectedEvent);
-    }
-
-    @Test
-    public void missingEventsFails() {
-        givenAggregate();
-        givenExpectedEvents();
-        givenAggregateUpdateMessageConsumerForMethod("listenerProducingNoEvent");
-        givenMessage();
-        whenConsume();
-        thenReportFailure();
-    }
-
-    private void thenReportFailure() {
-        assertTrue(report.isFailed());
-    }
-
-    @Test
-    public void unexpectedEventFails() {
-        givenAggregate();
-        givenExpectedEvents();
-        givenAggregateUpdateMessageConsumerForMethod("listenerProducingUnexpectedEvent");
-        givenMessage();
-        whenConsume();
-        thenReportFailure();
     }
 }

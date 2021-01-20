@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
-import poussecafe.domain.MessageCollectionValidator;
 import poussecafe.util.ReflectionUtils;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -51,12 +50,9 @@ public class AggregateServicesFactory {
         Class<?> entityClass = environment.entityOfFactoryOrRepository(repositoryClass);
         repository.setEntityClass(entityClass);
         repository.setDataAccess(supplyDataAccessImplementation(entityClass));
-        repository.setMessageCollectionValidator(messageCollectionValidator);
         repository.setApplicationPerformanceMonitoring(applicationPerformanceMonitoring);
         return repository;
     }
-
-    private MessageCollectionValidator messageCollectionValidator = new MessageCollectionValidator();
 
     private Object supplyDataAccessImplementation(Class<?> entityClass) {
         Supplier<?> factory = environment.entityDataAccessFactory(entityClass);

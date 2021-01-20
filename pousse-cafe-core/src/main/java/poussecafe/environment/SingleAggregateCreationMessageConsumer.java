@@ -1,5 +1,6 @@
 package poussecafe.environment;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import poussecafe.apm.ApmSpan;
@@ -43,6 +44,11 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
 
         public Builder applicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
             consumer.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
+            return this;
+        }
+
+        public Builder expectedEvents(List<ExpectedEvent> expectedEvents) {
+            consumer.expectedEvents = expectedEvents;
             return this;
         }
 
@@ -121,6 +127,10 @@ public class SingleAggregateCreationMessageConsumer implements MessageConsumer {
     private void addCreatedAggregate(TransactionRunner transactionRunner,
             AggregateRepository repository,
             AggregateRoot aggregate) {
+        aggregate.addExecutedListener(listenerId);
+        aggregate.addExpectedEvents(expectedEvents);
         transactionRunner.runInTransaction(() -> repository.add(aggregate));
     }
+
+    private List<ExpectedEvent> expectedEvents;
 }

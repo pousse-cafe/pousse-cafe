@@ -1,7 +1,7 @@
 package poussecafe.testmodule;
 
-import poussecafe.messaging.Message;
+import poussecafe.domain.DomainEvent;
 
-public class SimpleMessage implements Message {
+public class SimpleMessage implements DomainEvent {
 
 }

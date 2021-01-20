@@ -71,22 +71,25 @@ public class FactoryMessageListenerFactory {
                 .build();
         Class<?> returnType = method.getReturnType();
         if(entityClass.isAssignableFrom(returnType) || returnType.isAssignableFrom(Optional.class)) {
-            return addSingleCreatedAggregate(invoker, aggregateServices, definition.shortId());
+            return addSingleCreatedAggregate(definition, invoker, aggregateServices);
         } else if(Iterable.class.isAssignableFrom(returnType)) {
-            return addIterableCreatedAggregates(invoker, aggregateServices, definition.shortId());
+            return addIterableCreatedAggregates(definition, invoker, aggregateServices);
         } else {
             throw new PousseCafeException("Method " + method.getName() + " of " + factory.getClass().getName() + " is not a valid factory message listener");
         }
     }
 
-    private MessageConsumer addSingleCreatedAggregate(MethodInvoker invoker,
-            AggregateServices aggregateServices, String listenerId) {
+    private MessageConsumer addSingleCreatedAggregate(
+            MessageListenerDefinition definition,
+            MethodInvoker invoker,
+            AggregateServices aggregateServices) {
         return new SingleAggregateCreationMessageConsumer.Builder()
-                .listenerId(listenerId)
+                .listenerId(definition.shortId())
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .expectedEvents(definition.expectedEvents())
                 .build();
     }
 
@@ -94,14 +97,17 @@ public class FactoryMessageListenerFactory {
 
     private TransactionRunnerLocator transactionRunnerLocator;
 
-    private MessageConsumer addIterableCreatedAggregates(MethodInvoker invoker,
-            AggregateServices aggregateServices, String listenerId) {
+    private MessageConsumer addIterableCreatedAggregates(
+            MessageListenerDefinition definition,
+            MethodInvoker invoker,
+            AggregateServices aggregateServices) {
         return new SeveralAggregatesCreationMessageConsumer.Builder()
-                .listenerId(listenerId)
+                .listenerId(definition.shortId())
                 .transactionRunnerLocator(transactionRunnerLocator)
                 .invoker(invoker)
                 .aggregateServices(aggregateServices)
                 .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .expectedEvents(definition.expectedEvents())
                 .build();
     }
 }

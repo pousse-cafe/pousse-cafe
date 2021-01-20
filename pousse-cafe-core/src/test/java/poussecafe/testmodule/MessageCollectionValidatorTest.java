@@ -1,7 +1,10 @@
 package poussecafe.testmodule;
 
+import java.util.List;
 import org.junit.Test;
 import poussecafe.domain.MessageCollectionValidator;
+import poussecafe.domain.MessageCollectionValidator.Error.ErrorType;
+import poussecafe.environment.ExpectedEvent;
 import poussecafe.messaging.Message;
 import poussecafe.storage.DefaultMessageCollection;
 import poussecafe.storage.MessageCollection;
@@ -10,11 +13,22 @@ import static org.junit.Assert.assertTrue;
 
 public class MessageCollectionValidatorTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void messageEmittedTwiceThrows() {
+    @Test
+    public void messageIssuedTwiceError() {
+        givenValidator();
         givenMessageEmittedTwice();
         whenValidatingMessageCollection();
+        thenErrorDetected();
     }
+
+    private void givenValidator() {
+        messageCollectionValidator.addExpectedEvent(new ExpectedEvent.Builder()
+                .required(false)
+                .producedEventClass(SimpleMessage.class)
+                .build());
+    }
+
+    private MessageCollectionValidator messageCollectionValidator = new MessageCollectionValidator();
 
     private void givenMessageEmittedTwice() {
         messageCollection = new DefaultMessageCollection();
@@ -26,16 +40,21 @@ public class MessageCollectionValidatorTest {
     private MessageCollection messageCollection;
 
     private void whenValidatingMessageCollection() {
-        messageCollectionValidator.validate(messageCollection);
+        errors = messageCollectionValidator.validate(messageCollection);
     }
 
-    private MessageCollectionValidator messageCollectionValidator = new MessageCollectionValidator();
+    private List<MessageCollectionValidator.Error> errors;
+
+    private void thenErrorDetected() {
+        assertTrue(errors.stream().filter(error -> error.type() == ErrorType.DUPLICATE).findFirst().isPresent());
+    }
 
     @Test
-    public void distinctMessagesDoesNotThrow() {
+    public void distinctMessagesNoError() {
+        givenValidator();
         givenDistinctMessages();
         whenValidatingMessageCollection();
-        thenNoExceptionThrown();
+        thenNoError();
     }
 
     private void givenDistinctMessages() {
@@ -45,7 +64,7 @@ public class MessageCollectionValidatorTest {
         messageCollection.addMessage(new SimpleMessage());
     }
 
-    private void thenNoExceptionThrown() {
-        assertTrue(true);
+    private void thenNoError() {
+        assertTrue(errors.isEmpty());
     }
 }

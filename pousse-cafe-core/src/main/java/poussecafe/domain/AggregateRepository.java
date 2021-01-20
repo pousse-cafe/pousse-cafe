@@ -27,12 +27,6 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
         return entityClass;
     }
 
-    public void setMessageCollectionValidator(MessageCollectionValidator messageCollectionValidator) {
-        this.messageCollectionValidator = messageCollectionValidator;
-    }
-
-    private MessageCollectionValidator messageCollectionValidator;
-
     public void setApplicationPerformanceMonitoring(ApplicationPerformanceMonitoring applicationPerformanceMonitoring) {
         this.applicationPerformanceMonitoring = applicationPerformanceMonitoring;
     }
@@ -100,7 +94,7 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
     protected void addData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            messageCollectionValidator.validate(messageCollection);
+            entity.validateIssuedMessages();
             D data = entity.attributes();
             dataAccess.addData(data);
         }
@@ -138,7 +132,7 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
     protected void updateData(A entity) {
         MessageCollection messageCollection = entity.messageCollection();
         if(!entity.dontPersist()) {
-            messageCollectionValidator.validate(messageCollection);
+            entity.validateIssuedMessages();
             D data = entity.attributes();
             dataAccess.updateData(data);
         }
@@ -152,17 +146,16 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
             checkId(id);
             Optional<A> entity = getOptional(id);
             if (entity.isPresent()) {
-                deleteWithoutSpan(entity.get());
+                deleteInSpan(entity.get());
             }
         } finally {
             span.end();
         }
     }
 
-    private void deleteWithoutSpan(A entity) {
+    private void deleteInSpan(A entity) {
         entity.onDelete();
         MessageCollection messageCollection = entity.messageCollection();
-        messageCollectionValidator.validate(messageCollection);
         dataAccess.deleteData(entity.attributes().identifier().value());
         considerMessageSending(entity, messageCollection);
     }
@@ -171,7 +164,7 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName("delete(" + entityClass.getSimpleName() + ")");
         try {
-            deleteWithoutSpan(entity);
+            deleteInSpan(entity);
         } finally {
             span.end();
         }

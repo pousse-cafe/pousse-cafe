@@ -57,6 +57,11 @@ public abstract class Entity<I, D extends EntityAttributes<I>> {
 
     private boolean dontPersist;
 
+    /**
+     * @deprecated
+     * @see #dontPersist(boolean)
+     */
+    @Deprecated(forRemoval = true)
     public boolean dontPersist() {
         return dontPersist;
     }
