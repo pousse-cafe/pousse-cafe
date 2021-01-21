@@ -10,11 +10,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
+import poussecafe.attribute.AttributeBuilder;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.util.StringId;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 public class DataAdapters {
@@ -105,10 +104,12 @@ public class DataAdapters {
         };
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * @deprecated Use {@link AttributeBuilder#parametrizedListClass(Class)} instead.
+     */
+    @Deprecated(since = "0.26")
     public static <T> Class<List<T>> parametrizedListClass(Class<T> elementType) {
-        requireNonNull(elementType);
-        return (Class<List<T>>) emptyList().getClass();
+        return AttributeBuilder.parametrizedListClass(elementType);
     }
 
     public static DataAdapter<String, byte[]> stringByteArray() {

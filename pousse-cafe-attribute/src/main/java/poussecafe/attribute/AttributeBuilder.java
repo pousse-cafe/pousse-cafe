@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
@@ -17,6 +18,7 @@ import poussecafe.attribute.single.SingleAttributeBuilder;
 import poussecafe.attribute.single.SingleAttributeBuilder.ExpectingAdaptedReader;
 import poussecafe.util.StringId;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 public class AttributeBuilder {
@@ -87,5 +89,11 @@ public class AttributeBuilder {
     @SuppressWarnings("unchecked")
     public static Class<byte[]> byteArrayClass() {
         return (Class<byte[]>) new byte[] {}.getClass();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Class<List<T>> parametrizedListClass(Class<T> elementType) {
+        requireNonNull(elementType);
+        return (Class<List<T>>) emptyList().getClass();
     }
 }
