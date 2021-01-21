@@ -2,6 +2,7 @@ package poussecafe.source.analysis;
 
 import java.util.List;
 import java.util.Optional;
+import poussecafe.source.Source;
 
 public interface ResolvedClass {
 
@@ -16,4 +17,6 @@ public interface ResolvedClass {
     ClassResolver resolver();
 
     Optional<Object> staticFieldValue(String constantName);
+
+    Optional<Source> source();
 }

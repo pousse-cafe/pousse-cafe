@@ -1,9 +1,6 @@
 package poussecafe.source;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import poussecafe.source.analysis.ClassResolver;
-import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ModelBuilder;
 
@@ -13,27 +10,26 @@ class ModelBuildingProjectVisitor implements SourceFileVisitor {
 
     @Override
     public void visitFile(SourceFile sourceFile) {
-        var compilationUnit = sourceFile.tree();
-        var compilationUnitVisitor = compilationUnitVisitor(compilationUnit);
-        compilationUnit.accept(compilationUnitVisitor);
+        visitor = compilationUnitVisitor(sourceFile);
+        sourceFile.tree().accept(visitor);
     }
 
-    private ASTVisitor compilationUnitVisitor(CompilationUnit compilationUnit) {
+    private ModelBuildingCompilationUnitVisitor visitor;
+
+    private ModelBuildingCompilationUnitVisitor compilationUnitVisitor(SourceFile sourceFile) {
         return new ModelBuildingCompilationUnitVisitor.Builder()
-                .compilationUnitResolver(new CompilationUnitResolver.Builder()
-                        .compilationUnit(compilationUnit)
-                        .classResolver(classResolver)
-                        .build())
-                .model(model)
+                .sourceFile(sourceFile)
+                .classResolver(classResolver)
+                .modelBuilder(builder)
                 .build();
     }
 
     private ClassResolver classResolver;
 
-    private ModelBuilder model = new ModelBuilder();
+    private ModelBuilder builder = new ModelBuilder();
 
     public Model buildModel() {
-        return model.build();
+        return builder.build();
     }
 
     ModelBuildingProjectVisitor(ClassResolver classResolver) {

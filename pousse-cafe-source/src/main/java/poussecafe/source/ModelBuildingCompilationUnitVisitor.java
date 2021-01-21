@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.analysis.AggregateContainerClass;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.AnnotatedElement;
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.FactoryClass;
 import poussecafe.source.analysis.MessageListenerMethod;
@@ -75,11 +76,14 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
 
     private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var processDefinition = new ProcessDefinitionType(resolvedTypeDeclaration);
-        model.addProcess(new ProcessModel.Builder()
+        modelBuilder.addProcess(new ProcessModel.Builder()
                 .name(processDefinition.processName())
                 .packageName(compilationUnit().getPackage().getName().getFullyQualifiedName())
+                .source(sourceFile.source())
                 .build());
     }
+
+    private SourceFile sourceFile;
 
     private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         FactoryClass factoryClass = new FactoryClass(resolvedTypeDeclaration);
@@ -122,7 +126,7 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
     }
 
     private void createOrUpdateAggregate(String name) {
-        aggregateBuilder = model.getAndCreateIfAbsent(name,
+        aggregateBuilder = modelBuilder.getAndCreateIfAbsent(name,
                 compilationUnit().getPackage().getName().getFullyQualifiedName());
     }
 
@@ -159,7 +163,7 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         }
     }
 
-    private ModelBuilder model;
+    private ModelBuilder modelBuilder;
 
     @Override
     public boolean visit(MethodDeclaration node) {
@@ -171,7 +175,7 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
                         .withContainer(container)
                         .withMethodDeclaration(new MessageListenerMethod(method))
                         .build();
-                model.addMessageListener(messageListener);
+                modelBuilder.addMessageListener(messageListener);
 
                 registerMessage(messageListener.consumedMessage(),
                         method.parameterTypeName(0).orElseThrow());
@@ -193,14 +197,16 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
 
     private void registerMessage(Message message, ResolvedTypeName messageTypeName) {
         if(message.type() == MessageType.COMMAND) {
-            model.addCommand(new Command.Builder()
+            modelBuilder.addCommand(new Command.Builder()
                     .name(message.name())
                     .packageName(messageTypeName.packageName())
+                    .source(messageTypeName.resolvedClass().source())
                     .build());
         } else if(message.type() == MessageType.DOMAIN_EVENT) {
-            model.addEvent(new DomainEvent.Builder()
+            modelBuilder.addEvent(new DomainEvent.Builder()
                     .name(message.name())
                     .packageName(messageTypeName.packageName())
+                    .source(messageTypeName.resolvedClass().source())
                     .build());
         } else {
             throw new UnsupportedOperationException("Unsupported message type " + message.type());
@@ -233,26 +239,39 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
     public static class Builder {
 
         public ModelBuildingCompilationUnitVisitor build() {
-            requireNonNull(model);
+            requireNonNull(sourceFile);
 
-            var visitor = new ModelBuildingCompilationUnitVisitor(compilationUnit);
-            visitor.model = model;
+            var compilationUnit = sourceFile.tree();
+            var compilationUnitResolver = new CompilationUnitResolver.Builder()
+                    .compilationUnit(compilationUnit)
+                    .classResolver(classResolver)
+                    .build();
+            var visitor = new ModelBuildingCompilationUnitVisitor(compilationUnitResolver);
+            visitor.sourceFile = sourceFile;
+            visitor.modelBuilder = modelBuilder;
             return visitor;
         }
 
-        public Builder compilationUnitResolver(CompilationUnitResolver compilationUnit) {
-            this.compilationUnit = compilationUnit;
+        public Builder sourceFile(SourceFile sourceFile) {
+            this.sourceFile = sourceFile;
             return this;
         }
 
-        private CompilationUnitResolver compilationUnit;
+        private SourceFile sourceFile;
 
-        public Builder model(ModelBuilder model) {
-            this.model = model;
+        public Builder classResolver(ClassResolver classResolver) {
+            this.classResolver = classResolver;
             return this;
         }
 
-        private ModelBuilder model;
+        private ClassResolver classResolver;
+
+        public Builder modelBuilder(ModelBuilder modelBuilder) {
+            this.modelBuilder = modelBuilder;
+            return this;
+        }
+
+        private ModelBuilder modelBuilder;
     }
 
     private ModelBuildingCompilationUnitVisitor(CompilationUnitResolver compilationUnit) {

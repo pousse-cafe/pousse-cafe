@@ -40,7 +40,7 @@ public class SourceScanner implements SourceConsumer {
         } else {
             try {
                 fileVisitor.visitFile(new SourceFile.Builder()
-                        .id(sourceId)
+                        .source(source)
                         .tree(unit)
                         .build());
             } catch (ResolutionException e) {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import poussecafe.source.Source;
 import poussecafe.util.Equality;
 
 import static java.util.Objects.requireNonNull;
@@ -112,5 +113,10 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
         return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(classObject, other.classObject)
                 .build());
+    }
+
+    @Override
+    public Optional<Source> source() {
+        return Optional.empty();
     }
 }

@@ -6,11 +6,15 @@ import static java.util.Objects.requireNonNull;
 
 public class SourceFile {
 
-    public String id() {
-        return id;
+    public Source source() {
+        return source;
     }
 
-    private String id;
+    private Source source;
+
+    public String id() {
+        return source.id();
+    }
 
     public CompilationUnit tree() {
         return tree;
@@ -21,15 +25,15 @@ public class SourceFile {
     public static class Builder {
 
         public SourceFile build() {
-            requireNonNull(sourceFileTree.id);
+            requireNonNull(sourceFileTree.source);
             requireNonNull(sourceFileTree.tree);
             return sourceFileTree;
         }
 
         private SourceFile sourceFileTree = new SourceFile();
 
-        public Builder id(String id) {
-            sourceFileTree.id = id;
+        public Builder source(Source source) {
+            sourceFileTree.source = source;
             return this;
         }
 
@@ -45,6 +49,6 @@ public class SourceFile {
 
     @Override
     public String toString() {
-        return id;
+        return source.id();
     }
 }
