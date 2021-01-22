@@ -9,7 +9,13 @@ public class AggregateContainerClass {
         return annotatedElement.findAnnotation(CompilationUnitResolver.AGGREGATE_ANNOTATION_CLASS).isPresent();
     }
 
-    private AggregateContainerClass() {
+    public AggregateContainerClass(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        this.resolvedTypeDeclaration = resolvedTypeDeclaration;
+    }
 
+    private ResolvedTypeDeclaration resolvedTypeDeclaration;
+
+    public String aggregateName() {
+        return resolvedTypeDeclaration.className().simple();
     }
 }

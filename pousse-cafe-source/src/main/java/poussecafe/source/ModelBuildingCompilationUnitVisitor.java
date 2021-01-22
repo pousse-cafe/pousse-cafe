@@ -1,6 +1,7 @@
 package poussecafe.source;
 
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -49,8 +50,11 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
             visitProcessDefinition(resolvedTypeDeclaration);
             return false;
+        } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
+            visitAggregateContainer(resolvedTypeDeclaration);
+            return true;
         } else {
-            return AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration);
+            return false;
         }
     }
 
@@ -152,6 +156,12 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         } else {
             return innerClassQualifiedName((TypeDeclaration) parent) + "." + typeDeclaration.getName().getIdentifier();
         }
+    }
+
+    private void visitAggregateContainer(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        AggregateContainerClass containerClass = new AggregateContainerClass(resolvedTypeDeclaration);
+        createOrUpdateAggregate(containerClass.aggregateName());
+        aggregateBuilder.containerSource(Optional.of(sourceFile.source()));
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,6 +49,12 @@ public class Aggregate extends ComponentWithType {
                 || innerRoot
                 || innerRepository;
     }
+
+    public Optional<Source> containerSource() {
+        return containerSource;
+    }
+
+    private Optional<Source> containerSource = Optional.empty();
 
     public static class Builder {
 
@@ -154,6 +161,11 @@ public class Aggregate extends ComponentWithType {
             if(innerRepository.isEmpty()) {
                 innerRepository(noAPriori || (aPrioriInnerFactory || aPrioriInnerRoot));
             }
+            return this;
+        }
+
+        public Builder containerSource(Optional<Source> containerSource) {
+            aggregate.containerSource = containerSource;
             return this;
         }
     }
