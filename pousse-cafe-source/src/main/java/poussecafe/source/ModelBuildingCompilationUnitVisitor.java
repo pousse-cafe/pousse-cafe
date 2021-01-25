@@ -71,6 +71,9 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
         createOrUpdateAggregate(aggregateName);
+        if(typeLevel() == 0) {
+            aggregateBuilder.standaloneRootSource(Optional.of(sourceFile.source()));
+        }
         container = new MessageListenerContainer.Builder()
                 .type(MessageListenerContainerType.ROOT)
                 .aggregateName(aggregateName)
@@ -102,6 +105,9 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
         createOrUpdateAggregate(aggregateName);
+        if(typeLevel() == 0) {
+            aggregateBuilder.standaloneFactorySource(Optional.of(sourceFile.source()));
+        }
         container = new MessageListenerContainer.Builder()
                 .type(MessageListenerContainerType.FACTORY)
                 .aggregateName(aggregateName)
@@ -122,6 +128,9 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
         createOrUpdateAggregate(aggregateName);
+        if(typeLevel() == 0) {
+            aggregateBuilder.standaloneRepositorySource(Optional.of(sourceFile.source()));
+        }
         container = new MessageListenerContainer.Builder()
                 .type(MessageListenerContainerType.REPOSITORY)
                 .aggregateName(aggregateName)

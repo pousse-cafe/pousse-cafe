@@ -56,6 +56,24 @@ public class Aggregate extends ComponentWithType {
 
     private Optional<Source> containerSource = Optional.empty();
 
+    public Optional<Source> standaloneFactorySource() {
+        return standaloneFactorySource;
+    }
+
+    private Optional<Source> standaloneFactorySource = Optional.empty();
+
+    public Optional<Source> standaloneRootSource() {
+        return standaloneRootSource;
+    }
+
+    private Optional<Source> standaloneRootSource = Optional.empty();
+
+    public Optional<Source> standaloneRepositorySource() {
+        return standaloneRepositorySource;
+    }
+
+    private Optional<Source> standaloneRepositorySource = Optional.empty();
+
     public static class Builder {
 
         private Aggregate aggregate = new Aggregate();
@@ -63,6 +81,10 @@ public class Aggregate extends ComponentWithType {
         public Aggregate build() {
             requireNonNull(aggregate.name);
             requireNonNull(aggregate.packageName);
+            requireNonNull(aggregate.containerSource);
+            requireNonNull(aggregate.standaloneFactorySource);
+            requireNonNull(aggregate.standaloneRootSource);
+            requireNonNull(aggregate.standaloneRepositorySource);
 
             aggregate.innerFactory = innerFactory.orElseThrow().booleanValue();
             aggregate.innerRoot = innerRoot.orElseThrow().booleanValue();
@@ -166,6 +188,21 @@ public class Aggregate extends ComponentWithType {
 
         public Builder containerSource(Optional<Source> containerSource) {
             aggregate.containerSource = containerSource;
+            return this;
+        }
+
+        public Builder standaloneFactorySource(Optional<Source> standaloneFactorySource) {
+            aggregate.standaloneFactorySource = standaloneFactorySource;
+            return this;
+        }
+
+        public Builder standaloneRootSource(Optional<Source> standaloneRootSource) {
+            aggregate.standaloneRootSource = standaloneRootSource;
+            return this;
+        }
+
+        public Builder standaloneRepositorySource(Optional<Source> standaloneRepositorySource) {
+            aggregate.standaloneRepositorySource = standaloneRepositorySource;
             return this;
         }
     }
