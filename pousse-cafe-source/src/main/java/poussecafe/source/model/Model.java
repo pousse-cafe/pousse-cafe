@@ -107,6 +107,16 @@ public class Model {
         return Collections.unmodifiableCollection(aggregates.values());
     }
 
+    void addRunner(Runner runner) {
+        runners.put(runner.className(), runner);
+    }
+
+    private Map<String, Runner> runners = new HashMap<>();
+
+    public Optional<Runner> runner(String className) {
+        return Optional.ofNullable(runners.get(className));
+    }
+
     /**
      * Fixing package names implies the copy of all components of a given model but keeping
      * the package names as defined in this model. Only the components in given modal are kept in the

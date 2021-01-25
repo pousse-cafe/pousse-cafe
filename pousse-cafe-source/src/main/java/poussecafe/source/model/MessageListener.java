@@ -49,7 +49,13 @@ public class MessageListener {
         return runnerName;
     }
 
-    private Optional<String> runnerName;
+    private Optional<String> runnerName = Optional.empty();
+
+    public Optional<String> runnerClass() {
+        return runnerClass;
+    }
+
+    private Optional<String> runnerClass = Optional.empty();
 
     public Optional<String> consumesFromExternal() {
         return consumesFromExternal;
@@ -80,6 +86,8 @@ public class MessageListener {
             requireNonNull(messageListener.methodName);
             requireNonNull(messageListener.consumedMessage);
             requireNonNull(messageListener.consumesFromExternal);
+            requireNonNull(messageListener.runnerName);
+            requireNonNull(messageListener.runnerClass);
 
             if(messageListener.container.type() == MessageListenerContainerType.FACTORY
                     && messageListener.productionType.isEmpty()) {
@@ -156,6 +164,11 @@ public class MessageListener {
             return this;
         }
 
+        public Builder withRunnerClass(Optional<String> runnerClass) {
+            messageListener.runnerClass = runnerClass;
+            return this;
+        }
+
         public Builder withProducedEvent(ProducedEvent producedEvent) {
             messageListener.producedEvents.add(producedEvent);
             return this;
@@ -182,5 +195,9 @@ public class MessageListener {
             this.processNames.addAll(processNames);
             return this;
         }
+    }
+
+    private MessageListener() {
+
     }
 }

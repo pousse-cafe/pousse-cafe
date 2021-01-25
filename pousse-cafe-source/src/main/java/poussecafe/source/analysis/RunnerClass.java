@@ -47,4 +47,8 @@ public class RunnerClass {
             return Collections.emptyList();
         }
     }
+
+    public String className() {
+        return type.name().qualifiedName();
+    }
 }

@@ -123,6 +123,7 @@ public class ModelBuilder {
         setInnerClassFlags();
         aggregates.values().stream().map(Aggregate.Builder::build).forEach(model::addAggregate);
         listeners.forEach(model::addMessageListener);
+        runners.values().forEach(model::addRunner);
         return model;
     }
 
@@ -148,4 +149,10 @@ public class ModelBuilder {
             builder.ensureDefaultLocations();
         }
     }
+
+    public void addRunner(Runner runnerClass) {
+        runners.put(runnerClass.className(), runnerClass);
+    }
+
+    private Map<String, Runner> runners = new HashMap<>();
 }

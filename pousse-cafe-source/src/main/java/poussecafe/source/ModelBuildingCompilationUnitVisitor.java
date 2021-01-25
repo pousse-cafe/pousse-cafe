@@ -17,6 +17,7 @@ import poussecafe.source.analysis.ProducedEventAnnotation;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
+import poussecafe.source.analysis.RunnerClass;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
@@ -29,6 +30,7 @@ import poussecafe.source.model.MessageType;
 import poussecafe.source.model.ModelBuilder;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
+import poussecafe.source.model.Runner;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -53,6 +55,9 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
         } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
             visitAggregateContainer(resolvedTypeDeclaration);
             return true;
+        } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
+            visitRunner(resolvedTypeDeclaration);
+            return false;
         } else {
             return false;
         }
@@ -184,15 +189,25 @@ class ModelBuildingCompilationUnitVisitor extends TypeResolvingCompilationUnitVi
 
     private ModelBuilder modelBuilder;
 
+    private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var runnerClass = new RunnerClass(resolvedTypeDeclaration);
+        modelBuilder.addRunner(new Runner.Builder()
+                .withRunnerSource(Optional.of(sourceFile.source()))
+                .withClassName(runnerClass.className())
+                .build());
+    }
+
     @Override
     public boolean visit(MethodDeclaration node) {
         if(aggregateBuilder != null) {
             var method = currentResolver().resolve(node);
             var annotatedMethod = method.asAnnotatedElement();
             if(MessageListenerMethod.isMessageListener(method)) {
+                var listenerMethod = new MessageListenerMethod(method);
                 var messageListener = new MessageListener.Builder()
                         .withContainer(container)
-                        .withMethodDeclaration(new MessageListenerMethod(method))
+                        .withMethodDeclaration(listenerMethod)
+                        .withRunnerClass(listenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                         .build();
                 modelBuilder.addMessageListener(messageListener);
 
