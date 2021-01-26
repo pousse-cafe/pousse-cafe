@@ -1,6 +1,7 @@
 package poussecafe.source;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.eclipse.jdt.core.JavaCore;
@@ -17,23 +18,31 @@ public class PathSource implements Source {
 
     @Override
     public void configure(ASTParser parser) {
-        var chars = readAllChars(path);
-        parser.setSource(chars);
+        parser.setSource(content().toCharArray());
         var options = JavaCore.getOptions(); // NOSONAR
         JavaCore.setComplianceOptions(JavaCore.VERSION_11, options);
         parser.setCompilerOptions(options);
     }
 
-    private char[] readAllChars(Path sourceFilePath) {
+    @Override
+    public String content() {
+        if(content.get() == null) {
+            content = new WeakReference<>(readAllChars());
+        }
+        return content.get();
+    }
+
+    private String readAllChars() {
         byte[] bytes;
         try {
-            bytes = Files.readAllBytes(sourceFilePath);
+            bytes = Files.readAllBytes(path);
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read path content", e);
         }
-        String content = new String(bytes);
-        return content.toCharArray();
+        return new String(bytes);
     }
+
+    private WeakReference<String> content = new WeakReference<>(null);
 
     public PathSource(Path path) {
         this.path = path;

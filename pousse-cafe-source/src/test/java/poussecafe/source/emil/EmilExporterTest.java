@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
-import poussecafe.source.SourceModelBuilder;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
+import poussecafe.source.analysis.SourceModelBuilder;
 import poussecafe.source.model.Model;
 
 import static org.hamcrest.CoreMatchers.equalTo;

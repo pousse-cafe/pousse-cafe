@@ -13,6 +13,6 @@ public class AggregateDiscoveryTest extends DiscoveryTest {
     }
 
     private void thenAggregatesFound() {
-        new ModelAssertions(model()).thenProcess1AggregateListenersFound();
+        new ModelAssertions(model()).thenProcess1AggregatesFound();
     }
 }

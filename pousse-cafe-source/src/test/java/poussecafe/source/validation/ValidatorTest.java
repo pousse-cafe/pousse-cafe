@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Predicate;
-import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.Name;
 
 import static org.junit.Assert.assertTrue;
@@ -14,14 +13,17 @@ public abstract class ValidatorTest {
 
     protected void givenValidator() {
         classPathExplorer = new ClassPathExplorerMock();
-        validator = new Validator(new ClassLoaderClassResolver(), Optional.of(classPathExplorer));
+        modelBuilder = new ValidationModelBuilder();
     }
 
     private ClassPathExplorerMock classPathExplorer;
 
-    protected Validator validator;
+    private ValidationModelBuilder modelBuilder;
+
+    private Validator validator;
 
     protected void whenValidating() {
+        validator = new Validator(modelBuilder.build(), Optional.of(classPathExplorer));
         validator.validate();
         result = validator.result();
     }
@@ -54,7 +56,7 @@ public abstract class ValidatorTest {
                 pathSegments[2 + (thisClassNameSegments.length - 1) + i] = relativeClassName[i];
             }
             pathSegments[pathSegments.length - 1] = pathSegments[pathSegments.length - 1] + ".java";
-            validator.includeFile(Path.of("src", pathSegments));
+            modelBuilder.includeFile(Path.of("src", pathSegments));
         } catch (IOException e) {
             fail(e.toString());
         }
@@ -71,7 +73,7 @@ public abstract class ValidatorTest {
                 pathSegments[2 + i] = thisClassNameSegments[i];
             }
             pathSegments[pathSegments.length - 1] = pathSegments[pathSegments.length - 1] + ".java";
-            validator.includeFile(Path.of("src", pathSegments));
+            modelBuilder.includeFile(Path.of("src", pathSegments));
         } catch (IOException e) {
             fail(e.toString());
         }
@@ -79,5 +81,9 @@ public abstract class ValidatorTest {
 
     protected void addSubType(Name superTypeName, Name subtype) {
         classPathExplorer.addSubType(superTypeName, subtype);
+    }
+
+    protected void includeFile(Path filePath) throws IOException {
+        modelBuilder.includeFile(filePath);
     }
 }

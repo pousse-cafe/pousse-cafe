@@ -1,13 +1,7 @@
 package poussecafe.source.validation;
 
 import java.util.Optional;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import poussecafe.source.SourceFile;
 import poussecafe.source.analysis.AggregateRootClass;
-import poussecafe.source.analysis.ClassResolver;
-import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.DataAccessImplementationType;
 import poussecafe.source.analysis.EntityDefinitionType;
 import poussecafe.source.analysis.EntityImplementationType;
@@ -18,11 +12,12 @@ import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
+import poussecafe.source.analysis.ResolvedCompilationUnit;
+import poussecafe.source.analysis.ResolvedCompilationUnitVisitor;
 import poussecafe.source.analysis.ResolvedMethod;
 import poussecafe.source.analysis.ResolvedTypeDeclaration;
 import poussecafe.source.analysis.ResolvedTypeName;
 import poussecafe.source.analysis.RunnerClass;
-import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
@@ -38,15 +33,22 @@ import poussecafe.source.validation.model.Runner;
 import poussecafe.source.validation.model.ValidationModel;
 
 import static java.util.Arrays.asList;
-import static java.util.Objects.requireNonNull;
 
-public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUnitVisitor {
+public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVisitor {
 
     @Override
-    protected boolean visitTypeDeclarationOrSkip(TypeDeclaration node) {
-        var resolvedTypeDeclaration = resolve(node);
+    public boolean visit(ResolvedCompilationUnit unit) {
+        this.unit = unit;
+        return true;
+    }
+
+    private ResolvedCompilationUnit unit;
+
+    @Override
+    public boolean visit(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)
                 || MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)) {
                 visitMessageDefinition(resolvedTypeDeclaration);
             }
@@ -54,53 +56,63 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
                 visitMessageImplementation(resolvedTypeDeclaration);
             }
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitEntityDefinition(resolvedTypeDeclaration);
             if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
                 visitAggregateRootDefinition(resolvedTypeDeclaration);
             }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitEntityImplementation(resolvedTypeDeclaration);
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitDataAccessImplementation(resolvedTypeDeclaration);
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitRunner(resolvedTypeDeclaration);
         } else if(ModuleClass.isModule(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitModule(resolvedTypeDeclaration);
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitProcessDefinition(resolvedTypeDeclaration);
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitFactory(resolvedTypeDeclaration);
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
+            foundPousseCafeComponent(true);
             visitRepository(resolvedTypeDeclaration);
         }
         return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
+    }
+
+    @Override
+    public boolean foundContent() {
+        return foundPousseCafeComponent;
+    }
+
+    private boolean foundPousseCafeComponent;
+
+    protected void foundPousseCafeComponent(boolean value) {
+        foundPousseCafeComponent = value;
     }
 
     private void visitMessageDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new MessageDefinitionType(resolvedTypeDeclaration);
         model.addMessageDefinition(new MessageDefinition.Builder()
                 .messageName(definitionType.name())
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
                 .domainEvent(definitionType.type() == MessageType.DOMAIN_EVENT)
                 .build());
     }
 
-    private ValidationModel model;
-
-    private SourceFileLine sourceFileLine(ASTNode node) {
-        return new SourceFileLine.Builder()
-                .sourceFile(sourceFile)
-                .line(lineNumber(node))
-                .build();
-    }
-
-    private SourceFile sourceFile;
+    private ValidationModel model = new ValidationModel();
 
     private void visitMessageImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var implementationType = new MessageImplementationType(resolvedTypeDeclaration);
         model.addMessageImplementation(new MessageImplementation.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .messageDefinitionClassName(implementationType.messageName().resolvedClass().name())
                 .messagingNames(implementationType.messagingNames())
                 .className(resolvedTypeDeclaration.className())
@@ -113,7 +125,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         var definitionType = new EntityDefinitionType(resolvedTypeDeclaration);
         model.addEntityDefinition(new EntityDefinition.Builder()
                 .entityName(definitionType.name())
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.className())
                 .build());
     }
@@ -121,7 +133,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitAggregateRootDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new AggregateRootClass(resolvedTypeDeclaration);
         model.addAggregateRootDefinition(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.className())
                 .innerClass(definitionType.isInnerClass())
                 .build());
@@ -130,7 +142,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitEntityImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var implementationType = new EntityImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .entityImplementationQualifiedClassName(Optional.of(resolvedTypeDeclaration.name().qualifiedName()))
                 .entityDefinitionQualifiedClassName(implementationType.entity().map(ResolvedTypeName::qualifiedName))
                 .storageNames(implementationType.storageNames())
@@ -140,7 +152,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitDataAccessImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var implementationType = new DataAccessImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .entityImplementationQualifiedClassName(implementationType.dataImplementation().map(ResolvedTypeName::qualifiedName))
                 .entityDefinitionQualifiedClassName(implementationType.aggregateRoot().map(ResolvedTypeName::qualifiedName))
                 .storageNames(asList(implementationType.storageName()))
@@ -150,7 +162,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new RunnerClass(resolvedTypeDeclaration);
         model.addRunner(new Runner.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .classQualifiedName(resolvedTypeDeclaration.name().qualifiedName())
                 .typeParametersQualifiedNames(runnerClass.typeParametersQualifiedNames())
                 .build());
@@ -159,7 +171,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitModule(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new ModuleClass(resolvedTypeDeclaration);
         model.addModule(new Module.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .name(runnerClass.className())
                 .build());
     }
@@ -167,7 +179,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var processDefinitionClass = new ProcessDefinitionType(resolvedTypeDeclaration);
         model.addProcessDefinition(new ProcessDefinition.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(processDefinitionClass.className())
                 .name(processDefinitionClass.processName())
                 .build());
@@ -176,7 +188,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new FactoryClass(resolvedTypeDeclaration);
         model.addAggregateFactory(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.className())
                 .innerClass(definitionType.isInnerClass())
                 .build());
@@ -185,15 +197,14 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new RepositoryClass(resolvedTypeDeclaration);
         model.addAggregateRepository(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.className())
                 .innerClass(definitionType.isInnerClass())
                 .build());
     }
 
     @Override
-    public boolean visit(MethodDeclaration node) {
-        var method = currentResolver().resolve(node);
+    public boolean visit(ResolvedMethod method) {
         if(MessageListenerMethod.isMessageListener(method)) {
             visitMessageListener(method);
         }
@@ -203,7 +214,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
     private void visitMessageListener(ResolvedMethod method) {
         var messageListenerMethod = new MessageListenerMethod(method);
         model.addMessageListener(new MessageListener.Builder()
-                .sourceFileLine(sourceFileLine(method.declaration().getName()))
+                .sourceFileLine(unit.sourceFileLine(method.declaration().getName()))
                 .isPublic(method.modifiers().hasVisibility(Visibility.PUBLIC))
                 .runnerQualifiedClassName(messageListenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                 .returnsValue(messageListenerMethod.returnType().isPresent())
@@ -225,45 +236,7 @@ public class ValidationCompilationUnitVisitor extends TypeResolvingCompilationUn
         }
     }
 
-    public static class Builder {
-
-        public ValidationCompilationUnitVisitor build() {
-            requireNonNull(sourceFile);
-            requireNonNull(model);
-            requireNonNull(classResolver);
-
-            var visitor = new ValidationCompilationUnitVisitor(new CompilationUnitResolver.Builder()
-                    .classResolver(classResolver)
-                    .compilationUnit(sourceFile.tree())
-                    .build());
-            visitor.model = model;
-            visitor.sourceFile = sourceFile;
-            return visitor;
-        }
-
-        public Builder sourceFile(SourceFile sourceFile) {
-            this.sourceFile = sourceFile;
-            return this;
-        }
-
-        private SourceFile sourceFile;
-
-        public Builder model(ValidationModel model) {
-            this.model = model;
-            return this;
-        }
-
-        private ValidationModel model;
-
-        public Builder classResolver(ClassResolver classResolver) {
-            this.classResolver = classResolver;
-            return this;
-        }
-
-        private ClassResolver classResolver;
-    }
-
-    private ValidationCompilationUnitVisitor(CompilationUnitResolver compilationUnit) {
-        super(compilationUnit);
+    public ValidationModel buildModel() {
+        return model;
     }
 }

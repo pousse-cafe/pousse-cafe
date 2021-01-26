@@ -20,7 +20,7 @@ public class MessageValidatorTest extends ValidatorTest {
     }
 
     private void givenDefinition() throws IOException {
-        validator.includeFile(messageDefinitionSourcePath());
+        includeFile(messageDefinitionSourcePath());
     }
 
     private Path messageDefinitionSourcePath() {
@@ -28,7 +28,7 @@ public class MessageValidatorTest extends ValidatorTest {
     }
 
     private void givenImplementation() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "message", "Message1Data.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "message", "Message1Data.java"));
     }
 
     private boolean missingImplementationError(ValidationMessage message) {

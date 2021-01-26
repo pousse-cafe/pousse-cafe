@@ -29,9 +29,9 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private void givenMessageImplementations() throws IOException {
-        validator.includeFile(path("Message1Data"));
-        validator.includeFile(path("Message2Data"));
-        validator.includeFile(path("Message3Data"));
+        includeFile(path("Message1Data"));
+        includeFile(path("Message2Data"));
+        includeFile(path("Message3Data"));
     }
 
     private Path path(String string) {
@@ -39,15 +39,15 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private void givenContainer() throws IOException {
-        validator.includeFile(path("MyAggregate"));
+        includeFile(path("MyAggregate"));
     }
 
     private void givenAggregateImplementation() throws IOException {
-        validator.includeFile(path("MyAggregateDataAccess"));
+        includeFile(path("MyAggregateDataAccess"));
     }
 
     private void givenRunner() throws IOException {
-        validator.includeFile(path("UpdatorRunner"));
+        includeFile(path("UpdatorRunner"));
     }
 
     private boolean validContainerListenersMessage(ValidationMessage message) {
@@ -66,7 +66,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private void givenListenerWithoutRunner() throws IOException {
-        validator.includeFile(path("AggregateRootWithoutRunner"));
+        includeFile(path("AggregateRootWithoutRunner"));
     }
 
     private boolean missingRunnerError(ValidationMessage message) {
@@ -87,11 +87,11 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private void givenListenerWithWrongRunner() throws IOException {
-        validator.includeFile(path("AggregateRootWithWrongRunner"));
+        includeFile(path("AggregateRootWithWrongRunner"));
     }
 
     private void givenWrongRunner() throws IOException {
-        validator.includeFile(path("WrongRunner"));
+        includeFile(path("WrongRunner"));
     }
 
     private boolean wrongRunnerWarning(ValidationMessage message) {

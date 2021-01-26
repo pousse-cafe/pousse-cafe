@@ -1,17 +1,10 @@
 package poussecafe.source.validation;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.source.Source;
-import poussecafe.source.SourceConsumer;
-import poussecafe.source.SourceScanner;
-import poussecafe.source.analysis.ClassLoaderClassResolver;
-import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.analysis.ResolvedClass;
@@ -25,11 +18,10 @@ import poussecafe.source.validation.namingconventions.NamingConventionsValidator
 
 import static java.util.Objects.requireNonNull;
 
-public class Validator implements SourceConsumer {
+public class Validator {
 
     public void validate() {
         if(result == null) {
-            model = visitor.buildModel();
             enrichModelWithClassPathComponents();
             buildValidators();
             for(SubValidator validator : validators) {
@@ -69,8 +61,6 @@ public class Validator implements SourceConsumer {
 
     private List<SubValidator> validators;
 
-    private ValidationModelBuildingVisitor visitor;
-
     private void runAndIncludeMessages(SubValidator validator) {
         validator.validate();
         messages.addAll(validator.messages());
@@ -84,32 +74,15 @@ public class Validator implements SourceConsumer {
         return result;
     }
 
-    @Override
-    public void includeFile(Path sourceFilePath) throws IOException {
-        scanner.includeFile(sourceFilePath);
-    }
-
-    private SourceScanner scanner;
-
-    @Override
-    public void includeTree(Path sourceDirectory) throws IOException {
-        scanner.includeTree(sourceDirectory);
-    }
-
-    @Override
-    public void includeSource(Source source) {
-        scanner.includeSource(source);
-    }
-
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public Validator() {
-        this(new ClassLoaderClassResolver(), Optional.empty());
+    public Validator(ValidationModel model) {
+        this(model, Optional.empty());
     }
 
-    public Validator(ClassResolver classResolver, Optional<ClassPathExplorer> classPathExplorer) {
-        visitor = new ValidationModelBuildingVisitor(classResolver);
-        scanner = new SourceScanner(visitor);
+    public Validator(ValidationModel model, Optional<ClassPathExplorer> classPathExplorer) {
+        requireNonNull(model);
+        this.model = model;
 
         requireNonNull(classPathExplorer);
         this.classPathExplorer = classPathExplorer;

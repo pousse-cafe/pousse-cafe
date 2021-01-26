@@ -20,7 +20,7 @@ public class EntityValidatorTest extends ValidatorTest {
     }
 
     private void givenDefinition() throws IOException {
-        validator.includeFile(entityDefinitionSourcePath());
+        includeFile(entityDefinitionSourcePath());
     }
 
     private Path entityDefinitionSourcePath() {
@@ -28,7 +28,7 @@ public class EntityValidatorTest extends ValidatorTest {
     }
 
     private void givenImplementation() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityAttributes.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityAttributes.java"));
     }
 
     @Test
@@ -57,15 +57,15 @@ public class EntityValidatorTest extends ValidatorTest {
     }
 
     private void givenAggregateRootDefinition() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "MyAggregateRoot.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "MyAggregateRoot.java"));
     }
 
     private void givenAggregateRootImplementation() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyAggregateRootAttributes.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyAggregateRootAttributes.java"));
     }
 
     private void givenDataAccess() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityDataAccess.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityDataAccess.java"));
     }
 
     private boolean missingAggregateRootImplementationWarning(ValidationMessage message) {
@@ -87,6 +87,6 @@ public class EntityValidatorTest extends ValidatorTest {
     }
 
     private void givenDataAccess2() throws IOException {
-        validator.includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityDataAccess2.java"));
+        includeFile(Path.of("src", "test", "java", "poussecafe", "source", "validation", "entity", "adapters", "MyEntityDataAccess2.java"));
     }
 }
