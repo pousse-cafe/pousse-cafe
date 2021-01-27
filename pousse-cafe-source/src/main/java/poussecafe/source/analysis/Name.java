@@ -55,6 +55,10 @@ public class Name {
         return new Name(Arrays.stream(segments, 0, segments.length - 1).collect(joining(".")));
     }
 
+    public Name withLastSegment(String segment) {
+        return new Name(qualified() + "." + segment);
+    }
+
     public org.eclipse.jdt.core.dom.Name toJdomName(AST ast) {
         if(qualified) {
             return ast.newQualifiedName(ast.newName(qualifier), ast.newSimpleName(identifier));
@@ -72,13 +76,24 @@ public class Name {
     }
 
     public Name(String name) {
+        if(!Character.isLetter(name.charAt(0))) {
+            throw new IllegalArgumentException("Invalid type name " + name);
+        }
         requireNonNull(name);
         qualifiedName = name;
         evaluate();
     }
 
     public Name(String qualifier, String identifier) {
-        qualified = true;
+        if(!Character.isLetter(qualifier.charAt(0))) {
+            throw new IllegalArgumentException("Invalid qualified " + qualifier);
+        }
+        if(!Character.isLetter(identifier.charAt(0))
+                || identifier.indexOf('.') != -1) {
+            throw new IllegalArgumentException("Invalid identifier " + identifier);
+        }
+
+        qualified = !qualifier.isEmpty();
 
         requireNonNull(qualifier);
         this.qualifier = qualifier;
@@ -86,7 +101,11 @@ public class Name {
         requireNonNull(identifier);
         this.identifier = identifier;
 
-        qualifiedName = qualifier + "." + identifier;
+        if(qualified) {
+            qualifiedName = qualifier + "." + identifier;
+        } else {
+            qualifiedName = identifier;
+        }
     }
 
     private void evaluate() {

@@ -19,4 +19,6 @@ public interface ResolvedClass {
     Optional<Object> staticFieldValue(String constantName);
 
     Optional<Source> source();
+
+    boolean isInterface();
 }

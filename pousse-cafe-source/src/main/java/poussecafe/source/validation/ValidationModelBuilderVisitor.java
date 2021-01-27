@@ -115,7 +115,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .messageDefinitionClassName(implementationType.messageName().resolvedClass().name())
                 .messagingNames(implementationType.messagingNames())
-                .className(resolvedTypeDeclaration.className())
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .concrete(implementationType.isConcreteImplementation())
                 .message(implementationType.implementsMessageInterface())
                 .build());
@@ -126,7 +126,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         model.addEntityDefinition(new EntityDefinition.Builder()
                 .entityName(definitionType.name())
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .className(resolvedTypeDeclaration.className())
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .build());
     }
 
@@ -134,7 +134,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var definitionType = new AggregateRootClass(resolvedTypeDeclaration);
         model.addAggregateRootDefinition(new AggregateComponentDefinition.Builder()
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .className(resolvedTypeDeclaration.className())
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
     }
@@ -189,7 +189,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var definitionType = new FactoryClass(resolvedTypeDeclaration);
         model.addAggregateFactory(new AggregateComponentDefinition.Builder()
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .className(resolvedTypeDeclaration.className())
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
     }
@@ -198,7 +198,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var definitionType = new RepositoryClass(resolvedTypeDeclaration);
         model.addAggregateRepository(new AggregateComponentDefinition.Builder()
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .className(resolvedTypeDeclaration.className())
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
     }

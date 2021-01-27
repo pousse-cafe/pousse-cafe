@@ -16,6 +16,6 @@ public class AggregateContainerClass {
     private ResolvedTypeDeclaration resolvedTypeDeclaration;
 
     public String aggregateName() {
-        return resolvedTypeDeclaration.className().simple();
+        return resolvedTypeDeclaration.unresolvedName().simpleName();
     }
 }

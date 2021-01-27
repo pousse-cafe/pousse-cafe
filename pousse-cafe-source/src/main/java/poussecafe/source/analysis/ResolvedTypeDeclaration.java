@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -40,8 +41,18 @@ public class ResolvedTypeDeclaration {
     private Resolver resolver;
 
     public ResolvedTypeName name() {
-        return resolver.resolve(new Name(declaration.getName()));
+        if(resolvedName == null) {
+            var resolvedClass = resolver.classResolver().loadClass(unresolvedName());
+            resolvedName = new ResolvedTypeName.Builder()
+                    .withName(unresolvedName().asName())
+                    .withResolvedClass(resolvedClass.orElseThrow())
+                    .withResolver(resolver)
+                    .build();
+        }
+        return resolvedName;
     }
+
+    private ResolvedTypeName resolvedName;
 
     public boolean implementsInterface(String interfaceClass) {
         for(Object object : declaration.superInterfaceTypes()) {
@@ -77,19 +88,20 @@ public class ResolvedTypeDeclaration {
     }
 
     public boolean isInnerClass() {
-        return declaration.getParent() instanceof TypeDeclaration;
+        return declaringType.isPresent();
     }
 
-    public ResolvedTypeDeclaration declaringType() {
-        return new Builder()
-                .withDeclaration((TypeDeclaration) declaration.getParent())
-                .withResolver(resolver)
-                .build();
+    public Optional<ResolvedTypeDeclaration> declaringType() {
+        return declaringType;
     }
 
-    public Name className() {
-        return name().resolvedClass().name();
+    private Optional<ResolvedTypeDeclaration> declaringType = Optional.empty();
+
+    public SafeClassName unresolvedName() {
+        return name;
     }
+
+    private SafeClassName name;
 
     public Optional<ResolvedType> superclassType() {
         return Optional.ofNullable(declaration.getSuperclassType()).map(this::resolveType);
@@ -109,6 +121,22 @@ public class ResolvedTypeDeclaration {
                 .collect(toList());
     }
 
+    public List<ResolvedTypeDeclaration> innerTypes() {
+        return Arrays.stream(declaration.getTypes())
+                .map(this::resolveInnerType)
+                .collect(toList());
+    }
+
+    private ResolvedTypeDeclaration resolveInnerType(TypeDeclaration innerType) {
+        var innerClassResolver = new TypeDeclarationResolver.Builder()
+                .parent(resolver)
+                .parentTypeDeclaration(Optional.of(this))
+                .typeDeclaration(innerType)
+                .safeClassName(unresolvedName().withLastSegment(innerType.getName().toString()))
+                .build();
+        return innerClassResolver.resolvedTypeDeclaration();
+    }
+
     public static class Builder {
 
         private ResolvedTypeDeclaration type = new ResolvedTypeDeclaration();
@@ -116,6 +144,7 @@ public class ResolvedTypeDeclaration {
         public ResolvedTypeDeclaration build() {
             requireNonNull(type.declaration);
             requireNonNull(type.resolver);
+            requireNonNull(type.name);
             return type;
         }
 
@@ -126,6 +155,16 @@ public class ResolvedTypeDeclaration {
 
         public Builder withResolver(Resolver resolver) {
             type.resolver = resolver;
+            return this;
+        }
+
+        public Builder withName(SafeClassName name) {
+            type.name = name;
+            return this;
+        }
+
+        public Builder withDeclaringType(Optional<ResolvedTypeDeclaration> declaringType) {
+            type.declaringType = declaringType;
             return this;
         }
     }

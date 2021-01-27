@@ -78,6 +78,16 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
         }
     }
 
+    @Override
+    public Optional<Source> source() {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean isInterface() {
+        return classObject.isInterface();
+    }
+
     public static class Builder {
 
         public ClassLoaderResolvedClass build() {
@@ -113,10 +123,5 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
         return Equality.referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(classObject, other.classObject)
                 .build());
-    }
-
-    @Override
-    public Optional<Source> source() {
-        return Optional.empty();
     }
 }

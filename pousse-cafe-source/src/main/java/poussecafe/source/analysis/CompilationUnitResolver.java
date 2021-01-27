@@ -2,14 +2,18 @@ package poussecafe.source.analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poussecafe.discovery.AbstractMessage;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.DataAccessImplementation;
@@ -31,22 +35,14 @@ import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.Command;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("deprecation")
 public class CompilationUnitResolver implements Resolver {
 
     private void init() { // NOSONAR
-        loadCompilationUnitClass();
         registerInnerClasses();
-    }
-
-    private void loadCompilationUnitClass() {
-        var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
-        var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
-        var className = packageName + "." + typeName.getName().getFullyQualifiedName();
-        compilationUnitClass = classResolver.loadClass(new Name(className))
-                .orElseThrow(() -> newResolutionException(className));
     }
 
     private CompilationUnit compilationUnit;
@@ -54,8 +50,6 @@ public class CompilationUnitResolver implements Resolver {
     public CompilationUnit compilationUnit() {
         return compilationUnit;
     }
-
-    private ResolvedClass compilationUnitClass;
 
     private ClassResolver classResolver;
 
@@ -69,15 +63,38 @@ public class CompilationUnitResolver implements Resolver {
     }
 
     private void registerInnerClasses() {
-        registerInnerClasses(compilationUnitClass);
-    }
-
-    private void registerInnerClasses(ResolvedClass containerClass) {
-        for(ResolvedClass innerClass : containerClass.innerClasses()) {
-            registerClass(innerClass);
-            registerInnerClasses(innerClass);
+        var type = compilationUnit.types().get(0);
+        if(type instanceof TypeDeclaration) {
+            registerInnerClasses(emptyList(), (TypeDeclaration) type);
         }
     }
+
+    private void registerInnerClasses(List<String> pathToParent, TypeDeclaration containerClass) {
+        for(TypeDeclaration innerClass : containerClass.getTypes()) {
+            var innerClassName = new Name(innerClass.getName().toString());
+            var innerClassPath = new ArrayList<>(pathToParent);
+            innerClassPath.add(innerClassName.simple());
+
+            registerClass(innerClassPath);
+        }
+    }
+
+    private void registerClass(List<String> innerClassPath) {
+        var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
+        var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
+        var rootClassName = new Name(packageName, typeName.getName().getFullyQualifiedName());
+        var innerClassName = new Name(innerClassPath.get(innerClassPath.size() - 1));
+        registerClass(innerClassName, new LazyResolver(() -> classResolver.loadInnerClass(rootClassName, innerClassPath)));
+    }
+
+    private void registerClass(Name className, LazyResolver resolver) {
+        importedClasses.put(className.toString(), resolver);
+        resolvedTypeNames.put(className.getIdentifier().toString(), resolver);
+    }
+
+    private Map<String, LazyResolver> importedClasses = new HashMap<>();
+
+    private Map<String, LazyResolver> resolvedTypeNames = new HashMap<>();
 
     public void tryRegister(ImportDeclaration importDeclaration) {
         if(!importDeclaration.isStatic()) {
@@ -97,18 +114,9 @@ public class CompilationUnitResolver implements Resolver {
     private List<String> importedPackages = new ArrayList<>();
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
-        Name fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
-        registerClass(classResolver.loadClass(fullyQualifiedName)
-                .orElseThrow(() -> newResolutionException(fullyQualifiedName.toString())));
+        var fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
+        registerClass(fullyQualifiedName, new LazyResolver(() -> classResolver.loadClass(fullyQualifiedName)));
     }
-
-    private void registerClass(ResolvedClass importedClass) {
-        var className = importedClass.name();
-        importedClasses.put(className.toString(), importedClass);
-        resolvedTypeNames.put(className.getIdentifier().toString(), resolvedTypeName(importedClass));
-    }
-
-    private Map<String, ResolvedClass> importedClasses = new HashMap<>();
 
     private ResolvedTypeName resolvedTypeName(ResolvedClass resolvedClass) {
         return new ResolvedTypeName.Builder()
@@ -120,21 +128,78 @@ public class CompilationUnitResolver implements Resolver {
 
     @Override
     public ResolvedTypeName resolve(Name name) {
-        return resolveClass(name);
-    }
-
-    private ResolvedTypeName resolveClass(Name name) {
         if(name.isQualifiedName()) {
-            var resolvedClass = classResolver.loadClass(name);
+            Optional<ResolvedClass> resolvedClass = tryNamingConventionBasedResolution(name);
+            if(resolvedClass.isEmpty()) {
+                logger.debug("Naming convention resolution failed for {}, falling back on generic method", name);
+                resolvedClass = classResolver.loadClass(name);
+            }
             if(resolvedClass.isPresent()) {
                 return resolvedTypeName(resolvedClass.get());
             } else {
                 return resolvePartiallyQualifiedName(name);
             }
         } else {
-            String simpleName = name.toString();
-            return resolvedTypeNames.computeIfAbsent(simpleName, key -> resolveSimpleName(name)
-                    .orElseThrow(() -> newResolutionException(name.toString())));
+            var simpleName = name.toString();
+            var resolver = resolvedTypeNames.get(simpleName);
+            Optional<ResolvedClass> resolvedClass;
+            if(resolver != null) {
+                resolvedClass = resolver.resolve();
+            } else {
+                resolvedClass = resolveSimpleName(name);
+                resolvedTypeNames.put(simpleName, new LazyResolver(() -> resolvedClass));
+            }
+            return resolvedClass.map(this::resolvedTypeName)
+                    .orElseThrow(() -> newResolutionException(name.toString()));
+        }
+    }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private Optional<ResolvedClass> tryNamingConventionBasedResolution(Name name) {
+        var innerClassName = innerClassName(name);
+        if(innerClassName.rootClassName().isQualifiedName()) {
+            return classResolver.loadClass(innerClassName);
+        } else if(!innerClassName.rootClassName().isQualifiedName()) {
+            var rootClass = resolveSimpleName(innerClassName.rootClassName());
+            if(rootClass.isPresent()) {
+                if(innerClassName.isRootClassName()) {
+                    return rootClass;
+                } else {
+                    return classResolver.locateInnerClass(rootClass.get(), innerClassName.innerClassPath());
+                }
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private SafeClassName innerClassName(Name name) {
+        if(name.isQualifiedName()) {
+            var segments = name.segments();
+            var rootClassNameBuilder = new StringBuilder();
+            int rootClassNameIndex;
+            for(rootClassNameIndex = 0; rootClassNameIndex < segments.length; ++rootClassNameIndex) {
+                var segment = segments[rootClassNameIndex];
+                if(rootClassNameIndex > 0) {
+                    rootClassNameBuilder.append('.');
+                }
+                rootClassNameBuilder.append(segment);
+                if(Character.isUpperCase(segment.charAt(0))) {
+                    break;
+                }
+            }
+            var innerClassNameBuilder = new SafeClassName.Builder();
+            innerClassNameBuilder.rootClassName(new Name(rootClassNameBuilder.toString()));
+            for(int i = rootClassNameIndex + 1; i < segments.length; ++i) {
+                var segment = segments[i];
+                innerClassNameBuilder.appendPathElement(segment);
+            }
+            return innerClassNameBuilder.build();
+        } else {
+            return SafeClassName.ofRootClass(name);
         }
     }
 
@@ -148,8 +213,9 @@ public class CompilationUnitResolver implements Resolver {
             var simpleName = segments[i];
             var resolvedTypeName = resolveSimpleName(new Name(simpleName));
             if(resolvedTypeName.isPresent()) {
-                var innerClass = classResolver.loadInnerClass(new Name(resolvedTypeName.get().qualifiedName()),
-                        innerClassPath).orElseThrow(() -> newResolutionException(name.toString()));
+                var innerClass = classResolver.loadInnerClass(new Name(resolvedTypeName.get().name().qualified()),
+                            innerClassPath)
+                        .orElseThrow(() -> newResolutionException(name.toString()));
                 return new ResolvedTypeName.Builder()
                         .withName(name)
                         .withResolvedClass(innerClass)
@@ -162,32 +228,61 @@ public class CompilationUnitResolver implements Resolver {
         throw new ResolutionException("Unable to resolve " + name);
     }
 
-    private Map<String, ResolvedTypeName> resolvedTypeNames = new HashMap<>();
-
-    private Optional<ResolvedTypeName> resolveSimpleName(Name simpleName) {
+    private Optional<ResolvedClass> resolveSimpleName(Name simpleName) {
         if(simpleName.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
 
         var resolvedName = resolvedTypeNames.get(simpleName.toString());
         if(resolvedName != null) {
-            return Optional.of(resolvedName);
+            return resolvedName.resolve();
+        } else {
+            return tryResolutionWithFrequentJavaLang(simpleName)
+                    .or(() -> tryResolutionWithCompilationUnitPackage(simpleName))
+                    .or(() -> tryResolutionWithImportedPackages(simpleName))
+                    .or(() -> tryResolutionWithJavaLang(simpleName))
+                    .or(() -> tryResolutionWithDefaultPackage(simpleName));
         }
+    }
 
+    private Optional<ResolvedClass> tryResolutionWithFrequentJavaLang(Name simpleName) {
+        if(FREQUENT_JAVA_LANG.contains(simpleName.simple())) {
+            return tryResolutionWithJavaLang(simpleName);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static final Set<String> FREQUENT_JAVA_LANG = new HashSet<>();
+    static {
+        FREQUENT_JAVA_LANG.add("SuppressWarnings");
+        FREQUENT_JAVA_LANG.add("Override");
+    }
+
+    private Optional<ResolvedClass> tryResolutionWithCompilationUnitPackage(Name simpleName) {
+        return tryResolution(compilationUnitPackageName(), simpleName);
+    }
+
+    private Optional<ResolvedClass> tryResolutionWithImportedPackages(Name simpleName) {
         for(String importedPackage : importedPackages) {
             Optional<ResolvedClass> loadedClass = tryResolution(importedPackage, simpleName);
             if(loadedClass.isPresent()) {
-                return Optional.of(resolvedTypeName(loadedClass.get()));
+                return Optional.of(loadedClass.get());
             }
         }
-        return tryResolution(compilationUnitPackageName(), simpleName)
-                .or(() -> tryResolution("java.lang", simpleName))
-                .or(() -> tryResolution("", simpleName))
-                .map(this::resolvedTypeName);
+        return Optional.empty();
     }
 
     private String compilationUnitPackageName() {
         return compilationUnit.getPackage().getName().getFullyQualifiedName();
+    }
+
+    private Optional<ResolvedClass> tryResolutionWithJavaLang(Name simpleName) {
+        return tryResolution("java.lang", simpleName);
+    }
+
+    private Optional<ResolvedClass> tryResolutionWithDefaultPackage(Name simpleName) {
+        return tryResolution("", simpleName);
     }
 
     private Optional<ResolvedClass> tryResolution(String packageName, Name simpleName) {
@@ -203,13 +298,6 @@ public class CompilationUnitResolver implements Resolver {
         }
 
         return classResolver.loadClass(candidateQualifiedName);
-    }
-
-    public ResolvedMethod resolve(MethodDeclaration method) {
-        return new ResolvedMethod.Builder()
-                .withResolver(this)
-                .withDeclaration(method)
-                .build();
     }
 
     public static final String AGGREGATE_ROOT_CLASS = AggregateRoot.class.getCanonicalName();

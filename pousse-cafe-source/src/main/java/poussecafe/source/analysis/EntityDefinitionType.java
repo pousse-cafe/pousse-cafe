@@ -9,7 +9,7 @@ public class EntityDefinitionType {
     public String name() {
         if(typeName.name().instanceOf(CompilationUnitResolver.AGGREGATE_ROOT_CLASS)
                 && typeName.isInnerClass()) {
-            return typeName.declaringType().name().simpleName();
+            return typeName.declaringType().orElseThrow().name().simpleName();
         } else {
             return typeName.name().simpleName();
         }

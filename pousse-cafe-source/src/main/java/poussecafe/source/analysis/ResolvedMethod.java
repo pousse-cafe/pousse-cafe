@@ -6,7 +6,8 @@ import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import static java.util.Objects.requireNonNull;
 
 public class ResolvedMethod {
 
@@ -74,27 +75,34 @@ public class ResolvedMethod {
     }
 
     public ResolvedTypeDeclaration declaringType() {
-        return new ResolvedTypeDeclaration.Builder()
-                .withResolver(resolver)
-                .withDeclaration((TypeDeclaration) declaration.getParent())
-                .build();
+        return declaringType;
     }
+
+    private ResolvedTypeDeclaration declaringType;
 
     public static class Builder {
 
-        private ResolvedMethod annotatedElement = new ResolvedMethod();
+        private ResolvedMethod resolvedMethod = new ResolvedMethod();
 
         public ResolvedMethod build() {
-            return annotatedElement;
+            requireNonNull(resolvedMethod.resolver);
+            requireNonNull(resolvedMethod.declaration);
+            requireNonNull(resolvedMethod.declaringType);
+            return resolvedMethod;
         }
 
         public Builder withResolver(Resolver resolver) {
-            annotatedElement.resolver = resolver;
+            resolvedMethod.resolver = resolver;
             return this;
         }
 
         public Builder withDeclaration(MethodDeclaration declaration) {
-            annotatedElement.declaration = declaration;
+            resolvedMethod.declaration = declaration;
+            return this;
+        }
+
+        public Builder withDeclaringType(ResolvedTypeDeclaration declaringType) {
+            resolvedMethod.declaringType = declaringType;
             return this;
         }
     }

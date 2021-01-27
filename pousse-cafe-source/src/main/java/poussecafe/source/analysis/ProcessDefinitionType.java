@@ -20,6 +20,6 @@ public class ProcessDefinitionType {
     }
 
     public Name className() {
-        return resolvedTypeDeclaration.className();
+        return resolvedTypeDeclaration.unresolvedName().asName();
     }
 }
