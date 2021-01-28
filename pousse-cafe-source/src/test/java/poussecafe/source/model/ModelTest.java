@@ -48,7 +48,7 @@ public class ModelTest {
                 .build());
         currentModel.addMessageListener(new MessageListener.Builder()
                 .withContainer(new MessageListenerContainer.Builder()
-                        .type(MessageListenerContainerType.ROOT)
+                        .type(MessageListenerContainerType.STANDALONE_ROOT)
                         .aggregateName("Aggregate1")
                         .containerIdentifier("Aggregate1Factory")
                         .build())

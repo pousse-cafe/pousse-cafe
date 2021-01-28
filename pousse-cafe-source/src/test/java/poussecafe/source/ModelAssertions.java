@@ -48,14 +48,14 @@ public class ModelAssertions {
     public void thenProcess1AggregateListenersFound() {
         Optional<MessageListener> listener0 = aggregateMessageListener("Aggregate1", "process1Listener0", "Command1");
         assertTrue(listener0.isPresent());
-        assertTrue(listener0.orElseThrow().container().type() == MessageListenerContainerType.FACTORY);
+        assertTrue(listener0.orElseThrow().container().type() == MessageListenerContainerType.INNER_FACTORY);
         assertThat(listener0.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate1"));
         assertThat(listener0.orElseThrow().consumedMessage(), equalTo(Message.command("Command1")));
         assertTrue(listener0.orElseThrow().processNames().contains("Process1"));
 
         Optional<MessageListener> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
         assertTrue(listener1.isPresent());
-        assertTrue(listener1.orElseThrow().container().type() == MessageListenerContainerType.ROOT);
+        assertTrue(listener1.orElseThrow().container().type() == MessageListenerContainerType.INNER_ROOT);
         assertThat(listener1.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate1"));
         assertThat(listener1.orElseThrow().consumedMessage(), equalTo(Message.domainEvent("Event1")));
         assertTrue(listener1.orElseThrow().processNames().contains("Process1"));
@@ -69,7 +69,7 @@ public class ModelAssertions {
         Optional<MessageListener> listener2 = aggregateMessageListener("Aggregate2", "process1Listener2", "Event2");
         assertTrue(listener2.isPresent());
         assertThat(listener2.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate2"));
-        assertTrue(listener2.orElseThrow().container().type() == MessageListenerContainerType.ROOT);
+        assertTrue(listener2.orElseThrow().container().type() == MessageListenerContainerType.STANDALONE_ROOT);
         assertThat(listener2.orElseThrow().consumedMessage().name(), equalTo("Event2"));
         assertTrue(listener2.orElseThrow().processNames().contains("Process1"));
         assertThat(listener2.orElseThrow().producedEvents(), hasItem(new ProducedEvent.Builder()
@@ -81,7 +81,7 @@ public class ModelAssertions {
 
         Optional<MessageListener> listener3 = aggregateMessageListener("Aggregate2", "process1Listener3", "Command2");
         assertTrue(listener3.isPresent());
-        assertTrue(listener3.orElseThrow().container().type() == MessageListenerContainerType.REPOSITORY);
+        assertTrue(listener3.orElseThrow().container().type() == MessageListenerContainerType.STANDALONE_REPOSITORY);
         assertThat(listener3.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate2"));
         assertThat(listener3.orElseThrow().consumedMessage(), equalTo(Message.command("Command2")));
         assertTrue(listener3.orElseThrow().processNames().contains("Process1"));

@@ -12,7 +12,6 @@ import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProducedEvent;
@@ -162,11 +161,11 @@ public class EmilExporter {
     }
 
     private void appendListener(MessageListener listener) {
-        if(listener.container().type() == MessageListenerContainerType.FACTORY) {
+        if(listener.container().type().isFactory()) {
             appendFactoryListener(listener);
-        } else if(listener.container().type() == MessageListenerContainerType.REPOSITORY) {
+        } else if(listener.container().type().isRepository()) {
             appendRepositoryListener(listener);
-        } else if(listener.container().type() == MessageListenerContainerType.ROOT) {
+        } else if(listener.container().type().isRoot()) {
             appendAggregateRootListener(listener);
         } else {
             builder.appendEndOfConsumption();

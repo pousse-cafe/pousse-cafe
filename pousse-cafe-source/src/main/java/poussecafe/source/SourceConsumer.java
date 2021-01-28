@@ -11,7 +11,7 @@ public interface SourceConsumer {
 
     void includeSource(Source source);
 
-    boolean providedPousseCafeResource(String sourceId);
+    boolean isSourceOfInterest(String sourceId);
 
-    boolean includedSource(String sourceId);
+    boolean isIncluded(String sourceId);
 }

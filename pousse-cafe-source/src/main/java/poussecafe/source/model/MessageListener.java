@@ -89,7 +89,7 @@ public class MessageListener {
             requireNonNull(messageListener.runnerName);
             requireNonNull(messageListener.runnerClass);
 
-            if(messageListener.container.type() == MessageListenerContainerType.FACTORY
+            if(messageListener.container.type().isFactory()
                     && messageListener.productionType.isEmpty()) {
                 throw new IllegalStateException("Production type must be present with factory listeners");
             }

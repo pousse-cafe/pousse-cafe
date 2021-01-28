@@ -41,9 +41,9 @@ public class MessageListenerContainer {
             requireNonNull(container.type);
             requireNonNull(container.containerIdentifier);
 
-            if((container.type == MessageListenerContainerType.FACTORY
-                        || container.type == MessageListenerContainerType.REPOSITORY
-                        || container.type == MessageListenerContainerType.ROOT)
+            if((container.type.isFactory()
+                        || container.type.isRepository()
+                        || container.type.isRoot())
                     && container.aggregateName.isEmpty()) {
                 throw new IllegalStateException("Aggregate name must be set with type " + container.type);
             }
@@ -70,18 +70,18 @@ public class MessageListenerContainer {
     @Override
     public String toString() {
         var builder = new StringBuilder();
-        if(type == MessageListenerContainerType.FACTORY) {
+        if(type.isFactory()) {
             builder.append("F{");
-        } else if(type == MessageListenerContainerType.REPOSITORY) {
+        } else if(type.isRepository()) {
             builder.append("Re{");
-        } else if(type == MessageListenerContainerType.ROOT) {
+        } else if(type.isRoot()) {
             builder.append("@");
         }
 
         builder.append(containerIdentifier);
 
-        if(type == MessageListenerContainerType.FACTORY
-                || type == MessageListenerContainerType.REPOSITORY) {
+        if(type.isFactory()
+                || type.isRepository()) {
             builder.append("}");
         }
         return builder.toString();

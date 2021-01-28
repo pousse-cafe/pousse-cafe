@@ -6,8 +6,10 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.AggregateContainer;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
+import poussecafe.source.model.Hooks;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
@@ -18,6 +20,10 @@ import poussecafe.source.model.ModelBuilder;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.Runner;
+import poussecafe.source.model.StandaloneAggregateFactory;
+import poussecafe.source.model.StandaloneAggregateRepository;
+import poussecafe.source.model.StandaloneAggregateRoot;
+import poussecafe.source.model.TypeComponent;
 
 import static java.util.stream.Collectors.toList;
 
@@ -78,16 +84,32 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
             aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
-        createOrUpdateAggregate(aggregateName);
         if(typeLevel == 0) {
-            aggregateBuilder.standaloneRootSource(Optional.of(compilationUnit.sourceFile().source()));
+            createStandaloneAggregateRoot(resolvedTypeDeclaration);
         }
         container = new MessageListenerContainer.Builder()
-                .type(MessageListenerContainerType.ROOT)
+                .type(typeLevel == 0 ? MessageListenerContainerType.STANDALONE_ROOT : MessageListenerContainerType.INNER_ROOT)
                 .aggregateName(aggregateName)
                 .containerIdentifier(identifier)
                 .build();
     }
+
+    private void createStandaloneAggregateRoot(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        standaloneAggregateRootBuilder = new StandaloneAggregateRoot.Builder();
+        standaloneAggregateRootBuilder.typeComponent(typeComponent(resolvedTypeDeclaration.unresolvedName()));
+        hooksBuilder = new Hooks.Builder();
+    }
+
+    private TypeComponent typeComponent(SafeClassName typeName) {
+        return new TypeComponent.Builder()
+                .source(compilationUnit.sourceFile().source())
+                .name(typeName)
+                .build();
+    }
+
+    private StandaloneAggregateRoot.Builder standaloneAggregateRootBuilder;
+
+    private Hooks.Builder hooksBuilder;
 
     @Override
     public boolean foundContent() {
@@ -121,12 +143,13 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
             aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
-        createOrUpdateAggregate(aggregateName);
         if(typeLevel == 0) {
-            aggregateBuilder.standaloneFactorySource(Optional.of(compilationUnit.sourceFile().source()));
+            modelBuilder.addStandaloneAggregateFactory(new StandaloneAggregateFactory.Builder()
+                    .typeComponent(typeComponent(resolvedTypeDeclaration.unresolvedName()))
+                    .build());
         }
         container = new MessageListenerContainer.Builder()
-                .type(MessageListenerContainerType.FACTORY)
+                .type(typeLevel == 0 ? MessageListenerContainerType.STANDALONE_FACTORY : MessageListenerContainerType.INNER_FACTORY)
                 .aggregateName(aggregateName)
                 .containerIdentifier(identifier)
                 .build();
@@ -144,22 +167,17 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
             aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
         }
-        createOrUpdateAggregate(aggregateName);
         if(typeLevel == 0) {
-            aggregateBuilder.standaloneRepositorySource(Optional.of(compilationUnit.sourceFile().source()));
+            modelBuilder.addStandaloneAggregateRepository(new StandaloneAggregateRepository.Builder()
+                    .typeComponent(typeComponent(resolvedTypeDeclaration.unresolvedName()))
+                    .build());
         }
         container = new MessageListenerContainer.Builder()
-                .type(MessageListenerContainerType.REPOSITORY)
+                .type(typeLevel == 0 ? MessageListenerContainerType.STANDALONE_REPOSITORY : MessageListenerContainerType.INNER_REPOSITORY)
                 .aggregateName(aggregateName)
                 .containerIdentifier(identifier)
                 .build();
     }
-
-    private void createOrUpdateAggregate(String name) {
-        aggregateBuilder = modelBuilder.getAndCreateIfAbsent(name, compilationUnit.packageName());
-    }
-
-    private Aggregate.Builder aggregateBuilder;
 
     private int containerLevel;
 
@@ -184,18 +202,33 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     }
 
     private void visitAggregateContainer(ResolvedTypeDeclaration resolvedTypeDeclaration) {
-        AggregateContainerClass containerClass = new AggregateContainerClass(resolvedTypeDeclaration);
-        createOrUpdateAggregate(containerClass.aggregateName());
-        aggregateBuilder.containerSource(Optional.of(compilationUnit.sourceFile().source()));
+        aggregateContainerBuilder = new AggregateContainer.Builder();
+        aggregateContainerBuilder.typeComponent(typeComponent(resolvedTypeDeclaration.unresolvedName()));
+        hooksBuilder = new Hooks.Builder();
     }
+
+    private AggregateContainer.Builder aggregateContainerBuilder;
 
     @Override
     public void endVisit(ResolvedTypeDeclaration node) {
         if(typeLevel == containerLevel
-                && aggregateBuilder != null) {
-            aggregateBuilder = null;
+                && standaloneAggregateRootBuilder != null) {
+            modelBuilder.addStandaloneAggregateRoot(standaloneAggregateRootBuilder
+                    .hooks(hooksBuilder.build())
+                    .build());
+            standaloneAggregateRootBuilder = null;
+            hooksBuilder = null;
+            container = null;
+        } else if(typeLevel == 0
+                && aggregateContainerBuilder != null) {
+            modelBuilder.addAggregateContainer(aggregateContainerBuilder
+                    .hooks(hooksBuilder.build())
+                    .build());
+            aggregateContainerBuilder = null;
+            hooksBuilder = null;
             container = null;
         }
+
         --typeLevel;
     }
 
@@ -211,7 +244,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
 
     @Override
     public boolean visit(ResolvedMethod method) {
-        if(aggregateBuilder != null) {
+        if(container != null) {
             var annotatedMethod = method.asAnnotatedElement();
             if(MessageListenerMethod.isMessageListener(method)) {
                 var listenerMethod = new MessageListenerMethod(method);
@@ -225,14 +258,14 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
                 registerMessage(messageListener.consumedMessage(),
                         method.parameterTypeName(0).orElseThrow());
                 registerMessages(messageListener.producedEvents(), annotatedMethod);
-            } else if(container.type() == MessageListenerContainerType.ROOT) {
+            } else if(container.type().isRoot()) {
                 if(method.name().equals(Aggregate.ON_ADD_METHOD_NAME)) {
                     var producedEvents = producesEvents(annotatedMethod);
-                    aggregateBuilder.onAddProducedEvents(producedEvents);
+                    hooksBuilder.onAddProducedEvents(producedEvents);
                     registerMessages(producedEvents, annotatedMethod);
                 } else if(method.name().equals(Aggregate.ON_DELETE_METHOD_NAME)) {
                     var producedEvents = producesEvents(annotatedMethod);
-                    aggregateBuilder.onDeleteProducedEvents(producedEvents);
+                    hooksBuilder.onDeleteProducedEvents(producedEvents);
                     registerMessages(producedEvents, annotatedMethod);
                 }
             }
@@ -283,5 +316,10 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
 
     public Model buildModel() {
         return modelBuilder.build();
+    }
+
+    @Override
+    public void forget(String sourceId) {
+        modelBuilder.forget(sourceId);
     }
 }

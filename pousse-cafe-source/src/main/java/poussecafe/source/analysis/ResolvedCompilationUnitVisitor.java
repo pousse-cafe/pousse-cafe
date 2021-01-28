@@ -21,4 +21,8 @@ public interface ResolvedCompilationUnitVisitor {
     default boolean foundContent() {
         return false;
     }
+
+    default void forget(String sourceId) {
+
+    }
 }

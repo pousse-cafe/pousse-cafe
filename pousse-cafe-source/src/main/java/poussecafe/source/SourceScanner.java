@@ -29,7 +29,12 @@ public class SourceScanner implements SourceConsumer {
 
     @Override
     public void includeSource(Source source) {
-        includedSources.add(source.id());
+        if(includedSources.contains(source.id())) {
+            typeResolvingVisitor.forget(source.id());
+        } else {
+            includedSources.add(source.id());
+        }
+
         if(isPousseCafeResource(source)) {
             ASTParser parser = ASTParser.newParser(AST.JLS14);
             source.configure(parser);
@@ -50,7 +55,7 @@ public class SourceScanner implements SourceConsumer {
                             .source(source)
                             .build();
                     if(typeResolvingVisitor.visit(sourceFile)) {
-                        providingSources.add(sourceId);
+                        sourcesOfInterest.add(sourceId);
                     }
                 } catch (ResolutionException e) {
                     logger.error("Unable to analyze file {}, try to compile the project first", sourceId);
@@ -66,14 +71,14 @@ public class SourceScanner implements SourceConsumer {
     }
 
     @Override
-    public boolean providedPousseCafeResource(String sourceId) {
-        return providingSources.contains(sourceId);
+    public boolean isSourceOfInterest(String sourceId) {
+        return sourcesOfInterest.contains(sourceId);
     }
 
-    private Set<String> providingSources = new HashSet<>();
+    private Set<String> sourcesOfInterest = new HashSet<>();
 
     @Override
-    public boolean includedSource(String sourceId) {
+    public boolean isIncluded(String sourceId) {
         return includedSources.contains(sourceId);
     }
 

@@ -226,11 +226,11 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
 
     private MessageListenerContainerType messageListenerContainerType(ResolvedTypeDeclaration declaringType) {
         if(AggregateRootClass.isAggregateRoot(declaringType)) {
-            return MessageListenerContainerType.ROOT;
+            return declaringType.isInnerClass() ? MessageListenerContainerType.INNER_ROOT : MessageListenerContainerType.STANDALONE_ROOT;
         } else if(FactoryClass.isFactory(declaringType)) {
-            return MessageListenerContainerType.FACTORY;
+            return declaringType.isInnerClass() ? MessageListenerContainerType.INNER_FACTORY : MessageListenerContainerType.STANDALONE_FACTORY;
         } else if(RepositoryClass.isRepository(declaringType)) {
-            return MessageListenerContainerType.REPOSITORY;
+            return declaringType.isInnerClass() ? MessageListenerContainerType.INNER_REPOSITORY : MessageListenerContainerType.STANDALONE_REPOSITORY;
         } else {
             return MessageListenerContainerType.OTHER;
         }
@@ -238,5 +238,11 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
 
     public ValidationModel buildModel() {
         return model;
+    }
+
+    @Override
+    public void forget(String sourceId) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -27,13 +27,13 @@ public abstract class SingleVisitorScanner implements SourceConsumer {
     }
 
     @Override
-    public boolean providedPousseCafeResource(String sourceId) {
-        return scanner.providedPousseCafeResource(sourceId);
+    public boolean isSourceOfInterest(String sourceId) {
+        return scanner.isSourceOfInterest(sourceId);
     }
 
     @Override
-    public boolean includedSource(String sourceId) {
-        return scanner.includedSource(sourceId);
+    public boolean isIncluded(String sourceId) {
+        return scanner.isIncluded(sourceId);
     }
 
     protected SingleVisitorScanner() {

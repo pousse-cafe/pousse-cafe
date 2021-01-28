@@ -2,15 +2,15 @@ package poussecafe.source.model;
 
 import poussecafe.source.analysis.Name;
 
-class ComponentWithType {
+public class ComponentWithType {
 
-    String name;
+    protected String name;
 
     public String simpleName() {
         return name;
     }
 
-    String packageName;
+    protected String packageName;
 
     public String packageName() {
         return packageName;
@@ -20,7 +20,7 @@ class ComponentWithType {
         return new Name(packageName, name);
     }
 
-    ComponentWithType() {
+    protected ComponentWithType() {
 
     }
 }

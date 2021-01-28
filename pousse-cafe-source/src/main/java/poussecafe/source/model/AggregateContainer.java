@@ -1,0 +1,49 @@
+package poussecafe.source.model;
+
+import poussecafe.source.generation.NamingConventions;
+
+import static java.util.Objects.requireNonNull;
+
+public class AggregateContainer {
+
+    private TypeComponent typeComponent;
+
+    public TypeComponent typeComponent() {
+        return typeComponent;
+    }
+
+    private Hooks hooks;
+
+    public Hooks hooks() {
+        return hooks;
+    }
+
+    public String aggregateName() {
+        return NamingConventions.aggregateNameFromContainer(typeComponent.typeName().rootClassName().simple());
+    }
+
+    public static class Builder {
+
+        private AggregateContainer aggregate = new AggregateContainer();
+
+        public AggregateContainer build() {
+            requireNonNull(aggregate.typeComponent);
+            requireNonNull(aggregate.hooks);
+            return aggregate;
+        }
+
+        public Builder typeComponent(TypeComponent typeComponent) {
+            aggregate.typeComponent = typeComponent;
+            return this;
+        }
+
+        public Builder hooks(Hooks hooks) {
+            aggregate.hooks = hooks;
+            return this;
+        }
+    }
+
+    private AggregateContainer() {
+
+    }
+}

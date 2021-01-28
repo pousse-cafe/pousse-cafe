@@ -2,7 +2,6 @@ package poussecafe.source.validation.listener;
 
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.ResolvedClass;
-import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
@@ -50,7 +49,7 @@ public class MessageListenerValidator extends SubValidator {
                     .build());
         }
 
-        if(listener.containerType() != MessageListenerContainerType.FACTORY
+        if(!listener.containerType().isFactory()
                 && listener.returnsValue()) {
             messages.add(new ValidationMessage.Builder()
                     .location(listener.sourceFileLine())
@@ -59,7 +58,7 @@ public class MessageListenerValidator extends SubValidator {
                     .build());
         }
 
-        if(listener.containerType() == MessageListenerContainerType.ROOT
+        if(listener.containerType().isRoot()
                 && listener.runnerQualifiedClassName().isEmpty()) {
             messages.add(new ValidationMessage.Builder()
                     .location(listener.sourceFileLine())
@@ -68,7 +67,7 @@ public class MessageListenerValidator extends SubValidator {
                     .build());
         }
 
-        if(listener.containerType() != MessageListenerContainerType.ROOT
+        if(!listener.containerType().isRoot()
                 && listener.runnerQualifiedClassName().isPresent()) {
             messages.add(new ValidationMessage.Builder()
                     .location(listener.sourceFileLine())
@@ -91,7 +90,7 @@ public class MessageListenerValidator extends SubValidator {
     }
 
     private boolean canValidateRunner(MessageListener listener) {
-        return listener.containerType() == MessageListenerContainerType.ROOT
+        return listener.containerType().isRoot()
                 && listener.runnerQualifiedClassName().isPresent()
                 && listener.consumedMessageClass().isPresent()
                 && isMessage(listener.consumedMessageClass().orElseThrow());

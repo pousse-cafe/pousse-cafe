@@ -171,6 +171,10 @@ public class NamingConventions {
         return innerRepositoryClassName().equals(simpleName);
     }
 
+    public static String aggregateNameFromContainer(String simpleName) {
+        return simpleName;
+    }
+
     private NamingConventions() {
 
     }

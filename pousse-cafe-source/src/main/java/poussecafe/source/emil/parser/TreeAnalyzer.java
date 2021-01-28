@@ -1,9 +1,17 @@
 package poussecafe.source.emil.parser;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import poussecafe.source.PathSource;
+import poussecafe.source.Source;
+import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.SafeClassName;
 import poussecafe.source.emil.parser.EmilParser.AggregateRootConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.CommandConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.ConsumptionContext;
@@ -17,12 +25,14 @@ import poussecafe.source.emil.parser.EmilParser.MultipleMessageConsumptionsConte
 import poussecafe.source.emil.parser.EmilParser.MultipleMessageConsumptionsItemContext;
 import poussecafe.source.emil.parser.EmilParser.ProcessConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.ProcessContext;
+import poussecafe.source.emil.parser.EmilParser.QualifiedNameContext;
 import poussecafe.source.emil.parser.EmilParser.RepositoryConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.SingleMessageConsumptionContext;
 import poussecafe.source.generation.NamingConventions;
-import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.AggregateContainer;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
+import poussecafe.source.model.Hooks;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
@@ -32,6 +42,10 @@ import poussecafe.source.model.ModelBuilder;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.ProductionType;
+import poussecafe.source.model.StandaloneAggregateFactory;
+import poussecafe.source.model.StandaloneAggregateRepository;
+import poussecafe.source.model.StandaloneAggregateRoot;
+import poussecafe.source.model.TypeComponent;
 
 import static java.util.Objects.requireNonNull;
 
@@ -65,6 +79,28 @@ public class TreeAnalyzer {
     private ModelBuilder model = new ModelBuilder();
 
     public Model model() {
+        for(Entry<String, StandaloneAggregateRoot.Builder> root : standaloneAggregateRoots.entrySet()) {
+            var aggregateName = root.getKey();
+            var builder = root.getValue();
+            var hooksBuilder = aggregateHooks.get(aggregateName);
+            if(hooksBuilder != null) {
+                builder.hooks(hooksBuilder.build());
+            } else {
+                builder.hooks(Hooks.EMPTY);
+            }
+            model.addStandaloneAggregateRoot(builder.build());
+        }
+
+        for(Entry<String, AggregateContainer.Builder> root : aggregateContainers.entrySet()) {
+            var aggregateName = root.getKey();
+            var builder = root.getValue();
+            var hooksBuilder = aggregateHooks.get(aggregateName);
+            if(hooksBuilder != null) {
+                builder.hooks(hooksBuilder.build());
+            }
+            model.addAggregateContainer(builder.build());
+        }
+
         return model.build();
     }
 
@@ -128,18 +164,22 @@ public class TreeAnalyzer {
                 throw new IllegalStateException("Unexpected factory name " + simpleFactoryNameString);
             }
             aggregateName = NamingConventions.aggregateNameFromSimpleFactoryName(simpleFactoryNameString);
+            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleFactoryNameString));
+            model.addStandaloneAggregateFactory(new StandaloneAggregateFactory.Builder()
+                    .typeComponent(typeComponent(typeName))
+                    .build());
         } else if(qualifiedFactoryName != null) {
             aggregateName = qualifiedFactoryName.qualifier.getText();
             containerIdentifier = qualifiedFactoryName.getText();
+            addAggregateContainer(qualifiedFactoryName);
         } else {
             throw new UnsupportedOperationException();
         }
 
-        var existingAggregate = ensureAggregateExists(aggregateName);
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
-                .type(MessageListenerContainerType.FACTORY)
+                .type(simpleFactoryName != null ? MessageListenerContainerType.STANDALONE_FACTORY : MessageListenerContainerType.INNER_FACTORY)
                 .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(factoryListener.listenerName.getText());
@@ -157,8 +197,9 @@ public class TreeAnalyzer {
         }
 
         if(factoryConsumption.eventProductions() != null) {
+            var hooksBuilder = aggregateHooks.computeIfAbsent(aggregateName, key -> new Hooks.Builder());
             var producedEvents = producedEvents(factoryConsumption.eventProductions());
-            existingAggregate.onAddProducedEvents(producedEvents);
+            hooksBuilder.onAddProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);
@@ -167,6 +208,33 @@ public class TreeAnalyzer {
 
         analyzeEventProductions(factoryConsumption.eventProductions());
     }
+
+    private void addAggregateContainer(QualifiedNameContext qualifiedFactoryName) {
+        var typeName = SafeClassName.ofRootClass(new Name(packageName(qualifiedFactoryName.qualifier.getText()),
+                qualifiedFactoryName.qualifier.getText())).withLastSegment(qualifiedFactoryName.name.getText());
+        aggregateContainers.computeIfAbsent(qualifiedFactoryName.qualifier.getText(), key -> new AggregateContainer.Builder()
+                .typeComponent(typeComponent(typeName)));
+    }
+
+    private TypeComponent typeComponent(SafeClassName typeName) {
+        return new TypeComponent.Builder()
+                .name(typeName)
+                .source(source(typeName))
+                .build();
+    }
+
+    private Source source(SafeClassName typeName) {
+        var rootClassName = typeName.rootClassName();
+        var segments = rootClassName.segments();
+        var pathElements = new String[segments.length];
+        System.arraycopy(segments, 0, pathElements, 0, segments.length - 1);
+        pathElements[segments.length - 1] = segments[segments.length - 1] + ".java";
+        return new PathSource(Path.of("", pathElements));
+    }
+
+    private Map<String, AggregateContainer.Builder> aggregateContainers = new HashMap<>();
+
+    private Map<String, Hooks.Builder> aggregateHooks = new HashMap<>();
 
     private List<ProducedEvent> producedEvents(EventProductionsContext eventProductions) {
         var producedEvents = new ArrayList<ProducedEvent>();
@@ -207,10 +275,6 @@ public class TreeAnalyzer {
         }
     }
 
-    private Aggregate.Builder ensureAggregateExists(String aggregateName) {
-        return model.getAndCreateIfAbsent(aggregateName, packageName(aggregateName));
-    }
-
     private String packageName(String aggregateName) {
         return basePackage + ".model." + aggregateName.toLowerCase();
     }
@@ -249,19 +313,22 @@ public class TreeAnalyzer {
         if(simpleName != null) {
             aggregateName = NamingConventions.aggregateNameFromSimpleRootName(simpleName.getText());
             containerIdentifier = simpleName.getText();
+
+            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleName.getText()));
+            standaloneAggregateRoots.computeIfAbsent(aggregateName, key -> new StandaloneAggregateRoot.Builder()
+                    .typeComponent(typeComponent(typeName)));
         } else if(qualifiedName != null) {
             aggregateName = qualifiedName.qualifier.getText();
             containerIdentifier = qualifiedName.getText();
+            addAggregateContainer(qualifiedName);
         } else {
             throw new UnsupportedOperationException();
         }
 
-        ensureAggregateExists(aggregateName);
-
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
-                .type(MessageListenerContainerType.ROOT)
+                .type(simpleName != null ? MessageListenerContainerType.STANDALONE_ROOT : MessageListenerContainerType.INNER_ROOT)
                 .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(aggregateRootConsumption.listenerName.getText());
@@ -283,6 +350,8 @@ public class TreeAnalyzer {
         analyzeEventProductions(aggregateRootConsumption.eventProductions());
     }
 
+    private Map<String, StandaloneAggregateRoot.Builder> standaloneAggregateRoots = new HashMap<>();
+
     private void analyzeRepositoryConsumption(Optional<String> consumesFromExternal,
             Message consumedMessage,
             RepositoryConsumptionContext repositoryConsumption) {
@@ -299,19 +368,23 @@ public class TreeAnalyzer {
             }
             aggregateName = NamingConventions.aggregateNameFromSimpleRepositoryName(simpleRepositoryNameString);
             containerIdentifier = simpleRepositoryName.getText();
+
+            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleRepositoryNameString));
+            model.addStandaloneAggregateRepository(new StandaloneAggregateRepository.Builder()
+                    .typeComponent(typeComponent(typeName))
+                    .build());
         } else if(qualifiedRepositoryName != null) {
             aggregateName = qualifiedRepositoryName.qualifier.getText();
             containerIdentifier = qualifiedRepositoryName.getText();
+            addAggregateContainer(qualifiedRepositoryName);
         } else {
             throw new UnsupportedOperationException();
         }
 
-        var existingAggregate = ensureAggregateExists(aggregateName);
-
         var builder = new MessageListener.Builder();
         builder.withContainer(new MessageListenerContainer.Builder()
                 .aggregateName(aggregateName)
-                .type(MessageListenerContainerType.REPOSITORY)
+                .type(simpleRepositoryName != null ? MessageListenerContainerType.STANDALONE_REPOSITORY : MessageListenerContainerType.INNER_REPOSITORY)
                 .containerIdentifier(containerIdentifier)
                 .build());
         builder.withMethodName(repositoryConsumption.listenerName.getText());
@@ -321,8 +394,9 @@ public class TreeAnalyzer {
         }
 
         if(repositoryConsumption.eventProductions() != null) {
+            var hooksBuilder = aggregateHooks.computeIfAbsent(aggregateName, key -> new Hooks.Builder());
             var producedEvents = producedEvents(repositoryConsumption.eventProductions());
-            existingAggregate.onDeleteProducedEvents(producedEvents);
+            hooksBuilder.onDeleteProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);

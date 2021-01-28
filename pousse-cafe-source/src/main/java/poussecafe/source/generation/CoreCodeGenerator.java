@@ -17,7 +17,6 @@ import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
 
@@ -325,12 +324,12 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             var aggregateName = listener.container().aggregateName().orElseThrow();
             var aggregate = model.aggregate(aggregateName)
                     .orElseThrow(() -> new IllegalStateException("No aggregate with name " + aggregateName));
-            if(containerType == MessageListenerContainerType.ROOT) {
+            if(containerType.isRoot()) {
                 generateAggregateRootListeners(model, listener, aggregate);
                 generateRunner(model, listener, aggregate);
-            } else if(containerType == MessageListenerContainerType.FACTORY) {
+            } else if(containerType.isFactory()) {
                 generateFactoryListeners(model, listener, aggregate);
-            } else if(containerType == MessageListenerContainerType.REPOSITORY) {
+            } else if(containerType.isRepository()) {
                 generateRepositoryListeners(model, listener, aggregate);
             } else {
                 throw new UnsupportedOperationException("Unsupported container type " + containerType);

@@ -157,6 +157,10 @@ public class TypeResolvingCompilationUnitVisitor {
 
     private List<Exception> errors = new ArrayList<>();
 
+    public void forget(String sourceId) {
+        visitors.forEach(visitor -> visitor.forget(sourceId));
+    }
+
     public static class Builder {
 
         public TypeResolvingCompilationUnitVisitor build() {
