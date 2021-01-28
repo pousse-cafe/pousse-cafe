@@ -2,6 +2,7 @@ package poussecafe.source.analysis;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
@@ -156,6 +157,10 @@ public class TypeResolvingCompilationUnitVisitor {
     }
 
     private List<Exception> errors = new ArrayList<>();
+
+    public List<Exception> errors() {
+        return Collections.unmodifiableList(errors);
+    }
 
     public void forget(String sourceId) {
         visitors.forEach(visitor -> visitor.forget(sourceId));

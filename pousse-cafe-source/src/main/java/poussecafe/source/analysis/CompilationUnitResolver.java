@@ -115,7 +115,7 @@ public class CompilationUnitResolver implements Resolver {
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
         var fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
-        registerClass(fullyQualifiedName, new LazyResolver(() -> classResolver.loadClass(fullyQualifiedName)));
+        registerClass(fullyQualifiedName, new LazyResolver(() -> Optional.of(resolveFullyQualifiedName(fullyQualifiedName))));
     }
 
     private ResolvedTypeName resolvedTypeName(ResolvedClass resolvedClass) {
@@ -129,16 +129,7 @@ public class CompilationUnitResolver implements Resolver {
     @Override
     public ResolvedTypeName resolve(Name name) {
         if(name.isQualifiedName()) {
-            Optional<ResolvedClass> resolvedClass = tryNamingConventionBasedResolution(name);
-            if(resolvedClass.isEmpty()) {
-                logger.debug("Naming convention resolution failed for {}, falling back on generic method", name);
-                resolvedClass = classResolver.loadClass(name);
-            }
-            if(resolvedClass.isPresent()) {
-                return resolvedTypeName(resolvedClass.get());
-            } else {
-                return resolvePartiallyQualifiedName(name);
-            }
+            return resolvedTypeName(resolveFullyQualifiedName(name));
         } else {
             var simpleName = name.toString();
             var resolver = resolvedTypeNames.get(simpleName);
@@ -151,6 +142,19 @@ public class CompilationUnitResolver implements Resolver {
             }
             return resolvedClass.map(this::resolvedTypeName)
                     .orElseThrow(() -> newResolutionException(name.toString()));
+        }
+    }
+
+    private ResolvedClass resolveFullyQualifiedName(Name name) {
+        Optional<ResolvedClass> resolvedClass = tryNamingConventionBasedResolution(name);
+        if(resolvedClass.isEmpty()) {
+            logger.debug("Naming convention resolution failed for {}, falling back on generic method", name);
+            resolvedClass = classResolver.loadClass(name);
+        }
+        if(resolvedClass.isPresent()) {
+            return resolvedClass.get();
+        } else {
+            return resolvePartiallyQualifiedName(name);
         }
     }
 
@@ -203,7 +207,7 @@ public class CompilationUnitResolver implements Resolver {
         }
     }
 
-    private ResolvedTypeName resolvePartiallyQualifiedName(Name name) {
+    private ResolvedClass resolvePartiallyQualifiedName(Name name) {
         if(!name.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
@@ -213,14 +217,9 @@ public class CompilationUnitResolver implements Resolver {
             var simpleName = segments[i];
             var resolvedTypeName = resolveSimpleName(new Name(simpleName));
             if(resolvedTypeName.isPresent()) {
-                var innerClass = classResolver.loadInnerClass(new Name(resolvedTypeName.get().name().qualified()),
+                return classResolver.loadInnerClass(new Name(resolvedTypeName.get().name().qualified()),
                             innerClassPath)
                         .orElseThrow(() -> newResolutionException(name.toString()));
-                return new ResolvedTypeName.Builder()
-                        .withName(name)
-                        .withResolvedClass(innerClass)
-                        .withResolver(this)
-                        .build();
             } else {
                 innerClassPath.addFirst(simpleName);
             }

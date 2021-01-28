@@ -14,7 +14,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poussecafe.source.analysis.ResolutionException;
 import poussecafe.source.analysis.TypeResolvingCompilationUnitVisitor;
 
 public class SourceScanner implements SourceConsumer {
@@ -49,17 +48,19 @@ public class SourceScanner implements SourceConsumer {
             } else if(unit.types().size() != 1) {
                 logger.debug("Skipping {} because it does not contain a single type", sourceId);
             } else {
-                try {
-                    var sourceFile = new SourceFile.Builder()
-                            .tree(unit)
-                            .source(source)
-                            .build();
-                    if(typeResolvingVisitor.visit(sourceFile)) {
-                        sourcesOfInterest.add(sourceId);
+                var sourceFile = new SourceFile.Builder()
+                        .tree(unit)
+                        .source(source)
+                        .build();
+                if(typeResolvingVisitor.visit(sourceFile)) {
+                    sourcesOfInterest.add(sourceId);
+                }
+                if(!typeResolvingVisitor.errors().isEmpty()) {
+                    logger.error("Visitor errors:");
+                    for(Exception e : typeResolvingVisitor.errors()) {
+                        logger.error("-", e);
                     }
-                } catch (ResolutionException e) {
-                    logger.error("Unable to analyze file {}, try to compile the project first", sourceId);
-                    throw e;
+                    throw new IllegalStateException("Error while scanning source " + source.id());
                 }
             }
         }
