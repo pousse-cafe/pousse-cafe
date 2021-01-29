@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,12 @@ public class SafeClassName {
         } else {
             return innerClassPath.get(innerClassPath.size() - 1);
         }
+    }
+
+    public Path toRelativePath() {
+        var segments = rootClassName.segments();
+        segments[segments.length - 1] = segments[segments.length - 1] + ".java";
+        return Path.of("", segments);
     }
 
     @Override
@@ -110,6 +117,19 @@ public class SafeClassName {
                 .rootClassName(rootClassName)
                 .innerClassPath(innerClassPath)
                 .appendPathElement(lastElement)
+                .build();
+    }
+
+    public static SafeClassName ofClass(Class<?> classObject) {
+        var innerClassPath = new ArrayList<String>();
+        var rootClass = classObject;
+        while(rootClass.getDeclaringClass() != null) {
+            innerClassPath.add(rootClass.getSimpleName());
+            rootClass = rootClass.getDeclaringClass();
+        }
+        return new SafeClassName.Builder()
+                .rootClassName(new Name(rootClass.getCanonicalName()))
+                .innerClassPath(innerClassPath)
                 .build();
     }
 }

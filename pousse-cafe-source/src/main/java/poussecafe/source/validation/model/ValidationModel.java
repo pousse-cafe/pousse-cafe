@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import poussecafe.source.analysis.Name;
 
 public class ValidationModel {
@@ -76,6 +77,8 @@ public class ValidationModel {
 
     private Map<String, Runner> runners = new HashMap<>();
 
+    private Map<String, Runner> runnersBySourceId = new HashMap<>();
+
     public Optional<Runner> runner(String runnerClassQualifiedName) {
         return Optional.ofNullable(runners.get(runnerClassQualifiedName));
     }
@@ -85,6 +88,8 @@ public class ValidationModel {
     }
 
     private Map<Name, Module> modules = new HashMap<>();
+
+    private Map<String, Module> modulesBySourceId = new HashMap<>();
 
     public Collection<Module> modules() {
         return Collections.unmodifiableCollection(modules.values());
@@ -134,5 +139,37 @@ public class ValidationModel {
 
     public List<AggregateComponentDefinition> aggregateRepositories() {
         return Collections.unmodifiableList(aggregateRepositories);
+    }
+
+    public void forget(String sourceId) {
+        messageDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        messageImplementations.removeIf(definition-> definition.sourceFileLine().sourceFile().id().equals(sourceId));
+
+        entityDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        entityImplementations.removeIf(definition-> definition.sourceFileLine().sourceFile().id().equals(sourceId));
+
+        processDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+
+        forget(sourceId, modulesBySourceId,
+                component -> modules.remove(component.className()));
+
+        aggregateRoots.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        aggregateFactories.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        aggregateRepositories.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+
+        listeners.removeIf(listener -> listener.sourceFileLine().sourceFile().id().equals(sourceId));
+
+        forget(sourceId, runnersBySourceId,
+                component -> runners.remove(component.classQualifiedName()));
+    }
+
+    private <T> void forget(
+            String sourceId,
+            Map<String, T> componentsBySourceId,
+            Consumer<T> componentRemover) {
+        var component = componentsBySourceId.remove(sourceId);
+        if(component != null) {
+            componentRemover.accept(component);
+        }
     }
 }

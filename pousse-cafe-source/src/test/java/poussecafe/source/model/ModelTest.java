@@ -1,6 +1,9 @@
 package poussecafe.source.model;
 
 import org.junit.Test;
+import poussecafe.source.PathSource;
+import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.SafeClassName;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,10 +23,13 @@ public class ModelTest {
     private void givenCurrentModel() {
         setModel(currentModel, CURRENT_PACKAGE);
 
+        var commandTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Command1"));
         currentModel.addCommand(new Command.Builder()
                 .name("Command1")
                 .packageName(CURRENT_PACKAGE)
                 .build());
+
+        var eventTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Event1"));
         currentModel.addEvent(new DomainEvent.Builder()
                 .name("Event1")
                 .packageName(CURRENT_PACKAGE)
@@ -33,10 +39,12 @@ public class ModelTest {
     private static final String CURRENT_PACKAGE = "current.package";
 
     private void setModel(Model currentModel, String packageName) {
+        var commandTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Command1"));
         currentModel.addCommand(new Command.Builder()
                 .name("Command1")
                 .packageName(packageName)
                 .build());
+        var eventTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Event1"));
         currentModel.addEvent(new DomainEvent.Builder()
                 .name("Event1")
                 .packageName(packageName)
@@ -46,6 +54,7 @@ public class ModelTest {
                 .packageName(packageName)
                 .ensureDefaultLocations()
                 .build());
+        var containerTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Aggregate1Factory"));
         currentModel.addMessageListener(new MessageListener.Builder()
                 .withContainer(new MessageListenerContainer.Builder()
                         .type(MessageListenerContainerType.STANDALONE_ROOT)
@@ -64,6 +73,7 @@ public class ModelTest {
                             .name("Event1")
                             .build())
                         .build())
+                .withSource(new PathSource(containerTypeName.toRelativePath()))
                 .build());
     }
 

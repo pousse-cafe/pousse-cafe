@@ -1,6 +1,5 @@
 package poussecafe.source.model;
 
-import java.util.Optional;
 import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
@@ -9,8 +8,8 @@ public class ProcessModel extends ComponentWithType {
 
     private Source source;
 
-    public Optional<Source> source() {
-        return Optional.ofNullable(source);
+    public Source source() {
+        return source;
     }
 
     public static class Builder {
@@ -20,6 +19,7 @@ public class ProcessModel extends ComponentWithType {
         public ProcessModel build() {
             requireNonNull(process.name);
             requireNonNull(process.packageName);
+            requireNonNull(process.source);
             return process;
         }
 

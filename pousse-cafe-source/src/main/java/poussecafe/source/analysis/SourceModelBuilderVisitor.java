@@ -1,7 +1,6 @@
 package poussecafe.source.analysis;
 
 import java.util.List;
-import java.util.Optional;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -237,7 +236,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new RunnerClass(resolvedTypeDeclaration);
         modelBuilder.addRunner(new Runner.Builder()
-                .withRunnerSource(Optional.of(compilationUnit.sourceFile().source()))
+                .withRunnerSource(compilationUnit.sourceFile().source())
                 .withClassName(runnerClass.className())
                 .build());
     }
@@ -252,6 +251,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
                         .withContainer(container)
                         .withMethodDeclaration(listenerMethod)
                         .withRunnerClass(listenerMethod.runner().map(ResolvedTypeName::qualifiedName))
+                        .withSource(compilationUnit.sourceFile().source())
                         .build();
                 modelBuilder.addMessageListener(messageListener);
 

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import poussecafe.discovery.DefaultProcess;
+import poussecafe.source.Source;
 import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ResolvedType;
 import poussecafe.source.analysis.ResolvedTypeName;
@@ -77,6 +78,12 @@ public class MessageListener {
         return container().aggregateName().orElseThrow();
     }
 
+    public Source source() {
+        return source;
+    }
+
+    private Source source;
+
     public static class Builder {
 
         private MessageListener messageListener = new MessageListener();
@@ -88,6 +95,7 @@ public class MessageListener {
             requireNonNull(messageListener.consumesFromExternal);
             requireNonNull(messageListener.runnerName);
             requireNonNull(messageListener.runnerClass);
+            requireNonNull(messageListener.source);
 
             if(messageListener.container.type().isFactory()
                     && messageListener.productionType.isEmpty()) {
@@ -193,6 +201,11 @@ public class MessageListener {
 
         public Builder withProcessNames(List<String> processNames) {
             this.processNames.addAll(processNames);
+            return this;
+        }
+
+        public Builder withSource(Source source) {
+            messageListener.source = source;
             return this;
         }
     }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import poussecafe.source.PathSource;
 import poussecafe.source.Source;
 import poussecafe.util.Equality;
 
@@ -80,7 +81,7 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
 
     @Override
     public Optional<Source> source() {
-        return Optional.empty();
+        return Optional.of(new PathSource(SafeClassName.ofClass(classObject).toRelativePath()));
     }
 
     @Override

@@ -30,10 +30,8 @@ public class SourceScanner implements SourceConsumer {
     public void includeSource(Source source) {
         if(includedSources.contains(source.id())) {
             typeResolvingVisitor.forget(source.id());
-        } else {
-            includedSources.add(source.id());
         }
-
+        includedSources.add(source.id());
         if(isPousseCafeResource(source)) {
             ASTParser parser = ASTParser.newParser(AST.JLS14);
             source.configure(parser);

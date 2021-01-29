@@ -242,7 +242,6 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
 
     @Override
     public void forget(String sourceId) {
-        // TODO Auto-generated method stub
-
+        model.forget(sourceId);
     }
 }

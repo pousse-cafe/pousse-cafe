@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 public class ModelBuilder {
 
-    // TODO remove
     public ModelBuilder putAggregate(Aggregate.Builder source) {
         aggregates.put(source.name().orElseThrow(), source);
         return this;
@@ -57,12 +57,15 @@ public class ModelBuilder {
 
     private Map<String, AggregateContainer> aggregateContainersBySourceId = new HashMap<>();
 
-    public void addProcess(ProcessModel source) {
-        String name = source.simpleName();
-        processes.computeIfAbsent(name, key -> source);
+    public void addProcess(ProcessModel process) {
+        String name = process.simpleName();
+        processes.computeIfAbsent(name, key -> process);
+        processesBySourceId.put(process.source().id(), process);
     }
 
     private Map<String, ProcessModel> processes = new HashMap<>();
+
+    private Map<String, ProcessModel> processesBySourceId = new HashMap<>();
 
     public Optional<ProcessModel> process(String name) {
         return Optional.ofNullable(processes.get(name));
@@ -103,9 +106,14 @@ public class ModelBuilder {
                     + existingCommand.name().getQualifier() + " <> " + command.name().getQualifier());
         }
         commands.put(command.simpleName(), command);
+        if(command.source().isPresent()) {
+            commandsBySourceId.put(command.source().orElseThrow().id(), command);
+        }
     }
 
     private Map<String, Command> commands = new HashMap<>();
+
+    private Map<String, Command> commandsBySourceId = new HashMap<>();
 
     public Collection<Command> commands() {
         return Collections.unmodifiableCollection(commands.values());
@@ -123,9 +131,14 @@ public class ModelBuilder {
                     + existingEvent.name().getQualifier() + " <> " + event.name().getQualifier());
         }
         events.put(event.simpleName(), event);
+        if(event.source().isPresent()) {
+            eventsBySourceId.put(event.source().orElseThrow().id(), event);
+        }
     }
 
     private Map<String, DomainEvent> events = new HashMap<>();
+
+    private Map<String, DomainEvent> eventsBySourceId = new HashMap<>();
 
     public Collection<DomainEvent> events() {
         return Collections.unmodifiableCollection(events.values());
@@ -137,17 +150,45 @@ public class ModelBuilder {
 
     public void addRunner(Runner runnerClass) {
         runners.put(runnerClass.className(), runnerClass);
+        runnersBySourceId.put(runnerClass.runnerSource().id(), runnerClass);
     }
 
     private Map<String, Runner> runners = new HashMap<>();
 
-    public void forget(String sourceId) {
-        standaloneAggregateFactoriesBySourceId.remove(sourceId);
-        standaloneAggregateRootsBySourceId.remove(sourceId);
-        standaloneAggregateRepositoriesBySourceId.remove(sourceId);
-        aggregateContainersBySourceId.remove(sourceId);
+    private Map<String, Runner> runnersBySourceId = new HashMap<>();
 
-        // TODO Auto-generated method stub
+    public void forget(String sourceId) {
+        forget(sourceId, standaloneAggregateFactoriesBySourceId,
+                component -> standaloneAggregateFactories.remove(component.aggregateName()));
+        forget(sourceId, standaloneAggregateRootsBySourceId,
+                component -> standaloneAggregateRoots.remove(component.aggregateName()));
+        forget(sourceId, standaloneAggregateRepositoriesBySourceId,
+                component -> standaloneAggregateRepositories.remove(component.aggregateName()));
+        forget(sourceId, aggregateContainersBySourceId,
+                component -> aggregateContainers.remove(component.aggregateName()));
+
+        forget(sourceId, processesBySourceId,
+                component -> processes.remove(component.simpleName()));
+
+        listeners.removeIf(listener -> listener.source().id().equals(sourceId));
+
+        forget(sourceId, commandsBySourceId,
+                component -> commands.remove(component.simpleName()));
+        forget(sourceId, eventsBySourceId,
+                component -> events.remove(component.simpleName()));
+
+        forget(sourceId, runnersBySourceId,
+                component -> runners.remove(component.className()));
+    }
+
+    private <T> void forget(
+            String sourceId,
+            Map<String, T> componentsBySourceId,
+            Consumer<T> componentRemover) {
+        var component = componentsBySourceId.remove(sourceId);
+        if(component != null) {
+            componentRemover.accept(component);
+        }
     }
 
     public Model build() {
@@ -193,12 +234,14 @@ public class ModelBuilder {
             var aggregate = aggregates.computeIfAbsent(factory.aggregateName(),
                     name -> newBuilder(name, factory.typeComponent().typeName().rootClassName().qualifier()));
             aggregate.innerFactory(false);
+            aggregate.standaloneFactorySource(Optional.of(factory.typeComponent().source()));
         }
 
         for(StandaloneAggregateRoot root : standaloneAggregateRoots.values()) {
             var aggregate = aggregates.computeIfAbsent(root.aggregateName(),
                     name -> newBuilder(name, root.typeComponent().typeName().rootClassName().qualifier()));
             aggregate.innerRoot(false);
+            aggregate.standaloneRootSource(Optional.of(root.typeComponent().source()));
             aggregate.onAddProducedEvents(root.hooks().onAddProducedEvents());
             aggregate.onDeleteProducedEvents(root.hooks().onDeleteProducedEvents());
         }
@@ -206,6 +249,7 @@ public class ModelBuilder {
         for(StandaloneAggregateRepository repository : standaloneAggregateRepositories.values()) {
             var aggregate = aggregates.computeIfAbsent(repository.aggregateName(),
                     name -> newBuilder(name, repository.typeComponent().typeName().rootClassName().qualifier()));
+            aggregate.standaloneRepositorySource(Optional.of(repository.typeComponent().source()));
             aggregate.innerRepository(false);
         }
 
@@ -214,6 +258,7 @@ public class ModelBuilder {
                     name -> newBuilder(name, container.typeComponent().typeName().rootClassName().qualifier()));
             aggregate.onAddProducedEvents(container.hooks().onAddProducedEvents());
             aggregate.onDeleteProducedEvents(container.hooks().onDeleteProducedEvents());
+            aggregate.containerSource(Optional.of(container.typeComponent().source()));
         }
     }
 

@@ -55,9 +55,13 @@ public class TreeAnalyzer {
         ProcessContext process = tree.processContext();
         if(process.header().NAME() != null) {
             processName = process.header().NAME().getText();
+
+            var typeName = SafeClassName.ofRootClass(new Name(NamingConventions.processesPackageName(basePackage),
+                    processName));
             model.addProcess(new ProcessModel.Builder()
                     .name(processName)
-                    .packageName(NamingConventions.processesPackageName(basePackage))
+                    .packageName(typeName.rootClassName().qualifier())
+                    .source(source(typeName))
                     .build());
         }
 
@@ -106,9 +110,11 @@ public class TreeAnalyzer {
 
     private void analyzeCommandConsumption(CommandConsumptionContext context) {
         var commandName = context.command().NAME().getText();
+        var typeName = SafeClassName.ofRootClass(new Name(NamingConventions.commandsPackageName(basePackage),
+                commandName));
         model.addCommand(new Command.Builder()
                 .name(commandName)
-                .packageName(NamingConventions.commandsPackageName(basePackage))
+                .packageName(typeName.rootClassName().qualifier())
                 .build());
         analyzeMessageConsumptions(Optional.empty(), Message.command(commandName), context.messageConsumptions());
     }
@@ -157,6 +163,7 @@ public class TreeAnalyzer {
 
         String aggregateName;
         String containerIdentifier;
+        SafeClassName typeName;
         if(simpleFactoryName != null) {
             var simpleFactoryNameString = simpleFactoryName.getText();
             containerIdentifier = simpleFactoryNameString;
@@ -164,14 +171,14 @@ public class TreeAnalyzer {
                 throw new IllegalStateException("Unexpected factory name " + simpleFactoryNameString);
             }
             aggregateName = NamingConventions.aggregateNameFromSimpleFactoryName(simpleFactoryNameString);
-            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleFactoryNameString));
+            typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleFactoryNameString));
             model.addStandaloneAggregateFactory(new StandaloneAggregateFactory.Builder()
                     .typeComponent(typeComponent(typeName))
                     .build());
         } else if(qualifiedFactoryName != null) {
             aggregateName = qualifiedFactoryName.qualifier.getText();
             containerIdentifier = qualifiedFactoryName.getText();
-            addAggregateContainer(qualifiedFactoryName);
+            typeName = addAggregateContainer(qualifiedFactoryName);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -184,6 +191,7 @@ public class TreeAnalyzer {
                 .build());
         builder.withMethodName(factoryListener.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
+        builder.withSource(source(typeName));
         if(processName != null) {
             builder.withProcessName(processName);
         }
@@ -209,11 +217,12 @@ public class TreeAnalyzer {
         analyzeEventProductions(factoryConsumption.eventProductions());
     }
 
-    private void addAggregateContainer(QualifiedNameContext qualifiedFactoryName) {
+    private SafeClassName addAggregateContainer(QualifiedNameContext qualifiedFactoryName) {
         var typeName = SafeClassName.ofRootClass(new Name(packageName(qualifiedFactoryName.qualifier.getText()),
                 qualifiedFactoryName.qualifier.getText())).withLastSegment(qualifiedFactoryName.name.getText());
         aggregateContainers.computeIfAbsent(qualifiedFactoryName.qualifier.getText(), key -> new AggregateContainer.Builder()
                 .typeComponent(typeComponent(typeName)));
+        return typeName;
     }
 
     private TypeComponent typeComponent(SafeClassName typeName) {
@@ -296,9 +305,11 @@ public class TreeAnalyzer {
     }
 
     private DomainEvent event(String name) {
+        var typeName = SafeClassName.ofRootClass(new Name(NamingConventions.eventsPackageName(basePackage),
+                name));
         return new DomainEvent.Builder()
                 .name(name)
-                .packageName(basePackage + ".model.events")
+                .packageName(typeName.rootClassName().qualifier())
                 .build();
     }
 
@@ -310,17 +321,18 @@ public class TreeAnalyzer {
 
         String aggregateName;
         String containerIdentifier;
+        SafeClassName typeName;
         if(simpleName != null) {
             aggregateName = NamingConventions.aggregateNameFromSimpleRootName(simpleName.getText());
             containerIdentifier = simpleName.getText();
 
-            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleName.getText()));
+            typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleName.getText()));
             standaloneAggregateRoots.computeIfAbsent(aggregateName, key -> new StandaloneAggregateRoot.Builder()
                     .typeComponent(typeComponent(typeName)));
         } else if(qualifiedName != null) {
             aggregateName = qualifiedName.qualifier.getText();
             containerIdentifier = qualifiedName.getText();
-            addAggregateContainer(qualifiedName);
+            typeName = addAggregateContainer(qualifiedName);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -333,6 +345,7 @@ public class TreeAnalyzer {
                 .build());
         builder.withMethodName(aggregateRootConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
+        builder.withSource(source(typeName));
         if(processName != null) {
             builder.withProcessName(processName);
         }
@@ -361,6 +374,7 @@ public class TreeAnalyzer {
 
         String aggregateName;
         String containerIdentifier;
+        SafeClassName typeName;
         if(simpleRepositoryName != null) {
             var simpleRepositoryNameString = simpleRepositoryName.getText();
             if(!NamingConventions.isAggregateRepositoryName(simpleRepositoryNameString)) {
@@ -369,14 +383,14 @@ public class TreeAnalyzer {
             aggregateName = NamingConventions.aggregateNameFromSimpleRepositoryName(simpleRepositoryNameString);
             containerIdentifier = simpleRepositoryName.getText();
 
-            var typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleRepositoryNameString));
+            typeName = SafeClassName.ofRootClass(new Name(packageName(aggregateName), simpleRepositoryNameString));
             model.addStandaloneAggregateRepository(new StandaloneAggregateRepository.Builder()
                     .typeComponent(typeComponent(typeName))
                     .build());
         } else if(qualifiedRepositoryName != null) {
             aggregateName = qualifiedRepositoryName.qualifier.getText();
             containerIdentifier = qualifiedRepositoryName.getText();
-            addAggregateContainer(qualifiedRepositoryName);
+            typeName = addAggregateContainer(qualifiedRepositoryName);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -389,6 +403,7 @@ public class TreeAnalyzer {
                 .build());
         builder.withMethodName(repositoryConsumption.listenerName.getText());
         builder.withConsumedMessage(consumedMessage);
+        builder.withSource(source(typeName));
         if(processName != null) {
             builder.withProcessName(processName);
         }
@@ -407,9 +422,11 @@ public class TreeAnalyzer {
     }
 
     private void analyzeProcessConsumption(ProcessConsumptionContext processConsumption) {
+        var name = new Name(basePackage + ".process", processConsumption.NAME().getText());
         model.addProcess(new ProcessModel.Builder()
-                .name(processConsumption.NAME().getText())
-                .packageName(basePackage + ".process")
+                .name(name.simple())
+                .packageName(name.qualifier())
+                .source(source(SafeClassName.ofRootClass(name)))
                 .build());
     }
 

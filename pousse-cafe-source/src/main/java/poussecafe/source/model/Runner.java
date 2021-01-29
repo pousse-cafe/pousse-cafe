@@ -1,17 +1,16 @@
 package poussecafe.source.model;
 
-import java.util.Optional;
 import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
 
 public class Runner {
 
-    public Optional<Source> runnerSource() {
+    public Source runnerSource() {
         return runnerSource;
     }
 
-    private Optional<Source> runnerSource = Optional.empty();
+    private Source runnerSource;
 
     public String className() {
         return className;
@@ -29,7 +28,7 @@ public class Runner {
             return messageListener;
         }
 
-        public Builder withRunnerSource(Optional<Source> runnerSource) {
+        public Builder withRunnerSource(Source runnerSource) {
             messageListener.runnerSource = runnerSource;
             return this;
         }
