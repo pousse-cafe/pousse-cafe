@@ -29,7 +29,7 @@ public class SourceScanner implements SourceConsumer {
     @Override
     public void includeSource(Source source) {
         if(includedSources.contains(source.id())) {
-            typeResolvingVisitor.forget(source.id());
+            forget(source.id());
         }
         includedSources.add(source.id());
         if(isPousseCafeResource(source)) {
@@ -62,6 +62,10 @@ public class SourceScanner implements SourceConsumer {
                 }
             }
         }
+    }
+
+    public void forget(String sourceId) {
+        typeResolvingVisitor.forget(sourceId);
     }
 
     public static boolean isPousseCafeResource(Source source) {
