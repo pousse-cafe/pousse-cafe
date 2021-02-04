@@ -11,7 +11,5 @@ public interface SourceConsumer {
 
     void includeSource(Source source);
 
-    boolean isSourceOfInterest(String sourceId);
-
     boolean isIncluded(String sourceId);
 }

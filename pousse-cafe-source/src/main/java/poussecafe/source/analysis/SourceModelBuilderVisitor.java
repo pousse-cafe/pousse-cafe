@@ -30,7 +30,6 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
 
     @Override
     public boolean visit(ResolvedCompilationUnit unit) {
-        foundPousseCafeComponent(false);
         compilationUnit = unit;
         return false;
     }
@@ -43,27 +42,21 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     public boolean visit(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         ++typeLevel;
         if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitAggregateRoot(resolvedTypeDeclaration);
             return true;
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitFactory(resolvedTypeDeclaration);
             return true;
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitRepository(resolvedTypeDeclaration);
             return true;
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitProcessDefinition(resolvedTypeDeclaration);
             return false;
         } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitAggregateContainer(resolvedTypeDeclaration);
             return true;
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitRunner(resolvedTypeDeclaration);
             return false;
         } else {
@@ -107,17 +100,6 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     private StandaloneAggregateRoot.Builder standaloneAggregateRootBuilder;
 
     private Hooks.Builder hooksBuilder;
-
-    @Override
-    public boolean foundContent() {
-        return foundPousseCafeComponent;
-    }
-
-    private boolean foundPousseCafeComponent;
-
-    protected void foundPousseCafeComponent(boolean value) {
-        foundPousseCafeComponent = value;
-    }
 
     private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var processDefinition = new ProcessDefinitionType(resolvedTypeDeclaration);

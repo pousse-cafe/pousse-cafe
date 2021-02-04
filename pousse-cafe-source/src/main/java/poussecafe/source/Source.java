@@ -7,6 +7,4 @@ public interface Source {
     String id();
 
     void configure(ASTParser parser);
-
-    String content();
 }

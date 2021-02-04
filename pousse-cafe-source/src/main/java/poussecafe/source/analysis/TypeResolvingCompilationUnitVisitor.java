@@ -18,23 +18,13 @@ import static java.util.Objects.requireNonNull;
 
 public class TypeResolvingCompilationUnitVisitor {
 
-    /**
-     * @param sourceFile The source file to visit
-     * @return True if at least one visitor found content of interest
-     */
-    public boolean visit(SourceFile sourceFile) {
+    public void visit(SourceFile sourceFile) {
         currentSourceFile = sourceFile;
         resolver = new CompilationUnitResolver.Builder()
                 .compilationUnit(sourceFile.tree())
                 .classResolver(classResolver)
                 .build();
         sourceFile.tree().accept(astVisitor);
-        for(ResolvedCompilationUnitVisitor visitor : visitors) {
-            if(visitor.foundContent()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private SourceFile currentSourceFile;

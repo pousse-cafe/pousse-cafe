@@ -48,7 +48,6 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     public boolean visit(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)
                 || MessageImplementationType.isMessageImplementation(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             if(MessageDefinitionType.isMessageDefinition(resolvedTypeDeclaration)) {
                 visitMessageDefinition(resolvedTypeDeclaration);
             }
@@ -56,45 +55,26 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 visitMessageImplementation(resolvedTypeDeclaration);
             }
         } else if(EntityDefinitionType.isEntityDefinition(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitEntityDefinition(resolvedTypeDeclaration);
             if(AggregateRootClass.isAggregateRoot(resolvedTypeDeclaration)) {
                 visitAggregateRootDefinition(resolvedTypeDeclaration);
             }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitEntityImplementation(resolvedTypeDeclaration);
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitDataAccessImplementation(resolvedTypeDeclaration);
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitRunner(resolvedTypeDeclaration);
         } else if(ModuleClass.isModule(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitModule(resolvedTypeDeclaration);
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitProcessDefinition(resolvedTypeDeclaration);
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitFactory(resolvedTypeDeclaration);
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
-            foundPousseCafeComponent(true);
             visitRepository(resolvedTypeDeclaration);
         }
         return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
-    }
-
-    @Override
-    public boolean foundContent() {
-        return foundPousseCafeComponent;
-    }
-
-    private boolean foundPousseCafeComponent;
-
-    protected void foundPousseCafeComponent(boolean value) {
-        foundPousseCafeComponent = value;
     }
 
     private void visitMessageDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {

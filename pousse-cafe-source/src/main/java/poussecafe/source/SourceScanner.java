@@ -32,34 +32,30 @@ public class SourceScanner implements SourceConsumer {
             forget(source.id());
         }
         includedSources.add(source.id());
-        if(isPousseCafeResource(source)) {
-            ASTParser parser = ASTParser.newParser(AST.JLS14);
-            source.configure(parser);
-            var sourceId = source.id();
-            CompilationUnit unit = (CompilationUnit) parser.createAST(null);
-            if(unit.getMessages().length > 0) {
-                logger.warn("Skipping {} because of compilation issues", sourceId);
-                for(int i = 0; i < unit.getMessages().length; ++i) {
-                    Message message = unit.getMessages()[i];
-                    logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
+        ASTParser parser = ASTParser.newParser(AST.JLS14);
+        source.configure(parser);
+        var sourceId = source.id();
+        CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+        if(unit.getMessages().length > 0) {
+            logger.warn("Skipping {} because of compilation issues", sourceId);
+            for(int i = 0; i < unit.getMessages().length; ++i) {
+                Message message = unit.getMessages()[i];
+                logger.warn("Line {}: {}", unit.getLineNumber(message.getStartPosition()), message.getMessage());
+            }
+        } else if(unit.types().size() != 1) {
+            logger.debug("Skipping {} because it does not contain a single type", sourceId);
+        } else {
+            var sourceFile = new SourceFile.Builder()
+                    .tree(unit)
+                    .source(source)
+                    .build();
+            typeResolvingVisitor.visit(sourceFile);
+            if(!typeResolvingVisitor.errors().isEmpty()) {
+                logger.error("Visitor errors:");
+                for(Exception e : typeResolvingVisitor.errors()) {
+                    logger.error("-", e);
                 }
-            } else if(unit.types().size() != 1) {
-                logger.debug("Skipping {} because it does not contain a single type", sourceId);
-            } else {
-                var sourceFile = new SourceFile.Builder()
-                        .tree(unit)
-                        .source(source)
-                        .build();
-                if(typeResolvingVisitor.visit(sourceFile)) {
-                    sourcesOfInterest.add(sourceId);
-                }
-                if(!typeResolvingVisitor.errors().isEmpty()) {
-                    logger.error("Visitor errors:");
-                    for(Exception e : typeResolvingVisitor.errors()) {
-                        logger.error("-", e);
-                    }
-                    throw new IllegalStateException("Error while scanning source " + source.id());
-                }
+                throw new IllegalStateException("Error while scanning source " + source.id());
             }
         }
     }
@@ -67,18 +63,6 @@ public class SourceScanner implements SourceConsumer {
     public void forget(String sourceId) {
         typeResolvingVisitor.forget(sourceId);
     }
-
-    public static boolean isPousseCafeResource(Source source) {
-        var content = source.content();
-        return content.contains("poussecafe");
-    }
-
-    @Override
-    public boolean isSourceOfInterest(String sourceId) {
-        return sourcesOfInterest.contains(sourceId);
-    }
-
-    private Set<String> sourcesOfInterest = new HashSet<>();
 
     @Override
     public boolean isIncluded(String sourceId) {

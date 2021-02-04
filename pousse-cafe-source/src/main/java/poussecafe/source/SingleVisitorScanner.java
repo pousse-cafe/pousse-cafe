@@ -27,11 +27,6 @@ public abstract class SingleVisitorScanner implements SourceConsumer {
     }
 
     @Override
-    public boolean isSourceOfInterest(String sourceId) {
-        return scanner.isSourceOfInterest(sourceId);
-    }
-
-    @Override
     public boolean isIncluded(String sourceId) {
         return scanner.isIncluded(sourceId);
     }

@@ -18,10 +18,6 @@ public interface ResolvedCompilationUnitVisitor {
         return false;
     }
 
-    default boolean foundContent() {
-        return false;
-    }
-
     default void forget(String sourceId) {
 
     }
