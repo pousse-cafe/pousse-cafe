@@ -79,12 +79,10 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
         if(typeLevel == 0) {
             aggregateName = aggregateRootClass.aggregateName();
             identifier = resolvedTypeDeclaration.name().simpleName();
+            createStandaloneAggregateRoot(resolvedTypeDeclaration);
         } else {
             aggregateName = aggregateNameForInnerClass(resolvedTypeDeclaration);
             identifier = innerClassQualifiedName(resolvedTypeDeclaration);
-        }
-        if(typeLevel == 0) {
-            createStandaloneAggregateRoot(resolvedTypeDeclaration);
         }
         container = new MessageListenerContainer.Builder()
                 .type(typeLevel == 0 ? MessageListenerContainerType.STANDALONE_ROOT : MessageListenerContainerType.INNER_ROOT)

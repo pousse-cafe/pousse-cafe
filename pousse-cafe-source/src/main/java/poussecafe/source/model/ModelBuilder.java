@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toList;
 public class ModelBuilder {
 
     public ModelBuilder putAggregate(Aggregate.Builder source) {
+        source.provided(true);
         aggregates.put(source.name().orElseThrow(), source);
         return this;
     }
@@ -230,6 +231,8 @@ public class ModelBuilder {
     }
 
     private void initAggregateBuilders() {
+        aggregates.entrySet().removeIf(entry -> !entry.getValue().provided());
+
         for(StandaloneAggregateFactory factory : standaloneAggregateFactories.values()) {
             var aggregate = aggregates.computeIfAbsent(factory.aggregateName(),
                     name -> newBuilder(name, factory.typeComponent().typeName().rootClassName().qualifier()));

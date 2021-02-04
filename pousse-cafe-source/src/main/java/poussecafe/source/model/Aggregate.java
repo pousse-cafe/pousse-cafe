@@ -205,6 +205,17 @@ public class Aggregate extends ComponentWithType {
             aggregate.standaloneRepositorySource = standaloneRepositorySource;
             return this;
         }
+
+        public Builder provided(boolean provided) {
+            this.provided = provided;
+            return this;
+        }
+
+        private boolean provided;
+
+        public boolean provided() {
+            return provided;
+        }
     }
 
     private Aggregate() {
