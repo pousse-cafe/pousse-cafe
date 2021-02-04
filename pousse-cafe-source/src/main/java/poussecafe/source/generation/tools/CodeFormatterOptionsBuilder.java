@@ -8,8 +8,12 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
+import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -74,6 +78,24 @@ public class CodeFormatterOptionsBuilder {
     }
 
     private Map<String, String> options = defaultOptions();
+
+    public CodeFormatterOptionsBuilder withContext(IScopeContext context) {
+        String nodeQualifier = JavaCore.PLUGIN_ID + ".formatter";
+        var node = context.getNode(nodeQualifier);
+        try {
+            for(String key : node.keys()) {
+                String propertyName = nodeQualifier + "." + key;
+                String propertyValue = node.get(key, null);
+                logger.debug("Code formatting property {} = {}", propertyName, propertyValue);
+                options.put(propertyName, propertyValue);
+            }
+        } catch (BackingStoreException e) {
+            logger.error("Unable to load code formatter preferences", e);
+        }
+        return this;
+    }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String> defaultOptions() {
         var defaultOptions = new HashMap<String, String>();

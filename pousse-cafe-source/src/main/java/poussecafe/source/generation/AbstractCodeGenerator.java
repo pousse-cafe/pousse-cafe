@@ -3,6 +3,7 @@ package poussecafe.source.generation;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.generation.tools.CodeFormatterOptionsBuilder;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -33,6 +34,12 @@ public abstract class AbstractCodeGenerator {
     protected void loadProfileFromFile(InputStream profilesStream) {
         var optionsBuilder = new CodeFormatterOptionsBuilder();
         optionsBuilder.withProfile(profilesStream);
+        formatterOptions = optionsBuilder.build();
+    }
+
+    protected void loadPreferencesFromContext(IScopeContext context) {
+        var optionsBuilder = new CodeFormatterOptionsBuilder();
+        optionsBuilder.withContext(context);
         formatterOptions = optionsBuilder.build();
     }
 }

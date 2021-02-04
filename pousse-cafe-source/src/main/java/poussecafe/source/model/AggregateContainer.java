@@ -12,7 +12,7 @@ public class AggregateContainer {
         return typeComponent;
     }
 
-    private Hooks hooks;
+    private Hooks hooks = Hooks.EMPTY;
 
     public Hooks hooks() {
         return hooks;

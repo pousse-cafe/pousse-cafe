@@ -6,6 +6,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.analysis.SourceModelBuilder;
@@ -458,6 +459,11 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
         public Builder codeFormatterProfile(InputStream inputStream) {
             generator.loadProfileFromFile(inputStream);
+            return this;
+        }
+
+        public Builder preferencesContext(IScopeContext context) {
+            generator.loadPreferencesFromContext(context);
             return this;
         }
 
