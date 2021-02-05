@@ -1,17 +1,22 @@
 package poussecafe.source.validation.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import poussecafe.source.validation.SourceFileLine;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.source.validation.SourceLine;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class Runner {
+@SuppressWarnings("serial")
+public class Runner implements Serializable {
 
-    private SourceFileLine sourceFileLine;
+    private SourceLine sourceFileLine;
 
-    public SourceFileLine sourceFileLine() {
+    public SourceLine sourceFileLine() {
         return sourceFileLine;
     }
 
@@ -37,7 +42,7 @@ public class Runner {
 
         private Runner runner = new Runner();
 
-        public Builder sourceFileLine(SourceFileLine sourceFileLine) {
+        public Builder sourceFileLine(SourceLine sourceFileLine) {
             runner.sourceFileLine = sourceFileLine;
             return this;
         }
@@ -55,5 +60,23 @@ public class Runner {
 
     private Runner() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(classQualifiedName, other.classQualifiedName)
+                .append(sourceFileLine, other.sourceFileLine)
+                .append(typeParametersQualifiedNames, other.typeParametersQualifiedNames)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(classQualifiedName)
+                .append(sourceFileLine)
+                .append(typeParametersQualifiedNames)
+                .build();
     }
 }

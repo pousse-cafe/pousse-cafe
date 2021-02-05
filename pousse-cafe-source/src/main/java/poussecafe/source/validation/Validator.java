@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.Name;
 import poussecafe.source.analysis.ResolvedClass;
@@ -43,7 +45,7 @@ public class Validator {
             var modules = classPathExplorer.get().getSubTypesOf(new Name(CompilationUnitResolver.MODULE_INTERFACE));
             for(ResolvedClass moduleClass : modules) {
                 var module = new Module.Builder()
-                        .name(moduleClass.name())
+                        .className(moduleClass.name())
                         .build();
                 model.addClassPathModule(module);
             }
@@ -54,10 +56,12 @@ public class Validator {
         validators = new ArrayList<>();
         validators.add(new MessageValidator(model));
         validators.add(new EntityValidator(model));
-        validators.add(new MessageListenerValidator(model));
+        validators.add(new MessageListenerValidator(model, classResolver));
         validators.add(new NamesValidator(model));
         validators.add(new NamingConventionsValidator(model));
     }
+
+    private ClassResolver classResolver;
 
     private List<SubValidator> validators;
 
@@ -77,12 +81,15 @@ public class Validator {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public Validator(ValidationModel model) {
-        this(model, Optional.empty());
+        this(model, new ClassLoaderClassResolver(), Optional.empty());
     }
 
-    public Validator(ValidationModel model, Optional<ClassPathExplorer> classPathExplorer) {
+    public Validator(ValidationModel model, ClassResolver classResolver, Optional<ClassPathExplorer> classPathExplorer) {
         requireNonNull(model);
         this.model = model;
+
+        requireNonNull(classResolver);
+        this.classResolver = classResolver;
 
         requireNonNull(classPathExplorer);
         this.classPathExplorer = classPathExplorer;

@@ -1,5 +1,6 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -8,7 +9,8 @@ import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
 
-public class Aggregate extends ComponentWithType {
+@SuppressWarnings("serial")
+public class Aggregate extends ComponentWithType implements Serializable {
 
     public static final String ON_ADD_METHOD_NAME = "onAdd";
 
@@ -51,44 +53,40 @@ public class Aggregate extends ComponentWithType {
     }
 
     public Optional<Source> containerSource() {
-        return containerSource;
+        return Optional.ofNullable(containerSource);
     }
 
-    private Optional<Source> containerSource = Optional.empty();
+    private Source containerSource;
 
     public Optional<Source> standaloneFactorySource() {
-        return standaloneFactorySource;
+        return Optional.ofNullable(standaloneFactorySource);
     }
 
-    private Optional<Source> standaloneFactorySource = Optional.empty();
+    private Source standaloneFactorySource;
 
     public Optional<Source> standaloneRootSource() {
-        return standaloneRootSource;
+        return Optional.ofNullable(standaloneRootSource);
     }
 
-    private Optional<Source> standaloneRootSource = Optional.empty();
+    private Source standaloneRootSource;
 
     public Optional<Source> standaloneRepositorySource() {
-        return standaloneRepositorySource;
+        return Optional.ofNullable(standaloneRepositorySource);
     }
 
-    private Optional<Source> standaloneRepositorySource = Optional.empty();
+    private Source standaloneRepositorySource;
 
-    public static class Builder {
+    public static class Builder implements Serializable {
 
         private Aggregate aggregate = new Aggregate();
 
         public Aggregate build() {
             requireNonNull(aggregate.name);
             requireNonNull(aggregate.packageName);
-            requireNonNull(aggregate.containerSource);
-            requireNonNull(aggregate.standaloneFactorySource);
-            requireNonNull(aggregate.standaloneRootSource);
-            requireNonNull(aggregate.standaloneRepositorySource);
 
-            aggregate.innerFactory = innerFactory.orElseThrow().booleanValue();
-            aggregate.innerRoot = innerRoot.orElseThrow().booleanValue();
-            aggregate.innerRepository = innerRepository.orElseThrow().booleanValue();
+            aggregate.innerFactory = innerFactory.booleanValue();
+            aggregate.innerRoot = innerRoot.booleanValue();
+            aggregate.innerRepository = innerRepository.booleanValue();
 
             return aggregate;
         }
@@ -103,9 +101,14 @@ public class Aggregate extends ComponentWithType {
             aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
             aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
 
-            innerFactory = Optional.of(other.innerFactory);
-            innerRoot = Optional.of(other.innerRoot);
-            innerRepository = Optional.of(other.innerRepository);
+            innerFactory = other.innerFactory;
+            innerRoot = other.innerRoot;
+            innerRepository = other.innerRepository;
+
+            aggregate.containerSource = other.containerSource;
+            aggregate.standaloneFactorySource = other.standaloneFactorySource;
+            aggregate.standaloneRootSource = other.standaloneRootSource;
+            aggregate.standaloneRepositorySource = other.standaloneRepositorySource;
 
             return this;
         }
@@ -125,6 +128,11 @@ public class Aggregate extends ComponentWithType {
             return this;
         }
 
+        public Builder onDeleteProducedEvent(ProducedEvent producedEvent) {
+            aggregate.onDeleteProducedEvents.add(producedEvent);
+            return this;
+        }
+
         public Builder name(String name) {
             aggregate.name = name;
             return this;
@@ -137,72 +145,72 @@ public class Aggregate extends ComponentWithType {
 
         public Builder innerFactory(boolean inner) {
             consistentLocationOrElseThrow(innerFactory, inner, "factory");
-            innerFactory = Optional.of(inner);
+            innerFactory = inner;
             return this;
         }
 
-        private void consistentLocationOrElseThrow(Optional<Boolean> inner, boolean newValue, String componentName) {
-            if(inner.isPresent()
-                    && inner.get().booleanValue() != newValue) {
+        private void consistentLocationOrElseThrow(Boolean inner, boolean newValue, String componentName) {
+            if(inner != null
+                    && inner.booleanValue() != newValue) {
                 throw new IllegalArgumentException("Inconsistent " + componentName + " location for aggregate "
                     + aggregate.name + ": must be in a container or not");
             }
         }
 
-        private Optional<Boolean> innerFactory = Optional.empty();
+        private Boolean innerFactory;
 
         public Builder innerRoot(boolean inner) {
             consistentLocationOrElseThrow(innerRoot, inner, "root");
-            innerRoot = Optional.of(inner);
+            innerRoot = inner;
             return this;
         }
 
-        private Optional<Boolean> innerRoot = Optional.empty();
+        private Boolean innerRoot;
 
         public Builder innerRepository(boolean inner) {
             consistentLocationOrElseThrow(innerRepository, inner, "repository");
-            innerRepository = Optional.of(inner);
+            innerRepository = inner;
             return this;
         }
 
-        private Optional<Boolean> innerRepository = Optional.empty();
+        private Boolean innerRepository;
 
         public Builder ensureDefaultLocations() {
-            boolean aPrioriInnerFactory = innerFactory.isPresent() && innerFactory.get().booleanValue();
-            boolean aPrioriInnerRoot = innerRoot.isPresent() && innerRoot.get().booleanValue();
-            boolean aPrioriInnerRepository = innerRepository.isPresent() && innerRepository.get().booleanValue();
-            boolean noAPriori = innerFactory.isEmpty()
-                    && innerRoot.isEmpty()
-                    && !innerRepository.isEmpty();
-            if(innerFactory.isEmpty()) {
+            boolean aPrioriInnerFactory = innerFactory != null && innerFactory.booleanValue();
+            boolean aPrioriInnerRoot = innerRoot != null && innerRoot.booleanValue();
+            boolean aPrioriInnerRepository = innerRepository != null && innerRepository.booleanValue();
+            boolean noAPriori = innerFactory == null
+                    && innerRoot == null
+                    && innerRepository == null;
+            if(innerFactory == null) {
                 innerFactory(noAPriori || (aPrioriInnerRoot || aPrioriInnerRepository));
             }
-            if(innerRoot.isEmpty()) {
+            if(innerRoot == null) {
                 innerRoot(noAPriori || (aPrioriInnerFactory || aPrioriInnerRepository));
             }
-            if(innerRepository.isEmpty()) {
+            if(innerRepository == null) {
                 innerRepository(noAPriori || (aPrioriInnerFactory || aPrioriInnerRoot));
             }
             return this;
         }
 
         public Builder containerSource(Optional<Source> containerSource) {
-            aggregate.containerSource = containerSource;
+            aggregate.containerSource = containerSource.orElse(null);
             return this;
         }
 
         public Builder standaloneFactorySource(Optional<Source> standaloneFactorySource) {
-            aggregate.standaloneFactorySource = standaloneFactorySource;
+            aggregate.standaloneFactorySource = standaloneFactorySource.orElse(null);
             return this;
         }
 
         public Builder standaloneRootSource(Optional<Source> standaloneRootSource) {
-            aggregate.standaloneRootSource = standaloneRootSource;
+            aggregate.standaloneRootSource = standaloneRootSource.orElse(null);
             return this;
         }
 
         public Builder standaloneRepositorySource(Optional<Source> standaloneRepositorySource) {
-            aggregate.standaloneRepositorySource = standaloneRepositorySource;
+            aggregate.standaloneRepositorySource = standaloneRepositorySource.orElse(null);
             return this;
         }
 

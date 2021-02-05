@@ -3,7 +3,7 @@ package poussecafe.source.validation.names;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.model.Module;
 
 import static java.util.Arrays.asList;
@@ -21,10 +21,11 @@ public class NameResolutionTest {
         thenResultIs("Component");
     }
 
+    @SuppressWarnings("serial")
     private NamedComponent component(Name className, String name) {
         return new NamedComponent() {
             @Override
-            public Optional<SourceFileLine> sourceFileLine() {
+            public Optional<SourceLine> sourceLine() {
                 return Optional.empty();
             }
 
@@ -64,8 +65,8 @@ public class NameResolutionTest {
     }
 
     private Module module1 = new Module.Builder()
-            .sourceFileLine(mock(SourceFileLine.class))
-            .name(new Name("base.package.Module1"))
+            .sourceLine(mock(SourceLine.class))
+            .className(new Name("base.package.Module1"))
             .build();
 
     private void givenModules(Module... list) {
@@ -80,12 +81,12 @@ public class NameResolutionTest {
     }
 
     private Module module2 = new Module.Builder()
-            .sourceFileLine(mock(SourceFileLine.class))
-            .name(new Name("base.package2.Module2"))
+            .sourceLine(mock(SourceLine.class))
+            .className(new Name("base.package2.Module2"))
             .build();
 
     private Module module3 = new Module.Builder()
-            .sourceFileLine(mock(SourceFileLine.class))
-            .name(new Name("base.package3.Module3"))
+            .sourceLine(mock(SourceLine.class))
+            .className(new Name("base.package3.Module3"))
             .build();
 }

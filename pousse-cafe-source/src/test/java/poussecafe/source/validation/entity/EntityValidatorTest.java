@@ -41,7 +41,7 @@ public class EntityValidatorTest extends ValidatorTest {
 
     private boolean missingImplementationWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-            && message.location().sourceFile().id().equals(entityDefinitionSourcePath().toString())
+            && message.location().source().id().equals(entityDefinitionSourcePath().toString())
             && message.location().line() == 6
             && message.message().contains("No implementation");
     }
@@ -70,7 +70,7 @@ public class EntityValidatorTest extends ValidatorTest {
 
     private boolean missingAggregateRootImplementationWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-            && message.location().sourceFile().id().endsWith("/MyAggregateRoot.java")
+            && message.location().source().id().endsWith("/MyAggregateRoot.java")
             && message.location().line() == 6
             && message.message().contains("No implementation");
     }

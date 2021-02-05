@@ -1,18 +1,23 @@
 package poussecafe.source.validation.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.validation.SourceLine;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class MessageImplementation {
+@SuppressWarnings("serial")
+public class MessageImplementation implements Serializable {
 
-    private SourceFileLine sourceFileLine;
+    private SourceLine sourceLine;
 
-    public SourceFileLine sourceFileLine() {
-        return sourceFileLine;
+    public SourceLine sourceLine() {
+        return sourceLine;
     }
 
     public Name messageDefinitionClassName() {
@@ -43,16 +48,16 @@ public class MessageImplementation {
 
     private boolean concrete;
 
-    public boolean isMessage() {
-        return message;
+    public boolean implementsMessage() {
+        return implementsMessage;
     }
 
-    private boolean message;
+    private boolean implementsMessage;
 
     public static class Builder {
 
         public MessageImplementation build() {
-            requireNonNull(implementation.sourceFileLine);
+            requireNonNull(implementation.sourceLine);
             requireNonNull(implementation.messageDefinitionClassName);
             requireNonNull(implementation.className);
             return implementation;
@@ -60,8 +65,8 @@ public class MessageImplementation {
 
         private MessageImplementation implementation = new MessageImplementation();
 
-        public Builder sourceFileLine(SourceFileLine sourceFileLine) {
-            implementation.sourceFileLine = sourceFileLine;
+        public Builder sourceLine(SourceLine sourceLine) {
+            implementation.sourceLine = sourceLine;
             return this;
         }
 
@@ -85,13 +90,37 @@ public class MessageImplementation {
             return this;
         }
 
-        public Builder message(boolean message) {
-            implementation.message = message;
+        public Builder implementsMessage(boolean implementsMessage) {
+            implementation.implementsMessage = implementsMessage;
             return this;
         }
     }
 
     private MessageImplementation() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(className, other.className)
+                .append(concrete, other.concrete)
+                .append(implementsMessage, other.implementsMessage)
+                .append(messageDefinitionClassName, other.messageDefinitionClassName)
+                .append(messagingNames, other.messagingNames)
+                .append(sourceLine, other.sourceLine)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(className)
+                .append(concrete)
+                .append(implementsMessage)
+                .append(messageDefinitionClassName)
+                .append(messagingNames)
+                .append(sourceLine)
+                .build();
     }
 }

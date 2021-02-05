@@ -1,5 +1,6 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.CompilationUnitResolver;
@@ -8,7 +9,8 @@ import poussecafe.source.analysis.ResolvedTypeName;
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
-public class Message {
+@SuppressWarnings("serial")
+public class Message implements Serializable {
 
     public static Message ofTypeName(ResolvedTypeName typeName) {
         if(!isMessage(typeName)) {

@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import org.eclipse.jdt.core.dom.AST;
 
@@ -7,7 +8,8 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 import static poussecafe.util.Equality.referenceEquals;
 
-public class Name {
+@SuppressWarnings("serial")
+public class Name implements Serializable {
 
     public Name getIdentifier() {
         return new Name(identifier);

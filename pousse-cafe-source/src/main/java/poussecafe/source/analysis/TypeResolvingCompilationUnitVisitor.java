@@ -12,22 +12,28 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import poussecafe.source.SourceFile;
+import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
 
 public class TypeResolvingCompilationUnitVisitor {
 
-    public void visit(SourceFile sourceFile) {
+    public void visit(Source sourceFile) {
+        if(project != null) {
+            sourceFile.connect(project);
+        }
+
         currentSourceFile = sourceFile;
         resolver = new CompilationUnitResolver.Builder()
-                .compilationUnit(sourceFile.tree())
+                .compilationUnit(sourceFile.compilationUnit())
                 .classResolver(classResolver)
                 .build();
-        sourceFile.tree().accept(astVisitor);
+        sourceFile.compilationUnit().accept(astVisitor);
     }
 
-    private SourceFile currentSourceFile;
+    private Object project;
+
+    private Source currentSourceFile;
 
     private CompilationUnitResolver resolver;
 
@@ -172,6 +178,11 @@ public class TypeResolvingCompilationUnitVisitor {
 
         public Builder withVisitor(ResolvedCompilationUnitVisitor visitor) {
             compilationUnitVisitor.visitors.add(visitor);
+            return this;
+        }
+
+        public Builder withProject(Object project) {
+            compilationUnitVisitor.project = project;
             return this;
         }
     }

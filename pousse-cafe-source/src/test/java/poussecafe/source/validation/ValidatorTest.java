@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Predicate;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.Name;
 
 import static org.junit.Assert.assertTrue;
@@ -23,7 +24,7 @@ public abstract class ValidatorTest {
     private Validator validator;
 
     protected void whenValidating() {
-        validator = new Validator(modelBuilder.build(), Optional.of(classPathExplorer));
+        validator = new Validator(modelBuilder.build(), new ClassLoaderClassResolver(), Optional.of(classPathExplorer));
         validator.validate();
         result = validator.result();
     }

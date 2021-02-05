@@ -22,7 +22,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean standloneAggregateRootNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/StandaloneAggregateRoot")
+                && message.location().source().id().contains("/StandaloneAggregateRoot")
                 && message.message().contains("does not follow naming convention");
     }
 
@@ -52,7 +52,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean innerAggregateRootNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/MyAggregate")
+                && message.location().source().id().contains("/MyAggregate")
                 && message.message().contains("Aggregate root name does not follow naming convention");
     }
 
@@ -82,7 +82,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean standloneAggregateFactoryNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/StandaloneFactory")
+                && message.location().source().id().contains("/StandaloneFactory")
                 && message.message().contains("does not follow naming convention");
     }
 
@@ -108,7 +108,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean innerAggregateFactoryNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/MyAggregate")
+                && message.location().source().id().contains("/MyAggregate")
                 && message.message().contains("Aggregate factory name does not follow naming convention");
     }
 
@@ -134,7 +134,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean standloneAggregateRepositoryNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/StandaloneRepository")
+                && message.location().source().id().contains("/StandaloneRepository")
                 && message.message().contains("does not follow naming convention");
     }
 
@@ -160,7 +160,7 @@ public class NamingConventionsValidatorTest extends ValidatorTest {
 
     private boolean innerAggregateRepositoryNameWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().contains("/MyAggregate")
+                && message.location().source().id().contains("/MyAggregate")
                 && message.message().contains("Aggregate repository name does not follow naming convention");
     }
 

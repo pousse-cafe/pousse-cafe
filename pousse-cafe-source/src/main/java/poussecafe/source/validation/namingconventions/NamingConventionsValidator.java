@@ -39,7 +39,7 @@ public class NamingConventionsValidator extends SubValidator {
             if(!definition.isInnerClass()
                     && !standaloneNameValidator.test(definition.className().simple())) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine().orElseThrow())
+                        .location(definition.sourceLine().orElseThrow())
                         .type(ValidationMessageType.WARNING)
                         .message(componentName + " name does not follow naming convention")
                         .build());
@@ -48,7 +48,7 @@ public class NamingConventionsValidator extends SubValidator {
             if(definition.isInnerClass()
                     && !innerNameValidator.test(definition.className().simple())) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceFileLine().orElseThrow())
+                        .location(definition.sourceLine().orElseThrow())
                         .type(ValidationMessageType.WARNING)
                         .message(componentName + " name does not follow naming convention")
                         .build());

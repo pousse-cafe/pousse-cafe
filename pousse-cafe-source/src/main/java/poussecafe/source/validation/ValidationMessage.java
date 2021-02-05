@@ -16,11 +16,11 @@ public class ValidationMessage {
 
     private ValidationMessageType type;
 
-    public SourceFileLine location() {
+    public SourceLine location() {
         return location;
     }
 
-    private SourceFileLine location;
+    private SourceLine location;
 
     public static class Builder {
 
@@ -43,7 +43,7 @@ public class ValidationMessage {
             return this;
         }
 
-        public Builder location(SourceFileLine location) {
+        public Builder location(SourceLine location) {
             message.location = location;
             return this;
         }

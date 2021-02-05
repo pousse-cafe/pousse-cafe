@@ -1,20 +1,25 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class MessageListenerContainer {
+@SuppressWarnings("serial")
+public class MessageListenerContainer implements Serializable {
 
     private MessageListenerContainer() {
 
     }
 
     public Optional<String> aggregateName() {
-        return aggregateName;
+        return Optional.ofNullable(aggregateName);
     }
 
-    private Optional<String> aggregateName;
+    private String aggregateName;
 
     public MessageListenerContainerType type() {
         return type;
@@ -37,14 +42,13 @@ public class MessageListenerContainer {
         private MessageListenerContainer container = new MessageListenerContainer();
 
         public MessageListenerContainer build() {
-            requireNonNull(container.aggregateName);
             requireNonNull(container.type);
             requireNonNull(container.containerIdentifier);
 
             if((container.type.isFactory()
                         || container.type.isRepository()
                         || container.type.isRoot())
-                    && container.aggregateName.isEmpty()) {
+                    && container.aggregateName == null) {
                 throw new IllegalStateException("Aggregate name must be set with type " + container.type);
             }
 
@@ -52,7 +56,7 @@ public class MessageListenerContainer {
         }
 
         public Builder aggregateName(String aggregateName) {
-            container.aggregateName = Optional.of(aggregateName);
+            container.aggregateName = aggregateName;
             return this;
         }
 
@@ -85,5 +89,23 @@ public class MessageListenerContainer {
             builder.append("}");
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(aggregateName, other.aggregateName)
+                .append(containerIdentifier, other.containerIdentifier)
+                .append(type, other.type)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(aggregateName)
+                .append(containerIdentifier)
+                .append(type)
+                .build();
     }
 }

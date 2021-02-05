@@ -23,13 +23,11 @@ public class ModelTest {
     private void givenCurrentModel() {
         setModel(currentModel, CURRENT_PACKAGE);
 
-        var commandTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Command1"));
         currentModel.addCommand(new Command.Builder()
                 .name("Command1")
                 .packageName(CURRENT_PACKAGE)
                 .build());
 
-        var eventTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Event1"));
         currentModel.addEvent(new DomainEvent.Builder()
                 .name("Event1")
                 .packageName(CURRENT_PACKAGE)
@@ -39,12 +37,10 @@ public class ModelTest {
     private static final String CURRENT_PACKAGE = "current.package";
 
     private void setModel(Model currentModel, String packageName) {
-        var commandTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Command1"));
         currentModel.addCommand(new Command.Builder()
                 .name("Command1")
                 .packageName(packageName)
                 .build());
-        var eventTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Event1"));
         currentModel.addEvent(new DomainEvent.Builder()
                 .name("Event1")
                 .packageName(packageName)

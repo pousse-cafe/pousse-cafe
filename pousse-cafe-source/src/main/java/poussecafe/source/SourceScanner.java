@@ -8,8 +8,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.Set;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 import org.slf4j.Logger;
@@ -28,14 +26,14 @@ public class SourceScanner implements SourceConsumer {
 
     @Override
     public void includeSource(Source source) {
-        if(includedSources.contains(source.id())) {
-            forget(source.id());
+        String sourceId = source.id();
+        if(includedSources.contains(sourceId)) {
+            forget(sourceId);
+        } else {
+            includedSources.add(sourceId);
         }
-        includedSources.add(source.id());
-        ASTParser parser = ASTParser.newParser(AST.JLS14);
-        source.configure(parser);
-        var sourceId = source.id();
-        CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+
+        CompilationUnit unit = source.compilationUnit();
         if(unit.getMessages().length > 0) {
             logger.warn("Skipping {} because of compilation issues", sourceId);
             for(int i = 0; i < unit.getMessages().length; ++i) {
@@ -45,17 +43,13 @@ public class SourceScanner implements SourceConsumer {
         } else if(unit.types().size() != 1) {
             logger.debug("Skipping {} because it does not contain a single type", sourceId);
         } else {
-            var sourceFile = new SourceFile.Builder()
-                    .tree(unit)
-                    .source(source)
-                    .build();
-            typeResolvingVisitor.visit(sourceFile);
+            typeResolvingVisitor.visit(source);
             if(!typeResolvingVisitor.errors().isEmpty()) {
                 logger.error("Visitor errors:");
                 for(Exception e : typeResolvingVisitor.errors()) {
                     logger.error("-", e);
                 }
-                throw new IllegalStateException("Error while scanning source " + source.id());
+                throw new IllegalStateException("Error while scanning source " + sourceId);
             }
         }
     }

@@ -50,7 +50,7 @@ public class NamesValidator extends SubValidator {
             var componentsWithSameName = entry.getValue();
             if(componentsWithSameName.size() > 1) {
                 for(T component : componentsWithSameName) {
-                    var sourceFileLine = component.sourceFileLine();
+                    var sourceFileLine = component.sourceLine();
                     if(sourceFileLine.isPresent()) {
                         messages.add(new ValidationMessage.Builder()
                                 .location(sourceFileLine.get())
@@ -61,7 +61,7 @@ public class NamesValidator extends SubValidator {
                 }
             } else {
                 var component = componentsWithSameName.get(0);
-                var sourceFileLine = component.sourceFileLine();
+                var sourceFileLine = component.sourceLine();
                 if(warnIfNotQualified && !name.isQualifiedName() && sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())

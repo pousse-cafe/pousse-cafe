@@ -70,7 +70,7 @@ public class MessageValidatorTest extends ValidatorTest {
 
     private boolean autoImplementedEventWarning(ValidationMessage message) {
         return message.type() == ValidationMessageType.WARNING
-                && message.location().sourceFile().id().endsWith("/AutoImplementedEvent.java")
+                && message.location().source().id().endsWith("/AutoImplementedEvent.java")
                 && message.message().contains("should not implement itself");
     }
 
@@ -88,7 +88,7 @@ public class MessageValidatorTest extends ValidatorTest {
 
     private boolean abstractImplementationError(ValidationMessage message) {
         return message.type() == ValidationMessageType.ERROR
-                && message.location().sourceFile().id().endsWith("/AbstractMessage1Data.java")
+                && message.location().source().id().endsWith("/AbstractMessage1Data.java")
                 && message.message().contains("must be concrete");
     }
 
@@ -106,7 +106,7 @@ public class MessageValidatorTest extends ValidatorTest {
 
     private boolean notImplementingMessageError(ValidationMessage message) {
         return message.type() == ValidationMessageType.ERROR
-                && message.location().sourceFile().id().endsWith("/NotImplementingMessage1Data.java")
+                && message.location().source().id().endsWith("/NotImplementingMessage1Data.java")
                 && message.message().contains("must implement Message interface");
     }
 }

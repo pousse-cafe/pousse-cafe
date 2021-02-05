@@ -27,7 +27,7 @@ public class ModulesValidatorTest extends ValidatorTest {
     }
 
     private boolean module2ConflictError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/MyModule2.java")
+        return message.location().source().id().endsWith("/MyModule2.java")
                 && message.message().contains("Base package is a subpackage of module")
                 && message.type() == ValidationMessageType.ERROR;
     }
@@ -47,13 +47,13 @@ public class ModulesValidatorTest extends ValidatorTest {
     }
 
     private boolean module1DuplicateError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/names/MyModule.java")
+        return message.location().source().id().endsWith("/names/MyModule.java")
                 && message.message().contains("with same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }
 
     private boolean module2DuplicateError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/namesmoduleduplicate/MyModule.java")
+        return message.location().source().id().endsWith("/namesmoduleduplicate/MyModule.java")
                 && message.message().contains("with same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }

@@ -1,10 +1,12 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import poussecafe.source.generation.NamingConventions;
 
 import static java.util.Objects.requireNonNull;
 
-public class StandaloneAggregateRoot {
+@SuppressWarnings("serial")
+public class StandaloneAggregateRoot implements Serializable {
 
     private TypeComponent typeComponent;
 

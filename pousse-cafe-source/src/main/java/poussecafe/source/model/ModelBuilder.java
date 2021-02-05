@@ -1,5 +1,6 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +13,8 @@ import java.util.function.Consumer;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
-public class ModelBuilder {
+@SuppressWarnings("serial")
+public class ModelBuilder implements Serializable {
 
     public ModelBuilder putAggregate(Aggregate.Builder source) {
         source.provided(true);

@@ -51,7 +51,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private boolean validContainerListenersMessage(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/MyAggregate.java")
+        return message.location().source().id().endsWith("/MyAggregate.java")
                 && (message.location().line() == 16
                         || message.location().line() == 24
                         || message.location().line() == 36);
@@ -70,7 +70,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private boolean missingRunnerError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/AggregateRootWithoutRunner.java")
+        return message.location().source().id().endsWith("/AggregateRootWithoutRunner.java")
                 && message.location().line() == 10
                 && message.type() == ValidationMessageType.ERROR;
     }
@@ -95,7 +95,7 @@ public class MessageListenerValidatorTest extends ValidatorTest {
     }
 
     private boolean wrongRunnerWarning(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/WrongRunner.java")
+        return message.location().source().id().endsWith("/WrongRunner.java")
                 && message.location().line() == 5
                 && message.type() == ValidationMessageType.WARNING;
     }

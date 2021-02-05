@@ -1,5 +1,6 @@
 package poussecafe.source.analysis;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,8 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 import static poussecafe.util.Equality.referenceEquals;
 
-public class SafeClassName {
+@SuppressWarnings("serial")
+public class SafeClassName implements Serializable {
 
     public Name rootClassName() {
         return rootClassName;

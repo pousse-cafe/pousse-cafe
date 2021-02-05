@@ -23,7 +23,7 @@ public abstract class NamesValidatorTest extends ValidatorTest {
     protected abstract String componentClassName();
 
     private boolean duplicateMessageError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/components/" + componentFileName())
+        return message.location().source().id().endsWith("/components/" + componentFileName())
                 && message.message().contains("same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }
@@ -45,7 +45,7 @@ public abstract class NamesValidatorTest extends ValidatorTest {
     }
 
     private boolean duplicateMessage2Error(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/components2/" + componentFileName())
+        return message.location().source().id().endsWith("/components2/" + componentFileName())
                 && message.message().contains("same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }

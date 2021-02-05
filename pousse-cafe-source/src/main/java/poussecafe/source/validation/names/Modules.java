@@ -25,7 +25,7 @@ public class Modules {
     public List<ValidationMessage> checkModulesPartition() {
         var messages = new ArrayList<ValidationMessage>();
         for(int i = sortedModules.length - 1; i >= 1; --i) {
-            var sourceFileLine = sortedModules[i].sourceFileLine();
+            var sourceFileLine = sortedModules[i].sourceLine();
             if(sourceFileLine.isPresent()
                     && sortedModules[i].basePackage().startsWith(sortedModules[i - 1].basePackage())) {
                 messages.add(new ValidationMessage.Builder()

@@ -1,13 +1,18 @@
 package poussecafe.source.validation.model;
 
+import java.io.Serializable;
 import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.Name;
-import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.names.NamedComponent;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class MessageDefinition implements NamedComponent {
+@SuppressWarnings("serial")
+public class MessageDefinition implements NamedComponent, Serializable {
 
     private String messageName;
 
@@ -16,11 +21,11 @@ public class MessageDefinition implements NamedComponent {
         return messageName;
     }
 
-    private Optional<SourceFileLine> sourceFileLine;
+    private SourceLine sourceLine;
 
     @Override
-    public Optional<SourceFileLine> sourceFileLine() {
-        return sourceFileLine;
+    public Optional<SourceLine> sourceLine() {
+        return Optional.ofNullable(sourceLine);
     }
 
     public String qualifiedClassName() {
@@ -44,7 +49,6 @@ public class MessageDefinition implements NamedComponent {
 
         public MessageDefinition build() {
             requireNonNull(definition.messageName);
-            requireNonNull(definition.sourceFileLine);
             requireNonNull(definition.qualifiedClassName);
             return definition;
         }
@@ -56,8 +60,8 @@ public class MessageDefinition implements NamedComponent {
             return this;
         }
 
-        public Builder sourceFileLine(SourceFileLine sourceFileLine) {
-            definition.sourceFileLine = Optional.of(sourceFileLine);
+        public Builder sourceLine(SourceLine sourceLine) {
+            definition.sourceLine = sourceLine;
             return this;
         }
 
@@ -74,5 +78,25 @@ public class MessageDefinition implements NamedComponent {
 
     private MessageDefinition() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(messageName, other.messageName)
+                .append(sourceLine, other.sourceLine)
+                .append(qualifiedClassName, other.qualifiedClassName)
+                .append(domainEvent, other.domainEvent)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(messageName)
+                .append(sourceLine)
+                .append(qualifiedClassName)
+                .append(domainEvent)
+                .build();
     }
 }

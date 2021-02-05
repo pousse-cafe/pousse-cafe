@@ -1,16 +1,21 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.Optional;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class DomainEvent extends ComponentWithType {
+@SuppressWarnings("serial")
+public class DomainEvent extends ComponentWithType implements Serializable {
 
-    private Optional<Source> source = Optional.empty();
+    private Source source;
 
     public Optional<Source> source() {
-        return source;
+        return Optional.ofNullable(source);
     }
 
     public static class Builder {
@@ -20,12 +25,11 @@ public class DomainEvent extends ComponentWithType {
         public DomainEvent build() {
             requireNonNull(event.name);
             requireNonNull(event.packageName);
-            requireNonNull(event.source);
             return event;
         }
 
         public Builder source(Optional<Source> source) {
-            event.source = source;
+            event.source = source.orElse(null);
             return this;
         }
 
@@ -42,5 +46,23 @@ public class DomainEvent extends ComponentWithType {
 
     private DomainEvent() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(source, other.source)
+                .append(name, other.name)
+                .append(packageName, other.packageName)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(source)
+                .append(name)
+                .append(packageName)
+                .build();
     }
 }

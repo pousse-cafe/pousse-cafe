@@ -33,7 +33,7 @@ public class DefaultModuleWarningTest extends ValidatorTest {
     }
 
     private boolean defaultModuleWarning(ValidationMessage message, String fileNameSuffix) {
-        return message.location().sourceFile().id().endsWith(fileNameSuffix)
+        return message.location().source().id().endsWith(fileNameSuffix)
                 && message.message().contains("in default module")
                 && message.type() == ValidationMessageType.WARNING;
     }

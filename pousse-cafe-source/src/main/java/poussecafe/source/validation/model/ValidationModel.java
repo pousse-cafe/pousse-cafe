@@ -1,5 +1,6 @@
 package poussecafe.source.validation.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,9 +11,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.Name;
 
-public class ValidationModel {
+import static poussecafe.util.Equality.referenceEquals;
+
+@SuppressWarnings("serial")
+public class ValidationModel implements Serializable {
 
     public void addMessageDefinition(MessageDefinition definition) {
         messageDefinitions.add(definition);
@@ -111,7 +117,7 @@ public class ValidationModel {
         }
     }
 
-    public void addAggregateRootDefinition(AggregateComponentDefinition aggregateRoot) {
+    public void addAggregateRoot(AggregateComponentDefinition aggregateRoot) {
         aggregateRoots.add(aggregateRoot);
     }
 
@@ -142,22 +148,22 @@ public class ValidationModel {
     }
 
     public void forget(String sourceId) {
-        messageDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
-        messageImplementations.removeIf(definition-> definition.sourceFileLine().sourceFile().id().equals(sourceId));
+        messageDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        messageImplementations.removeIf(definition-> definition.sourceLine().source().id().equals(sourceId));
 
-        entityDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
-        entityImplementations.removeIf(definition-> definition.sourceFileLine().sourceFile().id().equals(sourceId));
+        entityDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        entityImplementations.removeIf(definition-> definition.sourceFileLine().source().id().equals(sourceId));
 
-        processDefinitions.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        processDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
 
         forget(sourceId, modulesBySourceId,
                 component -> modules.remove(component.className()));
 
-        aggregateRoots.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
-        aggregateFactories.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
-        aggregateRepositories.removeIf(definition-> definition.sourceFileLine().isPresent() && definition.sourceFileLine().orElseThrow().sourceFile().id().equals(sourceId));
+        aggregateRoots.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        aggregateFactories.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        aggregateRepositories.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
 
-        listeners.removeIf(listener -> listener.sourceFileLine().sourceFile().id().equals(sourceId));
+        listeners.removeIf(listener -> listener.sourceLine().source().id().equals(sourceId));
 
         forget(sourceId, runnersBySourceId,
                 component -> runners.remove(component.classQualifiedName()));
@@ -171,5 +177,45 @@ public class ValidationModel {
         if(component != null) {
             componentRemover.accept(component);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(aggregateFactories, other.aggregateFactories)
+                .append(aggregateRepositories, other.aggregateRepositories)
+                .append(aggregateRoots, other.aggregateRoots)
+                .append(entityDefinitions, other.entityDefinitions)
+                .append(entityImplementations, other.entityImplementations)
+                .append(listeners, other.listeners)
+                .append(messageDefinitionClassNames, other.messageDefinitionClassNames)
+                .append(messageDefinitions, other.messageDefinitions)
+                .append(messageImplementations, other.messageImplementations)
+                .append(modules, other.modules)
+                .append(modulesBySourceId, other.modulesBySourceId)
+                .append(processDefinitions, other.processDefinitions)
+                .append(runners, other.runners)
+                .append(runnersBySourceId, other.runnersBySourceId)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(aggregateFactories)
+                .append(aggregateRepositories)
+                .append(aggregateRoots)
+                .append(entityDefinitions)
+                .append(entityImplementations)
+                .append(listeners)
+                .append(messageDefinitionClassNames)
+                .append(messageDefinitions)
+                .append(messageImplementations)
+                .append(modules)
+                .append(modulesBySourceId)
+                .append(processDefinitions)
+                .append(runners)
+                .append(runnersBySourceId)
+                .build();
     }
 }

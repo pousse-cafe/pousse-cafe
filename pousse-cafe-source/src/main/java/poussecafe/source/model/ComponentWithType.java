@@ -1,8 +1,10 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import poussecafe.source.analysis.Name;
 
-public class ComponentWithType {
+@SuppressWarnings("serial")
+public class ComponentWithType implements Serializable {
 
     protected String name;
 

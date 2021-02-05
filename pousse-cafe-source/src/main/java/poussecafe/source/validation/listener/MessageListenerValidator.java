@@ -1,13 +1,16 @@
 package poussecafe.source.validation.listener;
 
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
-import poussecafe.source.analysis.ResolvedClass;
+import poussecafe.source.analysis.Name;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.model.MessageListener;
 import poussecafe.source.validation.model.Runner;
 import poussecafe.source.validation.model.ValidationModel;
+
+import static java.util.Objects.requireNonNull;
 
 public class MessageListenerValidator extends SubValidator {
 
@@ -26,7 +29,7 @@ public class MessageListenerValidator extends SubValidator {
     private void validateListener(MessageListener listener) {
         if(!listener.isPublic()) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.ERROR)
                     .message("A message listener must be public")
                     .build());
@@ -34,7 +37,7 @@ public class MessageListenerValidator extends SubValidator {
 
         if(listener.parametersCount() != 1) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.ERROR)
                     .message("A message listener must have a single parameter")
                     .build());
@@ -43,7 +46,7 @@ public class MessageListenerValidator extends SubValidator {
         if(listener.consumedMessageClass().isEmpty()
                 || !isMessage(listener.consumedMessageClass().orElseThrow())) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.ERROR)
                     .message("A message listener must consume a message i.e. have a subclass of Message as single parameter's type")
                     .build());
@@ -52,7 +55,7 @@ public class MessageListenerValidator extends SubValidator {
         if(!listener.containerType().isFactory()
                 && listener.returnsValue()) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.WARNING)
                     .message("Only message listeners defined in factories should return a value")
                     .build());
@@ -61,7 +64,7 @@ public class MessageListenerValidator extends SubValidator {
         if(listener.containerType().isRoot()
                 && listener.runnerQualifiedClassName().isEmpty()) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.ERROR)
                     .message("An aggregate root message listener must have a runner")
                     .build());
@@ -70,7 +73,7 @@ public class MessageListenerValidator extends SubValidator {
         if(!listener.containerType().isRoot()
                 && listener.runnerQualifiedClassName().isPresent()) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.WARNING)
                     .message("Only aggregate root message listeners need a runner")
                     .build());
@@ -81,13 +84,20 @@ public class MessageListenerValidator extends SubValidator {
         }
     }
 
-    private boolean isMessage(ResolvedClass consumedMessageClass) {
-        try {
-            return consumedMessageClass.instanceOf(CompilationUnitResolver.MESSAGE_CLASS);
-        } catch (ClassNotFoundException e) {
+    private boolean isMessage(Name consumedMessageClass) {
+        var messageClass = resolver.loadClass(consumedMessageClass);
+        if(messageClass.isPresent()) {
+            try {
+                return messageClass.get().instanceOf(CompilationUnitResolver.MESSAGE_CLASS);
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
+        } else {
             return false;
         }
     }
+
+    private ClassResolver resolver;
 
     private boolean canValidateRunner(MessageListener listener) {
         return listener.containerType().isRoot()
@@ -101,7 +111,7 @@ public class MessageListenerValidator extends SubValidator {
         var runner = model.runner(runnerClassQualifiedName);
         if(runner.isEmpty()) {
             messages.add(new ValidationMessage.Builder()
-                    .location(listener.sourceFileLine())
+                    .location(listener.sourceLine())
                     .type(ValidationMessageType.ERROR)
                     .message("Runner class does not implement AggregateMessageListenerRunner interface or is not concrete")
                     .build());
@@ -111,7 +121,7 @@ public class MessageListenerValidator extends SubValidator {
     }
 
     private void validateConcreteRunner(MessageListener listener, Runner runner) {
-        var messageDefinitionQualifiedName = listener.consumedMessageClass().orElseThrow().name().qualified();
+        var messageDefinitionQualifiedName = listener.consumedMessageClass().orElseThrow().qualified();
         if(!runner.typeParametersQualifiedNames().contains(messageDefinitionQualifiedName)) {
             messages.add(new ValidationMessage.Builder()
                     .location(runner.sourceFileLine())
@@ -121,7 +131,10 @@ public class MessageListenerValidator extends SubValidator {
         }
     }
 
-    public MessageListenerValidator(ValidationModel model) {
+    public MessageListenerValidator(ValidationModel model, ClassResolver resolver) {
         super(model);
+
+        requireNonNull(resolver);
+        this.resolver = resolver;
     }
 }

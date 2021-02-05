@@ -1,19 +1,14 @@
 package poussecafe.source;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTParser;
 
-public class PathSource implements Source {
-
-    @Override
-    public String id() {
-        return path.toString();
-    }
-
-    private Path path;
+@SuppressWarnings("serial")
+public class PathSource extends Source implements Serializable {
 
     @Override
     public void configure(ASTParser parser) {
@@ -26,7 +21,7 @@ public class PathSource implements Source {
     private String readAllChars() {
         byte[] bytes;
         try {
-            bytes = Files.readAllBytes(path);
+            bytes = Files.readAllBytes(Path.of(id()));
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read path content", e);
         }
@@ -34,6 +29,6 @@ public class PathSource implements Source {
     }
 
     public PathSource(Path path) {
-        this.path = path;
+        super(path.toString());
     }
 }

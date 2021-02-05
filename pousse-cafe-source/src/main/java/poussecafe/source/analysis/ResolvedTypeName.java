@@ -8,6 +8,10 @@ public class ResolvedTypeName {
 
     private Name name;
 
+    public Name name() {
+        return name;
+    }
+
     private ResolvedClass resolvedClass;
 
     public ResolvedClass resolvedClass() {

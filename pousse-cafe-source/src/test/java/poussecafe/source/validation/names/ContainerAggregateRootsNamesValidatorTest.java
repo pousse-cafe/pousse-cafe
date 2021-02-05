@@ -29,13 +29,13 @@ public class ContainerAggregateRootsNamesValidatorTest extends ValidatorTest {
     }
 
     private boolean duplicateAggregate1Error(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/components/Aggregate1.java")
+        return message.location().source().id().endsWith("/components/Aggregate1.java")
                 && message.message().contains("same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }
 
     private boolean duplicateAggregate2Error(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/components/Aggregate2.java")
+        return message.location().source().id().endsWith("/components/Aggregate2.java")
                 && message.message().contains("same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }
@@ -55,7 +55,7 @@ public class ContainerAggregateRootsNamesValidatorTest extends ValidatorTest {
     }
 
     private boolean duplicateAggregate1DuplicateError(ValidationMessage message) {
-        return message.location().sourceFile().id().endsWith("/components2/Aggregate1.java")
+        return message.location().source().id().endsWith("/components2/Aggregate1.java")
                 && message.message().contains("same name already exists")
                 && message.type() == ValidationMessageType.ERROR;
     }

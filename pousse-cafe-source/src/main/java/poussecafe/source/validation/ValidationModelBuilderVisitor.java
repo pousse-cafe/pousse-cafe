@@ -1,6 +1,8 @@
 package poussecafe.source.validation;
 
+import java.io.Serializable;
 import java.util.Optional;
+import poussecafe.source.WithPersistableState;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.DataAccessImplementationType;
 import poussecafe.source.analysis.EntityDefinitionType;
@@ -10,6 +12,7 @@ import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
+import poussecafe.source.analysis.Name;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedCompilationUnit;
@@ -34,7 +37,7 @@ import poussecafe.source.validation.model.ValidationModel;
 
 import static java.util.Arrays.asList;
 
-public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVisitor {
+public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVisitor, WithPersistableState {
 
     @Override
     public boolean visit(ResolvedCompilationUnit unit) {
@@ -81,7 +84,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var definitionType = new MessageDefinitionType(resolvedTypeDeclaration);
         model.addMessageDefinition(new MessageDefinition.Builder()
                 .messageName(definitionType.name())
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
                 .domainEvent(definitionType.type() == MessageType.DOMAIN_EVENT)
                 .build());
@@ -92,12 +95,12 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     private void visitMessageImplementation(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var implementationType = new MessageImplementationType(resolvedTypeDeclaration);
         model.addMessageImplementation(new MessageImplementation.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .messageDefinitionClassName(implementationType.messageName().resolvedClass().name())
                 .messagingNames(implementationType.messagingNames())
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .concrete(implementationType.isConcreteImplementation())
-                .message(implementationType.implementsMessageInterface())
+                .implementsMessage(implementationType.implementsMessageInterface())
                 .build());
     }
 
@@ -105,15 +108,15 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var definitionType = new EntityDefinitionType(resolvedTypeDeclaration);
         model.addEntityDefinition(new EntityDefinition.Builder()
                 .entityName(definitionType.name())
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .build());
     }
 
     private void visitAggregateRootDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new AggregateRootClass(resolvedTypeDeclaration);
-        model.addAggregateRootDefinition(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+        model.addAggregateRoot(new AggregateComponentDefinition.Builder()
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
@@ -151,15 +154,15 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     private void visitModule(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new ModuleClass(resolvedTypeDeclaration);
         model.addModule(new Module.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .name(runnerClass.className())
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(runnerClass.className())
                 .build());
     }
 
     private void visitProcessDefinition(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var processDefinitionClass = new ProcessDefinitionType(resolvedTypeDeclaration);
         model.addProcessDefinition(new ProcessDefinition.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(processDefinitionClass.className())
                 .name(processDefinitionClass.processName())
                 .build());
@@ -168,7 +171,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new FactoryClass(resolvedTypeDeclaration);
         model.addAggregateFactory(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
@@ -177,7 +180,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     private void visitRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new RepositoryClass(resolvedTypeDeclaration);
         model.addAggregateRepository(new AggregateComponentDefinition.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
                 .build());
@@ -194,11 +197,11 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     private void visitMessageListener(ResolvedMethod method) {
         var messageListenerMethod = new MessageListenerMethod(method);
         model.addMessageListener(new MessageListener.Builder()
-                .sourceFileLine(unit.sourceFileLine(method.declaration().getName()))
+                .sourceLine(unit.sourceFileLine(method.declaration().getName()))
                 .isPublic(method.modifiers().hasVisibility(Visibility.PUBLIC))
                 .runnerQualifiedClassName(messageListenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                 .returnsValue(messageListenerMethod.returnType().isPresent())
-                .consumedMessageClass(messageListenerMethod.consumedMessage().map(ResolvedTypeName::resolvedClass))
+                .consumedMessageClass(messageListenerMethod.consumedMessage().map(ResolvedTypeName::qualifiedName).map(Name::new))
                 .parametersCount(method.declaration().parameters().size())
                 .containerType(messageListenerContainerType(method.declaringType()))
                 .build());
@@ -223,5 +226,15 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     @Override
     public void forget(String sourceId) {
         model.forget(sourceId);
+    }
+
+    @Override
+    public Serializable getSerializableState() {
+        return model;
+    }
+
+    @Override
+    public void loadSerializedState(Serializable state) {
+        model = (ValidationModel) state;
     }
 }

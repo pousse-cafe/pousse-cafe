@@ -1,9 +1,11 @@
 package poussecafe.source.analysis;
 
+import java.io.Serializable;
 import java.util.List;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import poussecafe.source.WithPersistableState;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.AggregateContainer;
 import poussecafe.source.model.Command;
@@ -26,7 +28,7 @@ import poussecafe.source.model.TypeComponent;
 
 import static java.util.stream.Collectors.toList;
 
-public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor {
+public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor, WithPersistableState {
 
     @Override
     public boolean visit(ResolvedCompilationUnit unit) {
@@ -92,7 +94,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
 
     private TypeComponent typeComponent(SafeClassName typeName) {
         return new TypeComponent.Builder()
-                .source(compilationUnit.sourceFile().source())
+                .source(compilationUnit.sourceFile())
                 .name(typeName)
                 .build();
     }
@@ -106,7 +108,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
         modelBuilder.addProcess(new ProcessModel.Builder()
                 .name(processDefinition.processName())
                 .packageName(compilationUnit.packageName())
-                .source(compilationUnit.sourceFile().source())
+                .source(compilationUnit.sourceFile())
                 .build());
     }
 
@@ -216,7 +218,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new RunnerClass(resolvedTypeDeclaration);
         modelBuilder.addRunner(new Runner.Builder()
-                .withRunnerSource(compilationUnit.sourceFile().source())
+                .withRunnerSource(compilationUnit.sourceFile())
                 .withClassName(runnerClass.className())
                 .build());
     }
@@ -231,7 +233,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
                         .withContainer(container)
                         .withMethodDeclaration(listenerMethod)
                         .withRunnerClass(listenerMethod.runner().map(ResolvedTypeName::qualifiedName))
-                        .withSource(compilationUnit.sourceFile().source())
+                        .withSource(compilationUnit.sourceFile())
                         .build();
                 modelBuilder.addMessageListener(messageListener);
 
@@ -301,5 +303,15 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
     @Override
     public void forget(String sourceId) {
         modelBuilder.forget(sourceId);
+    }
+
+    @Override
+    public Serializable getSerializableState() {
+        return modelBuilder;
+    }
+
+    @Override
+    public void loadSerializedState(Serializable state) {
+        modelBuilder = (ModelBuilder) state;
     }
 }

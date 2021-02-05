@@ -56,7 +56,7 @@ public class EntityValidator extends SubValidator {
     private void applyConflictingMessageDefinitionsValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasConflictingDefinitions()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
-                var sourceFileLine = definition.sourceFileLine();
+                var sourceFileLine = definition.sourceLine();
                 if(sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())
@@ -71,7 +71,7 @@ public class EntityValidator extends SubValidator {
     private void applyNoImplementationValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasNoImplementation()) {
             for(EntityDefinition definition : entiyValidationModel.definitions()) {
-                var sourceFileLine = definition.sourceFileLine();
+                var sourceFileLine = definition.sourceLine();
                 if(sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())

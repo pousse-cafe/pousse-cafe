@@ -1,19 +1,24 @@
 package poussecafe.source.validation.model;
 
+import java.io.Serializable;
 import java.util.Optional;
-import poussecafe.source.analysis.ResolvedClass;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.source.analysis.Name;
 import poussecafe.source.model.MessageListenerContainerType;
-import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.validation.SourceLine;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class MessageListener {
+@SuppressWarnings("serial")
+public class MessageListener implements Serializable {
 
-    public SourceFileLine sourceFileLine() {
-        return sourceFileLine;
+    public SourceLine sourceLine() {
+        return sourceLine;
     }
 
-    private SourceFileLine sourceFileLine;
+    private SourceLine sourceLine;
 
     public boolean isPublic() {
         return isPublic;
@@ -22,10 +27,10 @@ public class MessageListener {
     private boolean isPublic;
 
     public Optional<String> runnerQualifiedClassName() {
-        return runnerQualifiedClassName;
+        return Optional.ofNullable(runnerQualifiedClassName);
     }
 
-    private Optional<String> runnerQualifiedClassName = Optional.empty();
+    private String runnerQualifiedClassName;
 
     public boolean returnsValue() {
         return returnsValue;
@@ -33,11 +38,11 @@ public class MessageListener {
 
     private boolean returnsValue;
 
-    public Optional<ResolvedClass> consumedMessageClass() {
-        return consumedMessageClass;
+    public Optional<Name> consumedMessageClass() {
+        return Optional.ofNullable(consumedMessageClass);
     }
 
-    private Optional<ResolvedClass> consumedMessageClass = Optional.empty();
+    private Name consumedMessageClass;
 
     public int parametersCount() {
         return parametersCount;
@@ -54,17 +59,15 @@ public class MessageListener {
     public static class Builder {
 
         public MessageListener build() {
-            requireNonNull(listener.sourceFileLine);
-            requireNonNull(listener.runnerQualifiedClassName);
-            requireNonNull(listener.consumedMessageClass);
+            requireNonNull(listener.sourceLine);
             requireNonNull(listener.containerType);
             return listener;
         }
 
         private MessageListener listener = new MessageListener();
 
-        public Builder sourceFileLine(SourceFileLine sourceFileLine) {
-            listener.sourceFileLine = sourceFileLine;
+        public Builder sourceLine(SourceLine sourceLine) {
+            listener.sourceLine = sourceLine;
             return this;
         }
 
@@ -74,7 +77,7 @@ public class MessageListener {
         }
 
         public Builder runnerQualifiedClassName(Optional<String> runnerQualifiedClassName) {
-            listener.runnerQualifiedClassName = runnerQualifiedClassName;
+            listener.runnerQualifiedClassName = runnerQualifiedClassName.orElse(null);
             return this;
         }
 
@@ -83,8 +86,8 @@ public class MessageListener {
             return this;
         }
 
-        public Builder consumedMessageClass(Optional<ResolvedClass> consumedMessageQualifiedClassName) {
-            listener.consumedMessageClass = consumedMessageQualifiedClassName;
+        public Builder consumedMessageClass(Optional<Name> consumedMessageQualifiedClassName) {
+            listener.consumedMessageClass = consumedMessageQualifiedClassName.orElse(null);
             return this;
         }
 
@@ -101,5 +104,31 @@ public class MessageListener {
 
     private MessageListener() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(consumedMessageClass, other.consumedMessageClass)
+                .append(containerType, other.containerType)
+                .append(isPublic, other.isPublic)
+                .append(parametersCount, other.parametersCount)
+                .append(returnsValue, other.returnsValue)
+                .append(runnerQualifiedClassName, other.runnerQualifiedClassName)
+                .append(sourceLine, other.sourceLine)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(consumedMessageClass)
+                .append(containerType)
+                .append(isPublic)
+                .append(parametersCount)
+                .append(returnsValue)
+                .append(runnerQualifiedClassName)
+                .append(sourceLine)
+                .build();
     }
 }

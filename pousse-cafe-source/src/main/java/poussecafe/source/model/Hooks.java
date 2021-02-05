@@ -1,10 +1,16 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Hooks {
+import static poussecafe.util.Equality.referenceEquals;
+
+@SuppressWarnings("serial")
+public class Hooks implements Serializable {
 
     public static final String ON_ADD_METHOD_NAME = "onAdd";
 
@@ -44,6 +50,11 @@ public class Hooks {
             hooks.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
             return this;
         }
+
+        public Builder onDeleteProducedEvent(ProducedEvent onDeleteProducedEvent) {
+            hooks.onDeleteProducedEvents.add(onDeleteProducedEvent);
+            return this;
+        }
     }
 
     private Hooks() {
@@ -51,4 +62,20 @@ public class Hooks {
     }
 
     public static final Hooks EMPTY = new Hooks.Builder().build();
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(onAddProducedEvents, other.onAddProducedEvents)
+                .append(onDeleteProducedEvents, other.onDeleteProducedEvents)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(onAddProducedEvents)
+                .append(onDeleteProducedEvents)
+                .build();
+    }
 }

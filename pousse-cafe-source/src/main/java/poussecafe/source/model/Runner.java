@@ -1,10 +1,15 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.Source;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
-public class Runner {
+@SuppressWarnings("serial")
+public class Runner implements Serializable {
 
     public Source runnerSource() {
         return runnerSource;
@@ -41,5 +46,21 @@ public class Runner {
 
     private Runner() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(runnerSource, other.runnerSource)
+                .append(className, other.className)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(runnerSource)
+                .append(className)
+                .build();
     }
 }

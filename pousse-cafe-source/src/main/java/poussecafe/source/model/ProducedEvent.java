@@ -1,5 +1,6 @@
 package poussecafe.source.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -11,7 +12,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
-public class ProducedEvent {
+@SuppressWarnings("serial")
+public class ProducedEvent implements Serializable {
 
     public Message message() {
         return message;

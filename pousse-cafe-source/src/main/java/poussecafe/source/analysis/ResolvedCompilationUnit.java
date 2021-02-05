@@ -2,8 +2,10 @@ package poussecafe.source.analysis;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import poussecafe.source.SourceFile;
-import poussecafe.source.validation.SourceFileLine;
+import poussecafe.source.Source;
+import poussecafe.source.validation.SourceLine;
+
+import static java.util.Objects.requireNonNull;
 
 public class ResolvedCompilationUnit {
 
@@ -14,16 +16,16 @@ public class ResolvedCompilationUnit {
     }
 
     public CompilationUnit compilationUnit() {
-        return sourceFile.tree();
+        return sourceFile.compilationUnit();
     }
 
     public String packageName() {
         return compilationUnit().getPackage().getName().getFullyQualifiedName();
     }
 
-    public SourceFileLine sourceFileLine(ASTNode node) {
-        return new SourceFileLine.Builder()
-                .sourceFile(sourceFile)
+    public SourceLine sourceFileLine(ASTNode node) {
+        return new SourceLine.Builder()
+                .source(sourceFile)
                 .line(lineNumber(node))
                 .build();
     }
@@ -32,17 +34,19 @@ public class ResolvedCompilationUnit {
         return compilationUnit().getLineNumber(node.getStartPosition());
     }
 
-    public SourceFile sourceFile() {
+    public Source sourceFile() {
         return sourceFile;
     }
 
-    private SourceFile sourceFile;
+    private Source sourceFile;
 
     public static class Builder {
 
         private ResolvedCompilationUnit resolvedCompilationUnit = new ResolvedCompilationUnit();
 
         public ResolvedCompilationUnit build() {
+            requireNonNull(resolvedCompilationUnit.resolver);
+            requireNonNull(resolvedCompilationUnit.sourceFile);
             return resolvedCompilationUnit;
         }
 
@@ -51,7 +55,7 @@ public class ResolvedCompilationUnit {
             return this;
         }
 
-        public Builder withSourceFile(SourceFile sourceFile) {
+        public Builder withSourceFile(Source sourceFile) {
             resolvedCompilationUnit.sourceFile = sourceFile;
             return this;
         }
