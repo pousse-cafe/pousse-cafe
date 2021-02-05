@@ -85,7 +85,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         model.addMessageDefinition(new MessageDefinition.Builder()
                 .messageName(definitionType.name())
                 .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .qualifiedClassName(resolvedTypeDeclaration.name().qualifiedName())
+                .qualifiedClassName(resolvedTypeDeclaration.unresolvedName().qualifiedName())
                 .domainEvent(definitionType.type() == MessageType.DOMAIN_EVENT)
                 .build());
     }

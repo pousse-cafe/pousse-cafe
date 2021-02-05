@@ -35,14 +35,13 @@ import poussecafe.environment.AggregateMessageListenerRunner;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.Command;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("deprecation")
 public class CompilationUnitResolver implements Resolver {
 
     private void init() { // NOSONAR
-        registerInnerClasses();
+        registerCompilationUnitTypes();
     }
 
     private CompilationUnit compilationUnit;
@@ -62,19 +61,24 @@ public class CompilationUnitResolver implements Resolver {
         return new ResolutionException("Unable to load class " + className);
     }
 
-    private void registerInnerClasses() {
+    private void registerCompilationUnitTypes() {
         var type = compilationUnit.types().get(0);
         if(type instanceof TypeDeclaration) {
-            registerInnerClasses(emptyList(), (TypeDeclaration) type);
+            var rootType = (TypeDeclaration) type;
+            var rootTypeSimpleName = rootType.getName().getIdentifier();
+            var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
+            var rootTypeName = new Name(packageName, rootTypeSimpleName);
+            resolvedTypeNames.put(rootTypeSimpleName,
+                    new LazyResolver(rootTypeSimpleName, () -> Optional.of(resolveFullyQualifiedName(rootTypeName))));
+            registerInnerClasses(rootType);
         }
     }
 
-    private void registerInnerClasses(List<String> pathToParent, TypeDeclaration containerClass) {
+    private void registerInnerClasses(TypeDeclaration containerClass) {
         for(TypeDeclaration innerClass : containerClass.getTypes()) {
             var innerClassName = new Name(innerClass.getName().toString());
-            var innerClassPath = new ArrayList<>(pathToParent);
+            var innerClassPath = new ArrayList<String>();
             innerClassPath.add(innerClassName.simple());
-
             registerClass(innerClassPath);
         }
     }
