@@ -183,13 +183,13 @@ public class Aggregate extends ComponentWithType implements Serializable {
                     && innerRoot == null
                     && innerRepository == null;
             if(innerFactory == null) {
-                innerFactory(noAPriori || (aPrioriInnerRoot || aPrioriInnerRepository));
+                innerFactory(!noAPriori && (aPrioriInnerRoot || aPrioriInnerRepository));
             }
             if(innerRoot == null) {
-                innerRoot(noAPriori || (aPrioriInnerFactory || aPrioriInnerRepository));
+                innerRoot(!noAPriori && (aPrioriInnerFactory || aPrioriInnerRepository));
             }
             if(innerRepository == null) {
-                innerRepository(noAPriori || (aPrioriInnerFactory || aPrioriInnerRoot));
+                innerRepository(!noAPriori && (aPrioriInnerFactory || aPrioriInnerRoot));
             }
             return this;
         }

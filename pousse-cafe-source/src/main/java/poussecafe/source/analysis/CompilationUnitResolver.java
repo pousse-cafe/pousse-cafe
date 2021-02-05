@@ -83,13 +83,9 @@ public class CompilationUnitResolver implements Resolver {
         var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
         var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
         var rootClassName = new Name(packageName, typeName.getName().getFullyQualifiedName());
-        var innerClassName = new Name(innerClassPath.get(innerClassPath.size() - 1));
-        registerClass(innerClassName, new LazyResolver(() -> classResolver.loadInnerClass(rootClassName, innerClassPath)));
-    }
-
-    private void registerClass(Name className, LazyResolver resolver) {
-        importedClasses.put(className.toString(), resolver);
-        resolvedTypeNames.put(className.getIdentifier().toString(), resolver);
+        var innerClassName = innerClassPath.get(innerClassPath.size() - 1);
+        resolvedTypeNames.put(innerClassName, new LazyResolver(innerClassName,
+                        () -> classResolver.loadInnerClass(rootClassName, innerClassPath)));
     }
 
     private Map<String, LazyResolver> importedClasses = new HashMap<>();
@@ -115,7 +111,13 @@ public class CompilationUnitResolver implements Resolver {
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
         var fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
-        registerClass(fullyQualifiedName, new LazyResolver(() -> Optional.of(resolveFullyQualifiedName(fullyQualifiedName))));
+        registerClass(fullyQualifiedName, new LazyResolver(fullyQualifiedName.toString(),
+                () -> Optional.of(resolveFullyQualifiedName(fullyQualifiedName))));
+    }
+
+    private void registerClass(Name className, LazyResolver resolver) {
+        importedClasses.put(className.toString(), resolver);
+        resolvedTypeNames.put(className.getIdentifier().toString(), resolver);
     }
 
     private ResolvedTypeName resolvedTypeName(ResolvedClass resolvedClass) {
@@ -138,7 +140,9 @@ public class CompilationUnitResolver implements Resolver {
                 resolvedClass = resolver.resolve();
             } else {
                 resolvedClass = resolveSimpleName(name);
-                resolvedTypeNames.put(simpleName, new LazyResolver(() -> resolvedClass));
+                if(resolvedClass.isPresent()) {
+                    resolvedTypeNames.put(simpleName, new LazyResolver(simpleName, () -> resolvedClass));
+                }
             }
             return resolvedClass.map(this::resolvedTypeName)
                     .orElseThrow(() -> newResolutionException(name.toString()));
@@ -213,7 +217,12 @@ public class CompilationUnitResolver implements Resolver {
         }
         var innerClassPath = new LinkedList<String>();
         var segments = name.segments();
-        for(int i = segments.length - 1; i >= 0; --i) {
+        int i = segments.length - 1;
+        if(importedClasses.containsKey(name.qualified())) { // Prevent infinite loop with single type imports
+            innerClassPath.add(segments[i]);
+            i = segments.length - 2;
+        }
+        for(; i >= 0; --i) {
             var simpleName = segments[i];
             var resolvedTypeName = resolveSimpleName(new Name(simpleName));
             if(resolvedTypeName.isPresent()) {
