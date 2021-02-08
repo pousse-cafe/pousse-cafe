@@ -89,6 +89,10 @@ public class MessageListener implements Serializable {
 
     private Source source;
 
+    public String id() {
+        return aggregateName() + "." + methodName + "(" + consumedMessage.name() + ")";
+    }
+
     public static class Builder {
 
         private MessageListener messageListener = new MessageListener();
