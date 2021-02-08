@@ -26,9 +26,9 @@ public class BundleConfigurer {
 
         private Set<String> basePackages = new HashSet<>();
 
+        @Deprecated(since = "0.27", forRemoval = true)
         public Builder basePackage(String basePackage) {
-            basePackageOf(basePackage, DefaultModule.class);
-            return this;
+            throw new UnsupportedOperationException("Module cannot be taken from components annotations anymore, use basePackageOf(String, Class<? extends Module) instead");
         }
 
         public Builder basePackageOf(String basePackage, Class<? extends Module> module) {
