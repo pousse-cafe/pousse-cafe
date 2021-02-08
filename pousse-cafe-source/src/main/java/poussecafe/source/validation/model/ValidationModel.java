@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.validation.names.DeclaredComponent;
 
 import static poussecafe.util.Equality.referenceEquals;
 
@@ -123,7 +124,7 @@ public class ValidationModel implements Serializable {
 
     private List<AggregateComponentDefinition> aggregateRoots = new ArrayList<>();
 
-    public List<AggregateComponentDefinition> aggregateRootsDefinitions() {
+    public List<AggregateComponentDefinition> aggregateRoots() {
         return Collections.unmodifiableList(aggregateRoots);
     }
 
@@ -147,12 +148,22 @@ public class ValidationModel implements Serializable {
         return Collections.unmodifiableList(aggregateRepositories);
     }
 
+    public void addDataAccessDefinition(DataAccessDefinition definition) {
+        dataAccessDefinitions.add(definition);
+    }
+
+    private List<DataAccessDefinition> dataAccessDefinitions = new ArrayList<>();
+
+    public List<DataAccessDefinition> dataAccessDefinitions() {
+        return Collections.unmodifiableList(dataAccessDefinitions);
+    }
+
     public void forget(String sourceId) {
         messageDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        messageImplementations.removeIf(definition-> definition.sourceLine().source().id().equals(sourceId));
+        messageImplementations.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
 
         entityDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        entityImplementations.removeIf(definition-> definition.sourceFileLine().source().id().equals(sourceId));
+        entityImplementations.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
 
         processDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
 
@@ -167,6 +178,8 @@ public class ValidationModel implements Serializable {
 
         forget(sourceId, runnersBySourceId,
                 component -> runners.remove(component.classQualifiedName()));
+
+        forget(sourceId, dataAccessDefinitions);
     }
 
     private <T> void forget(
@@ -177,6 +190,10 @@ public class ValidationModel implements Serializable {
         if(component != null) {
             componentRemover.accept(component);
         }
+    }
+
+    private void forget(String sourceId, List<? extends DeclaredComponent> components) {
+        components.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
     }
 
     @Override
@@ -196,6 +213,7 @@ public class ValidationModel implements Serializable {
                 .append(processDefinitions, other.processDefinitions)
                 .append(runners, other.runners)
                 .append(runnersBySourceId, other.runnersBySourceId)
+                .append(dataAccessDefinitions, other.dataAccessDefinitions)
                 .build());
     }
 
@@ -216,6 +234,7 @@ public class ValidationModel implements Serializable {
                 .append(processDefinitions)
                 .append(runners)
                 .append(runnersBySourceId)
+                .append(dataAccessDefinitions)
                 .build();
     }
 }

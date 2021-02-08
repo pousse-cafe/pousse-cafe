@@ -53,11 +53,14 @@ public class MessageValidator extends SubValidator {
     private void warnNoDefinition(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasNoDefinition()) {
             for(MessageImplementation implementation : messageValidationModel.implementations()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceLine())
-                        .type(ValidationMessageType.WARNING)
-                        .message("Missing or wrong message definition " + messageValidationModel.messageIdentifier())
-                        .build());
+                var sourceFileLine = implementation.sourceLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.WARNING)
+                            .message("Missing or wrong message definition " + messageValidationModel.messageIdentifier())
+                            .build());
+                }
             }
         }
     }
@@ -95,11 +98,14 @@ public class MessageValidator extends SubValidator {
     private void errorConflictingMessageImplementationsValidation(MessageValidationModel messageValidationModel) {
         if(messageValidationModel.hasConflictingImplementations()) {
             for(MessageImplementation implementation : messageValidationModel.implementations()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("Conflicting implementations for message " + messageValidationModel.messageIdentifier())
-                        .build());
+                var sourceFileLine = implementation.sourceLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.ERROR)
+                            .message("Conflicting implementations for message " + messageValidationModel.messageIdentifier())
+                            .build());
+                }
             }
         }
     }
@@ -109,10 +115,12 @@ public class MessageValidator extends SubValidator {
                 && messageValidationModel.implementations().size() == 1) {
             var definition = messageValidationModel.definitions().get(0);
             var implementation = messageValidationModel.implementations().get(0);
+            var sourceFileLine = implementation.sourceLine();
             if(definition.isEvent()
-                    && implementation.isAutoImplementation()) {
+                    && implementation.isAutoImplementation()
+                    && sourceFileLine.isPresent()) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceLine())
+                        .location(sourceFileLine.get())
                         .type(ValidationMessageType.WARNING)
                         .message("A domain event definition should not implement itself")
                         .build());
@@ -122,9 +130,11 @@ public class MessageValidator extends SubValidator {
 
     private void errorAbstractMessageImplementation(MessageValidationModel messageValidationModel) {
         for(MessageImplementation implementation : messageValidationModel.implementations()) {
-            if(!implementation.isConcrete()) {
+            var sourceFileLine = implementation.sourceLine();
+            if(!implementation.isConcrete()
+                    && sourceFileLine.isPresent()) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceLine())
+                        .location(sourceFileLine.get())
                         .type(ValidationMessageType.ERROR)
                         .message("Message implementation must be concrete")
                         .build());
@@ -134,9 +144,11 @@ public class MessageValidator extends SubValidator {
 
     private void errorMessageImplementationHierarchy(MessageValidationModel messageValidationModel) {
         for(MessageImplementation implementation : messageValidationModel.implementations()) {
-            if(!implementation.implementsMessage()) {
+            var sourceFileLine = implementation.sourceLine();
+            if(!implementation.implementsMessage()
+                    && sourceFileLine.isPresent()) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceLine())
+                        .location(sourceFileLine.get())
                         .type(ValidationMessageType.ERROR)
                         .message("Message implementation must implement Message interface")
                         .build());

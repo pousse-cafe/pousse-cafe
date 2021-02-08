@@ -8,7 +8,7 @@ import poussecafe.storage.TransactionRunner;
 
 public class InternalStorage extends Storage {
 
-    public static final String NAME = "internal";
+    public static final String NAME = "Internal";
 
     public static InternalStorage instance() {
         return SINGLETON;

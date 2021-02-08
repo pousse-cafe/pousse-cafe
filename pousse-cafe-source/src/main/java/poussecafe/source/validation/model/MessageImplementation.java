@@ -3,21 +3,25 @@ package poussecafe.source.validation.model;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
 @SuppressWarnings("serial")
-public class MessageImplementation implements Serializable {
+public class MessageImplementation
+implements Serializable, HasClassNameConvention {
 
     private SourceLine sourceLine;
 
-    public SourceLine sourceLine() {
-        return sourceLine;
+    @Override
+    public Optional<SourceLine> sourceLine() {
+        return Optional.ofNullable(sourceLine);
     }
 
     public Name messageDefinitionClassName() {
@@ -32,6 +36,7 @@ public class MessageImplementation implements Serializable {
 
     private List<String> messagingNames;
 
+    @Override
     public Name className() {
         return className;
     }
@@ -53,6 +58,11 @@ public class MessageImplementation implements Serializable {
     }
 
     private boolean implementsMessage;
+
+    @Override
+    public boolean validClassName() {
+        return NamingConventions.isMessageImplementationName(className());
+    }
 
     public static class Builder {
 

@@ -35,12 +35,12 @@ public class NamingConventions {
         return FACTORY_NAME_SUFFIX;
     }
 
-    public static boolean isAggregateFactoryName(String typeName) {
+    public static boolean isStandaloneAggregateFactoryName(String typeName) {
         return typeName.endsWith(FACTORY_NAME_SUFFIX);
     }
 
     public static String aggregateNameFromSimpleFactoryName(String factoryName) {
-        if(!isAggregateFactoryName(factoryName)) {
+        if(!isStandaloneAggregateFactoryName(factoryName)) {
             throw new IllegalArgumentException("Given type name is not a factory name");
         }
         return nameWithoutSuffix(factoryName, FACTORY_NAME_SUFFIX);
@@ -63,19 +63,25 @@ public class NamingConventions {
         return REPOSITORY_NAME_SUFFIX;
     }
 
-    public static boolean isAggregateRepositoryName(String typeName) {
+    public static boolean isStandaloneAggregateRepositoryName(String typeName) {
         return typeName.endsWith(REPOSITORY_NAME_SUFFIX);
     }
 
     public static String aggregateNameFromSimpleRepositoryName(String repositoryName) {
-        if(!isAggregateRepositoryName(repositoryName)) {
+        if(!isStandaloneAggregateRepositoryName(repositoryName)) {
             throw new IllegalArgumentException("Given type name is not a repository name");
         }
         return nameWithoutSuffix(repositoryName, REPOSITORY_NAME_SUFFIX);
     }
 
     public static Name aggregateDataAccessTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName() + "DataAccess");
+        return new Name(aggregate.packageName(), aggregate.simpleName() + DATA_ACCESS_SUFFIX);
+    }
+
+    private static final String DATA_ACCESS_SUFFIX = "DataAccess";
+
+    public static boolean isDataAccessDefinitionName(Name className) {
+        return className.simple().endsWith(DATA_ACCESS_SUFFIX);
     }
 
     public static Name aggregateAttributesQualifiedTypeName(Aggregate aggregate) {
@@ -101,7 +107,11 @@ public class NamingConventions {
     }
 
     public static Name aggregateDataAccessImplementationTypeName(Aggregate aggregate, String storageName) {
-        return new Name(adaptersPackageName(aggregate), aggregate.simpleName() + storageName + "DataAccess");
+        return new Name(adaptersPackageName(aggregate), aggregate.simpleName() + storageName + DATA_ACCESS_SUFFIX);
+    }
+
+    public static boolean isDataAccessImplementationName(String storageName, Name name) {
+        return name.simple().endsWith(storageName + DATA_ACCESS_SUFFIX);
     }
 
     public static Name commandTypeName(Command command) {
@@ -109,7 +119,13 @@ public class NamingConventions {
     }
 
     public static Name commandImplementationTypeName(Command command) {
-        return new Name(command.packageName() + "." + ADAPTERS_PACKAGE_NAME, command.simpleName() + "Data");
+        return new Name(command.packageName() + "." + ADAPTERS_PACKAGE_NAME, command.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
+    }
+
+    private static final String MESSAGE_IMPLEMENTATION_SUFFIX = "Data";
+
+    public static boolean isMessageImplementationName(Name className) {
+        return className.simple().endsWith(MESSAGE_IMPLEMENTATION_SUFFIX);
     }
 
     public static Name eventTypeName(DomainEvent event) {
@@ -117,7 +133,7 @@ public class NamingConventions {
     }
 
     public static Name eventImplementationTypeName(DomainEvent event) {
-        return new Name(event.packageName() + "." + ADAPTERS_PACKAGE_NAME, event.simpleName() + "Data");
+        return new Name(event.packageName() + "." + ADAPTERS_PACKAGE_NAME, event.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
     }
 
     public static String runnerPackage(Aggregate aggregate) {
@@ -149,13 +165,13 @@ public class NamingConventions {
     }
 
     public static String aggregateNameFromSimpleRootName(String simpleName) {
-        if(!isAggregateRootName(simpleName)) {
+        if(!isStandaloneAggregateRootName(simpleName)) {
             throw new IllegalArgumentException("Given type name is not a valid root name: " + simpleName);
         }
         return nameWithoutSuffix(simpleName, ROOT_SUFFIX);
     }
 
-    public static boolean isAggregateRootName(String typeName) {
+    public static boolean isStandaloneAggregateRootName(String typeName) {
         return typeName.endsWith(ROOT_SUFFIX);
     }
 
@@ -173,6 +189,10 @@ public class NamingConventions {
 
     public static String aggregateNameFromContainer(String simpleName) {
         return simpleName;
+    }
+
+    public static boolean isEntityImplementationName(Name className) {
+        return className.simple().endsWith(ATTRIBUTES_CLASS_NAME);
     }
 
     private NamingConventions() {

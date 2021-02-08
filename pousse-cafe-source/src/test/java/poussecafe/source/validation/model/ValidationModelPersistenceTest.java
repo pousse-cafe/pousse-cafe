@@ -125,6 +125,7 @@ public class ValidationModelPersistenceTest {
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .line(41)
                         .build())
+                .kind(AggregateComponentKind.FACTORY)
                 .build();
         model.addAggregateFactory(aggregateFactory);
 
@@ -135,6 +136,7 @@ public class ValidationModelPersistenceTest {
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .line(42)
                         .build())
+                .kind(AggregateComponentKind.ROOT)
                 .build();
         model.addAggregateRoot(aggregateRoot);
 
@@ -145,8 +147,17 @@ public class ValidationModelPersistenceTest {
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .line(43)
                         .build())
+                .kind(AggregateComponentKind.REPOSITORY)
                 .build();
         model.addAggregateRepository(aggregateRepository);
+
+        dataAccessDefinition = new DataAccessDefinition.Builder()
+                .sourceLine(new SourceLine.Builder()
+                        .source(new PathSource(Path.of("package/AggregateDataAccess.java")))
+                        .line(43)
+                        .build())
+                .className(new Name("package.AggregateData"))
+                .build();
     }
 
     private ValidationModel model;
@@ -172,6 +183,8 @@ public class ValidationModelPersistenceTest {
     private AggregateComponentDefinition aggregateFactory;
 
     private AggregateComponentDefinition aggregateRepository;
+
+    private DataAccessDefinition dataAccessDefinition;
 
     private void whenSerializeDeserialize() throws IOException, ClassNotFoundException {
         var bytes = serialize();

@@ -5,6 +5,7 @@ import java.util.Optional;
 import poussecafe.source.WithPersistableState;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.DataAccessImplementationType;
+import poussecafe.source.analysis.DataAccessInterface;
 import poussecafe.source.analysis.EntityDefinitionType;
 import poussecafe.source.analysis.EntityImplementationType;
 import poussecafe.source.analysis.FactoryClass;
@@ -25,6 +26,8 @@ import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
 import poussecafe.source.validation.model.AggregateComponentDefinition;
+import poussecafe.source.validation.model.AggregateComponentKind;
+import poussecafe.source.validation.model.DataAccessDefinition;
 import poussecafe.source.validation.model.EntityDefinition;
 import poussecafe.source.validation.model.EntityImplementation;
 import poussecafe.source.validation.model.MessageDefinition;
@@ -33,6 +36,7 @@ import poussecafe.source.validation.model.MessageListener;
 import poussecafe.source.validation.model.Module;
 import poussecafe.source.validation.model.ProcessDefinition;
 import poussecafe.source.validation.model.Runner;
+import poussecafe.source.validation.model.StorageImplementationKind;
 import poussecafe.source.validation.model.ValidationModel;
 
 import static java.util.Arrays.asList;
@@ -64,6 +68,8 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
             }
         } else if(EntityImplementationType.isEntityImplementation(resolvedTypeDeclaration)) {
             visitEntityImplementation(resolvedTypeDeclaration);
+        } else if(DataAccessInterface.isDataAccess(resolvedTypeDeclaration)) {
+            visitDataAccess(resolvedTypeDeclaration);
         } else if(DataAccessImplementationType.isDataAccessImplementation(resolvedTypeDeclaration)) {
             visitDataAccessImplementation(resolvedTypeDeclaration);
         } else if(RunnerClass.isRunner(resolvedTypeDeclaration)) {
@@ -73,9 +79,9 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         } else if(ProcessDefinitionType.isProcessDefinition(resolvedTypeDeclaration)) {
             visitProcessDefinition(resolvedTypeDeclaration);
         } else if(FactoryClass.isFactory(resolvedTypeDeclaration)) {
-            visitFactory(resolvedTypeDeclaration);
+            visitAggregateFactory(resolvedTypeDeclaration);
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
-            visitRepository(resolvedTypeDeclaration);
+            visitAggregateRepository(resolvedTypeDeclaration);
         }
         return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
     }
@@ -119,6 +125,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
+                .kind(AggregateComponentKind.ROOT)
                 .build());
     }
 
@@ -129,6 +136,15 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .entityImplementationQualifiedClassName(Optional.of(resolvedTypeDeclaration.name().qualifiedName()))
                 .entityDefinitionQualifiedClassName(implementationType.entity().map(ResolvedTypeName::qualifiedName))
                 .storageNames(implementationType.storageNames())
+                .kind(StorageImplementationKind.ATTRIBUTES)
+                .build());
+    }
+
+    private void visitDataAccess(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        var implementationType = new DataAccessInterface(resolvedTypeDeclaration);
+        model.addDataAccessDefinition(new DataAccessDefinition.Builder()
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(implementationType.className().asName())
                 .build());
     }
 
@@ -139,6 +155,8 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .entityImplementationQualifiedClassName(implementationType.dataImplementation().map(ResolvedTypeName::qualifiedName))
                 .entityDefinitionQualifiedClassName(implementationType.aggregateRoot().map(ResolvedTypeName::qualifiedName))
                 .storageNames(asList(implementationType.storageName()))
+                .kind(StorageImplementationKind.DATA_ACCESS)
+                .dataAccessImplementationClassName(Optional.of(resolvedTypeDeclaration.unresolvedName().qualifiedName()))
                 .build());
     }
 
@@ -168,21 +186,23 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .build());
     }
 
-    private void visitFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+    private void visitAggregateFactory(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new FactoryClass(resolvedTypeDeclaration);
         model.addAggregateFactory(new AggregateComponentDefinition.Builder()
                 .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
+                .kind(AggregateComponentKind.FACTORY)
                 .build());
     }
 
-    private void visitRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+    private void visitAggregateRepository(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var definitionType = new RepositoryClass(resolvedTypeDeclaration);
         model.addAggregateRepository(new AggregateComponentDefinition.Builder()
                 .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
                 .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .innerClass(definitionType.isInnerClass())
+                .kind(AggregateComponentKind.REPOSITORY)
                 .build());
     }
 

@@ -167,7 +167,7 @@ public class TreeAnalyzer {
         if(simpleFactoryName != null) {
             var simpleFactoryNameString = simpleFactoryName.getText();
             containerIdentifier = simpleFactoryNameString;
-            if(!NamingConventions.isAggregateFactoryName(simpleFactoryNameString)) {
+            if(!NamingConventions.isStandaloneAggregateFactoryName(simpleFactoryNameString)) {
                 throw new IllegalStateException("Unexpected factory name " + simpleFactoryNameString);
             }
             aggregateName = NamingConventions.aggregateNameFromSimpleFactoryName(simpleFactoryNameString);
@@ -377,7 +377,7 @@ public class TreeAnalyzer {
         SafeClassName typeName;
         if(simpleRepositoryName != null) {
             var simpleRepositoryNameString = simpleRepositoryName.getText();
-            if(!NamingConventions.isAggregateRepositoryName(simpleRepositoryNameString)) {
+            if(!NamingConventions.isStandaloneAggregateRepositoryName(simpleRepositoryNameString)) {
                 throw new IllegalStateException("Unexpected repository name " + simpleRepositoryName);
             }
             aggregateName = NamingConventions.aggregateNameFromSimpleRepositoryName(simpleRepositoryNameString);

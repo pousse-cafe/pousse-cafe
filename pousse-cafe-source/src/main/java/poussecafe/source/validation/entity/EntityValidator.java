@@ -86,11 +86,14 @@ public class EntityValidator extends SubValidator {
     private void applyConflictingMessageImplementationsValidation(EntityDefinitionValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasConflictingImplementations()) {
             for(EntityImplementation implementation : entiyValidationModel.implementations()) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceFileLine())
-                        .type(ValidationMessageType.ERROR)
-                        .message("Conflicting implementations for entity " + entiyValidationModel.entityIdentifier())
-                        .build());
+                var sourceFileLine = implementation.sourceLine();
+                if(sourceFileLine.isPresent()) {
+                    messages.add(new ValidationMessage.Builder()
+                            .location(sourceFileLine.get())
+                            .type(ValidationMessageType.ERROR)
+                            .message("Conflicting implementations for entity " + entiyValidationModel.entityIdentifier())
+                            .build());
+                }
             }
         }
     }
@@ -107,9 +110,11 @@ public class EntityValidator extends SubValidator {
 
         for(EntityImplementation implementation : model.entityImplementations()) {
             var implementationQualifiedName = implementation.entityImplementationQualifiedClassName();
-            if(implementationQualifiedName.isEmpty()) {
+            var sourceFileLine = implementation.sourceLine();
+            if(implementationQualifiedName.isEmpty()
+                    && sourceFileLine.isPresent()) {
                 messages.add(new ValidationMessage.Builder()
-                        .location(implementation.sourceFileLine())
+                        .location(sourceFileLine.get())
                         .type(ValidationMessageType.WARNING)
                         .message("Missing @DataAccessImplementation annotation")
                         .build());
@@ -130,11 +135,14 @@ public class EntityValidator extends SubValidator {
     private void applyNoDefinitionValidation(EntityImplementationValidationModel entiyValidationModel) {
         if(entiyValidationModel.hasNoDefinition()) {
             var implementation = entiyValidationModel.implementation();
-            messages.add(new ValidationMessage.Builder()
-                    .location(implementation.sourceFileLine())
-                    .type(ValidationMessageType.WARNING)
-                    .message("Entity implementation is not linked to a definition, add a @DataImplementation annotation or declare a data access implementation annotated with @DataAccessImplementation")
-                    .build());
+            var sourceFileLine = implementation.sourceLine();
+            if(sourceFileLine.isPresent()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(sourceFileLine.get())
+                        .type(ValidationMessageType.WARNING)
+                        .message("Entity implementation is not linked to a definition, add a @DataImplementation annotation or declare a data access implementation annotated with @DataAccessImplementation")
+                        .build());
+            }
         }
     }
 }

@@ -1,52 +1,53 @@
 package poussecafe.source.validation.namingconventions;
 
 import java.util.List;
-import java.util.function.Predicate;
-import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
-import poussecafe.source.validation.model.AggregateComponentDefinition;
+import poussecafe.source.validation.model.HasClassNameConvention;
+import poussecafe.source.validation.model.StorageImplementationKind;
 import poussecafe.source.validation.model.ValidationModel;
+
+import static java.util.stream.Collectors.toList;
 
 public class NamingConventionsValidator extends SubValidator {
 
     @Override
     public void validate() {
         warnWrongComponentName(
-                model.aggregateRootsDefinitions(),
-                NamingConventions::isAggregateRootName,
-                NamingConventions::isInnerAggregateRootName,
+                model.aggregateRoots(),
                 "Aggregate root");
         warnWrongComponentName(
                 model.aggregateFactories(),
-                NamingConventions::isAggregateFactoryName,
-                NamingConventions::isInnerAggregateFactoryName,
                 "Aggregate factory");
         warnWrongComponentName(
                 model.aggregateRepositories(),
-                NamingConventions::isAggregateRepositoryName,
-                NamingConventions::isInnerAggregateRepositoryName,
                 "Aggregate repository");
+        warnWrongComponentName(
+                model.entityImplementations().stream()
+                    .filter(implementation -> implementation.kind() == StorageImplementationKind.ATTRIBUTES)
+                    .collect(toList()),
+                "Entity implementation");
+        warnWrongComponentName(
+                model.dataAccessDefinitions(),
+                "Data access definition");
+        warnWrongComponentName(
+                model.entityImplementations().stream()
+                    .filter(implementation -> implementation.kind() == StorageImplementationKind.DATA_ACCESS)
+                    .collect(toList()),
+                "Data access implementation");
+        warnWrongComponentName(
+                model.messageImplementations().stream()
+                    .filter(implementation -> !implementation.isAutoImplementation())
+                    .collect(toList()),
+                "Message implementation");
     }
 
     private void warnWrongComponentName(
-            List<AggregateComponentDefinition> definitions,
-            Predicate<String> standaloneNameValidator,
-            Predicate<String> innerNameValidator,
+            List<? extends HasClassNameConvention> definitions,
             String componentName) {
-        for(AggregateComponentDefinition definition : definitions) {
-            if(!definition.isInnerClass()
-                    && !standaloneNameValidator.test(definition.className().simple())) {
-                messages.add(new ValidationMessage.Builder()
-                        .location(definition.sourceLine().orElseThrow())
-                        .type(ValidationMessageType.WARNING)
-                        .message(componentName + " name does not follow naming convention")
-                        .build());
-            }
-
-            if(definition.isInnerClass()
-                    && !innerNameValidator.test(definition.className().simple())) {
+        for(HasClassNameConvention definition : definitions) {
+            if(!definition.validClassName()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(definition.sourceLine().orElseThrow())
                         .type(ValidationMessageType.WARNING)

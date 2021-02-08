@@ -6,18 +6,22 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.source.analysis.Name;
+import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
 @SuppressWarnings("serial")
-public class EntityImplementation implements Serializable {
+public class EntityImplementation
+implements Serializable, HasClassNameConvention {
 
-    private SourceLine sourceFileLine;
+    private SourceLine sourceLine;
 
-    public SourceLine sourceFileLine() {
-        return sourceFileLine;
+    @Override
+    public Optional<SourceLine> sourceLine() {
+        return Optional.ofNullable(sourceLine);
     }
 
     public Optional<String> entityImplementationQualifiedClassName() {
@@ -38,17 +42,51 @@ public class EntityImplementation implements Serializable {
 
     private List<String> storageNames;
 
+    @Override
+    public boolean validClassName() {
+        if(kind == StorageImplementationKind.ATTRIBUTES) {
+            return NamingConventions.isEntityImplementationName(className());
+        } else if(kind == StorageImplementationKind.DATA_ACCESS) {
+            if(storageNames.size() == 1) {
+                return NamingConventions.isDataAccessImplementationName(storageNames.get(0), className());
+            } else {
+                return true;
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public StorageImplementationKind kind() {
+        return kind;
+    }
+
+    private StorageImplementationKind kind;
+
+    @Override
+    public Name className() {
+        if(kind == StorageImplementationKind.ATTRIBUTES) {
+            return new Name(entityImplementationQualifiedClassName);
+        } else if(kind == StorageImplementationKind.DATA_ACCESS) {
+            return new Name(dataAccessImplementationClassName);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private String dataAccessImplementationClassName;
+
     public static class Builder {
 
         public EntityImplementation build() {
-            requireNonNull(implementation.sourceFileLine);
+            requireNonNull(implementation.sourceLine);
             return implementation;
         }
 
         private EntityImplementation implementation = new EntityImplementation();
 
         public Builder sourceFileLine(SourceLine sourceFileLine) {
-            implementation.sourceFileLine = sourceFileLine;
+            implementation.sourceLine = sourceFileLine;
             return this;
         }
 
@@ -66,6 +104,16 @@ public class EntityImplementation implements Serializable {
             implementation.storageNames = storageNames;
             return this;
         }
+
+        public Builder kind(StorageImplementationKind kind) {
+            implementation.kind = kind;
+            return this;
+        }
+
+        public Builder dataAccessImplementationClassName(Optional<String> dataAccessImplementationClassName) {
+            implementation.dataAccessImplementationClassName = dataAccessImplementationClassName.orElse(null);
+            return this;
+        }
     }
 
     private EntityImplementation() {
@@ -77,8 +125,10 @@ public class EntityImplementation implements Serializable {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(entityDefinitionQualifiedClassName, other.entityDefinitionQualifiedClassName)
                 .append(entityImplementationQualifiedClassName, other.entityImplementationQualifiedClassName)
-                .append(sourceFileLine, other.sourceFileLine)
+                .append(dataAccessImplementationClassName, other.dataAccessImplementationClassName)
+                .append(sourceLine, other.sourceLine)
                 .append(storageNames, other.storageNames)
+                .append(kind, other.kind)
                 .build());
     }
 
@@ -87,8 +137,10 @@ public class EntityImplementation implements Serializable {
         return new HashCodeBuilder()
                 .append(entityDefinitionQualifiedClassName)
                 .append(entityImplementationQualifiedClassName)
-                .append(sourceFileLine)
+                .append(dataAccessImplementationClassName)
+                .append(sourceLine)
                 .append(storageNames)
+                .append(kind)
                 .build();
     }
 }
