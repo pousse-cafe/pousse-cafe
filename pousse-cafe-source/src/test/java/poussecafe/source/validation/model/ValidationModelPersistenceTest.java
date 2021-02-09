@@ -158,6 +158,7 @@ public class ValidationModelPersistenceTest {
                         .build())
                 .className(new Name("package.AggregateData"))
                 .build();
+        model.addDataAccessDefinition(dataAccessDefinition);
     }
 
     private ValidationModel model;
