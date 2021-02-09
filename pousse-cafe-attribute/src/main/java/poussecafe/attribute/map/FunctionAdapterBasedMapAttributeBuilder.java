@@ -46,10 +46,11 @@ implements ExpectingReadAdapters<J, U, K, V>, ExpectingWriteAdapters<J, U, K, V>
 
     private Function<V, U> writeValueAdapter;
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Complete<K, V> withMap(Map<J, U> map) {
+    public Complete<K, V> withMap(Map<J, ? extends U> map) {
         Objects.requireNonNull(map);
-        this.map = map;
+        this.map = (Map<J, U>) map;
         return this;
     }
 

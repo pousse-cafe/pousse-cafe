@@ -10,10 +10,6 @@ import poussecafe.attribute.adapters.DataAdapter;
 
 public class MapAttributeBuilder<K, V> {
 
-    public MapAttributeBuilder() {
-
-    }
-
     public Complete<K, V> withMap(Map<K, V> map) {
         Objects.requireNonNull(map);
         return new NoAdaptingMapAttributeBuilder<>(map);
@@ -40,7 +36,7 @@ public class MapAttributeBuilder<K, V> {
 
     public static interface ExpectingMap<J, U, K, V> {
 
-        Complete<K, V> withMap(Map<J, U> storageMap);
+        Complete<K, V> withMap(Map<J, ? extends U> storageMap);
     }
 
     public <J, U> ExpectingMap<J, U, K, V> usingEntryDataAdapters(

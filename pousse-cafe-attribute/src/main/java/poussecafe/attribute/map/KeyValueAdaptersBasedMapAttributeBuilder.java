@@ -18,10 +18,11 @@ implements ExpectingMap<J, U, K, V>, Complete<K, V> {
 
     DataAdapter<U, V> valueAdapter;
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Complete<K, V> withMap(Map<J, U> storageMap) {
+    public Complete<K, V> withMap(Map<J, ? extends U> storageMap) {
         Objects.requireNonNull(storageMap);
-        this.storageMap = storageMap;
+        this.storageMap = (Map<J, U>) storageMap;
         return this;
     }
 
