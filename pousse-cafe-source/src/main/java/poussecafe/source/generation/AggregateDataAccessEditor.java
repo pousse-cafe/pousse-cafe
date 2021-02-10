@@ -21,7 +21,7 @@ public class AggregateDataAccessEditor {
             var typeEditor = compilationUnitEditor.typeDeclaration();
             typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
             typeEditor.setInterface(true);
-            typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate));
+            typeEditor.setName(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()));
             if(aggregate.innerRoot()) {
                 compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
             }

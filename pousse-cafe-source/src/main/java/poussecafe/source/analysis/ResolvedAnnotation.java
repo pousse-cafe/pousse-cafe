@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 public class ResolvedAnnotation {
 
     public boolean isClass(String annotationClass) {
-        return resolver.resolve(new Name(annotation.getTypeName())).isClass(annotationClass);
+        return resolver.resolve(new ClassName(annotation.getTypeName())).isClass(annotationClass);
     }
 
     public Optional<ResolvedExpression> attribute(String attributeName) {

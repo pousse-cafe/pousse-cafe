@@ -4,12 +4,14 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.Source;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.SafeClassName;
 
 import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
 @SuppressWarnings("serial")
-public class Runner implements Serializable {
+public class Runner implements Serializable, WithTypeComponent {
 
     public Source runnerSource() {
         return runnerSource;
@@ -22,6 +24,14 @@ public class Runner implements Serializable {
     }
 
     private String className;
+
+    @Override
+    public TypeComponent typeComponent() {
+        return new TypeComponent.Builder()
+                .name(SafeClassName.ofRootClass(new ClassName(className)))
+                .source(runnerSource)
+                .build();
+    }
 
     public static class Builder {
 

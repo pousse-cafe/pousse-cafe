@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.validation.SourceLine;
 
@@ -38,11 +38,11 @@ public class MessageListener implements Serializable {
 
     private boolean returnsValue;
 
-    public Optional<Name> consumedMessageClass() {
+    public Optional<ClassName> consumedMessageClass() {
         return Optional.ofNullable(consumedMessageClass);
     }
 
-    private Name consumedMessageClass;
+    private ClassName consumedMessageClass;
 
     public int parametersCount() {
         return parametersCount;
@@ -86,7 +86,7 @@ public class MessageListener implements Serializable {
             return this;
         }
 
-        public Builder consumedMessageClass(Optional<Name> consumedMessageQualifiedClassName) {
+        public Builder consumedMessageClass(Optional<ClassName> consumedMessageQualifiedClassName) {
             listener.consumedMessageClass = consumedMessageQualifiedClassName.orElse(null);
             return this;
         }

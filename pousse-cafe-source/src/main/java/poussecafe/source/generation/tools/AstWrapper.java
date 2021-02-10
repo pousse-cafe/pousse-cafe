@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.TypeParameter;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -42,11 +42,11 @@ public class AstWrapper {
         return ast.newSimpleType(ast.newSimpleName(name));
     }
 
-    public SimpleType newSimpleType(Name name) {
+    public SimpleType newSimpleType(ClassName name) {
         return ast.newSimpleType(name.toJdomName(ast));
     }
 
-    public TypeLiteral newTypeLiteral(Name name) {
+    public TypeLiteral newTypeLiteral(ClassName name) {
         var typeLiteral = ast.newTypeLiteral();
         typeLiteral.setType(newSimpleType(name.getIdentifier()));
         return typeLiteral;
@@ -56,7 +56,7 @@ public class AstWrapper {
         return new TypeDeclarationBuilder(ast);
     }
 
-    public MethodDeclaration newPublicConstructor(Name typeName) {
+    public MethodDeclaration newPublicConstructor(ClassName typeName) {
         var constructor = ast.newMethodDeclaration();
         constructor.setConstructor(true);
         constructor.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
@@ -86,11 +86,11 @@ public class AstWrapper {
         return ast.newParameterizedType(newSimpleType(typeClass));
     }
 
-    public ParameterizedType newParameterizedType(Name typeName) {
+    public ParameterizedType newParameterizedType(ClassName typeName) {
         return ast.newParameterizedType(newSimpleType(typeName));
     }
 
-    public TypeParameter newExtendingTypeParameter(String name, Name supertype) {
+    public TypeParameter newExtendingTypeParameter(String name, ClassName supertype) {
         var parameter = ast.newTypeParameter();
         parameter.setName(ast.newSimpleName(name));
         parameter.typeBounds().add(newSimpleType(supertype));
@@ -127,7 +127,7 @@ public class AstWrapper {
         return stringArray;
     }
 
-    public SimpleName newSimpleName(Name name) {
+    public SimpleName newSimpleName(ClassName name) {
         return ast.newSimpleName(name.getIdentifier().toString());
     }
 

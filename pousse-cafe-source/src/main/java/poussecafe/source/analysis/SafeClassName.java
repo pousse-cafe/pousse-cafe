@@ -15,11 +15,11 @@ import static poussecafe.util.Equality.referenceEquals;
 @SuppressWarnings("serial")
 public class SafeClassName implements Serializable {
 
-    public Name rootClassName() {
+    public ClassName rootClassName() {
         return rootClassName;
     }
 
-    private Name rootClassName;
+    private ClassName rootClassName;
 
     public List<String> innerClassPath() {
         return Collections.unmodifiableList(innerClassPath);
@@ -31,8 +31,8 @@ public class SafeClassName implements Serializable {
         return innerClassPath.isEmpty();
     }
 
-    public Name asName() {
-        return new Name(qualifiedName());
+    public ClassName asName() {
+        return new ClassName(qualifiedName());
     }
 
     public String qualifiedName() {
@@ -88,7 +88,7 @@ public class SafeClassName implements Serializable {
 
         private SafeClassName safeName = new SafeClassName();
 
-        public Builder rootClassName(Name rootClassName) {
+        public Builder rootClassName(ClassName rootClassName) {
             safeName.rootClassName = rootClassName;
             return this;
         }
@@ -108,7 +108,7 @@ public class SafeClassName implements Serializable {
 
     }
 
-    public static SafeClassName ofRootClass(Name name) {
+    public static SafeClassName ofRootClass(ClassName name) {
         return new SafeClassName.Builder()
                 .rootClassName(name)
                 .build();
@@ -130,7 +130,7 @@ public class SafeClassName implements Serializable {
             rootClass = rootClass.getDeclaringClass();
         }
         return new SafeClassName.Builder()
-                .rootClassName(new Name(rootClass.getCanonicalName()))
+                .rootClassName(new ClassName(rootClass.getCanonicalName()))
                 .innerClassPath(innerClassPath)
                 .build();
     }

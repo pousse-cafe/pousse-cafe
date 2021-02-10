@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import poussecafe.discovery.ProducesEvent;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -25,7 +25,7 @@ import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.stream.Collectors.toList;
@@ -52,7 +52,7 @@ public abstract class AggregateMessageListenerEditor {
         }
 
         var consumedMessage = messageListener.consumedMessage();
-        Name consumedMessageClassName;
+        ClassName consumedMessageClassName;
         if(consumedMessage.type() == MessageType.COMMAND) {
             consumedMessageClassName = model.command(consumedMessage.name()).orElseThrow().name();
         } else {
@@ -89,7 +89,7 @@ public abstract class AggregateMessageListenerEditor {
                     poussecafe.discovery.MessageListener.class).get(0);
         } else {
             messageListenerAnnotationEditor = methodEditor.modifiers().insertNewNormalAnnotationFirst(
-                    new Name(poussecafe.discovery.MessageListener.class.getSimpleName()));
+                    new ClassName(poussecafe.discovery.MessageListener.class.getSimpleName()));
         }
 
         var processesValue = processesValue(messageListenerAnnotationEditor.getAttribute("processes"));
@@ -162,11 +162,11 @@ public abstract class AggregateMessageListenerEditor {
         if(processNames.isEmpty()) {
             return ast.ast().newArrayInitializer();
         } else if(processNames.size() == 1) {
-            return ast.newTypeLiteral(new Name(processNames.get(0)));
+            return ast.newTypeLiteral(new ClassName(processNames.get(0)));
         } else {
             var array = ast.ast().newArrayInitializer();
             for(String processName : processNames) {
-                array.expressions().add(ast.newTypeLiteral(new Name(processName)));
+                array.expressions().add(ast.newTypeLiteral(new ClassName(processName)));
             }
             return array;
         }
@@ -224,7 +224,7 @@ public abstract class AggregateMessageListenerEditor {
         }
     }
 
-    protected Model model;
+    protected SourceModel model;
 
     protected MessageListener messageListener;
 

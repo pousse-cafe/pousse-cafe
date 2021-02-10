@@ -1,32 +1,32 @@
 package poussecafe.source.generation;
 
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
 
 public class NamingConventions {
 
-    public static Name aggregateIdentifierTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName() + "Id");
+    public static ClassName aggregateIdentifierTypeName(Aggregate aggregate) {
+        return new ClassName(aggregate.packageName(), aggregate.simpleName() + "Id");
     }
 
-    public static Name aggregateContainerTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName());
+    public static ClassName aggregateContainerTypeName(Aggregate aggregate) {
+        return new ClassName(aggregate.packageName(), aggregate.simpleName());
     }
 
-    public static Name aggregateRootTypeName(Aggregate aggregate) {
+    public static ClassName aggregateRootTypeName(Aggregate aggregate) {
         if(aggregate.innerRoot()) {
-            return new Name(aggregateContainerTypeName(aggregate).toString(), ROOT_SUFFIX);
+            return new ClassName(aggregateContainerTypeName(aggregate).toString(), ROOT_SUFFIX);
         } else {
-            return new Name(aggregate.packageName(), aggregate.simpleName() + ROOT_SUFFIX);
+            return new ClassName(aggregate.packageName(), aggregate.simpleName() + ROOT_SUFFIX);
         }
     }
 
     private static final String ROOT_SUFFIX = "Root";
 
-    public static Name aggregateFactoryTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName() + FACTORY_NAME_SUFFIX);
+    public static ClassName aggregateFactoryTypeName(Aggregate aggregate) {
+        return new ClassName(aggregate.packageName(), aggregate.simpleName() + FACTORY_NAME_SUFFIX);
     }
 
     private static final String FACTORY_NAME_SUFFIX = "Factory";
@@ -53,8 +53,8 @@ public class NamingConventions {
         return typeName.substring(0, typeName.length() - suffix.length());
     }
 
-    public static Name aggregateRepositoryTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName() + REPOSITORY_NAME_SUFFIX);
+    public static ClassName aggregateRepositoryTypeName(Aggregate aggregate) {
+        return new ClassName(aggregate.packageName(), aggregate.simpleName() + REPOSITORY_NAME_SUFFIX);
     }
 
     private static final String REPOSITORY_NAME_SUFFIX = "Repository";
@@ -74,21 +74,21 @@ public class NamingConventions {
         return nameWithoutSuffix(repositoryName, REPOSITORY_NAME_SUFFIX);
     }
 
-    public static Name aggregateDataAccessTypeName(Aggregate aggregate) {
-        return new Name(aggregate.packageName(), aggregate.simpleName() + DATA_ACCESS_SUFFIX);
+    public static ClassName aggregateDataAccessTypeName(AggregatePackage aggregate) {
+        return new ClassName(aggregate.packageName(), aggregate.aggregateName() + DATA_ACCESS_SUFFIX);
     }
 
     private static final String DATA_ACCESS_SUFFIX = "DataAccess";
 
-    public static boolean isDataAccessDefinitionName(Name className) {
+    public static boolean isDataAccessDefinitionName(ClassName className) {
         return className.simple().endsWith(DATA_ACCESS_SUFFIX);
     }
 
-    public static Name aggregateAttributesQualifiedTypeName(Aggregate aggregate) {
+    public static ClassName aggregateAttributesQualifiedTypeName(Aggregate aggregate) {
         if(aggregate.innerRoot()) {
-            return new Name(innerRootClassName(), ATTRIBUTES_CLASS_NAME);
+            return new ClassName(innerRootClassName(), ATTRIBUTES_CLASS_NAME);
         } else {
-            return new Name(aggregateRootTypeName(aggregate).getIdentifier().toString(), ATTRIBUTES_CLASS_NAME);
+            return new ClassName(aggregateRootTypeName(aggregate).getIdentifier().toString(), ATTRIBUTES_CLASS_NAME);
         }
     }
 
@@ -98,42 +98,42 @@ public class NamingConventions {
 
     public static final String ADAPTERS_PACKAGE_NAME = "adapters";
 
-    public static Name aggregateAttributesImplementationTypeName(Aggregate aggregate) {
-        return new Name(adaptersPackageName(aggregate), aggregate.simpleName() + ATTRIBUTES_CLASS_NAME);
+    public static ClassName aggregateAttributesImplementationTypeName(AggregatePackage aggregate) {
+        return new ClassName(adaptersPackageName(aggregate), aggregate.aggregateName() + ATTRIBUTES_CLASS_NAME);
     }
 
-    public static String adaptersPackageName(Aggregate aggregate) {
+    public static String adaptersPackageName(AggregatePackage aggregate) {
         return aggregate.packageName() + "." + ADAPTERS_PACKAGE_NAME;
     }
 
-    public static Name aggregateDataAccessImplementationTypeName(Aggregate aggregate, String storageName) {
-        return new Name(adaptersPackageName(aggregate), aggregate.simpleName() + storageName + DATA_ACCESS_SUFFIX);
+    public static ClassName aggregateDataAccessImplementationTypeName(AggregatePackage aggregate, String storageName) {
+        return new ClassName(adaptersPackageName(aggregate), aggregate.aggregateName() + storageName + DATA_ACCESS_SUFFIX);
     }
 
-    public static boolean isDataAccessImplementationName(String storageName, Name name) {
+    public static boolean isDataAccessImplementationName(String storageName, ClassName name) {
         return name.simple().endsWith(storageName + DATA_ACCESS_SUFFIX);
     }
 
-    public static Name commandTypeName(Command command) {
-        return new Name(command.packageName(), command.simpleName());
+    public static ClassName commandTypeName(Command command) {
+        return new ClassName(command.packageName(), command.simpleName());
     }
 
-    public static Name commandImplementationTypeName(Command command) {
-        return new Name(command.packageName() + "." + ADAPTERS_PACKAGE_NAME, command.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
+    public static ClassName commandImplementationTypeName(Command command) {
+        return new ClassName(command.packageName() + "." + ADAPTERS_PACKAGE_NAME, command.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
     }
 
     private static final String MESSAGE_IMPLEMENTATION_SUFFIX = "Data";
 
-    public static boolean isMessageImplementationName(Name className) {
+    public static boolean isMessageImplementationName(ClassName className) {
         return className.simple().endsWith(MESSAGE_IMPLEMENTATION_SUFFIX);
     }
 
-    public static Name eventTypeName(DomainEvent event) {
-        return new Name(event.packageName(), event.simpleName());
+    public static ClassName eventTypeName(DomainEvent event) {
+        return new ClassName(event.packageName(), event.simpleName());
     }
 
-    public static Name eventImplementationTypeName(DomainEvent event) {
-        return new Name(event.packageName() + "." + ADAPTERS_PACKAGE_NAME, event.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
+    public static ClassName eventImplementationTypeName(DomainEvent event) {
+        return new ClassName(event.packageName() + "." + ADAPTERS_PACKAGE_NAME, event.simpleName() + MESSAGE_IMPLEMENTATION_SUFFIX);
     }
 
     public static String runnerPackage(Aggregate aggregate) {
@@ -156,9 +156,9 @@ public class NamingConventions {
         return ROOT_SUFFIX;
     }
 
-    public static Name innerAggregateRootIdentifier(Aggregate aggregate) {
+    public static ClassName innerAggregateRootIdentifier(Aggregate aggregate) {
         if(aggregate.innerRoot()) {
-            return new Name(aggregateContainerTypeName(aggregate).getIdentifier().toString(), ROOT_SUFFIX);
+            return new ClassName(aggregateContainerTypeName(aggregate).getIdentifier().toString(), ROOT_SUFFIX);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -191,7 +191,7 @@ public class NamingConventions {
         return simpleName;
     }
 
-    public static boolean isEntityImplementationName(Name className) {
+    public static boolean isEntityImplementationName(ClassName className) {
         return className.simple().endsWith(ATTRIBUTES_CLASS_NAME);
     }
 

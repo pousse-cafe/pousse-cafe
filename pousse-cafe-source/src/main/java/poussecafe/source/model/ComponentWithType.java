@@ -1,10 +1,12 @@
 package poussecafe.source.model;
 
 import java.io.Serializable;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.Source;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.SafeClassName;
 
 @SuppressWarnings("serial")
-public class ComponentWithType implements Serializable {
+public class ComponentWithType implements Serializable, WithTypeComponent {
 
     protected String name;
 
@@ -18,11 +20,25 @@ public class ComponentWithType implements Serializable {
         return packageName;
     }
 
-    public Name name() {
-        return new Name(packageName, name);
+    public ClassName name() {
+        return new ClassName(packageName, name);
+    }
+
+    protected Source source;
+
+    public Source source() {
+        return source;
     }
 
     protected ComponentWithType() {
 
+    }
+
+    @Override
+    public TypeComponent typeComponent() {
+        return new TypeComponent.Builder()
+                .name(SafeClassName.ofRootClass(name()))
+                .source(source())
+                .build();
     }
 }

@@ -35,7 +35,7 @@ public class ResolvedMethod {
         Type parameterType = message.getType();
         if(parameterType instanceof SimpleType) {
             SimpleType messageType = (SimpleType) message.getType();
-            return Optional.of(resolver.resolve(new Name(messageType.getName())));
+            return Optional.of(resolver.resolve(new ClassName(messageType.getName())));
         } else {
             return Optional.empty();
         }

@@ -9,7 +9,7 @@ import org.junit.Test;
 import poussecafe.source.DiscoveryTest;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.SourceModelBuilder;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,7 +29,7 @@ public class EmilExporterTest {
         model = builder.build();
     }
 
-    private Model model;
+    private SourceModel model;
 
     private void whenExporting(Optional<String> process) {
         exported = new EmilExporter.Builder()

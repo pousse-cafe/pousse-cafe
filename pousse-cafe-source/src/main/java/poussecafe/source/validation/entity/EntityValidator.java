@@ -27,10 +27,11 @@ public class EntityValidator extends SubValidator {
 
     private void validateDefinitions() {
         var entiyValidations = buildEntityDefinitionValidationModels();
-        for(EntityDefinitionValidationModel entiyValidationModel : entiyValidations.values()) {
-            applyConflictingMessageDefinitionsValidation(entiyValidationModel);
-            applyNoImplementationValidation(entiyValidationModel);
-            applyConflictingMessageImplementationsValidation(entiyValidationModel);
+        for(EntityDefinitionValidationModel entityValidationModel : entiyValidations.values()) {
+            applyConflictingMessageDefinitionsValidation(entityValidationModel);
+            applyNoImplementationValidation(entityValidationModel);
+            applyConflictingMessageImplementationsValidation(entityValidationModel);
+            applyAbstractImplementationsValidation(entityValidationModel);
         }
     }
 
@@ -53,45 +54,45 @@ public class EntityValidator extends SubValidator {
         return entiyValidations;
     }
 
-    private void applyConflictingMessageDefinitionsValidation(EntityDefinitionValidationModel entiyValidationModel) {
-        if(entiyValidationModel.hasConflictingDefinitions()) {
-            for(EntityDefinition definition : entiyValidationModel.definitions()) {
+    private void applyConflictingMessageDefinitionsValidation(EntityDefinitionValidationModel entityValidationModel) {
+        if(entityValidationModel.hasConflictingDefinitions()) {
+            for(EntityDefinition definition : entityValidationModel.definitions()) {
                 var sourceFileLine = definition.sourceLine();
                 if(sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())
                             .type(ValidationMessageType.ERROR)
-                            .message("Conflicting definitions for entity " + entiyValidationModel.entityIdentifier() + ", make implementations mutually exclusive w.r.t. entity name")
+                            .message("Conflicting definitions for entity " + entityValidationModel.entityIdentifier() + ", make implementations mutually exclusive w.r.t. entity name")
                             .build());
                 }
             }
         }
     }
 
-    private void applyNoImplementationValidation(EntityDefinitionValidationModel entiyValidationModel) {
-        if(entiyValidationModel.hasNoImplementation()) {
-            for(EntityDefinition definition : entiyValidationModel.definitions()) {
+    private void applyNoImplementationValidation(EntityDefinitionValidationModel entityValidationModel) {
+        if(entityValidationModel.hasNoImplementation()) {
+            for(EntityDefinition definition : entityValidationModel.definitions()) {
                 var sourceFileLine = definition.sourceLine();
                 if(sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())
                             .type(ValidationMessageType.WARNING)
-                            .message("No implementation found for entity " + entiyValidationModel.entityIdentifier())
+                            .message("No implementation found for entity " + entityValidationModel.entityIdentifier())
                             .build());
                 }
             }
         }
     }
 
-    private void applyConflictingMessageImplementationsValidation(EntityDefinitionValidationModel entiyValidationModel) {
-        if(entiyValidationModel.hasConflictingImplementations()) {
-            for(EntityImplementation implementation : entiyValidationModel.implementations()) {
+    private void applyConflictingMessageImplementationsValidation(EntityDefinitionValidationModel entityValidationModel) {
+        if(entityValidationModel.hasConflictingImplementations()) {
+            for(EntityImplementation implementation : entityValidationModel.implementations()) {
                 var sourceFileLine = implementation.sourceLine();
                 if(sourceFileLine.isPresent()) {
                     messages.add(new ValidationMessage.Builder()
                             .location(sourceFileLine.get())
                             .type(ValidationMessageType.ERROR)
-                            .message("Conflicting implementations for entity " + entiyValidationModel.entityIdentifier())
+                            .message("Conflicting implementations for entity " + entityValidationModel.entityIdentifier())
                             .build());
                 }
             }
@@ -100,8 +101,8 @@ public class EntityValidator extends SubValidator {
 
     private void validateImplementations() {
         var entiyValidations = buildEntityImplementationValidationModels();
-        for(EntityImplementationValidationModel entiyValidationModel : entiyValidations.values()) {
-            applyNoDefinitionValidation(entiyValidationModel);
+        for(EntityImplementationValidationModel entityValidationModel : entiyValidations.values()) {
+            applyNoDefinitionValidation(entityValidationModel);
         }
     }
 
@@ -132,15 +133,29 @@ public class EntityValidator extends SubValidator {
         return validationModels;
     }
 
-    private void applyNoDefinitionValidation(EntityImplementationValidationModel entiyValidationModel) {
-        if(entiyValidationModel.hasNoDefinition()) {
-            var implementation = entiyValidationModel.implementation();
+    private void applyNoDefinitionValidation(EntityImplementationValidationModel entityValidationModel) {
+        if(entityValidationModel.hasNoDefinition()) {
+            var implementation = entityValidationModel.implementation();
             var sourceFileLine = implementation.sourceLine();
             if(sourceFileLine.isPresent()) {
                 messages.add(new ValidationMessage.Builder()
                         .location(sourceFileLine.get())
                         .type(ValidationMessageType.WARNING)
                         .message("Entity implementation is not linked to a definition, add a @DataImplementation annotation or declare a data access implementation annotated with @DataAccessImplementation")
+                        .build());
+            }
+        }
+    }
+
+    private void applyAbstractImplementationsValidation(EntityDefinitionValidationModel entityValidationModel) {
+        for(EntityImplementation implementation : entityValidationModel.implementations()) {
+            var sourceFileLine = implementation.sourceLine();
+            if(sourceFileLine.isPresent()
+                    && !implementation.isConcrete()) {
+                messages.add(new ValidationMessage.Builder()
+                        .location(sourceFileLine.get())
+                        .type(ValidationMessageType.ERROR)
+                        .message("Entity implementation must be concrete")
                         .build());
             }
         }

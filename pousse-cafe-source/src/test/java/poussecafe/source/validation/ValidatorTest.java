@@ -2,10 +2,9 @@ package poussecafe.source.validation;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.function.Predicate;
-import poussecafe.source.analysis.ClassLoaderClassResolver;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.validation.types.InteralStorageTypesValidator;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -24,7 +23,11 @@ public abstract class ValidatorTest {
     private Validator validator;
 
     protected void whenValidating() {
-        validator = new Validator(modelBuilder.build(), new ClassLoaderClassResolver(), Optional.of(classPathExplorer));
+        validator = new Validator.Builder()
+                .model(modelBuilder.build())
+                .classPathExplorer(classPathExplorer)
+                .storageTypesValidator(new InteralStorageTypesValidator())
+                .build();
         validator.validate();
         result = validator.result();
     }
@@ -45,7 +48,7 @@ public abstract class ValidatorTest {
 
     protected void includeRelativeClass(String... relativeClassName) {
         try {
-            var thisClassName = new Name(getClass().getCanonicalName());
+            var thisClassName = new ClassName(getClass().getCanonicalName());
             var thisClassNameSegments = thisClassName.segments();
             String[] pathSegments = new String[2 + (thisClassNameSegments.length - 1) + relativeClassName.length];
             pathSegments[0] = "test";
@@ -65,7 +68,7 @@ public abstract class ValidatorTest {
 
     protected void includeClass(Class<?> classObject) {
         try {
-            var thisClassName = new Name(classObject.getCanonicalName());
+            var thisClassName = new ClassName(classObject.getCanonicalName());
             var thisClassNameSegments = thisClassName.segments();
             String[] pathSegments = new String[2 + thisClassNameSegments.length];
             pathSegments[0] = "test";
@@ -80,7 +83,7 @@ public abstract class ValidatorTest {
         }
     }
 
-    protected void addSubType(Name superTypeName, Name subtype) {
+    protected void addSubType(ClassName superTypeName, ClassName subtype) {
         classPathExplorer.addSubType(superTypeName, subtype);
     }
 

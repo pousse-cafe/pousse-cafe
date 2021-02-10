@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -60,7 +60,7 @@ public class AggregateRootEditor {
     }
 
     private ParameterizedType aggregateRootSupertype() {
-        var parametrizedRootType = ast.newParameterizedType(new Name(AggregateRoot.class.getSimpleName()));
+        var parametrizedRootType = ast.newParameterizedType(new ClassName(AggregateRoot.class.getSimpleName()));
         parametrizedRootType.typeArguments().add(aggregateIdentifierType());
 
         var attributesTypeName = NamingConventions.aggregateAttributesQualifiedTypeName(aggregate);

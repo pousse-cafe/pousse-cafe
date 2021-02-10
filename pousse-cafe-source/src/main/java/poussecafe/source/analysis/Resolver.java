@@ -4,11 +4,11 @@ import org.eclipse.jdt.core.dom.SimpleType;
 
 public interface Resolver {
 
-    ResolvedTypeName resolve(Name name);
+    ResolvedTypeName resolve(ClassName name);
 
     ClassResolver classResolver();
 
     default ResolvedTypeName resolve(SimpleType simpleType) {
-        return resolve(new Name(simpleType.getName()));
+        return resolve(new ClassName(simpleType.getName()));
     }
 }

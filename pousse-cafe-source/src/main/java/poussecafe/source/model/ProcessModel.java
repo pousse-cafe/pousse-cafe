@@ -11,12 +11,6 @@ import static poussecafe.util.Equality.referenceEquals;
 @SuppressWarnings("serial")
 public class ProcessModel extends ComponentWithType implements Serializable {
 
-    private Source source;
-
-    public Source source() {
-        return source;
-    }
-
     public static class Builder {
 
         private ProcessModel process = new ProcessModel();

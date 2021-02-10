@@ -15,8 +15,8 @@ import static java.util.stream.Collectors.toList;
 public class ClassLoaderResolvedClass implements ResolvedClass {
 
     @Override
-    public Name name() {
-        return new Name(classObject.getCanonicalName());
+    public ClassName name() {
+        return new ClassName(classObject.getCanonicalName());
     }
 
     private Class<?> classObject;
@@ -38,7 +38,7 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
 
     @Override
     public boolean instanceOf(String supertype) throws ClassNotFoundException {
-        Optional<ResolvedClass> classLoaderResolvedSupertype = classResolver.loadClass(new Name(supertype));
+        Optional<ResolvedClass> classLoaderResolvedSupertype = classResolver.loadClass(new ClassName(supertype));
         if(classLoaderResolvedSupertype.isPresent()) {
             var supertypeClassObject = classLoaderResolvedSupertype
                     .map(resolved -> ((ClassLoaderResolvedClass) resolved).classObject)
@@ -80,8 +80,8 @@ public class ClassLoaderResolvedClass implements ResolvedClass {
     }
 
     @Override
-    public Optional<Source> source() {
-        return Optional.of(new PathSource(SafeClassName.ofClass(classObject).toRelativePath()));
+    public Source source() {
+        return new PathSource(SafeClassName.ofClass(classObject).toRelativePath());
     }
 
     @Override

@@ -79,7 +79,7 @@ public class TypeResolvingCompilationUnitVisitor {
                 typeResolverBuilder
                         .parent(resolver)
                         .parentTypeDeclaration(Optional.empty())
-                        .safeClassName(SafeClassName.ofRootClass(new Name(packageName + "." + typeName)));
+                        .safeClassName(SafeClassName.ofRootClass(new ClassName(packageName + "." + typeName)));
             } else {
                 var declaringTypeResolver = typeDeclarationResolvers.peek();
                 var declaringType = declaringTypeResolver.resolvedTypeDeclaration();

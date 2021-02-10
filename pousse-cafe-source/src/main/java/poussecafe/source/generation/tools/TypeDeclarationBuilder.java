@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,7 +19,7 @@ public class TypeDeclarationBuilder {
         return this;
     }
 
-    public TypeDeclarationBuilder setName(Name name) {
+    public TypeDeclarationBuilder setName(ClassName name) {
         setName(name.getIdentifier().toString());
         return this;
     }

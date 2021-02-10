@@ -9,10 +9,10 @@ import static java.util.stream.Collectors.joining;
 import static poussecafe.util.Equality.referenceEquals;
 
 @SuppressWarnings("serial")
-public class Name implements Serializable {
+public class ClassName implements Serializable {
 
-    public Name getIdentifier() {
-        return new Name(identifier);
+    public ClassName getIdentifier() {
+        return new ClassName(identifier);
     }
 
     private String identifier;
@@ -21,8 +21,8 @@ public class Name implements Serializable {
         return identifier;
     }
 
-    public Name getQualifier() {
-        return new Name(qualifier);
+    public ClassName getQualifier() {
+        return new ClassName(qualifier);
     }
 
     private String qualifier;
@@ -47,18 +47,22 @@ public class Name implements Serializable {
         return qualifiedName;
     }
 
-    public Name withoutFirstSegment() {
+    public ClassName withoutFirstSegment() {
         var segments = segments();
-        return new Name(Arrays.stream(segments, 1, segments.length).collect(joining(".")));
+        return new ClassName(Arrays.stream(segments, 1, segments.length).collect(joining(".")));
     }
 
-    public Name withoutLastSegment() {
-        var segments = segments();
-        return new Name(Arrays.stream(segments, 0, segments.length - 1).collect(joining(".")));
+    public ClassName withoutLastSegment() {
+        return withoutLastSegments(1);
     }
 
-    public Name withLastSegment(String segment) {
-        return new Name(qualified() + "." + segment);
+    public ClassName withoutLastSegments(int n) {
+        var segments = segments();
+        return new ClassName(Arrays.stream(segments, 0, segments.length - n).collect(joining(".")));
+    }
+
+    public ClassName withLastSegment(String segment) {
+        return new ClassName(qualified() + "." + segment);
     }
 
     public org.eclipse.jdt.core.dom.Name toJdomName(AST ast) {
@@ -73,11 +77,11 @@ public class Name implements Serializable {
         return qualified;
     }
 
-    public Name(org.eclipse.jdt.core.dom.Name jdomName) {
+    public ClassName(org.eclipse.jdt.core.dom.Name jdomName) {
         this(jdomName.getFullyQualifiedName());
     }
 
-    public Name(String name) {
+    public ClassName(String name) {
         if(!Character.isLetter(name.charAt(0))) {
             throw new IllegalArgumentException("Invalid type name " + name);
         }
@@ -86,7 +90,7 @@ public class Name implements Serializable {
         evaluate();
     }
 
-    public Name(String qualifier, String identifier) {
+    public ClassName(String qualifier, String identifier) {
         if(!Character.isLetter(qualifier.charAt(0))) {
             throw new IllegalArgumentException("Invalid qualified " + qualifier);
         }

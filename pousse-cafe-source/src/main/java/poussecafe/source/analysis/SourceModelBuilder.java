@@ -1,11 +1,11 @@
 package poussecafe.source.analysis;
 
 import poussecafe.source.SingleVisitorScanner;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 public class SourceModelBuilder extends SingleVisitorScanner {
 
-    public Model build() {
+    public SourceModel build() {
         return visitor.buildModel();
     }
 

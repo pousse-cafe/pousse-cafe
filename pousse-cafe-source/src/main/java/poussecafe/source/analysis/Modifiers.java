@@ -117,10 +117,10 @@ public class Modifiers {
         return Optional.empty();
     }
 
-    public List<Annotation> findUnresolvedAnnotationsByIdentifier(Name annotationClass) {
+    public List<Annotation> findUnresolvedAnnotationsByIdentifier(ClassName annotationClass) {
         var annotations = new ArrayList<Annotation>();
         for(Annotation annotation : annotations()) {
-            Name annotationTypeName = new Name(annotation.getTypeName());
+            ClassName annotationTypeName = new ClassName(annotation.getTypeName());
             if(annotationTypeName.getIdentifier().equals(annotationClass.getIdentifier())) {
                 annotations.add(annotation);
             }

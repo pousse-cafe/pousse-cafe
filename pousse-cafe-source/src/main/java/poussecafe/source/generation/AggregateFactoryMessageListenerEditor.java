@@ -7,7 +7,7 @@ import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProductionType;
 
 import static java.util.Objects.requireNonNull;
@@ -74,7 +74,7 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
             return this;
         }
 
-        public Builder model(Model model) {
+        public Builder model(SourceModel model) {
             editor.model = model;
             return this;
         }

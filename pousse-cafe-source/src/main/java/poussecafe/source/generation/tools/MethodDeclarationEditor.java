@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.Objects.requireNonNull;
 
@@ -53,7 +53,7 @@ public class MethodDeclarationEditor {
 
     private MethodDeclaration methodDeclaration;
 
-    public void addParameter(Name typeName, String parameterName) {
+    public void addParameter(ClassName typeName, String parameterName) {
         var constructorParameter = new AstWrapper(rewrite.ast()).newSimpleMethodParameter(typeName.toString(), parameterName);
         rewrite.listRewrite(MethodDeclaration.PARAMETERS_PROPERTY).insertLast(constructorParameter, null);
     }

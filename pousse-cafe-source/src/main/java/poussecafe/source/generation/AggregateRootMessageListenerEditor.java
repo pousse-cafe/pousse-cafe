@@ -1,12 +1,12 @@
 package poussecafe.source.generation;
 
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.NormalAnnotationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
 
     @Override
     protected void setListenerRunner(NormalAnnotationEditor messageListenerAnnotationEditor) {
-        var runnerType = ast.newTypeLiteral(new Name(messageListener.runnerName().orElseThrow()));
+        var runnerType = ast.newTypeLiteral(new ClassName(messageListener.runnerName().orElseThrow()));
         messageListenerAnnotationEditor.setAttribute("runner", runnerType);
     }
 
@@ -47,7 +47,7 @@ public class AggregateRootMessageListenerEditor extends AggregateMessageListener
             return this;
         }
 
-        public Builder model(Model model) {
+        public Builder model(SourceModel model) {
             editor.model = model;
             return this;
         }

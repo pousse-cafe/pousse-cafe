@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.Test;
 import poussecafe.source.PathSource;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.SafeClassName;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -25,19 +25,19 @@ public class ModelBuilderPersistenceTest {
     }
 
     private void givenModelBuilder() {
-        builder = new ModelBuilder();
+        builder = new SourceModelBuilder();
 
         command1 = new Command.Builder()
                 .name("Command1")
                 .packageName("package.commands")
-                .source(Optional.of(new PathSource(Path.of("package/commands/Command1.java"))))
+                .source(new PathSource(Path.of("package/commands/Command1.java")))
                 .build();
         builder.addCommand(command1);
 
         event1 = new DomainEvent.Builder()
                 .name("Event1")
                 .packageName("package.events")
-                .source(Optional.of(new PathSource(Path.of("package/events/Event1.java"))))
+                .source(new PathSource(Path.of("package/events/Event1.java")))
                 .build();
         builder.addEvent(event1);
 
@@ -74,7 +74,7 @@ public class ModelBuilderPersistenceTest {
 
         expectedAggregateContainer = new AggregateContainer.Builder()
                 .typeComponent(new TypeComponent.Builder()
-                        .name(SafeClassName.ofRootClass(new Name("package.Aggregate")))
+                        .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate")))
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .build())
                 .hooks(new Hooks.Builder()
@@ -98,7 +98,7 @@ public class ModelBuilderPersistenceTest {
 
         standaloneAggregateFactory = new StandaloneAggregateFactory.Builder()
                 .typeComponent(new TypeComponent.Builder()
-                        .name(SafeClassName.ofRootClass(new Name("package.Aggregate1Factory")))
+                        .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate1Factory")))
                         .source(new PathSource(Path.of("package/Aggregate1Factory.java")))
                         .build())
                 .build();
@@ -106,7 +106,7 @@ public class ModelBuilderPersistenceTest {
 
         standaloneAggregateRoot = new StandaloneAggregateRoot.Builder()
                 .typeComponent(new TypeComponent.Builder()
-                        .name(SafeClassName.ofRootClass(new Name("package.Aggregate1Root")))
+                        .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate1Root")))
                         .source(new PathSource(Path.of("package/Aggregate1Root.java")))
                         .build())
                 .hooks(new Hooks.Builder()
@@ -130,7 +130,7 @@ public class ModelBuilderPersistenceTest {
 
         standaloneAggregateRepository = new StandaloneAggregateRepository.Builder()
                 .typeComponent(new TypeComponent.Builder()
-                        .name(SafeClassName.ofRootClass(new Name("package.Aggregate1Repository")))
+                        .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate1Repository")))
                         .source(new PathSource(Path.of("package/Aggregate1Repository.java")))
                         .build())
                 .build();
@@ -161,7 +161,7 @@ public class ModelBuilderPersistenceTest {
         builder.putAggregate(providedAggregate);
     }
 
-    private ModelBuilder builder;
+    private SourceModelBuilder builder;
 
     private Command command1;
 
@@ -198,11 +198,11 @@ public class ModelBuilderPersistenceTest {
 
     private void deserializeAndBuildModel(ByteArrayOutputStream bytes) throws IOException, ClassNotFoundException {
         var ois = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-        var builder2 = (ModelBuilder) ois.readObject();
+        var builder2 = (SourceModelBuilder) ois.readObject();
         model = builder2.build();
     }
 
-    private Model model;
+    private SourceModel model;
 
     private void thenDeserializedModelMatchesExpected() {
         assertThat(model.command("Command1").orElseThrow(), equalTo(command1));

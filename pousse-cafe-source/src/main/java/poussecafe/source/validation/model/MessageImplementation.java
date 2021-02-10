@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 
@@ -24,11 +24,11 @@ implements Serializable, HasClassNameConvention {
         return Optional.ofNullable(sourceLine);
     }
 
-    public Name messageDefinitionClassName() {
+    public ClassName messageDefinitionClassName() {
         return messageDefinitionClassName;
     }
 
-    private Name messageDefinitionClassName;
+    private ClassName messageDefinitionClassName;
 
     public List<String> messagingNames() {
         return Collections.unmodifiableList(messagingNames);
@@ -37,11 +37,11 @@ implements Serializable, HasClassNameConvention {
     private List<String> messagingNames;
 
     @Override
-    public Name className() {
+    public ClassName className() {
         return className;
     }
 
-    private Name className;
+    private ClassName className;
 
     public boolean isAutoImplementation() {
         return messageDefinitionClassName.equals(className);
@@ -80,7 +80,7 @@ implements Serializable, HasClassNameConvention {
             return this;
         }
 
-        public Builder messageDefinitionClassName(Name messageDefinitionClassName) {
+        public Builder messageDefinitionClassName(ClassName messageDefinitionClassName) {
             implementation.messageDefinitionClassName = messageDefinitionClassName;
             return this;
         }
@@ -90,7 +90,7 @@ implements Serializable, HasClassNameConvention {
             return this;
         }
 
-        public Builder className(Name className) {
+        public Builder className(ClassName className) {
             implementation.className = className;
             return this;
         }

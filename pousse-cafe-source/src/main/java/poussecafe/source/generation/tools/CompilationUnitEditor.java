@@ -23,7 +23,7 @@ import org.eclipse.jface.text.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.files.TextFiles;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.Objects.requireNonNull;
 
@@ -64,7 +64,7 @@ public class CompilationUnitEditor {
         return importDeclaration.getName().getFullyQualifiedName().equals(name);
     }
 
-    public void addImport(Name name) {
+    public void addImport(ClassName name) {
         addImport(name.toString());
     }
 

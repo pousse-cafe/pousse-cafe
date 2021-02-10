@@ -1,7 +1,7 @@
 package poussecafe.source.generation;
 
 import poussecafe.domain.ValueObject;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -45,7 +45,7 @@ public class AggregateIdEditor {
             editor.modifiers().setVisibility(Visibility.PUBLIC);
 
             editor.clearParameters();
-            editor.addParameter(new Name("String"), "value");
+            editor.addParameter(new ClassName("String"), "value");
 
             var body = ast.ast().newBlock();
             var superInvocation = ast.ast().newSuperConstructorInvocation();

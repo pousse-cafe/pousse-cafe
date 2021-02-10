@@ -3,6 +3,7 @@ package poussecafe.source.validation;
 import java.io.Serializable;
 import java.util.Optional;
 import poussecafe.source.WithPersistableState;
+import poussecafe.source.analysis.AggregateContainerClass;
 import poussecafe.source.analysis.AggregateRootClass;
 import poussecafe.source.analysis.DataAccessImplementationType;
 import poussecafe.source.analysis.DataAccessInterface;
@@ -13,7 +14,7 @@ import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedCompilationUnit;
@@ -25,8 +26,10 @@ import poussecafe.source.analysis.RunnerClass;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
+import poussecafe.source.model.TypeComponent;
 import poussecafe.source.validation.model.AggregateComponentDefinition;
 import poussecafe.source.validation.model.AggregateComponentKind;
+import poussecafe.source.validation.model.AggregateContainer;
 import poussecafe.source.validation.model.DataAccessDefinition;
 import poussecafe.source.validation.model.EntityDefinition;
 import poussecafe.source.validation.model.EntityImplementation;
@@ -82,6 +85,8 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
             visitAggregateFactory(resolvedTypeDeclaration);
         } else if(RepositoryClass.isRepository(resolvedTypeDeclaration)) {
             visitAggregateRepository(resolvedTypeDeclaration);
+        } else if(AggregateContainerClass.isAggregateContainerClass(resolvedTypeDeclaration)) {
+            visitAggregateContainer(resolvedTypeDeclaration);
         }
         return MessageListenerMethod.isMessageListenerMethodContainer(resolvedTypeDeclaration);
     }
@@ -137,6 +142,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .entityDefinitionQualifiedClassName(implementationType.entity().map(ResolvedTypeName::qualifiedName))
                 .storageNames(implementationType.storageNames())
                 .kind(StorageImplementationKind.ATTRIBUTES)
+                .isConcrete(resolvedTypeDeclaration.isConcrete())
                 .build());
     }
 
@@ -152,19 +158,20 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
         var implementationType = new DataAccessImplementationType(resolvedTypeDeclaration);
         model.addEntityImplementation(new EntityImplementation.Builder()
                 .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .entityImplementationQualifiedClassName(implementationType.dataImplementation().map(ResolvedTypeName::qualifiedName))
-                .entityDefinitionQualifiedClassName(implementationType.aggregateRoot().map(ResolvedTypeName::qualifiedName))
+                .entityImplementationQualifiedClassName(Optional.of(implementationType.dataImplementation().qualifiedName()))
+                .entityDefinitionQualifiedClassName(Optional.of(implementationType.aggregateRoot().qualifiedName()))
                 .storageNames(asList(implementationType.storageName()))
                 .kind(StorageImplementationKind.DATA_ACCESS)
                 .dataAccessImplementationClassName(Optional.of(resolvedTypeDeclaration.unresolvedName().qualifiedName()))
+                .isConcrete(resolvedTypeDeclaration.isConcrete())
                 .build());
     }
 
     private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new RunnerClass(resolvedTypeDeclaration);
         model.addRunner(new Runner.Builder()
-                .sourceFileLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
-                .classQualifiedName(resolvedTypeDeclaration.name().qualifiedName())
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .className(resolvedTypeDeclaration.unresolvedName().asName())
                 .typeParametersQualifiedNames(runnerClass.typeParametersQualifiedNames())
                 .build());
     }
@@ -206,6 +213,16 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .build());
     }
 
+    private void visitAggregateContainer(ResolvedTypeDeclaration resolvedTypeDeclaration) {
+        model.addAggregateContainer(new AggregateContainer.Builder()
+                .sourceLine(unit.sourceFileLine(resolvedTypeDeclaration.typeDeclaration()))
+                .typeComponent(new TypeComponent.Builder()
+                        .name(resolvedTypeDeclaration.unresolvedName())
+                        .source(unit.sourceFile())
+                        .build())
+                .build());
+    }
+
     @Override
     public boolean visit(ResolvedMethod method) {
         if(MessageListenerMethod.isMessageListener(method)) {
@@ -221,7 +238,7 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
                 .isPublic(method.modifiers().hasVisibility(Visibility.PUBLIC))
                 .runnerQualifiedClassName(messageListenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                 .returnsValue(messageListenerMethod.returnType().isPresent())
-                .consumedMessageClass(messageListenerMethod.consumedMessage().map(ResolvedTypeName::qualifiedName).map(Name::new))
+                .consumedMessageClass(messageListenerMethod.consumedMessage().map(ResolvedTypeName::qualifiedName).map(ClassName::new))
                 .parametersCount(method.declaration().parameters().size())
                 .containerType(messageListenerContainerType(method.declaringType()))
                 .build());

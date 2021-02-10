@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
@@ -32,20 +32,20 @@ public class NamesValidator extends SubValidator {
     }
 
     private void checkModulesUniqueness() {
-        checkNameUniqueness(model.modules(), module -> new Name(module.name()), "Module", false);
+        checkNameUniqueness(model.modules(), module -> new ClassName(module.name()), "Module", false);
     }
 
     private <T extends NamedComponent> void checkNameUniqueness(
             Collection<T> items,
-            Function<T, Name> nameProvider,
+            Function<T, ClassName> nameProvider,
             String componentName,
             boolean warnIfNotQualified) {
-        var names = new HashMap<Name, List<T>>();
+        var names = new HashMap<ClassName, List<T>>();
         for(T component : items) {
             var componentsWithName = names.computeIfAbsent(nameProvider.apply(component), key -> new ArrayList<>());
             componentsWithName.add(component);
         }
-        for(Entry<Name, List<T>> entry : names.entrySet()) {
+        for(Entry<ClassName, List<T>> entry : names.entrySet()) {
             var name = entry.getKey();
             var componentsWithSameName = entry.getValue();
             if(componentsWithSameName.size() > 1) {

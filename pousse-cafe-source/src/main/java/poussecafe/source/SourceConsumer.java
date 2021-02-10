@@ -10,6 +10,4 @@ public interface SourceConsumer {
     void includeTree(Path sourceDirectory) throws IOException;
 
     void includeSource(Source source);
-
-    boolean isIncluded(String sourceId);
 }

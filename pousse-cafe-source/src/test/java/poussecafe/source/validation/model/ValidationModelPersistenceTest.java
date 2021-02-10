@@ -10,8 +10,10 @@ import java.util.Optional;
 import org.junit.Test;
 import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.source.PathSource;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.SafeClassName;
 import poussecafe.source.model.MessageListenerContainerType;
+import poussecafe.source.model.TypeComponent;
 import poussecafe.source.validation.SourceLine;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -42,10 +44,10 @@ public class ValidationModelPersistenceTest {
         model.addMessageDefinition(messageDefinition);
 
         messageImplementation = new MessageImplementation.Builder()
-                .className(new Name("package.EventData"))
+                .className(new ClassName("package.EventData"))
                 .concrete(true)
                 .implementsMessage(true)
-                .messageDefinitionClassName(new Name("package.Event"))
+                .messageDefinitionClassName(new ClassName("package.Event"))
                 .messagingNames(asList(InternalMessaging.NAME))
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/EventData.java")))
@@ -55,7 +57,7 @@ public class ValidationModelPersistenceTest {
         model.addMessageImplementation(messageImplementation);
 
         entityDefinition = new EntityDefinition.Builder()
-                .className(new Name("package.Entity"))
+                .className(new ClassName("package.Entity"))
                 .entityName("Entity")
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Entity.java")))
@@ -72,11 +74,12 @@ public class ValidationModelPersistenceTest {
                         .line(42)
                         .build())
                 .storageNames(asList(InternalStorage.NAME))
+                .kind(StorageImplementationKind.ATTRIBUTES)
                 .build();
         model.addEntityImplementation(entityImplementation);
 
         messageListener = new MessageListener.Builder()
-                .consumedMessageClass(Optional.of(new Name("package.Event")))
+                .consumedMessageClass(Optional.of(new ClassName("package.Event")))
                 .containerType(MessageListenerContainerType.INNER_ROOT)
                 .isPublic(true)
                 .parametersCount(1)
@@ -90,8 +93,8 @@ public class ValidationModelPersistenceTest {
         model.addMessageListener(messageListener);
 
         runner = new Runner.Builder()
-                .classQualifiedName("package.Runner")
-                .sourceFileLine(new SourceLine.Builder()
+                .className(new ClassName("package.Runner"))
+                .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .line(42)
                         .build())
@@ -100,7 +103,7 @@ public class ValidationModelPersistenceTest {
         model.addRunner(runner);
 
         module = new Module.Builder()
-                .className(new Name("package.Module"))
+                .className(new ClassName("package.Module"))
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .line(42)
@@ -109,7 +112,7 @@ public class ValidationModelPersistenceTest {
         model.addModule(module);
 
         processDefinition = new ProcessDefinition.Builder()
-                .className(new Name("package.Process"))
+                .className(new ClassName("package.Process"))
                 .name("Process")
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Process.java")))
@@ -119,7 +122,7 @@ public class ValidationModelPersistenceTest {
         model.addProcessDefinition(processDefinition);
 
         aggregateFactory = new AggregateComponentDefinition.Builder()
-                .className(new Name("package.Aggregate.Factory"))
+                .className(new ClassName("package.Aggregate.Factory"))
                 .innerClass(true)
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Aggregate.java")))
@@ -130,7 +133,7 @@ public class ValidationModelPersistenceTest {
         model.addAggregateFactory(aggregateFactory);
 
         aggregateRoot = new AggregateComponentDefinition.Builder()
-                .className(new Name("package.Aggregate.Root"))
+                .className(new ClassName("package.Aggregate.Root"))
                 .innerClass(true)
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Aggregate.java")))
@@ -141,7 +144,7 @@ public class ValidationModelPersistenceTest {
         model.addAggregateRoot(aggregateRoot);
 
         aggregateRepository = new AggregateComponentDefinition.Builder()
-                .className(new Name("package.Aggregate.Repository"))
+                .className(new ClassName("package.Aggregate.Repository"))
                 .innerClass(true)
                 .sourceLine(new SourceLine.Builder()
                         .source(new PathSource(Path.of("package/Aggregate.java")))
@@ -156,9 +159,21 @@ public class ValidationModelPersistenceTest {
                         .source(new PathSource(Path.of("package/AggregateDataAccess.java")))
                         .line(43)
                         .build())
-                .className(new Name("package.AggregateData"))
+                .className(new ClassName("package.AggregateData"))
                 .build();
         model.addDataAccessDefinition(dataAccessDefinition);
+
+        aggregateContainer = new AggregateContainer.Builder()
+                .sourceLine(new SourceLine.Builder()
+                        .source(new PathSource(Path.of("package/Aggregate.java")))
+                        .line(43)
+                        .build())
+                .typeComponent(new TypeComponent.Builder()
+                        .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate")))
+                        .source(new PathSource(Path.of("package/Aggregate.java")))
+                        .build())
+                .build();
+        model.addAggregateContainer(aggregateContainer);
     }
 
     private ValidationModel model;
@@ -186,6 +201,8 @@ public class ValidationModelPersistenceTest {
     private AggregateComponentDefinition aggregateRepository;
 
     private DataAccessDefinition dataAccessDefinition;
+
+    private AggregateContainer aggregateContainer;
 
     private void whenSerializeDeserialize() throws IOException, ClassNotFoundException {
         var bytes = serialize();

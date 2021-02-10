@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.tools.CodeFormatterOptionsBuilder;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 
@@ -12,7 +12,7 @@ import static java.util.Collections.emptyMap;
 
 public abstract class AbstractCodeGenerator {
 
-    protected CompilationUnitEditor compilationUnitEditor(Name className) {
+    protected CompilationUnitEditor compilationUnitEditor(ClassName className) {
         return new CompilationUnitEditor.Builder()
                 .sourceDirectory(sourceDirectory)
                 .packageName(className.getQualifier().toString())

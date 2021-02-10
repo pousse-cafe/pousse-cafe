@@ -2,14 +2,14 @@ package poussecafe.source.model;
 
 import org.junit.Test;
 import poussecafe.source.PathSource;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.SafeClassName;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ModelTest {
+public class SourceModelTest {
 
     @Test
     public void fixPackageNames() {
@@ -22,35 +22,32 @@ public class ModelTest {
 
     private void givenCurrentModel() {
         setModel(currentModel, CURRENT_PACKAGE);
-
-        currentModel.addCommand(new Command.Builder()
-                .name("Command1")
-                .packageName(CURRENT_PACKAGE)
-                .build());
-
-        currentModel.addEvent(new DomainEvent.Builder()
-                .name("Event1")
-                .packageName(CURRENT_PACKAGE)
-                .build());
     }
 
     private static final String CURRENT_PACKAGE = "current.package";
 
-    private void setModel(Model currentModel, String packageName) {
+    private void setModel(SourceModel currentModel, String packageName) {
+        var commandTypeName = SafeClassName.ofRootClass(new ClassName(CURRENT_PACKAGE, "Command1"));
         currentModel.addCommand(new Command.Builder()
                 .name("Command1")
                 .packageName(packageName)
+                .source(new PathSource(commandTypeName.toRelativePath()))
                 .build());
+
+        var eventTypeName = SafeClassName.ofRootClass(new ClassName(CURRENT_PACKAGE, "Event1"));
         currentModel.addEvent(new DomainEvent.Builder()
                 .name("Event1")
                 .packageName(packageName)
+                .source(new PathSource(eventTypeName.toRelativePath()))
                 .build());
+
         currentModel.addAggregate(new Aggregate.Builder()
                 .name("Aggregate1")
                 .packageName(packageName)
                 .ensureDefaultLocations()
                 .build());
-        var containerTypeName = SafeClassName.ofRootClass(new Name(CURRENT_PACKAGE, "Aggregate1Factory"));
+
+        var containerTypeName = SafeClassName.ofRootClass(new ClassName(CURRENT_PACKAGE, "Aggregate1Factory"));
         currentModel.addMessageListener(new MessageListener.Builder()
                 .withContainer(new MessageListenerContainer.Builder()
                         .type(MessageListenerContainerType.STANDALONE_ROOT)
@@ -73,19 +70,19 @@ public class ModelTest {
                 .build());
     }
 
-    private Model currentModel = new Model();
+    private SourceModel currentModel = new SourceModel();
 
     private void givenNewModelWithOtherPackageNames() {
         setModel(newModel, "other.package");
     }
 
-    private Model newModel = new Model();
+    private SourceModel newModel = new SourceModel();
 
     private void whenFixingModel() {
         fixedModel = currentModel.fixPackageNames(newModel);
     }
 
-    private Model fixedModel;
+    private SourceModel fixedModel;
 
     private void thenFixedModelHasCurrentModelPackageNames() {
         for(Command command : fixedModel.commands()) {

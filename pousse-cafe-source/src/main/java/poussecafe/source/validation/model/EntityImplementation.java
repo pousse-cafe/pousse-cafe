@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 
@@ -64,11 +64,11 @@ implements Serializable, HasClassNameConvention {
     private StorageImplementationKind kind;
 
     @Override
-    public Name className() {
+    public ClassName className() {
         if(kind == StorageImplementationKind.ATTRIBUTES) {
-            return new Name(entityImplementationQualifiedClassName);
+            return new ClassName(entityImplementationQualifiedClassName);
         } else if(kind == StorageImplementationKind.DATA_ACCESS) {
-            return new Name(dataAccessImplementationClassName);
+            return new ClassName(dataAccessImplementationClassName);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -76,10 +76,24 @@ implements Serializable, HasClassNameConvention {
 
     private String dataAccessImplementationClassName;
 
+    public boolean isConcrete() {
+        return isConcrete;
+    }
+
+    private boolean isConcrete;
+
     public static class Builder {
 
         public EntityImplementation build() {
             requireNonNull(implementation.sourceLine);
+            requireNonNull(implementation.storageNames);
+            requireNonNull(implementation.kind);
+
+            if(implementation.kind == StorageImplementationKind.DATA_ACCESS
+                    && implementation.storageNames.size() != 1) {
+                throw new IllegalStateException("A data access must be associated with a single storage");
+            }
+
             return implementation;
         }
 
@@ -112,6 +126,11 @@ implements Serializable, HasClassNameConvention {
 
         public Builder dataAccessImplementationClassName(Optional<String> dataAccessImplementationClassName) {
             implementation.dataAccessImplementationClassName = dataAccessImplementationClassName.orElse(null);
+            return this;
+        }
+
+        public Builder isConcrete(boolean isConcrete) {
+            implementation.isConcrete = isConcrete;
             return this;
         }
     }

@@ -7,7 +7,7 @@ import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Arrays.asList;
@@ -43,7 +43,7 @@ public class ModelAssertions {
         return model.aggregate(name);
     }
 
-    private Model model;
+    private SourceModel model;
 
     public void thenProcess1AggregateListenersFound() {
         Optional<MessageListener> listener0 = aggregateMessageListener("Aggregate1", "process1Listener0", "Command1");
@@ -137,7 +137,7 @@ public class ModelAssertions {
         assertTrue(model.commands().stream().map(Command::simpleName).anyMatch(name::equals));
     }
 
-    public ModelAssertions(Model model) {
+    public ModelAssertions(SourceModel model) {
         requireNonNull(model);
         this.model = model;
     }

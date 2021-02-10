@@ -38,7 +38,7 @@ public class ResolvedExpression {
             Type type = typeLiteral.getType();
             if(type instanceof SimpleType) {
                 SimpleType simpleType = (SimpleType) type;
-                return Optional.of(resolver.resolve(new Name(simpleType.getName())));
+                return Optional.of(resolver.resolve(new ClassName(simpleType.getName())));
             } else {
                 return Optional.empty();
             }
@@ -107,7 +107,7 @@ public class ResolvedExpression {
     public Object resolvedConstantValue() {
         if(isQualifiedName()) {
             var qualifiedName = asQualifiedName();
-            var containerType = resolver.resolve(new Name(qualifiedName.getQualifier()));
+            var containerType = resolver.resolve(new ClassName(qualifiedName.getQualifier()));
             String constantName = qualifiedName.getName().getIdentifier();
             return containerType.resolvedClass().staticFieldValue(constantName).orElse(null);
         } else {

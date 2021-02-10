@@ -4,7 +4,7 @@ import java.io.IOException;
 import org.junit.Test;
 import poussecafe.source.emil.parser.TreeAnalyzer;
 import poussecafe.source.emil.parser.TreeParser;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 public class ModelGenerationTest extends GenerationTest {
 
@@ -31,9 +31,9 @@ public class ModelGenerationTest extends GenerationTest {
         model = analyzer.model();
     }
 
-    private Model model;
+    private SourceModel model;
 
-    protected Model model() {
+    protected SourceModel model() {
         return model;
     }
 

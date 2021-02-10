@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -25,7 +25,7 @@ public class TypeDeclarationEditor {
         return this;
     }
 
-    public TypeDeclarationEditor setName(Name name) {
+    public TypeDeclarationEditor setName(ClassName name) {
         setName(name.getIdentifier().toString());
         return this;
     }

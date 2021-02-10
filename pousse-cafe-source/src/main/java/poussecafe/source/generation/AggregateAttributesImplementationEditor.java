@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -19,14 +19,14 @@ public class AggregateAttributesImplementationEditor {
 
     public void edit() {
         if(compilationUnitEditor.isNew()) {
-            compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate));
+            compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate.aggregatePackage()));
 
             compilationUnitEditor.addImport(Attribute.class.getCanonicalName());
             compilationUnitEditor.addImport(AttributeBuilder.class.getCanonicalName());
             compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
             compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
 
-            var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
+            var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage());
             var typeEditor = compilationUnitEditor.typeDeclaration();
             typeEditor.setName(typeName.getIdentifier().toString());
 
@@ -65,7 +65,7 @@ public class AggregateAttributesImplementationEditor {
 
     public static final String VERSION_FIELD_NAME = "version";
 
-    private Name identifierSimpleName() {
+    private ClassName identifierSimpleName() {
         return NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier();
     }
 

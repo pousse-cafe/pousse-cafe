@@ -2,7 +2,7 @@ package poussecafe.source.validation.namesexternalmodule;
 
 import org.junit.Test;
 import poussecafe.source.analysis.CompilationUnitResolver;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.ValidatorTest;
@@ -63,7 +63,7 @@ public class DefaultModuleWarningTest extends ValidatorTest {
     }
 
     private void givenExternalModule() {
-        addSubType(new Name(CompilationUnitResolver.MODULE_INTERFACE),
-                new Name("poussecafe.source.validation.namesexternalmodule.MyModule"));
+        addSubType(new ClassName(CompilationUnitResolver.MODULE_INTERFACE),
+                new ClassName("poussecafe.source.validation.namesexternalmodule.MyModule"));
     }
 }

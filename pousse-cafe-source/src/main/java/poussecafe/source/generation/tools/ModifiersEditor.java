@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import poussecafe.source.analysis.Modifiers;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 
 import static java.util.Collections.singleton;
@@ -103,15 +103,15 @@ public class ModifiersEditor {
     }
 
     public List<NormalAnnotationEditor> normalAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return annotations(new Name(annotationClass.getCanonicalName()),
+        return annotations(new ClassName(annotationClass.getCanonicalName()),
                 this::newNormalAnnotation,
                 this::normalAnnotationEditor,
                 Annotation::isNormalAnnotation);
     }
 
     private <E extends AnnotationEditor> List<E> annotations(
-            Name annotationClass,
-            Function<Name, Annotation> factory,
+            ClassName annotationClass,
+            Function<ClassName, Annotation> factory,
             Function<Annotation, E> editorFactory,
             Predicate<Annotation> isExpectedType) {
         var annotations = modifiers.findUnresolvedAnnotationsByIdentifier(annotationClass);
@@ -144,13 +144,13 @@ public class ModifiersEditor {
         return editors;
     }
 
-    public NormalAnnotationEditor insertNewNormalAnnotationFirst(Name annotationClass) {
+    public NormalAnnotationEditor insertNewNormalAnnotationFirst(ClassName annotationClass) {
         var newNormalAnnotation = newNormalAnnotation(annotationClass);
         listRewrite().insertFirst(newNormalAnnotation, null);
         return normalAnnotationEditor(newNormalAnnotation);
     }
 
-    public NormalAnnotationEditor insertNewNormalAnnotationLast(Name annotationClass) {
+    public NormalAnnotationEditor insertNewNormalAnnotationLast(ClassName annotationClass) {
         var newNormalAnnotation = newNormalAnnotation(annotationClass);
         insertLast(newNormalAnnotation);
         return normalAnnotationEditor(newNormalAnnotation);
@@ -170,7 +170,7 @@ public class ModifiersEditor {
         }
     }
 
-    private NormalAnnotation newNormalAnnotation(Name annotationClass) {
+    private NormalAnnotation newNormalAnnotation(ClassName annotationClass) {
         var newNormalAnnotation = rewrite.ast().newNormalAnnotation();
         newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
@@ -188,7 +188,7 @@ public class ModifiersEditor {
     }
 
     public List<Annotation> findAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return modifiers.findUnresolvedAnnotationsByIdentifier(new Name(annotationClass.getCanonicalName()));
+        return modifiers.findUnresolvedAnnotationsByIdentifier(new ClassName(annotationClass.getCanonicalName()));
     }
 
     public boolean hasAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
@@ -196,17 +196,17 @@ public class ModifiersEditor {
     }
 
     public List<SingleMemberAnnotationEditor> singleMemberAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return singleMemberAnnotation(new Name(annotationClass.getCanonicalName()));
+        return singleMemberAnnotation(new ClassName(annotationClass.getCanonicalName()));
     }
 
-    public List<SingleMemberAnnotationEditor> singleMemberAnnotation(Name annotationClass) {
+    public List<SingleMemberAnnotationEditor> singleMemberAnnotation(ClassName annotationClass) {
         return annotations(annotationClass,
                 this::newSingleMemberAnnotation,
                 this::singleMemberAnnotationEditor,
                 Annotation::isSingleMemberAnnotation);
     }
 
-    private SingleMemberAnnotation newSingleMemberAnnotation(Name annotationClass) {
+    private SingleMemberAnnotation newSingleMemberAnnotation(ClassName annotationClass) {
         var newNormalAnnotation = rewrite.ast().newSingleMemberAnnotation();
         newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
@@ -220,17 +220,17 @@ public class ModifiersEditor {
     }
 
     public List<MarkerAnnotationEditor> markerAnnotation(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        return markerAnnotation(new Name(annotationClass.getCanonicalName()));
+        return markerAnnotation(new ClassName(annotationClass.getCanonicalName()));
     }
 
-    public List<MarkerAnnotationEditor> markerAnnotation(Name annotationClass) {
+    public List<MarkerAnnotationEditor> markerAnnotation(ClassName annotationClass) {
         return annotations(annotationClass,
                 this::newMarkerAnnotation,
                 this::markerAnnotationEditor,
                 Annotation::isMarkerAnnotation);
     }
 
-    private MarkerAnnotation newMarkerAnnotation(Name annotationClass) {
+    private MarkerAnnotation newMarkerAnnotation(ClassName annotationClass) {
         var newNormalAnnotation = rewrite.ast().newMarkerAnnotation();
         newNormalAnnotation.setTypeName(rewrite.ast().newSimpleName(annotationClass.getIdentifier().toString()));
         return newNormalAnnotation;
@@ -244,10 +244,10 @@ public class ModifiersEditor {
     }
 
     public void removeAnnotations(Class<? extends java.lang.annotation.Annotation> annotationClass) {
-        removeAnnotations(new Name(annotationClass.getCanonicalName()));
+        removeAnnotations(new ClassName(annotationClass.getCanonicalName()));
     }
 
-    public void removeAnnotations(Name annotationClass) {
+    public void removeAnnotations(ClassName annotationClass) {
         var nodes = modifiers.findUnresolvedAnnotationsByIdentifier(annotationClass);
         ListRewrite listRewrite = listRewrite();
         nodes.forEach(node -> listRewrite.remove(node, null));
@@ -258,7 +258,7 @@ public class ModifiersEditor {
         listRewrite.remove(annotation, null);
     }
 
-    public SingleMemberAnnotationEditor insertNewSingleMemberAnnotationLast(Name annotationClass) {
+    public SingleMemberAnnotationEditor insertNewSingleMemberAnnotationLast(ClassName annotationClass) {
         var newAnnotation = newSingleMemberAnnotation(annotationClass);
         insertLast(newAnnotation);
         return singleMemberAnnotationEditor(newAnnotation);

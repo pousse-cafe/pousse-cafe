@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.model.Module;
@@ -38,13 +38,13 @@ public class Modules {
         return messages;
     }
 
-    public Name qualifyName(NamedComponent component) {
+    public ClassName qualifyName(NamedComponent component) {
         var componentQualifiedClassName = component.className().qualified();
         for(int i = sortedModules.length - 1; i >= 0; --i) {
             if(componentQualifiedClassName.startsWith(sortedModules[i].basePackage() + ".")) {
-                return new Name(sortedModules[i].name(), component.name());
+                return new ClassName(sortedModules[i].name(), component.name());
             }
         }
-        return new Name(component.name());
+        return new ClassName(component.name());
     }
 }

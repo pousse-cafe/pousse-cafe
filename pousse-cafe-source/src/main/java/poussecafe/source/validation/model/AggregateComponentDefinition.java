@@ -1,9 +1,11 @@
 package poussecafe.source.validation.model;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.generation.AggregatePackage;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.names.DeclaredComponent;
@@ -23,11 +25,11 @@ implements DeclaredComponent, HasClassNameConvention {
     }
 
     @Override
-    public Name className() {
+    public ClassName className() {
         return className;
     }
 
-    private Name className;
+    private ClassName className;
 
     public boolean isInnerClass() {
         return innerClass;
@@ -62,6 +64,32 @@ implements DeclaredComponent, HasClassNameConvention {
 
     private AggregateComponentKind kind;
 
+    public AggregatePackage aggregatePackage() {
+        if(!validClassName()) {
+            throw new IllegalStateException("Aggregate package cannot be computed properly with from invalid class name");
+        }
+        if(kind == AggregateComponentKind.FACTORY) {
+            return aggregatePackage(NamingConventions::aggregateNameFromSimpleFactoryName);
+        } else if(kind == AggregateComponentKind.ROOT) {
+            return aggregatePackage(NamingConventions::aggregateNameFromSimpleRootName);
+        } else if(kind == AggregateComponentKind.REPOSITORY) {
+            return aggregatePackage(NamingConventions::aggregateNameFromSimpleRepositoryName);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private AggregatePackage aggregatePackage(UnaryOperator<String> aggregateNameFunction) {
+        String[] classNameSegments = className.segments();
+        if(innerClass) {
+            return new AggregatePackage(className.withoutLastSegments(2).qualified(),
+                    NamingConventions.aggregateNameFromContainer(className.segments()[classNameSegments.length - 2]));
+        } else {
+            return new AggregatePackage(className.withoutLastSegment().qualified(),
+                    aggregateNameFunction.apply(className.segments()[classNameSegments.length - 1]));
+        }
+    }
+
     public static class Builder {
 
         public AggregateComponentDefinition build() {
@@ -77,7 +105,7 @@ implements DeclaredComponent, HasClassNameConvention {
             return this;
         }
 
-        public Builder className(Name className) {
+        public Builder className(ClassName className) {
             definition.className = className;
             return this;
         }

@@ -6,11 +6,29 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import poussecafe.source.Source;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.generation.AggregatePackage;
 
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("serial")
-public class Aggregate extends ComponentWithType implements Serializable {
+public class Aggregate implements Serializable {
+
+    protected String name;
+
+    public String simpleName() {
+        return name;
+    }
+
+    protected String packageName;
+
+    public String packageName() {
+        return packageName;
+    }
+
+    public ClassName name() {
+        return new ClassName(packageName, name);
+    }
 
     public static final String ON_ADD_METHOD_NAME = "onAdd";
 
@@ -75,6 +93,10 @@ public class Aggregate extends ComponentWithType implements Serializable {
     }
 
     private Source standaloneRepositorySource;
+
+    public AggregatePackage aggregatePackage() {
+        return new AggregatePackage(packageName, name);
+    }
 
     public static class Builder implements Serializable {
 

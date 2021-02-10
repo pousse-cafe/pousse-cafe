@@ -9,10 +9,11 @@ import static java.util.Objects.requireNonNull;
 import static poussecafe.util.Equality.referenceEquals;
 
 @SuppressWarnings("serial")
-public class AggregateContainer implements Serializable {
+public class AggregateContainer implements Serializable, WithTypeComponent {
 
     private TypeComponent typeComponent;
 
+    @Override
     public TypeComponent typeComponent() {
         return typeComponent;
     }

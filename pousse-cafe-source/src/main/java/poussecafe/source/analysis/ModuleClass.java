@@ -15,8 +15,8 @@ public class ModuleClass {
 
     private ResolvedTypeDeclaration declaration;
 
-    public Name className() {
-        return new Name(declaration.name().qualifiedName());
+    public ClassName className() {
+        return new ClassName(declaration.name().qualifiedName());
     }
 
     public String basePackage() {

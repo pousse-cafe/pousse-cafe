@@ -1,7 +1,6 @@
 package poussecafe.source.model;
 
 import java.io.Serializable;
-import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.Source;
@@ -12,12 +11,6 @@ import static poussecafe.util.Equality.referenceEquals;
 @SuppressWarnings("serial")
 public class Command extends ComponentWithType implements Serializable {
 
-    private Source source;
-
-    public Optional<Source> source() {
-        return Optional.ofNullable(source);
-    }
-
     public static class Builder {
 
         private Command command = new Command();
@@ -25,11 +18,12 @@ public class Command extends ComponentWithType implements Serializable {
         public Command build() {
             requireNonNull(command.name);
             requireNonNull(command.packageName);
+            requireNonNull(command.source);
             return command;
         }
 
-        public Builder source(Optional<Source> source) {
-            command.source = source.orElse(null);
+        public Builder source(Source source) {
+            command.source = source;
             return this;
         }
 

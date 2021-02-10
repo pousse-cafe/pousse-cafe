@@ -16,8 +16,8 @@ import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.MessageType;
-import poussecafe.source.model.Model;
-import poussecafe.source.model.ModelBuilder;
+import poussecafe.source.model.SourceModel;
+import poussecafe.source.model.SourceModelBuilder;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.Runner;
@@ -213,7 +213,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
         --typeLevel;
     }
 
-    private ModelBuilder modelBuilder = new ModelBuilder();
+    private SourceModelBuilder modelBuilder = new SourceModelBuilder();
 
     private void visitRunner(ResolvedTypeDeclaration resolvedTypeDeclaration) {
         var runnerClass = new RunnerClass(resolvedTypeDeclaration);
@@ -296,7 +296,7 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
                 .collect(toList());
     }
 
-    public Model buildModel() {
+    public SourceModel buildModel() {
         return modelBuilder.build();
     }
 
@@ -312,6 +312,6 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
 
     @Override
     public void loadSerializedState(Serializable state) {
-        modelBuilder = (ModelBuilder) state;
+        modelBuilder = (SourceModelBuilder) state;
     }
 }

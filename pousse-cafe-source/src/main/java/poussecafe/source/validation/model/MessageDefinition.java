@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.names.NamedComponent;
 
@@ -35,8 +35,8 @@ public class MessageDefinition implements NamedComponent, Serializable {
     private String qualifiedClassName;
 
     @Override
-    public Name className() {
-        return new Name(qualifiedClassName);
+    public ClassName className() {
+        return new ClassName(qualifiedClassName);
     }
 
     public boolean isEvent() {

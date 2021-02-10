@@ -2,7 +2,7 @@ package poussecafe.source.validation.names;
 
 import java.util.Optional;
 import org.junit.Test;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.model.Module;
 
@@ -17,12 +17,12 @@ public class NameResolutionTest {
     @Test
     public void noModuleResolves() {
         givenNoModules();
-        whenResolvingName(component(new Name("base.package.ComponentClass"), "Component"));
+        whenResolvingName(component(new ClassName("base.package.ComponentClass"), "Component"));
         thenResultIs("Component");
     }
 
     @SuppressWarnings("serial")
-    private NamedComponent component(Name className, String name) {
+    private NamedComponent component(ClassName className, String name) {
         return new NamedComponent() {
             @Override
             public Optional<SourceLine> sourceLine() {
@@ -30,7 +30,7 @@ public class NameResolutionTest {
             }
 
             @Override
-            public Name className() {
+            public ClassName className() {
                 return className;
             }
 
@@ -51,22 +51,22 @@ public class NameResolutionTest {
         resolved = modules.qualifyName(component);
     }
 
-    private Name resolved;
+    private ClassName resolved;
 
     private void thenResultIs(String expected) {
-        assertThat(resolved, equalTo(new Name(expected)));
+        assertThat(resolved, equalTo(new ClassName(expected)));
     }
 
     @Test
     public void oneModuleResolves() {
         givenModules(module1);
-        whenResolvingName(component(new Name("base.package.MyComponentClass"), "MyComponent"));
+        whenResolvingName(component(new ClassName("base.package.MyComponentClass"), "MyComponent"));
         thenResultIs("Module1.MyComponent");
     }
 
     private Module module1 = new Module.Builder()
             .sourceLine(mock(SourceLine.class))
-            .className(new Name("base.package.Module1"))
+            .className(new ClassName("base.package.Module1"))
             .build();
 
     private void givenModules(Module... list) {
@@ -76,17 +76,17 @@ public class NameResolutionTest {
     @Test
     public void severalModuleResolves() {
         givenModules(module1, module2, module3);
-        whenResolvingName(component(new Name("base.package2.MyComponentClass"), "MyComponent"));
+        whenResolvingName(component(new ClassName("base.package2.MyComponentClass"), "MyComponent"));
         thenResultIs("Module2.MyComponent");
     }
 
     private Module module2 = new Module.Builder()
             .sourceLine(mock(SourceLine.class))
-            .className(new Name("base.package2.Module2"))
+            .className(new ClassName("base.package2.Module2"))
             .build();
 
     private Module module3 = new Module.Builder()
             .sourceLine(mock(SourceLine.class))
-            .className(new Name("base.package3.Module3"))
+            .className(new ClassName("base.package3.Module3"))
             .build();
 }

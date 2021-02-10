@@ -8,15 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("serial")
-public class ModelBuilder implements Serializable {
+public class SourceModelBuilder implements Serializable {
 
-    public ModelBuilder putAggregate(Aggregate.Builder source) {
+    public SourceModelBuilder putAggregate(Aggregate.Builder source) {
         source.provided(true);
         aggregates.put(source.name().orElseThrow(), source);
         return this;
@@ -26,39 +25,27 @@ public class ModelBuilder implements Serializable {
 
     public void addStandaloneAggregateRoot(StandaloneAggregateRoot root) {
         standaloneAggregateRoots.put(root.aggregateName(), root);
-        standaloneAggregateRootsBySourceId.put(root.typeComponent().source().id(), root);
     }
 
     private Map<String, StandaloneAggregateRoot> standaloneAggregateRoots = new HashMap<>();
 
-    private Map<String, StandaloneAggregateRoot> standaloneAggregateRootsBySourceId = new HashMap<>();
-
     public void addStandaloneAggregateFactory(StandaloneAggregateFactory factory) {
         standaloneAggregateFactories.put(factory.aggregateName(), factory);
-        standaloneAggregateFactoriesBySourceId.put(factory.typeComponent().source().id(), factory);
     }
 
     private Map<String, StandaloneAggregateFactory> standaloneAggregateFactories = new HashMap<>();
 
-    private Map<String, StandaloneAggregateFactory> standaloneAggregateFactoriesBySourceId = new HashMap<>();
-
     public void addStandaloneAggregateRepository(StandaloneAggregateRepository repository) {
         standaloneAggregateRepositories.put(repository.aggregateName(), repository);
-        standaloneAggregateRepositoriesBySourceId.put(repository.typeComponent().source().id(), repository);
     }
 
     private Map<String, StandaloneAggregateRepository> standaloneAggregateRepositories = new HashMap<>();
 
-    private Map<String, StandaloneAggregateRepository> standaloneAggregateRepositoriesBySourceId = new HashMap<>();
-
     public void addAggregateContainer(AggregateContainer container) {
         aggregateContainers.put(container.aggregateName(), container);
-        aggregateContainersBySourceId.put(container.typeComponent().source().id(), container);
     }
 
     private Map<String, AggregateContainer> aggregateContainers = new HashMap<>();
-
-    private Map<String, AggregateContainer> aggregateContainersBySourceId = new HashMap<>();
 
     public void addProcess(ProcessModel process) {
         String name = process.simpleName();
@@ -109,14 +96,9 @@ public class ModelBuilder implements Serializable {
                     + existingCommand.name().getQualifier() + " <> " + command.name().getQualifier());
         }
         commands.put(command.simpleName(), command);
-        if(command.source().isPresent()) {
-            commandsBySourceId.put(command.source().orElseThrow().id(), command);
-        }
     }
 
     private Map<String, Command> commands = new HashMap<>();
-
-    private Map<String, Command> commandsBySourceId = new HashMap<>();
 
     public Collection<Command> commands() {
         return Collections.unmodifiableCollection(commands.values());
@@ -134,14 +116,9 @@ public class ModelBuilder implements Serializable {
                     + existingEvent.name().getQualifier() + " <> " + event.name().getQualifier());
         }
         events.put(event.simpleName(), event);
-        if(event.source().isPresent()) {
-            eventsBySourceId.put(event.source().orElseThrow().id(), event);
-        }
     }
 
     private Map<String, DomainEvent> events = new HashMap<>();
-
-    private Map<String, DomainEvent> eventsBySourceId = new HashMap<>();
 
     public Collection<DomainEvent> events() {
         return Collections.unmodifiableCollection(events.values());
@@ -153,49 +130,30 @@ public class ModelBuilder implements Serializable {
 
     public void addRunner(Runner runnerClass) {
         runners.put(runnerClass.className(), runnerClass);
-        runnersBySourceId.put(runnerClass.runnerSource().id(), runnerClass);
     }
 
     private Map<String, Runner> runners = new HashMap<>();
 
-    private Map<String, Runner> runnersBySourceId = new HashMap<>();
-
     public void forget(String sourceId) {
-        forget(sourceId, standaloneAggregateFactoriesBySourceId,
-                component -> standaloneAggregateFactories.remove(component.aggregateName()));
-        forget(sourceId, standaloneAggregateRootsBySourceId,
-                component -> standaloneAggregateRoots.remove(component.aggregateName()));
-        forget(sourceId, standaloneAggregateRepositoriesBySourceId,
-                component -> standaloneAggregateRepositories.remove(component.aggregateName()));
-        forget(sourceId, aggregateContainersBySourceId,
-                component -> aggregateContainers.remove(component.aggregateName()));
-
-        forget(sourceId, processesBySourceId,
-                component -> processes.remove(component.simpleName()));
-
+        forget(sourceId, standaloneAggregateFactories.values());
+        forget(sourceId, standaloneAggregateRoots.values());
+        forget(sourceId, standaloneAggregateRepositories.values());
+        forget(sourceId, aggregateContainers.values());
+        forget(sourceId, processes.values());
+        forget(sourceId, commands.values());
+        forget(sourceId, events.values());
+        forget(sourceId, runners.values());
         listeners.removeIf(listener -> listener.source().id().equals(sourceId));
-
-        forget(sourceId, commandsBySourceId,
-                component -> commands.remove(component.simpleName()));
-        forget(sourceId, eventsBySourceId,
-                component -> events.remove(component.simpleName()));
-
-        forget(sourceId, runnersBySourceId,
-                component -> runners.remove(component.className()));
     }
 
-    private <T> void forget(
+    private <T extends WithTypeComponent> void forget(
             String sourceId,
-            Map<String, T> componentsBySourceId,
-            Consumer<T> componentRemover) {
-        var component = componentsBySourceId.remove(sourceId);
-        if(component != null) {
-            componentRemover.accept(component);
-        }
+            Collection<T> components) {
+        components.removeIf(component -> component.typeComponent().source().id().equals(sourceId));
     }
 
-    public Model build() {
-        var model = new Model();
+    public SourceModel build() {
+        var model = new SourceModel();
         processes.values().forEach(model::addProcess);
         commands.values().forEach(model::addCommand);
         events.values().forEach(model::addEvent);
@@ -205,7 +163,7 @@ public class ModelBuilder implements Serializable {
         return model;
     }
 
-    private void buildModelAggregates(Model model) {
+    private void buildModelAggregates(SourceModel model) {
         initAggregateBuilders();
         for(MessageListener listener : listeners) {
             if(listener.isLinkedToAggregate()) {

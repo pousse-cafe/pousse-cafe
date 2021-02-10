@@ -19,11 +19,11 @@ public class ResolvedType {
     public ResolvedTypeName genericTypeName() {
         if(type instanceof SimpleType) {
             SimpleType simple = (SimpleType) type;
-            return resolver.resolve(new Name(simple.getName()));
+            return resolver.resolve(new ClassName(simple.getName()));
         } else if(type instanceof ParameterizedType) {
             ParameterizedType parametrized = (ParameterizedType) type;
             SimpleType simple = (SimpleType) parametrized.getType();
-            return resolver.resolve(new Name(simple.getName()));
+            return resolver.resolve(new ClassName(simple.getName()));
         }
         return null;
     }

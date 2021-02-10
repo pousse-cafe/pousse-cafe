@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import poussecafe.source.analysis.ClassResolver;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.SourceModelBuilder;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.DefaultInsertionMode;
@@ -18,19 +18,19 @@ import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProcessModel;
 
 import static java.util.Objects.requireNonNull;
 
 public class CoreCodeGenerator extends AbstractCodeGenerator {
 
-    public void generate(Model newModel) {
+    public void generate(SourceModel newModel) {
         var fixedModel = currentModel.fixPackageNames(newModel);
         generateWithFixedModel(fixedModel);
     }
 
-    private void generateWithFixedModel(Model fixedModel) {
+    private void generateWithFixedModel(SourceModel fixedModel) {
         for(ProcessModel process : fixedModel.processes()) {
             if(currentModel.process(process.simpleName()).isEmpty()) {
                 generateProcess(process);
@@ -59,7 +59,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         generateMessageListeners(fixedModel);
     }
 
-    private Model currentModel;
+    private SourceModel currentModel;
 
     private void generateProcess(ProcessModel process) {
         var typeName = process.name();
@@ -127,7 +127,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
 
     private CompilationUnitEditor containerOrStandaloneCompilationUnitEditor(Aggregate aggregate,
             boolean innerType,
-            Name standaloneTypeName) {
+            ClassName standaloneTypeName) {
         if(innerType) {
             var typeName = NamingConventions.aggregateContainerTypeName(aggregate);
             return compilationUnitEditor(typeName);
@@ -188,7 +188,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAggregateDataAccess(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateDataAccessTypeName(aggregate);
+        var typeName = NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage());
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateRootEditor = new AggregateDataAccessEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -242,7 +242,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
     }
 
     private void addAttributesDefaultImplementation(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage());
         var compilationUnitEditor = compilationUnitEditor(typeName);
         var aggregateFactoryEditor = new AggregateAttributesImplementationEditor.Builder()
                 .compilationUnitEditor(compilationUnitEditor)
@@ -301,7 +301,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         commandEditor.edit();
     }
 
-    private void generateHooks(Model model) {
+    private void generateHooks(SourceModel model) {
         for(Aggregate aggregate : model.aggregates()) {
             var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
                     aggregate.innerRoot(),
@@ -319,7 +319,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         }
     }
 
-    private void generateMessageListeners(Model model) {
+    private void generateMessageListeners(SourceModel model) {
         for(MessageListener listener : model.messageListeners()) {
             var containerType = listener.container().type();
             var aggregateName = listener.container().aggregateName().orElseThrow();
@@ -338,7 +338,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         }
     }
 
-    private void generateAggregateRootListeners(Model model, MessageListener listener, Aggregate aggregate) {
+    private void generateAggregateRootListeners(SourceModel model, MessageListener listener, Aggregate aggregate) {
         var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
                 aggregate.innerRoot(),
                 NamingConventions.aggregateRootTypeName(aggregate));
@@ -372,8 +372,8 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         return containerClass.editExistingType(existingRoot.orElseThrow());
     }
 
-    private void generateRunner(Model model, MessageListener listener, Aggregate aggregate) {
-        var runnerTypeName = new Name(NamingConventions.runnerPackage(aggregate),
+    private void generateRunner(SourceModel model, MessageListener listener, Aggregate aggregate) {
+        var runnerTypeName = new ClassName(NamingConventions.runnerPackage(aggregate),
                 listener.runnerName().orElseThrow());
         var runnerCompilationUnitEditor = compilationUnitEditor(runnerTypeName);
         var runnerEditor = new RunnerEditor.Builder()
@@ -385,7 +385,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         runnerEditor.edit();
     }
 
-    private void generateFactoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
+    private void generateFactoryListeners(SourceModel model, MessageListener listener, Aggregate aggregate) {
         var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
                 aggregate.innerFactory(),
                 NamingConventions.aggregateFactoryTypeName(aggregate));
@@ -402,7 +402,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         editor.edit();
     }
 
-    private void generateRepositoryListeners(Model model, MessageListener listener, Aggregate aggregate) {
+    private void generateRepositoryListeners(SourceModel model, MessageListener listener, Aggregate aggregate) {
         var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
                 aggregate.innerRepository(),
                 NamingConventions.aggregateRepositoryTypeName(aggregate));
@@ -432,7 +432,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
                     modelBuilder.includeTree(generator.sourceDirectory);
                     generator.currentModel = modelBuilder.build();
                 } catch (NoSuchFileException e) {
-                    generator.currentModel = new Model(); // empty model
+                    generator.currentModel = new SourceModel(); // empty model
                 } catch (IOException e) {
                     throw new IllegalArgumentException("Unable to build model from source directory " +
                             generator.sourceDirectory);
@@ -447,7 +447,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             return this;
         }
 
-        public Builder currentModel(Model currentModel) {
+        public Builder currentModel(SourceModel currentModel) {
             generator.currentModel = currentModel;
             return this;
         }

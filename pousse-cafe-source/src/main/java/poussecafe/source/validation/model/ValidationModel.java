@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.names.DeclaredComponent;
 
 import static poussecafe.util.Equality.referenceEquals;
@@ -24,6 +23,11 @@ public class ValidationModel implements Serializable {
     public void addMessageDefinition(MessageDefinition definition) {
         messageDefinitions.add(definition);
         messageDefinitionClassNames.add(definition.qualifiedClassName());
+        addClass(definition);
+    }
+
+    private void addClass(DeclaredComponent component) {
+        classes.add(component.className());
     }
 
     private List<MessageDefinition> messageDefinitions = new ArrayList<>();
@@ -40,6 +44,7 @@ public class ValidationModel implements Serializable {
 
     public void addMessageImplementation(MessageImplementation implementation) {
         messageImplementations.add(implementation);
+        addClass(implementation);
     }
 
     private List<MessageImplementation> messageImplementations = new ArrayList<>();
@@ -50,6 +55,7 @@ public class ValidationModel implements Serializable {
 
     public void addEntityDefinition(EntityDefinition definition) {
         entityDefinitions.add(definition);
+        addClass(definition);
     }
 
     private List<EntityDefinition> entityDefinitions = new ArrayList<>();
@@ -60,6 +66,7 @@ public class ValidationModel implements Serializable {
 
     public void addEntityImplementation(EntityImplementation implementation) {
         entityImplementations.add(implementation);
+        addClass(implementation);
     }
 
     private List<EntityImplementation> entityImplementations = new ArrayList<>();
@@ -79,12 +86,11 @@ public class ValidationModel implements Serializable {
     }
 
     public void addRunner(Runner runner) {
-        runners.put(runner.classQualifiedName(), runner);
+        runners.put(runner.className().qualified(), runner);
+        addClass(runner);
     }
 
     private Map<String, Runner> runners = new HashMap<>();
-
-    private Map<String, Runner> runnersBySourceId = new HashMap<>();
 
     public Optional<Runner> runner(String runnerClassQualifiedName) {
         return Optional.ofNullable(runners.get(runnerClassQualifiedName));
@@ -92,11 +98,10 @@ public class ValidationModel implements Serializable {
 
     public void addModule(Module module) {
         modules.put(module.className(), module);
+        addClass(module);
     }
 
-    private Map<Name, Module> modules = new HashMap<>();
-
-    private Map<String, Module> modulesBySourceId = new HashMap<>();
+    private Map<ClassName, Module> modules = new HashMap<>();
 
     public Collection<Module> modules() {
         return Collections.unmodifiableCollection(modules.values());
@@ -104,6 +109,7 @@ public class ValidationModel implements Serializable {
 
     public void addProcessDefinition(ProcessDefinition processDefinition) {
         processDefinitions.add(processDefinition);
+        addClass(processDefinition);
     }
 
     private List<ProcessDefinition> processDefinitions = new ArrayList<>();
@@ -120,6 +126,7 @@ public class ValidationModel implements Serializable {
 
     public void addAggregateRoot(AggregateComponentDefinition aggregateRoot) {
         aggregateRoots.add(aggregateRoot);
+        addClass(aggregateRoot);
     }
 
     private List<AggregateComponentDefinition> aggregateRoots = new ArrayList<>();
@@ -130,6 +137,7 @@ public class ValidationModel implements Serializable {
 
     public void addAggregateFactory(AggregateComponentDefinition aggregateFactory) {
         aggregateFactories.add(aggregateFactory);
+        addClass(aggregateFactory);
     }
 
     private List<AggregateComponentDefinition> aggregateFactories = new ArrayList<>();
@@ -140,6 +148,7 @@ public class ValidationModel implements Serializable {
 
     public void addAggregateRepository(AggregateComponentDefinition aggregateRepository) {
         aggregateRepositories.add(aggregateRepository);
+        addClass(aggregateRepository);
     }
 
     private List<AggregateComponentDefinition> aggregateRepositories = new ArrayList<>();
@@ -150,6 +159,7 @@ public class ValidationModel implements Serializable {
 
     public void addDataAccessDefinition(DataAccessDefinition definition) {
         dataAccessDefinitions.add(definition);
+        addClass(definition);
     }
 
     private List<DataAccessDefinition> dataAccessDefinitions = new ArrayList<>();
@@ -159,41 +169,54 @@ public class ValidationModel implements Serializable {
     }
 
     public void forget(String sourceId) {
-        messageDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        messageImplementations.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        forget(sourceId, messageDefinitions);
+        forget(sourceId, messageImplementations);
 
-        entityDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        entityImplementations.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        forget(sourceId, entityDefinitions);
+        forget(sourceId, entityImplementations);
 
-        processDefinitions.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        forget(sourceId, processDefinitions);
 
-        forget(sourceId, modulesBySourceId,
-                component -> modules.remove(component.className()));
+        forget(sourceId, modules.values());
 
-        aggregateRoots.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        aggregateFactories.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
-        aggregateRepositories.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+        forget(sourceId, aggregateRoots);
+        forget(sourceId, aggregateFactories);
+        forget(sourceId, aggregateRepositories);
 
         listeners.removeIf(listener -> listener.sourceLine().source().id().equals(sourceId));
 
-        forget(sourceId, runnersBySourceId,
-                component -> runners.remove(component.classQualifiedName()));
-
+        forget(sourceId, runners.values());
         forget(sourceId, dataAccessDefinitions);
     }
 
-    private <T> void forget(
+    private void forget(
             String sourceId,
-            Map<String, T> componentsBySourceId,
-            Consumer<T> componentRemover) {
-        var component = componentsBySourceId.remove(sourceId);
-        if(component != null) {
-            componentRemover.accept(component);
+            Collection<? extends DeclaredComponent> components) {
+        var iterator = components.iterator();
+        while(iterator.hasNext()) {
+            var next = iterator.next();
+            if(next.sourceLine().isPresent()
+                    && next.sourceLine().orElseThrow().source().id().equals(sourceId)) {
+                classes.remove(next.className());
+                iterator.remove();
+            }
         }
     }
 
-    private void forget(String sourceId, List<? extends DeclaredComponent> components) {
-        components.removeIf(definition-> definition.sourceLine().isPresent() && definition.sourceLine().orElseThrow().source().id().equals(sourceId));
+    public boolean hasClass(ClassName className) {
+        return classes.contains(className);
+    }
+
+    private Set<ClassName> classes = new HashSet<>();
+
+    public List<AggregateContainer> aggregateContainers() {
+        return Collections.unmodifiableList(aggregateContainers);
+    }
+
+    private List<AggregateContainer> aggregateContainers = new ArrayList<>();
+
+    public void addAggregateContainer(AggregateContainer aggregateContainer) {
+        aggregateContainers.add(aggregateContainer);
     }
 
     @Override
@@ -209,11 +232,10 @@ public class ValidationModel implements Serializable {
                 .append(messageDefinitions, other.messageDefinitions)
                 .append(messageImplementations, other.messageImplementations)
                 .append(modules, other.modules)
-                .append(modulesBySourceId, other.modulesBySourceId)
                 .append(processDefinitions, other.processDefinitions)
                 .append(runners, other.runners)
-                .append(runnersBySourceId, other.runnersBySourceId)
                 .append(dataAccessDefinitions, other.dataAccessDefinitions)
+                .append(aggregateContainers, other.aggregateContainers)
                 .build());
     }
 
@@ -230,11 +252,10 @@ public class ValidationModel implements Serializable {
                 .append(messageDefinitions)
                 .append(messageImplementations)
                 .append(modules)
-                .append(modulesBySourceId)
                 .append(processDefinitions)
                 .append(runners)
-                .append(runnersBySourceId)
                 .append(dataAccessDefinitions)
+                .append(aggregateContainers)
                 .build();
     }
 }

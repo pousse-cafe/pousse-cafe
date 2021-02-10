@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public abstract class ClassResolver {
 
-    public Optional<ResolvedClass> loadClass(Name name) {
+    public Optional<ResolvedClass> loadClass(ClassName name) {
         return loadClass(SafeClassName.ofRootClass(name));
     }
 
@@ -13,7 +13,7 @@ public abstract class ClassResolver {
         return loadInnerClass(name.rootClassName(), name.innerClassPath());
     }
 
-    public Optional<ResolvedClass> loadInnerClass(Name rootClassName, List<String> path) {
+    public Optional<ResolvedClass> loadInnerClass(ClassName rootClassName, List<String> path) {
         try {
             ResolvedClass rootClass = loadClass(rootClassName.toString());
             return locateInnerClass(rootClass, path);

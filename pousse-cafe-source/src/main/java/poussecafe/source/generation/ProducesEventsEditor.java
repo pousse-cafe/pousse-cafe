@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import poussecafe.discovery.ProducesEvent;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.ModifiersEditor;
@@ -110,23 +110,23 @@ public class ProducesEventsEditor {
     }
 
     private void addProducesEventSingleMemberAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
-        var annotationEditor = modifiers.insertNewSingleMemberAnnotationLast(new Name(ProducesEvent.class.getCanonicalName()));
+        var annotationEditor = modifiers.insertNewSingleMemberAnnotationLast(new ClassName(ProducesEvent.class.getCanonicalName()));
         setSingleValue(producedEvent, annotationEditor);
     }
 
     private void setSingleValue(ProducedEvent producedEvent, SingleMemberAnnotationEditor annotationEditor) {
-        annotationEditor.setValue(ast.newTypeLiteral(new Name(producedEvent.message().name())));
+        annotationEditor.setValue(ast.newTypeLiteral(new ClassName(producedEvent.message().name())));
     }
 
     private AstWrapper ast;
 
     private void addProducesEventNormalAnnotation(ModifiersEditor modifiers, ProducedEvent producedEvent) {
-        var annotationEditor = modifiers.insertNewNormalAnnotationLast(new Name(ProducesEvent.class.getCanonicalName()));
+        var annotationEditor = modifiers.insertNewNormalAnnotationLast(new ClassName(ProducesEvent.class.getCanonicalName()));
         setAttributes(producedEvent, annotationEditor);
     }
 
     private void setAttributes(ProducedEvent producedEvent, NormalAnnotationEditor annotationEditor) {
-        annotationEditor.setAttribute("value", ast.newTypeLiteral(new Name(producedEvent.message().name())));
+        annotationEditor.setAttribute("value", ast.newTypeLiteral(new ClassName(producedEvent.message().name())));
         if(!producedEvent.required()) {
             annotationEditor.setAttribute("required", ast.ast().newBooleanLiteral(false));
         }

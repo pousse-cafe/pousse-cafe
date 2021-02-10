@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 public class TypeDeclarationResolver implements Resolver {
 
     @Override
-    public ResolvedTypeName resolve(Name name) {
+    public ResolvedTypeName resolve(ClassName name) {
         var resolvedInnerClass = resolveInnerClass(tryRemoveDeclaringClassNamePrefix(name));
         if(resolvedInnerClass.isPresent()) {
             return resolvedInnerClass.get();
@@ -18,27 +18,27 @@ public class TypeDeclarationResolver implements Resolver {
         }
     }
 
-    private Name tryRemoveDeclaringClassNamePrefix(Name name) {
+    private ClassName tryRemoveDeclaringClassNamePrefix(ClassName name) {
         SafeClassName declaringClassName = resolvedTypeDeclaration().unresolvedName();
         if(isPrefixedWithSimpleName(name, declaringClassName)) {
-            return new Name(name.toString().substring(declaringClassName.simpleName().length() + 1));
+            return new ClassName(name.toString().substring(declaringClassName.simpleName().length() + 1));
         } else if(isPrefixedWithQualifiedName(name, declaringClassName)) {
-            return new Name(name.toString().substring(declaringClassName.qualifiedName().length() + 1));
+            return new ClassName(name.toString().substring(declaringClassName.qualifiedName().length() + 1));
         } else { // No prefix to remove
             return name;
         }
     }
 
-    private boolean isPrefixedWithSimpleName(Name name, SafeClassName declaringClassName) {
+    private boolean isPrefixedWithSimpleName(ClassName name, SafeClassName declaringClassName) {
         return !name.toString().equals(declaringClassName.simpleName())
                 && name.toString().startsWith(declaringClassName.simpleName());
     }
 
-    private boolean isPrefixedWithQualifiedName(Name name, SafeClassName declaringClassName) {
+    private boolean isPrefixedWithQualifiedName(ClassName name, SafeClassName declaringClassName) {
         return name.toString().startsWith(declaringClassName.qualifiedName());
     }
 
-    private Optional<ResolvedTypeName> resolveInnerClass(Name relativeInnerClassName) {
+    private Optional<ResolvedTypeName> resolveInnerClass(ClassName relativeInnerClassName) {
         var segments = relativeInnerClassName.segments();
         var innerClass = findInnerClassByName(resolvedTypeDeclaration(),
                 segments[0]);

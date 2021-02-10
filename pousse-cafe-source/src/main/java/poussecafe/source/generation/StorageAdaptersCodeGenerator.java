@@ -13,7 +13,7 @@ public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator
     }
 
     private void updateDefaultAttributesImplementation(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate);
+        var typeName = NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage());
         var compilationUnitEditor = compilationUnitEditor(typeName);
         if(!compilationUnitEditor.isNew()) {
             updateDefaultAttributesImplementation(aggregate, compilationUnitEditor);
@@ -27,7 +27,7 @@ public abstract class StorageAdaptersCodeGenerator extends AbstractCodeGenerator
     protected abstract void updateDefaultAttributesImplementation(Aggregate aggregate, CompilationUnitEditor compilationUnitEditor);
 
     private void addDataAccessImplementation(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate, storageName());
+        var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate.aggregatePackage(), storageName());
         var compilationUnitEditor = compilationUnitEditor(typeName);
         if(compilationUnitEditor.isNew()) {
             addDataAccessImplementation(aggregate, compilationUnitEditor);

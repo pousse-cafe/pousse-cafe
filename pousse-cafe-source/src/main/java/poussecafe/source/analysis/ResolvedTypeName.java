@@ -6,9 +6,9 @@ public class ResolvedTypeName {
 
     private Resolver resolver;
 
-    private Name name;
+    private ClassName name;
 
-    public Name name() {
+    public ClassName name() {
         return name;
     }
 
@@ -55,7 +55,7 @@ public class ResolvedTypeName {
             return this;
         }
 
-        public Builder withName(Name name) {
+        public Builder withName(ClassName name) {
             resolved.name = name;
             return this;
         }

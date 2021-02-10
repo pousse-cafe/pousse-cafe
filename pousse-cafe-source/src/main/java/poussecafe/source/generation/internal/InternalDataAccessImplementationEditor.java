@@ -15,11 +15,11 @@ import static java.util.Objects.requireNonNull;
 public class InternalDataAccessImplementationEditor {
 
     public void edit() {
-        compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate));
+        compilationUnitEditor.setPackage(NamingConventions.adaptersPackageName(aggregate.aggregatePackage()));
 
         compilationUnitEditor.addImport(DataAccessImplementation.class);
         compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
-        compilationUnitEditor.addImport(NamingConventions.aggregateDataAccessTypeName(aggregate));
+        compilationUnitEditor.addImport(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()));
         compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
         compilationUnitEditor.addImport(InternalDataAccess.class);
         compilationUnitEditor.addImport(InternalStorage.class);
@@ -28,7 +28,7 @@ public class InternalDataAccessImplementationEditor {
 
         var dataAccessImplementationAnnotation = typeEditor.modifiers().normalAnnotation(DataAccessImplementation.class).get(0);
         dataAccessImplementationAnnotation.setAttribute("aggregateRoot", ast.newTypeLiteral(NamingConventions.aggregateRootTypeName(aggregate).getIdentifier()));
-        dataAccessImplementationAnnotation.setAttribute("dataImplementation", ast.newTypeLiteral(NamingConventions.aggregateAttributesImplementationTypeName(aggregate).getIdentifier()));
+        dataAccessImplementationAnnotation.setAttribute("dataImplementation", ast.newTypeLiteral(NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage()).getIdentifier()));
 
         var storageNameAccess = ast.ast().newFieldAccess();
         storageNameAccess.setExpression(ast.ast().newSimpleName(InternalStorage.class.getSimpleName()));
@@ -36,16 +36,16 @@ public class InternalDataAccessImplementationEditor {
         dataAccessImplementationAnnotation.setAttribute("storageName", storageNameAccess);
 
         typeEditor.modifiers().setVisibility(Visibility.PUBLIC);
-        var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate, InternalStorageAdaptersCodeGenerator.INTERNAL_STORAGE_NAME).getIdentifier();
+        var typeName = NamingConventions.aggregateDataAccessImplementationTypeName(aggregate.aggregatePackage(), InternalStorageAdaptersCodeGenerator.INTERNAL_STORAGE_NAME).getIdentifier();
         typeEditor.setName(typeName);
 
         var superclassType = ast.newParameterizedType(InternalDataAccess.class);
         superclassType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier()));
-        superclassType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate).getIdentifier()));
+        superclassType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage()).getIdentifier()));
         typeEditor.setSuperclass(superclassType);
 
-        var superinterfaceType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
-        superinterfaceType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate).getIdentifier()));
+        var superinterfaceType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
+        superinterfaceType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage()).getIdentifier()));
         typeEditor.addSuperinterface(superinterfaceType);
 
         var constructorEditor = typeEditor.constructors(typeName.getIdentifier().toString()).get(0);

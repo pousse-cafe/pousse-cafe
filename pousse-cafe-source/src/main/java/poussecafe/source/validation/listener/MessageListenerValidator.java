@@ -2,7 +2,7 @@ package poussecafe.source.validation.listener;
 
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
@@ -84,7 +84,7 @@ public class MessageListenerValidator extends SubValidator {
         }
     }
 
-    private boolean isMessage(Name consumedMessageClass) {
+    private boolean isMessage(ClassName consumedMessageClass) {
         var messageClass = resolver.loadClass(consumedMessageClass);
         if(messageClass.isPresent()) {
             try {
@@ -124,7 +124,7 @@ public class MessageListenerValidator extends SubValidator {
         var messageDefinitionQualifiedName = listener.consumedMessageClass().orElseThrow().qualified();
         if(!runner.typeParametersQualifiedNames().contains(messageDefinitionQualifiedName)) {
             messages.add(new ValidationMessage.Builder()
-                    .location(runner.sourceFileLine())
+                    .location(runner.sourceLine().orElseThrow())
                     .type(ValidationMessageType.WARNING)
                     .message("Runner does not handle listener's consumed message")
                     .build());

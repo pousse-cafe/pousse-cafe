@@ -11,7 +11,7 @@ import java.util.Optional;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
-public class Model {
+public class SourceModel {
 
     void addAggregate(Aggregate source) {
         aggregates.put(source.simpleName(), source);
@@ -126,8 +126,8 @@ public class Model {
      *
      * @return A new Model instance being the result of fixing given model if needed with this one.
      */
-    public Model fixPackageNames(Model newModel) {
-        var fixedModel = new Model();
+    public SourceModel fixPackageNames(SourceModel newModel) {
+        var fixedModel = new SourceModel();
         newModel.events.values().stream().map(this::fixEvent).forEach(fixedModel::addEvent);
         newModel.commands.values().stream().map(this::fixCommand).forEach(fixedModel::addCommand);
         newModel.processes.values().stream().map(this::fixProcess).forEach(fixedModel::addProcess);

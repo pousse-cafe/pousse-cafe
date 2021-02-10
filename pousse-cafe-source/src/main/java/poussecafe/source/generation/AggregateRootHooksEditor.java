@@ -10,7 +10,7 @@ import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
 
 import static java.util.Objects.requireNonNull;
@@ -45,7 +45,7 @@ public class AggregateRootHooksEditor {
         }
     }
 
-    private Model model;
+    private SourceModel model;
 
     private Aggregate aggregate;
 
@@ -110,7 +110,7 @@ public class AggregateRootHooksEditor {
             return this;
         }
 
-        public Builder model(Model model) {
+        public Builder model(SourceModel model) {
             editor.model = model;
             return this;
         }

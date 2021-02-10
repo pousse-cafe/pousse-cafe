@@ -1,14 +1,14 @@
 package poussecafe.source.generation;
 
 import poussecafe.listeners.UpdateOneRunner;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,7 @@ public class RunnerEditor {
 
             var supertype = ast.newParameterizedType(UpdateOneRunner.class);
 
-            var messageTypeName = new Name(messageListener.consumedMessage().name());
+            var messageTypeName = new ClassName(messageListener.consumedMessage().name());
             supertype.typeArguments().add(ast.newSimpleType(messageTypeName));
 
             var idName = NamingConventions.aggregateIdentifierTypeName(aggregate);
@@ -57,7 +57,7 @@ public class RunnerEditor {
         }
     }
 
-    private Name messageName() {
+    private ClassName messageName() {
         var message = messageListener.consumedMessage();
         if(message.type() == MessageType.COMMAND) {
             return model.command(message.name()).orElseThrow().name();
@@ -68,7 +68,7 @@ public class RunnerEditor {
         }
     }
 
-    private Model model;
+    private SourceModel model;
 
     private Aggregate aggregate;
 
@@ -93,7 +93,7 @@ public class RunnerEditor {
             return this;
         }
 
-        public Builder model(Model model) {
+        public Builder model(SourceModel model) {
             editor.model = model;
             return this;
         }

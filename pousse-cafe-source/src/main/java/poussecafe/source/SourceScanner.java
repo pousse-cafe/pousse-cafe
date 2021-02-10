@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
-import java.util.Set;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 import org.slf4j.Logger;
@@ -27,11 +25,7 @@ public class SourceScanner implements SourceConsumer {
     @Override
     public void includeSource(Source source) {
         String sourceId = source.id();
-        if(includedSources.contains(sourceId)) {
-            forget(sourceId);
-        } else {
-            includedSources.add(sourceId);
-        }
+        forget(sourceId);
 
         CompilationUnit unit = source.compilationUnit();
         if(unit.getMessages().length > 0) {
@@ -57,13 +51,6 @@ public class SourceScanner implements SourceConsumer {
     public void forget(String sourceId) {
         typeResolvingVisitor.forget(sourceId);
     }
-
-    @Override
-    public boolean isIncluded(String sourceId) {
-        return includedSources.contains(sourceId);
-    }
-
-    private Set<String> includedSources = new HashSet<>();
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.ResolvedClass;
 import poussecafe.source.validation.entity.EntityValidator;
 import poussecafe.source.validation.listener.MessageListenerValidator;
@@ -17,6 +17,8 @@ import poussecafe.source.validation.model.Module;
 import poussecafe.source.validation.model.ValidationModel;
 import poussecafe.source.validation.names.NamesValidator;
 import poussecafe.source.validation.namingconventions.NamingConventionsValidator;
+import poussecafe.source.validation.types.StorageTypesValidator;
+import poussecafe.source.validation.types.TypesValidator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -42,7 +44,7 @@ public class Validator {
 
     private void enrichModelWithClassPathComponents() {
         if(classPathExplorer.isPresent()) {
-            var modules = classPathExplorer.get().getSubTypesOf(new Name(CompilationUnitResolver.MODULE_INTERFACE));
+            var modules = classPathExplorer.get().getSubTypesOf(new ClassName(CompilationUnitResolver.MODULE_INTERFACE));
             for(ResolvedClass moduleClass : modules) {
                 var module = new Module.Builder()
                         .className(moduleClass.name())
@@ -59,6 +61,7 @@ public class Validator {
         validators.add(new MessageListenerValidator(model, classResolver));
         validators.add(new NamesValidator(model));
         validators.add(new NamingConventionsValidator(model));
+        validators.add(new TypesValidator(model, storageTypesValidators, classResolver));
     }
 
     private ClassResolver classResolver;
@@ -80,20 +83,56 @@ public class Validator {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public Validator(ValidationModel model) {
-        this(model, new ClassLoaderClassResolver(), Optional.empty());
+    public static class Builder {
+
+        public Validator build() {
+            requireNonNull(validator.model);
+            requireNonNull(validator.classPathExplorer);
+            requireNonNull(validator.storageTypesValidators);
+
+            if(validator.classResolver == null) {
+                validator.classResolver = new ClassLoaderClassResolver();
+            }
+
+            validator.storageTypesValidators.forEach(this::initValidator);
+
+            return validator;
+        }
+
+        private Validator validator = new Validator();
+
+        private void initValidator(StorageTypesValidator storageValidator) {
+            storageValidator.setModel(validator.model);
+            storageValidator.setClassResolver(validator.classResolver);
+        }
+
+        public Builder model(ValidationModel model) {
+            validator.model = model;
+            return this;
+        }
+
+        public Builder classResolver(ClassResolver classResolver) {
+            validator.classResolver = classResolver;
+            return this;
+        }
+
+        public Builder classPathExplorer(ClassPathExplorer classPathExplorer) {
+            validator.classPathExplorer = Optional.of(classPathExplorer);
+            return this;
+        }
+
+        public Builder storageTypesValidator(StorageTypesValidator storageTypesValidator) {
+            requireNonNull(storageTypesValidator);
+            validator.storageTypesValidators.add(storageTypesValidator);
+            return this;
+        }
     }
 
-    public Validator(ValidationModel model, ClassResolver classResolver, Optional<ClassPathExplorer> classPathExplorer) {
-        requireNonNull(model);
-        this.model = model;
+    private Validator() {
 
-        requireNonNull(classResolver);
-        this.classResolver = classResolver;
-
-        requireNonNull(classPathExplorer);
-        this.classPathExplorer = classPathExplorer;
     }
 
     private Optional<ClassPathExplorer> classPathExplorer = Optional.empty();
+
+    private List<StorageTypesValidator> storageTypesValidators = new ArrayList<>();
 }

@@ -65,7 +65,7 @@ public class AggregateRepositoryEditor {
             editor.modifiers().markerAnnotation(Override.class);
             editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-            var returnType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
+            var returnType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
             returnType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
             editor.setReturnType(returnType);
 
@@ -74,7 +74,7 @@ public class AggregateRepositoryEditor {
             var returnStatement = ast.ast().newReturnStatement();
             var castedDataAccess = ast.ast().newCastExpression();
             var parametrizedDataAccessType = ast.newParameterizedType(
-                    NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
+                    NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
             parametrizedDataAccessType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
             castedDataAccess.setType(parametrizedDataAccessType);
             var dataAccessInvocation = ast.ast().newSuperMethodInvocation();

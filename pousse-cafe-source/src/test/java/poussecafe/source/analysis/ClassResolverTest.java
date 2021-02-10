@@ -15,7 +15,7 @@ public class ClassResolverTest {
     }
 
     private void givenQualifiedName(String qualifiedName) {
-        this.qualifiedName = new Name(qualifiedName);
+        this.qualifiedName = new ClassName(qualifiedName);
     }
 
     private void whenResolving() {
@@ -26,7 +26,7 @@ public class ClassResolverTest {
         assertTrue(resolved.isPresent());
     }
 
-    private Name qualifiedName;
+    private ClassName qualifiedName;
 
     private Optional<ResolvedClass> resolved;
 

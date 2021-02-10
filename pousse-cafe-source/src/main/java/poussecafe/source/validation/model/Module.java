@@ -3,7 +3,7 @@ package poussecafe.source.validation.model;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.names.NamedComponent;
 
@@ -21,11 +21,11 @@ public class Module implements NamedComponent {
     private SourceLine sourceLine;
 
     @Override
-    public Name className() {
+    public ClassName className() {
         return className;
     }
 
-    private Name className;
+    private ClassName className;
 
     public String basePackage() {
         return className.qualifier();
@@ -50,7 +50,7 @@ public class Module implements NamedComponent {
             return this;
         }
 
-        public Builder className(Name className) {
+        public Builder className(ClassName className) {
             module.className = className;
             return this;
         }

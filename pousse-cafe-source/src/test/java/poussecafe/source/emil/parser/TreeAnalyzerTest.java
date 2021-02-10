@@ -3,7 +3,7 @@ package poussecafe.source.emil.parser;
 import java.io.IOException;
 import org.junit.Test;
 import poussecafe.source.ModelAssertions;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 public class TreeAnalyzerTest {
 
@@ -39,5 +39,5 @@ public class TreeAnalyzerTest {
 
     private Tree tree;
 
-    private Model model;
+    private SourceModel model;
 }

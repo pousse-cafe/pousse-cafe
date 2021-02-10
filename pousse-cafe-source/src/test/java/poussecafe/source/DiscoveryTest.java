@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.analysis.SourceModelBuilder;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 
 public abstract class DiscoveryTest {
 
@@ -24,7 +24,7 @@ public abstract class DiscoveryTest {
 
     public static final Path testModelDirectory = Path.of("", "src", "test", "java", "poussecafe", "source", "testmodel");
 
-    protected Model model() {
+    protected SourceModel model() {
         return modelBuilder.build();
     }
 

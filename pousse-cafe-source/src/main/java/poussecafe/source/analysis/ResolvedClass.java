@@ -6,7 +6,7 @@ import poussecafe.source.Source;
 
 public interface ResolvedClass {
 
-    Name name();
+    ClassName name();
 
     List<ResolvedClass> innerClasses();
 
@@ -18,7 +18,7 @@ public interface ResolvedClass {
 
     Optional<Object> staticFieldValue(String constantName);
 
-    Optional<Source> source();
+    Source source();
 
     boolean isInterface();
 }

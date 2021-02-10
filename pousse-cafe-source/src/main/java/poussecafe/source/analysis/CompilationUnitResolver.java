@@ -67,7 +67,7 @@ public class CompilationUnitResolver implements Resolver {
             var rootType = (TypeDeclaration) type;
             var rootTypeSimpleName = rootType.getName().getIdentifier();
             var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
-            var rootTypeName = new Name(packageName, rootTypeSimpleName);
+            var rootTypeName = new ClassName(packageName, rootTypeSimpleName);
             resolvedTypeNames.put(rootTypeSimpleName,
                     new LazyResolver(rootTypeSimpleName, () -> Optional.of(resolveFullyQualifiedName(rootTypeName))));
             registerInnerClasses(rootType);
@@ -76,7 +76,7 @@ public class CompilationUnitResolver implements Resolver {
 
     private void registerInnerClasses(TypeDeclaration containerClass) {
         for(TypeDeclaration innerClass : containerClass.getTypes()) {
-            var innerClassName = new Name(innerClass.getName().toString());
+            var innerClassName = new ClassName(innerClass.getName().toString());
             var innerClassPath = new ArrayList<String>();
             innerClassPath.add(innerClassName.simple());
             registerClass(innerClassPath);
@@ -86,7 +86,7 @@ public class CompilationUnitResolver implements Resolver {
     private void registerClass(List<String> innerClassPath) {
         var packageName = compilationUnit.getPackage().getName().getFullyQualifiedName();
         var typeName = (AbstractTypeDeclaration) compilationUnit.types().get(0);
-        var rootClassName = new Name(packageName, typeName.getName().getFullyQualifiedName());
+        var rootClassName = new ClassName(packageName, typeName.getName().getFullyQualifiedName());
         var innerClassName = innerClassPath.get(innerClassPath.size() - 1);
         resolvedTypeNames.put(innerClassName, new LazyResolver(innerClassName,
                         () -> classResolver.loadInnerClass(rootClassName, innerClassPath)));
@@ -114,12 +114,12 @@ public class CompilationUnitResolver implements Resolver {
     private List<String> importedPackages = new ArrayList<>();
 
     private void tryRegisterSingleTypeImport(ImportDeclaration importDeclaration) {
-        var fullyQualifiedName = new Name(importDeclaration.getName().getFullyQualifiedName());
+        var fullyQualifiedName = new ClassName(importDeclaration.getName().getFullyQualifiedName());
         registerClass(fullyQualifiedName, new LazyResolver(fullyQualifiedName.toString(),
                 () -> Optional.of(resolveFullyQualifiedName(fullyQualifiedName))));
     }
 
-    private void registerClass(Name className, LazyResolver resolver) {
+    private void registerClass(ClassName className, LazyResolver resolver) {
         importedClasses.put(className.toString(), resolver);
         resolvedTypeNames.put(className.getIdentifier().toString(), resolver);
     }
@@ -133,7 +133,7 @@ public class CompilationUnitResolver implements Resolver {
     }
 
     @Override
-    public ResolvedTypeName resolve(Name name) {
+    public ResolvedTypeName resolve(ClassName name) {
         if(name.isQualifiedName()) {
             return resolvedTypeName(resolveFullyQualifiedName(name));
         } else {
@@ -153,7 +153,7 @@ public class CompilationUnitResolver implements Resolver {
         }
     }
 
-    private ResolvedClass resolveFullyQualifiedName(Name name) {
+    private ResolvedClass resolveFullyQualifiedName(ClassName name) {
         Optional<ResolvedClass> resolvedClass = tryNamingConventionBasedResolution(name);
         if(resolvedClass.isEmpty()) {
             logger.debug("Naming convention resolution failed for {}, falling back on generic method", name);
@@ -168,7 +168,7 @@ public class CompilationUnitResolver implements Resolver {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Optional<ResolvedClass> tryNamingConventionBasedResolution(Name name) {
+    private Optional<ResolvedClass> tryNamingConventionBasedResolution(ClassName name) {
         var innerClassName = innerClassName(name);
         if(innerClassName.rootClassName().isQualifiedName()) {
             return classResolver.loadClass(innerClassName);
@@ -188,7 +188,7 @@ public class CompilationUnitResolver implements Resolver {
         }
     }
 
-    private SafeClassName innerClassName(Name name) {
+    private SafeClassName innerClassName(ClassName name) {
         if(name.isQualifiedName()) {
             var segments = name.segments();
             var rootClassNameBuilder = new StringBuilder();
@@ -204,7 +204,7 @@ public class CompilationUnitResolver implements Resolver {
                 }
             }
             var innerClassNameBuilder = new SafeClassName.Builder();
-            innerClassNameBuilder.rootClassName(new Name(rootClassNameBuilder.toString()));
+            innerClassNameBuilder.rootClassName(new ClassName(rootClassNameBuilder.toString()));
             for(int i = rootClassNameIndex + 1; i < segments.length; ++i) {
                 var segment = segments[i];
                 innerClassNameBuilder.appendPathElement(segment);
@@ -215,7 +215,7 @@ public class CompilationUnitResolver implements Resolver {
         }
     }
 
-    private ResolvedClass resolvePartiallyQualifiedName(Name name) {
+    private ResolvedClass resolvePartiallyQualifiedName(ClassName name) {
         if(!name.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
@@ -228,9 +228,9 @@ public class CompilationUnitResolver implements Resolver {
         }
         for(; i >= 0; --i) {
             var simpleName = segments[i];
-            var resolvedTypeName = resolveSimpleName(new Name(simpleName));
+            var resolvedTypeName = resolveSimpleName(new ClassName(simpleName));
             if(resolvedTypeName.isPresent()) {
-                return classResolver.loadInnerClass(new Name(resolvedTypeName.get().name().qualified()),
+                return classResolver.loadInnerClass(new ClassName(resolvedTypeName.get().name().qualified()),
                             innerClassPath)
                         .orElseThrow(() -> newResolutionException(name.toString()));
             } else {
@@ -240,7 +240,7 @@ public class CompilationUnitResolver implements Resolver {
         throw new ResolutionException("Unable to resolve " + name);
     }
 
-    private Optional<ResolvedClass> resolveSimpleName(Name simpleName) {
+    private Optional<ResolvedClass> resolveSimpleName(ClassName simpleName) {
         if(simpleName.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
@@ -257,7 +257,7 @@ public class CompilationUnitResolver implements Resolver {
         }
     }
 
-    private Optional<ResolvedClass> tryResolutionWithFrequentJavaLang(Name simpleName) {
+    private Optional<ResolvedClass> tryResolutionWithFrequentJavaLang(ClassName simpleName) {
         if(FREQUENT_JAVA_LANG.contains(simpleName.simple())) {
             return tryResolutionWithJavaLang(simpleName);
         } else {
@@ -271,11 +271,11 @@ public class CompilationUnitResolver implements Resolver {
         FREQUENT_JAVA_LANG.add("Override");
     }
 
-    private Optional<ResolvedClass> tryResolutionWithCompilationUnitPackage(Name simpleName) {
+    private Optional<ResolvedClass> tryResolutionWithCompilationUnitPackage(ClassName simpleName) {
         return tryResolution(compilationUnitPackageName(), simpleName);
     }
 
-    private Optional<ResolvedClass> tryResolutionWithImportedPackages(Name simpleName) {
+    private Optional<ResolvedClass> tryResolutionWithImportedPackages(ClassName simpleName) {
         for(String importedPackage : importedPackages) {
             Optional<ResolvedClass> loadedClass = tryResolution(importedPackage, simpleName);
             if(loadedClass.isPresent()) {
@@ -289,24 +289,24 @@ public class CompilationUnitResolver implements Resolver {
         return compilationUnit.getPackage().getName().getFullyQualifiedName();
     }
 
-    private Optional<ResolvedClass> tryResolutionWithJavaLang(Name simpleName) {
+    private Optional<ResolvedClass> tryResolutionWithJavaLang(ClassName simpleName) {
         return tryResolution("java.lang", simpleName);
     }
 
-    private Optional<ResolvedClass> tryResolutionWithDefaultPackage(Name simpleName) {
+    private Optional<ResolvedClass> tryResolutionWithDefaultPackage(ClassName simpleName) {
         return tryResolution("", simpleName);
     }
 
-    private Optional<ResolvedClass> tryResolution(String packageName, Name simpleName) {
+    private Optional<ResolvedClass> tryResolution(String packageName, ClassName simpleName) {
         if(simpleName.isQualifiedName()) {
             throw new IllegalArgumentException();
         }
 
-        Name candidateQualifiedName;
+        ClassName candidateQualifiedName;
         if(packageName.isEmpty()) {
             candidateQualifiedName = simpleName;
         } else {
-            candidateQualifiedName = new Name(packageName + "." + simpleName);
+            candidateQualifiedName = new ClassName(packageName + "." + simpleName);
         }
 
         return classResolver.loadClass(candidateQualifiedName);

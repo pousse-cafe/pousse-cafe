@@ -1,31 +1,24 @@
 package poussecafe.source.analysis;
 
-import java.util.Optional;
-
 public class DataAccessImplementationType {
 
     public static boolean isDataAccessImplementation(ResolvedTypeDeclaration type) {
-        return type.name().instanceOf(CompilationUnitResolver.DATA_ACCESS_INTERFACE)
-                && isConcreteImplementation(type);
+        return type.asAnnotatedElement().findAnnotation(
+                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS).isPresent();
     }
 
-    private static boolean isConcreteImplementation(ResolvedTypeDeclaration type) {
-        return !type.modifiers().isAbstract()
-                && !type.typeDeclaration().isInterface();
-    }
-
-    public Optional<ResolvedTypeName> aggregateRoot() {
+    public ResolvedTypeName aggregateRoot() {
         var annotation = type.asAnnotatedElement().findAnnotation(
-                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS);
-        return annotation.map(a -> a.attribute("aggregateRoot").orElseThrow().asType());
+                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS).orElseThrow();
+        return annotation.attribute("aggregateRoot").orElseThrow().asType();
     }
 
     private ResolvedTypeDeclaration type;
 
-    public Optional<ResolvedTypeName> dataImplementation() {
+    public ResolvedTypeName dataImplementation() {
         var annotation = type.asAnnotatedElement().findAnnotation(
-                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS);
-        return annotation.map(a -> a.attribute("dataImplementation").orElseThrow().asType());
+                CompilationUnitResolver.DATA_ACCESS_IMPLEMENTATION_ANNOTATION_CLASS).orElseThrow();
+        return annotation.attribute("dataImplementation").orElseThrow().asType();
     }
 
     public String storageName() {

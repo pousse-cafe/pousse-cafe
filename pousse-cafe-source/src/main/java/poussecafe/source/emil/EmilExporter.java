@@ -13,7 +13,7 @@ import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
-import poussecafe.source.model.Model;
+import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.ProductionType;
 
@@ -216,7 +216,7 @@ public class EmilExporter {
         builder.appendNewLine();
     }
 
-    private Model model;
+    private SourceModel model;
 
     private void appendMessageConsumptions(MessageListener listener, String hookName, List<ProducedEvent> hookProducedEvents) {
         if(!hookProducedEvents.isEmpty()) {
@@ -337,7 +337,7 @@ public class EmilExporter {
             return exporter;
         }
 
-        public Builder model(Model model) {
+        public Builder model(SourceModel model) {
             exporter.model = model;
             return this;
         }

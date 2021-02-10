@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.source.analysis.Name;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.validation.SourceLine;
 
@@ -23,11 +23,11 @@ implements Serializable, HasClassNameConvention {
     private SourceLine sourceLine;
 
     @Override
-    public Name className() {
+    public ClassName className() {
         return className;
     }
 
-    private Name className;
+    private ClassName className;
 
     @Override
     public boolean validClassName() {
@@ -48,7 +48,7 @@ implements Serializable, HasClassNameConvention {
             return this;
         }
 
-        public Builder className(Name className) {
+        public Builder className(ClassName className) {
             dataAccessDefinition.className = className;
             return this;
         }

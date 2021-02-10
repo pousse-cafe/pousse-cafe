@@ -6,10 +6,11 @@ import poussecafe.source.generation.NamingConventions;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("serial")
-public class StandaloneAggregateFactory implements Serializable {
+public class StandaloneAggregateFactory implements Serializable, WithTypeComponent {
 
     private TypeComponent typeComponent;
 
+    @Override
     public TypeComponent typeComponent() {
         return typeComponent;
     }
