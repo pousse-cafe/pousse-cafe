@@ -222,17 +222,17 @@ public class TypeDeclarationEditor {
                 .collect(toList());
     }
 
-    private List<FieldDeclaration> findFields(String methodName) {
-        var methods = new ArrayList<FieldDeclaration>();
+    private List<FieldDeclaration> findFields(String fieldName) {
+        var fields = new ArrayList<FieldDeclaration>();
         for(Object declaration : typeDeclaration.bodyDeclarations()) {
             if(declaration instanceof FieldDeclaration) {
                 FieldDeclaration methodDeclaration = (FieldDeclaration) declaration;
-                if(isSingleField(methodDeclaration, methodName)) {
-                    methods.add(methodDeclaration);
+                if(isSingleField(methodDeclaration, fieldName)) {
+                    fields.add(methodDeclaration);
                 }
             }
         }
-        return methods;
+        return fields;
     }
 
     private boolean isSingleField(FieldDeclaration fieldDeclaration, String methodName) {
@@ -242,6 +242,10 @@ public class TypeDeclarationEditor {
         } else {
             return false;
         }
+    }
+
+    public boolean hasField(String fieldName) {
+        return !findFields(fieldName).isEmpty();
     }
 
     public List<MethodDeclarationEditor> constructors(String typeName) {

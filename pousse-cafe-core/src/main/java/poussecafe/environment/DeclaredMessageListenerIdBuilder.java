@@ -46,6 +46,15 @@ public class DeclaredMessageListenerIdBuilder {
 
     public String buildShortId() {
         checkRequirements();
-        return declaringClass.getSimpleName() + "::" + methodName + "(" + messageClass.getSimpleName() + ")";
+        return listenerContainerName() + "::" + methodName + "(" + messageClass.getSimpleName() + ")";
+    }
+
+    private String listenerContainerName() {
+        var declaringClassContainer = declaringClass.getDeclaringClass();
+        if(declaringClassContainer == null) {
+            return declaringClass.getSimpleName();
+        } else {
+            return declaringClassContainer.getSimpleName() + "." + declaringClass.getSimpleName();
+        }
     }
 }
