@@ -11,11 +11,8 @@ jdk:
 install: skip
 
 script:
-- mvn verify -B -U -Dmaven.javadoc.skip=true
-
-after_success:
 - wget -O settings.xml https://raw.githubusercontent.com/pousse-cafe/pousse-cafe-deploy/master/snapshot_release_settings.xml
-- ./can_auto_deploy.sh && mvn deploy --settings settings.xml -Dmaven.javadoc.skip=true -DskipTests
+- if ./can_auto_deploy.sh  ; then mvn deploy --settings settings.xml -Dmaven.javadoc.skip=true -DskipTests; else mvn verify -B -U -Dmaven.javadoc.skip=true; fi
 
 env:
   global:
