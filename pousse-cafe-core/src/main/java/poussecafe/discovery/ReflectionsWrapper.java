@@ -33,7 +33,7 @@ public class ReflectionsWrapper {
         }
     }
 
-    private static final String VALID_PACKAGE_NAME_REGEX = "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]$";
+    private static final String VALID_PACKAGE_NAME_REGEX = "^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*$";
 
     private Reflections reflections;
 
