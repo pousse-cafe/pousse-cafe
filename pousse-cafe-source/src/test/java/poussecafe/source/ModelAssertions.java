@@ -7,14 +7,13 @@ import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainerType;
-import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
+import poussecafe.source.model.SourceModel;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -23,20 +22,9 @@ public class ModelAssertions {
     public void thenProcess1AggregatesFound() {
         Optional<Aggregate> aggregate1 = aggregateRoot("Aggregate1");
         assertTrue(aggregate1.isPresent());
-        assertThat(aggregate1.orElseThrow().onAddProducedEvents().size(), is(1));
-        assertThat(aggregate1.orElseThrow().onAddProducedEvents(), hasItem(new ProducedEvent.Builder()
-                .message(Message.domainEvent("Event5"))
-                .required(true)
-                .build()));
 
         Optional<Aggregate> aggregate2 = aggregateRoot("Aggregate2");
         assertTrue(aggregate2.isPresent());
-
-        assertThat(aggregate2.orElseThrow().onDeleteProducedEvents().size(), is(1));
-        assertThat(aggregate2.orElseThrow().onDeleteProducedEvents(), hasItem(new ProducedEvent.Builder()
-                .message(Message.domainEvent("Event6"))
-                .required(true)
-                .build()));
     }
 
     private Optional<Aggregate> aggregateRoot(String name) {
@@ -52,6 +40,10 @@ public class ModelAssertions {
         assertThat(listener0.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate1"));
         assertThat(listener0.orElseThrow().consumedMessage(), equalTo(Message.command("Command1")));
         assertTrue(listener0.orElseThrow().processNames().contains("Process1"));
+        assertThat(listener0.orElseThrow().producedEvents(), hasItem(new ProducedEvent.Builder()
+                .message(Message.domainEvent("Event5"))
+                .required(true)
+                .build()));
 
         Optional<MessageListener> listener1 = aggregateMessageListener("Aggregate1", "process1Listener1", "Event1");
         assertTrue(listener1.isPresent());
@@ -85,6 +77,10 @@ public class ModelAssertions {
         assertThat(listener3.orElseThrow().container().aggregateName().orElseThrow(), equalTo("Aggregate2"));
         assertThat(listener3.orElseThrow().consumedMessage(), equalTo(Message.command("Command2")));
         assertTrue(listener3.orElseThrow().processNames().contains("Process1"));
+        assertThat(listener3.orElseThrow().producedEvents(), hasItem(new ProducedEvent.Builder()
+                .message(Message.domainEvent("Event6"))
+                .required(true)
+                .build()));
     }
 
     private Optional<MessageListener> aggregateMessageListener(String aggregateName, String listenerName, String messageName) {

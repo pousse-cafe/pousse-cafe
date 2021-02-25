@@ -77,22 +77,6 @@ public class ModelBuilderPersistenceTest {
                         .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate")))
                         .source(new PathSource(Path.of("package/Aggregate.java")))
                         .build())
-                .hooks(new Hooks.Builder()
-                        .onAddProducedEvent(new ProducedEvent.Builder()
-                                .message(new Message.Builder()
-                                        .name("Command1")
-                                        .type(MessageType.DOMAIN_EVENT)
-                                        .build())
-                                .required(true)
-                                .build())
-                        .onDeleteProducedEvent(new ProducedEvent.Builder()
-                                .message(new Message.Builder()
-                                        .name("Event1")
-                                        .type(MessageType.DOMAIN_EVENT)
-                                        .build())
-                                .required(true)
-                                .build())
-                        .build())
                 .build();
         builder.addAggregateContainer(expectedAggregateContainer);
 
@@ -108,22 +92,6 @@ public class ModelBuilderPersistenceTest {
                 .typeComponent(new TypeComponent.Builder()
                         .name(SafeClassName.ofRootClass(new ClassName("package.Aggregate1Root")))
                         .source(new PathSource(Path.of("package/Aggregate1Root.java")))
-                        .build())
-                .hooks(new Hooks.Builder()
-                        .onAddProducedEvent(new ProducedEvent.Builder()
-                                .message(new Message.Builder()
-                                        .name("Command1")
-                                        .type(MessageType.COMMAND)
-                                        .build())
-                                .required(true)
-                                .build())
-                        .onDeleteProducedEvent(new ProducedEvent.Builder()
-                                .message(new Message.Builder()
-                                        .name("Event1")
-                                        .type(MessageType.DOMAIN_EVENT)
-                                        .build())
-                                .required(true)
-                                .build())
                         .build())
                 .build();
         builder.addStandaloneAggregateRoot(standaloneAggregateRoot);
@@ -142,20 +110,6 @@ public class ModelBuilderPersistenceTest {
         providedAggregate.innerRoot(true);
         providedAggregate.innerRepository(true);
         providedAggregate.name("ProvidedAggregate");
-        providedAggregate.onAddProducedEvent(new ProducedEvent.Builder()
-                .message(new Message.Builder()
-                        .name("Command1")
-                        .type(MessageType.COMMAND)
-                        .build())
-                .required(true)
-                .build());
-        providedAggregate.onDeleteProducedEvent(new ProducedEvent.Builder()
-                .message(new Message.Builder()
-                        .name("Event1")
-                        .type(MessageType.DOMAIN_EVENT)
-                        .build())
-                .required(true)
-                .build());
         providedAggregate.packageName("package");
         providedAggregate.provided(true);
         builder.putAggregate(providedAggregate);
@@ -210,8 +164,6 @@ public class ModelBuilderPersistenceTest {
         assertThat(model.process("Process").orElseThrow(), equalTo(process));
 
         assertThat(model.aggregate("Aggregate").orElseThrow().containerSource().orElseThrow(), equalTo(expectedAggregateContainer.typeComponent().source()));
-        assertThat(model.aggregate("Aggregate").orElseThrow().onAddProducedEvents(), equalTo(expectedAggregateContainer.hooks().onAddProducedEvents()));
-        assertThat(model.aggregate("Aggregate").orElseThrow().onDeleteProducedEvents(), equalTo(expectedAggregateContainer.hooks().onDeleteProducedEvents()));
 
         assertThat(model.aggregateListeners("Aggregate").stream()
                 .filter(listener -> listener.methodName().equals("listener"))
@@ -222,7 +174,5 @@ public class ModelBuilderPersistenceTest {
         assertThat(model.aggregate("Aggregate1").orElseThrow().standaloneFactorySource().orElseThrow(), equalTo(standaloneAggregateFactory.typeComponent().source()));
         assertThat(model.aggregate("Aggregate1").orElseThrow().standaloneRootSource().orElseThrow(), equalTo(standaloneAggregateRoot.typeComponent().source()));
         assertThat(model.aggregate("Aggregate1").orElseThrow().standaloneRepositorySource().orElseThrow(), equalTo(standaloneAggregateRepository.typeComponent().source()));
-        assertThat(model.aggregate("Aggregate1").orElseThrow().onAddProducedEvents(), equalTo(standaloneAggregateRoot.hooks().onAddProducedEvents()));
-        assertThat(model.aggregate("Aggregate1").orElseThrow().onDeleteProducedEvents(), equalTo(standaloneAggregateRoot.hooks().onDeleteProducedEvents()));
     }
 }

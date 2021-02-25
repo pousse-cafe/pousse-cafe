@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import poussecafe.source.generation.NamingConventions;
-import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Hooks;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
@@ -195,15 +193,7 @@ public class EmilExporter {
 
     private void appendFactoryListener(MessageListener listener) {
         appendFactoryName(listener);
-
-        var aggregateName = listener.container().aggregateName().orElseThrow();
-        var aggregate = model.aggregate(aggregateName).orElseThrow();
-
-        var allProducedEvents = new ArrayList<ProducedEvent>();
-        allProducedEvents.addAll(aggregate.onAddProducedEvents());
-        allProducedEvents.addAll(listener.producedEvents());
-
-        appendMessageConsumptions(listener, Aggregate.ON_ADD_METHOD_NAME, allProducedEvents);
+        appendMessageConsumptions(listener, Hooks.ON_ADD_METHOD_NAME, listener.producedEvents());
     }
 
     private void appendFactoryName(MessageListener listener) {
@@ -251,15 +241,7 @@ public class EmilExporter {
 
     private void appendRepositoryListener(MessageListener listener) {
         appendRepositoryName(listener);
-
-        var aggregateName = listener.container().aggregateName().orElseThrow();
-        var aggregate = model.aggregate(aggregateName).orElseThrow();
-
-        var allProducedEvents = new ArrayList<ProducedEvent>();
-        allProducedEvents.addAll(aggregate.onDeleteProducedEvents());
-        allProducedEvents.addAll(listener.producedEvents());
-
-        appendMessageConsumptions(listener, Aggregate.ON_DELETE_METHOD_NAME, allProducedEvents);
+        appendMessageConsumptions(listener, Hooks.ON_DELETE_METHOD_NAME, listener.producedEvents());
     }
 
     private void appendRepositoryName(MessageListener listener) {
@@ -335,7 +317,6 @@ public class EmilExporter {
 
             exporter.processProducedEvents = new HashSet<>();
             exporter.targetListeners.stream().forEach(listener -> addToProducedEvents(listener.producedEvents()));
-            registerHooks();
 
             return exporter;
         }
@@ -343,28 +324,6 @@ public class EmilExporter {
         private void addToProducedEvents(Collection<ProducedEvent> producedEvents) {
             var messages = producedEvents.stream().map(ProducedEvent::message).collect(toList());
             exporter.processProducedEvents.addAll(messages);
-        }
-
-        private void registerHooks() {
-            registerHooks(
-                    listener -> listener.container().type().isFactory(),
-                    aggregate -> aggregate.onAddProducedEvents());
-            registerHooks(
-                    listener -> listener.container().type().isRepository(),
-                    aggregate -> aggregate.onDeleteProducedEvents());
-        }
-
-        private void registerHooks(
-                Predicate<MessageListener> listenerTriggersHook,
-                Function<Aggregate, Collection<ProducedEvent>> hookProducedEventsGetter) {
-            var aggregatesWithHookInProcess = new HashSet<String>();
-            exporter.targetListeners.stream()
-                .filter(listenerTriggersHook)
-                .forEach(listener -> aggregatesWithHookInProcess.add(listener.aggregateName()));
-            for(String aggregateName : aggregatesWithHookInProcess) {
-                var aggregate = exporter.model.aggregate(aggregateName).orElseThrow();
-                addToProducedEvents(hookProducedEventsGetter.apply(aggregate));
-            }
         }
 
         public Builder model(SourceModel model) {

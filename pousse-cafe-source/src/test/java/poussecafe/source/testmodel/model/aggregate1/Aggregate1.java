@@ -23,12 +23,6 @@ public class Aggregate1 {
 
     public static class Root extends AggregateRoot<String, Root.Attributes> {
 
-        @Override
-        @ProducesEvent(Event5.class)
-        public void onAdd() {
-
-        }
-
         static class SomeInnerClass {
 
         }
@@ -52,16 +46,19 @@ public class Aggregate1 {
     public class Factory extends AggregateFactory<String, Root, Root.Attributes> {
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public Aggregate1 process1Listener0(Command1 command) {
             return null;
         }
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public Optional<Aggregate1> process1Listener4(Command3 command) {
             return null;
         }
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public List<Aggregate1> process1Listener5(Command4 command) {
             return null;
         }

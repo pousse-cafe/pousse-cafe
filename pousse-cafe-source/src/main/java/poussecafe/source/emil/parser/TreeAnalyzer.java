@@ -33,7 +33,6 @@ import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.AggregateContainer;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
-import poussecafe.source.model.Hooks;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageListenerContainer;
@@ -85,25 +84,11 @@ public class TreeAnalyzer {
 
     public SourceModel model() {
         for(Entry<String, StandaloneAggregateRoot.Builder> root : standaloneAggregateRoots.entrySet()) {
-            var aggregateName = root.getKey();
-            var builder = root.getValue();
-            var hooksBuilder = aggregateHooks.get(aggregateName);
-            if(hooksBuilder != null) {
-                builder.hooks(hooksBuilder.build());
-            } else {
-                builder.hooks(Hooks.EMPTY);
-            }
-            model.addStandaloneAggregateRoot(builder.build());
+            model.addStandaloneAggregateRoot(root.getValue().build());
         }
 
         for(Entry<String, AggregateContainer.Builder> root : aggregateContainers.entrySet()) {
-            var aggregateName = root.getKey();
-            var builder = root.getValue();
-            var hooksBuilder = aggregateHooks.get(aggregateName);
-            if(hooksBuilder != null) {
-                builder.hooks(hooksBuilder.build());
-            }
-            model.addAggregateContainer(builder.build());
+            model.addAggregateContainer(root.getValue().build());
         }
 
         return model.build();
@@ -208,10 +193,8 @@ public class TreeAnalyzer {
 
         if(factoryConsumption.aggregateRoot() != null
                 && factoryConsumption.eventProductions() != null) {
-            ensureAggregateRoot(factoryConsumption.aggregateRoot());
-            var hooksBuilder = aggregateHooks.computeIfAbsent(aggregateName, key -> new Hooks.Builder());
             var producedEvents = producedEvents(factoryConsumption.eventProductions());
-            hooksBuilder.onAddProducedEvents(producedEvents);
+            builder.withProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);
@@ -250,8 +233,6 @@ public class TreeAnalyzer {
     }
 
     private Map<String, AggregateContainer.Builder> aggregateContainers = new HashMap<>();
-
-    private Map<String, Hooks.Builder> aggregateHooks = new HashMap<>();
 
     private List<ProducedEvent> producedEvents(EventProductionsContext eventProductions) {
         var producedEvents = new ArrayList<ProducedEvent>();
@@ -433,10 +414,8 @@ public class TreeAnalyzer {
 
         if(repositoryConsumption.aggregateRoot() != null
                 && repositoryConsumption.eventProductions() != null) {
-            ensureAggregateRoot(repositoryConsumption.aggregateRoot());
-            var hooksBuilder = aggregateHooks.computeIfAbsent(aggregateName, key -> new Hooks.Builder());
             var producedEvents = producedEvents(repositoryConsumption.eventProductions());
-            hooksBuilder.onDeleteProducedEvents(producedEvents);
+            builder.withProducedEvents(producedEvents);
         }
 
         builder.withConsumesFromExternal(consumesFromExternal);

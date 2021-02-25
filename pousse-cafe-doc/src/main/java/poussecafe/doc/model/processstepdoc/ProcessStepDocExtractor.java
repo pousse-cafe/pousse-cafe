@@ -15,7 +15,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
@@ -308,21 +307,6 @@ public class ProcessStepDocExtractor implements Service {
                         .build())
                 .consumedMessageName(consumedMessage)
                 .build();
-
-        if(aggregateDocFactory.isFactoryDoc(enclosingType)) {
-            TypeElement aggregateTypeElement = aggregateDocFactory.aggregateTypeElementOfFactory(enclosingType);
-            List<ExecutableElement> methods = ElementFilter.methodsIn(aggregateTypeElement.getEnclosedElements());
-            Optional<ExecutableElement> onAddMethod = methods.stream()
-                    .filter(element -> element.getSimpleName().toString().equals("onAdd"))
-                    .filter(element -> element.getParameters().isEmpty())
-                    .findFirst();
-            if(onAddMethod.isPresent()) {
-                ExecutableElement presentOnAddMethod = onAddMethod.get();
-                producedEvents.addAll(extractProducedEvents(presentOnAddMethod));
-                toExternals.addAll(extractToExternals(presentOnAddMethod));
-                toExternalsByEvent.putAll(extractToExternalsByEvent(presentOnAddMethod));
-            }
-        }
 
         AggregateDocId aggregate = declaringAggregate(methodDoc);
 

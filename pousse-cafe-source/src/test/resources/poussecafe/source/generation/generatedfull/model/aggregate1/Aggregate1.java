@@ -24,18 +24,21 @@ public class Aggregate1 {
     public static class Factory extends AggregateFactory<Aggregate1Id, Root, Root.Attributes> {
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public Root process1Listener0(Command1 command) {
             // TODO: build aggregate
             return null;
         }
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public Optional<Root> process1Listener4(Command3 command) {
             // TODO: build optional aggregate
             return null;
         }
 
         @MessageListener(processes = Process1.class)
+        @ProducesEvent(Event5.class)
         public Collection<Root> process1Listener5(Command4 command) {
             // TODO: build aggregate(s)
             return null;
@@ -43,12 +46,6 @@ public class Aggregate1 {
     }
 
     public static class Root extends AggregateRoot<Aggregate1Id, Root.Attributes> {
-
-        @Override
-        @ProducesEvent(Event5.class)
-        public void onAdd() {
-            // TODO: issue expected event(s)
-        }
 
         @MessageListener(
             processes = Process1.class,

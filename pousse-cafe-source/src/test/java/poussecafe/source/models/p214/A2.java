@@ -14,11 +14,6 @@ public class A2 {
 
     public static class Root extends AggregateRoot<A2Id, Root.Attributes> {
 
-        @Override
-        @ProducesEvent(E1.class)
-        public void onAdd() {
-        }
-
         public static interface Attributes extends EntityAttributes<A2Id> {
 
         }
@@ -27,6 +22,7 @@ public class A2 {
     public static class Factory extends AggregateFactory<A2Id, Root, Root.Attributes> {
 
         @MessageListener(processes = P214.class)
+        @ProducesEvent(E1.class)
         public Optional<Root> newA2(E3 event) {
             return null;
         }

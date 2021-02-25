@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.SourceModelBuilder;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.DefaultInsertionMode;
@@ -18,8 +18,8 @@ import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.MessageListener;
-import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProcessModel;
+import poussecafe.source.model.SourceModel;
 
 import static java.util.Objects.requireNonNull;
 
@@ -55,7 +55,6 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             }
         }
 
-        generateHooks(fixedModel);
         generateMessageListeners(fixedModel);
     }
 
@@ -299,24 +298,6 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
                 .event(event)
                 .build();
         commandEditor.edit();
-    }
-
-    private void generateHooks(SourceModel model) {
-        for(Aggregate aggregate : model.aggregates()) {
-            var compilationUnitEditor = containerOrStandaloneCompilationUnitEditor(aggregate,
-                    aggregate.innerRoot(),
-                    NamingConventions.aggregateRootTypeName(aggregate));
-            var typeEditor = stanaloneOrInnerTypeDeclarationEditor(compilationUnitEditor,
-                    aggregate.innerRoot(),
-                    NamingConventions.innerRootClassName());
-            var aggregateRootEditor = new AggregateRootHooksEditor.Builder()
-                    .compilationUnitEditor(compilationUnitEditor)
-                    .aggregate(aggregate)
-                    .model(model)
-                    .typeEditor(typeEditor)
-                    .build();
-            aggregateRootEditor.edit();
-        }
     }
 
     private void generateMessageListeners(SourceModel model) {

@@ -7,17 +7,10 @@ import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
 import poussecafe.source.generation.generatedfull.model.events.Event2;
 import poussecafe.source.generation.generatedfull.model.events.Event3;
-import poussecafe.source.generation.generatedfull.model.events.Event6;
 import poussecafe.source.generation.generatedfull.process.Process1;
 
 @Aggregate(factory = Aggregate2Factory.class, repository = Aggregate2Repository.class)
 public class Aggregate2Root extends AggregateRoot<Aggregate2Id, Aggregate2Root.Attributes> {
-
-    @Override
-    @ProducesEvent(Event6.class)
-    public void onDelete() {
-        // TODO: issue expected event(s)
-    }
 
     @MessageListener(processes = Process1.class, runner = Process1Listener2Runner.class)
     @ProducesEvent(value = Event3.class, required = false, consumedByExternal = "External2")

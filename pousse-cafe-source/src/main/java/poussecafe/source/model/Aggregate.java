@@ -1,10 +1,7 @@
 package poussecafe.source.model;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import poussecafe.source.Source;
 import poussecafe.source.analysis.ClassName;
 import poussecafe.source.generation.AggregatePackage;
@@ -29,22 +26,6 @@ public class Aggregate implements Serializable {
     public ClassName name() {
         return new ClassName(packageName, name);
     }
-
-    public static final String ON_ADD_METHOD_NAME = "onAdd";
-
-    public Set<ProducedEvent> onAddProducedEvents() {
-        return onAddProducedEvents;
-    }
-
-    private Set<ProducedEvent> onAddProducedEvents = new HashSet<>();
-
-    public static final String ON_DELETE_METHOD_NAME = "onDelete";
-
-    public Set<ProducedEvent> onDeleteProducedEvents() {
-        return onDeleteProducedEvents;
-    }
-
-    private Set<ProducedEvent> onDeleteProducedEvents = new HashSet<>();
 
     public boolean innerFactory() {
         return innerFactory;
@@ -120,8 +101,6 @@ public class Aggregate implements Serializable {
         public Builder startingFrom(Aggregate other) {
             aggregate.name = other.name;
             aggregate.packageName = other.packageName;
-            aggregate.onAddProducedEvents.addAll(other.onAddProducedEvents);
-            aggregate.onDeleteProducedEvents.addAll(other.onDeleteProducedEvents);
 
             innerFactory = other.innerFactory;
             innerRoot = other.innerRoot;
@@ -132,26 +111,6 @@ public class Aggregate implements Serializable {
             aggregate.standaloneRootSource = other.standaloneRootSource;
             aggregate.standaloneRepositorySource = other.standaloneRepositorySource;
 
-            return this;
-        }
-
-        public Builder onAddProducedEvents(Collection<ProducedEvent> producedEvents) {
-            aggregate.onAddProducedEvents.addAll(producedEvents);
-            return this;
-        }
-
-        public Builder onAddProducedEvent(ProducedEvent producedEvent) {
-            aggregate.onAddProducedEvents.add(producedEvent);
-            return this;
-        }
-
-        public Builder onDeleteProducedEvents(Collection<ProducedEvent> onDeleteProducedEvents) {
-            aggregate.onDeleteProducedEvents.addAll(onDeleteProducedEvents);
-            return this;
-        }
-
-        public Builder onDeleteProducedEvent(ProducedEvent producedEvent) {
-            aggregate.onDeleteProducedEvents.add(producedEvent);
             return this;
         }
 

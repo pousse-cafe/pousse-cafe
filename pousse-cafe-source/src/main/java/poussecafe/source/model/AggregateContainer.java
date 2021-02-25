@@ -18,12 +18,6 @@ public class AggregateContainer implements Serializable, WithTypeComponent {
         return typeComponent;
     }
 
-    private Hooks hooks = Hooks.EMPTY;
-
-    public Hooks hooks() {
-        return hooks;
-    }
-
     public String aggregateName() {
         return NamingConventions.aggregateNameFromContainer(typeComponent.typeName().rootClassName().simple());
     }
@@ -34,17 +28,11 @@ public class AggregateContainer implements Serializable, WithTypeComponent {
 
         public AggregateContainer build() {
             requireNonNull(aggregate.typeComponent);
-            requireNonNull(aggregate.hooks);
             return aggregate;
         }
 
         public Builder typeComponent(TypeComponent typeComponent) {
             aggregate.typeComponent = typeComponent;
-            return this;
-        }
-
-        public Builder hooks(Hooks hooks) {
-            aggregate.hooks = hooks;
             return this;
         }
     }
@@ -57,7 +45,6 @@ public class AggregateContainer implements Serializable, WithTypeComponent {
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
                 .append(typeComponent, other.typeComponent)
-                .append(hooks, other.hooks)
                 .build());
     }
 
@@ -65,7 +52,6 @@ public class AggregateContainer implements Serializable, WithTypeComponent {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(typeComponent)
-                .append(hooks)
                 .build();
     }
 }

@@ -15,12 +15,6 @@ public class StandaloneAggregateRoot implements Serializable, WithTypeComponent 
         return typeComponent;
     }
 
-    private Hooks hooks;
-
-    public Hooks hooks() {
-        return hooks;
-    }
-
     public String aggregateName() {
         return NamingConventions.aggregateNameFromSimpleRootName(typeComponent.typeName().rootClassName().simple());
     }
@@ -31,17 +25,11 @@ public class StandaloneAggregateRoot implements Serializable, WithTypeComponent 
 
         public StandaloneAggregateRoot build() {
             requireNonNull(aggregate.typeComponent);
-            requireNonNull(aggregate.hooks);
             return aggregate;
         }
 
         public Builder typeComponent(TypeComponent typeComponent) {
             aggregate.typeComponent = typeComponent;
-            return this;
-        }
-
-        public Builder hooks(Hooks hooks) {
-            aggregate.hooks = hooks;
             return this;
         }
     }
