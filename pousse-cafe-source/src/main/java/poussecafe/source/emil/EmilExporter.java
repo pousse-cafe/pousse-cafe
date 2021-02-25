@@ -1,6 +1,7 @@
 package poussecafe.source.emil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -8,14 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
-import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.ProducedEvent;
 import poussecafe.source.model.ProductionType;
+import poussecafe.source.model.SourceModel;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
@@ -331,10 +334,37 @@ public class EmilExporter {
             exporter.targetListeners.sort(new EmilListenersComparator());
 
             exporter.processProducedEvents = new HashSet<>();
-            exporter.targetListeners.stream().forEach(listener -> exporter.processProducedEvents.addAll(
-                    listener.producedEvents().stream().map(ProducedEvent::message).collect(toList())));
+            exporter.targetListeners.stream().forEach(listener -> addToProducedEvents(listener.producedEvents()));
+            registerHooks();
 
             return exporter;
+        }
+
+        private void addToProducedEvents(Collection<ProducedEvent> producedEvents) {
+            var messages = producedEvents.stream().map(ProducedEvent::message).collect(toList());
+            exporter.processProducedEvents.addAll(messages);
+        }
+
+        private void registerHooks() {
+            registerHooks(
+                    listener -> listener.container().type().isFactory(),
+                    aggregate -> aggregate.onAddProducedEvents());
+            registerHooks(
+                    listener -> listener.container().type().isRepository(),
+                    aggregate -> aggregate.onDeleteProducedEvents());
+        }
+
+        private void registerHooks(
+                Predicate<MessageListener> listenerTriggersHook,
+                Function<Aggregate, Collection<ProducedEvent>> hookProducedEventsGetter) {
+            var aggregatesWithHookInProcess = new HashSet<String>();
+            exporter.targetListeners.stream()
+                .filter(listenerTriggersHook)
+                .forEach(listener -> aggregatesWithHookInProcess.add(listener.aggregateName()));
+            for(String aggregateName : aggregatesWithHookInProcess) {
+                var aggregate = exporter.model.aggregate(aggregateName).orElseThrow();
+                addToProducedEvents(hookProducedEventsGetter.apply(aggregate));
+            }
         }
 
         public Builder model(SourceModel model) {
