@@ -330,23 +330,28 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private String listenerContainerName(TypeElement enclosingType) {
-        String componentName;
-        if(aggregateDocFactory.isStandaloneRoot(enclosingType)) {
-            componentName = NamingConventions.aggregateNameFromSimpleRootName(enclosingType.getSimpleName().toString());
-        } else if(aggregateDocFactory.isStandaloneFactory(enclosingType)) {
-            componentName = NamingConventions.aggregateNameFromSimpleFactoryName(enclosingType.getSimpleName().toString());
-        } else if(aggregateDocFactory.isStandaloneRepository(enclosingType)) {
-            componentName = NamingConventions.aggregateNameFromSimpleRepositoryName(enclosingType.getSimpleName().toString());
-        } else {
-            var potentialContainer = enclosingType.getEnclosingElement();
-            if(potentialContainer instanceof TypeElement
-                    && aggregateDocFactory.isContainer((TypeElement) potentialContainer)) {
-                componentName = potentialContainer.getSimpleName().toString();
+        try {
+            String componentName;
+            if(aggregateDocFactory.isStandaloneRoot(enclosingType)) {
+                componentName = NamingConventions.aggregateNameFromSimpleRootName(enclosingType.getSimpleName().toString());
+            } else if(aggregateDocFactory.isStandaloneFactory(enclosingType)) {
+                componentName = NamingConventions.aggregateNameFromSimpleFactoryName(enclosingType.getSimpleName().toString());
+            } else if(aggregateDocFactory.isStandaloneRepository(enclosingType)) {
+                componentName = NamingConventions.aggregateNameFromSimpleRepositoryName(enclosingType.getSimpleName().toString());
             } else {
-                componentName = enclosingType.getSimpleName().toString();
+                var potentialContainer = enclosingType.getEnclosingElement();
+                if(potentialContainer instanceof TypeElement
+                        && aggregateDocFactory.isContainer((TypeElement) potentialContainer)) {
+                    componentName = potentialContainer.getSimpleName().toString();
+                } else {
+                    componentName = enclosingType.getSimpleName().toString();
+                }
             }
+            return componentName;
+        } catch (IllegalArgumentException e) {
+            Logger.warn("Listener container {} does not follow naming conventions", enclosingType.getQualifiedName().toString(), e);
+            return enclosingType.getSimpleName().toString();
         }
-        return componentName;
     }
 
     private AggregateDocId declaringAggregate(ExecutableElement methodDoc) {
