@@ -59,7 +59,9 @@ public class CustomMessageListenerFactory {
         MessageListenerDefinition.checkMethodIsListener(method);
         return state -> {
             try {
-                method.invoke(target, state.message().original());
+                synchronized(target) {
+                    method.invoke(target, state.message().original());
+                }
                 return MessageListenerConsumptionReport.success(listenerShortId);
             } catch (Exception e) {
                 throw new PousseCafeException("Unable to invoke declared listener", e);

@@ -150,7 +150,7 @@ public abstract class PousseCafeTest {
 
     @MessageListener
     @SuppressWarnings("unchecked")
-    public void catchAll(Message message) {
+    public synchronized void catchAll(Message message) {
         Class<? extends Message> messageClass = runtime.environment().definedMessageClass(message.getClass());
         var messages = issuedMessages.computeIfAbsent(messageClass, key -> new ArrayList<>());
         messages.add(message);
@@ -160,7 +160,7 @@ public abstract class PousseCafeTest {
     private Map<Class<? extends Message>, List> issuedMessages = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <M extends Message> List<M> capturedMessages(Class<M> messageClass) {
+    public synchronized <M extends Message> List<M> capturedMessages(Class<M> messageClass) {
         return issuedMessages.getOrDefault(messageClass, emptyList());
     }
 
