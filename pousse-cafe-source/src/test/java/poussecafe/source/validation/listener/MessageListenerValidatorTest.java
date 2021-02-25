@@ -99,4 +99,34 @@ public class MessageListenerValidatorTest extends ValidatorTest {
                 && message.location().line() == 5
                 && message.type() == ValidationMessageType.WARNING;
     }
+
+    @Test
+    public void ignoredProducesEventThenWarning() throws IOException {
+        givenValidator();
+        givenContainerWithIgnoredProducesEvent();
+        whenValidating();
+        thenAtLeast(this::ignoredProducesEventWarning);
+    }
+
+    private void givenContainerWithIgnoredProducesEvent() {
+        includeClass(ListenerContainerWithIgnoredEvent.class);
+    }
+
+    private boolean ignoredProducesEventWarning(ValidationMessage message) {
+        return message.location().source().id().contains("/ListenerContainer")
+                && message.message().equals("ProducesEvent annotations only annotate listeners")
+                && message.type() == ValidationMessageType.WARNING;
+    }
+
+    @Test
+    public void noIgnoredProducesEventThenNoWarning() throws IOException {
+        givenValidator();
+        givenContainerWithoutIgnoredProducesEvent();
+        whenValidating();
+        thenNone(this::ignoredProducesEventWarning);
+    }
+
+    private void givenContainerWithoutIgnoredProducesEvent() {
+        includeClass(ListenerContainerWithoutIgnoredEvent.class);
+    }
 }

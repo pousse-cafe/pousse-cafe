@@ -39,6 +39,10 @@ public class ResolvedAnnotation {
 
     private Resolver resolver;
 
+    public Annotation annotation() {
+        return annotation;
+    }
+
     private Annotation annotation;
 
     public static class Builder {

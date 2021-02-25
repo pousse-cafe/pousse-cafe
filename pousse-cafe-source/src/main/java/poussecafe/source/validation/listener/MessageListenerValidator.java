@@ -1,8 +1,9 @@
 package poussecafe.source.validation.listener;
 
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.ClassResolver;
 import poussecafe.source.analysis.CompilationUnitResolver;
-import poussecafe.source.analysis.ClassName;
+import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.SubValidator;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
@@ -18,6 +19,13 @@ public class MessageListenerValidator extends SubValidator {
     public void validate() {
         for(MessageListener listener : model.messageListeners()) {
             validateListener(listener);
+        }
+        for(SourceLine line : model.ignoredProducesEventAnnotations()) {
+            messages.add(new ValidationMessage.Builder()
+                    .location(line)
+                    .type(ValidationMessageType.WARNING)
+                    .message("ProducesEvent annotations only annotate listeners")
+                    .build());
         }
     }
 

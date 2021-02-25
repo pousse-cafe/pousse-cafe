@@ -5,6 +5,8 @@ import java.util.Optional;
 import poussecafe.source.WithPersistableState;
 import poussecafe.source.analysis.AggregateContainerClass;
 import poussecafe.source.analysis.AggregateRootClass;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.CompilationUnitResolver;
 import poussecafe.source.analysis.DataAccessImplementationType;
 import poussecafe.source.analysis.DataAccessInterface;
 import poussecafe.source.analysis.EntityDefinitionType;
@@ -14,7 +16,6 @@ import poussecafe.source.analysis.MessageDefinitionType;
 import poussecafe.source.analysis.MessageImplementationType;
 import poussecafe.source.analysis.MessageListenerMethod;
 import poussecafe.source.analysis.ModuleClass;
-import poussecafe.source.analysis.ClassName;
 import poussecafe.source.analysis.ProcessDefinitionType;
 import poussecafe.source.analysis.RepositoryClass;
 import poussecafe.source.analysis.ResolvedCompilationUnit;
@@ -227,6 +228,11 @@ public class ValidationModelBuilderVisitor implements ResolvedCompilationUnitVis
     public boolean visit(ResolvedMethod method) {
         if(MessageListenerMethod.isMessageListener(method)) {
             visitMessageListener(method);
+        } else {
+            var annotation = method.asAnnotatedElement().findAnnotation(CompilationUnitResolver.PRODUCES_EVENT_ANNOTATION_CLASS);
+            if(annotation.isPresent()) {
+                model.addIgnoredProducesEventAnnotation(unit.sourceFileLine(annotation.get().annotation()));
+            }
         }
         return false;
     }

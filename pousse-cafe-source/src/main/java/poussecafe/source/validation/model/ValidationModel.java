@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.source.analysis.ClassName;
+import poussecafe.source.validation.SourceLine;
 import poussecafe.source.validation.names.DeclaredComponent;
 
 import static poussecafe.util.Equality.referenceEquals;
@@ -219,6 +220,16 @@ public class ValidationModel implements Serializable {
         aggregateContainers.add(aggregateContainer);
     }
 
+    public void addIgnoredProducesEventAnnotation(SourceLine line) {
+        ignoredProducesEventAnnotations.add(line);
+    }
+
+    private List<SourceLine> ignoredProducesEventAnnotations = new ArrayList<>();
+
+    public List<SourceLine> ignoredProducesEventAnnotations() {
+        return Collections.unmodifiableList(ignoredProducesEventAnnotations);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
@@ -236,6 +247,7 @@ public class ValidationModel implements Serializable {
                 .append(runners, other.runners)
                 .append(dataAccessDefinitions, other.dataAccessDefinitions)
                 .append(aggregateContainers, other.aggregateContainers)
+                .append(ignoredProducesEventAnnotations, other.ignoredProducesEventAnnotations)
                 .build());
     }
 
@@ -256,6 +268,7 @@ public class ValidationModel implements Serializable {
                 .append(runners)
                 .append(dataAccessDefinitions)
                 .append(aggregateContainers)
+                .append(ignoredProducesEventAnnotations)
                 .build();
     }
 }
