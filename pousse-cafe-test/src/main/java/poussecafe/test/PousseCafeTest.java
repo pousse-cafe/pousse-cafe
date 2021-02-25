@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import poussecafe.discovery.MessageListener;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.DomainEvent;
@@ -22,6 +23,7 @@ import static java.util.Collections.emptyList;
 public abstract class PousseCafeTest {
 
     @Before
+    @BeforeEach
     public void configureContext() {
         runtime = runtimeBuilder().build();
         runtime.injector().injectDependenciesInto(this);
