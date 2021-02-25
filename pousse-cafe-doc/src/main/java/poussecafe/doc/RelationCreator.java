@@ -131,7 +131,8 @@ public class RelationCreator implements Consumer<TypeElement> {
 
     private void tryAttributes(TypeElement classDoc) {
         TypeElement rootClassDoc;
-        if(aggregateDocFactory.isStandaloneRoot(classDoc)) {
+        if(aggregateDocFactory.isStandaloneRoot(classDoc)
+                || entityDocFactory.isEntityDoc(classDoc)) {
             rootClassDoc = classDoc;
         } else {
             rootClassDoc = aggregateDocFactory.innerRoot(classDoc).orElseThrow();
