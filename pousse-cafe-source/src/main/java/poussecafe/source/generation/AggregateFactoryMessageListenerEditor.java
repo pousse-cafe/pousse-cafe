@@ -8,7 +8,7 @@ import poussecafe.source.generation.tools.TypeDeclarationEditor;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.SourceModel;
-import poussecafe.source.model.ProductionType;
+import poussecafe.source.model.Cardinality;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,15 +23,15 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
     @Override
     protected void setReturnType(MethodDeclarationEditor methodEditor) {
         var aggregateRootSimpleTypeName = NamingConventions.aggregateRootTypeName(aggregate).getIdentifier().toString();
-        if(messageListener.productionType().isEmpty()
-                || messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
+        if(messageListener.returnTypeCardinality().isEmpty()
+                || messageListener.returnTypeCardinality().orElseThrow() == Cardinality.SINGLE) {
             methodEditor.setReturnType(ast.newSimpleType(aggregateRootSimpleTypeName));
-        } else if(messageListener.productionType().orElse(null) == ProductionType.OPTIONAL) {
+        } else if(messageListener.returnTypeCardinality().orElse(null) == Cardinality.OPTIONAL) {
             compilationUnitEditor.addImport(Optional.class);
             var optionalType = ast.newParameterizedType(Optional.class);
             optionalType.typeArguments().add(ast.newSimpleType(aggregateRootSimpleTypeName));
             methodEditor.setReturnType(optionalType);
-        } else if(messageListener.productionType().orElse(null) == ProductionType.SEVERAL) {
+        } else if(messageListener.returnTypeCardinality().orElse(null) == Cardinality.SEVERAL) {
             compilationUnitEditor.addImport(Collection.class);
             var collectionType = ast.newParameterizedType(Collection.class);
             collectionType.typeArguments().add(ast.newSimpleType(aggregateRootSimpleTypeName));
@@ -43,11 +43,11 @@ public class AggregateFactoryMessageListenerEditor extends AggregateMessageListe
 
     @Override
     protected void setBody(MethodDeclarationEditor methodEditor) {
-        if(messageListener.productionType().orElseThrow() == ProductionType.SINGLE) {
+        if(messageListener.returnTypeCardinality().orElseThrow() == Cardinality.SINGLE) {
             methodEditor.setEmptyBodyWithComment("TODO: build aggregate");
-        } else if(messageListener.productionType().orElseThrow() == ProductionType.OPTIONAL) {
+        } else if(messageListener.returnTypeCardinality().orElseThrow() == Cardinality.OPTIONAL) {
             methodEditor.setEmptyBodyWithComment("TODO: build optional aggregate");
-        } else if(messageListener.productionType().orElseThrow() == ProductionType.SEVERAL) {
+        } else if(messageListener.returnTypeCardinality().orElseThrow() == Cardinality.SEVERAL) {
             methodEditor.setEmptyBodyWithComment("TODO: build aggregate(s)");
         }
         methodEditor.appendStatementToBody(ast.newReturnNullStatement());

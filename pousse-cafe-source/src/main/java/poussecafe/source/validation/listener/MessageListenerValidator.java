@@ -60,12 +60,13 @@ public class MessageListenerValidator extends SubValidator {
                     .build());
         }
 
-        if(!listener.containerType().isFactory()
+        if(!(listener.containerType().isFactory()
+                || listener.containerType().isRepository())
                 && listener.returnsValue()) {
             messages.add(new ValidationMessage.Builder()
                     .location(listener.sourceLine())
                     .type(ValidationMessageType.WARNING)
-                    .message("Only message listeners defined in factories should return a value")
+                    .message("Only message listeners defined in factories or repositories should return a value")
                     .build());
         }
 

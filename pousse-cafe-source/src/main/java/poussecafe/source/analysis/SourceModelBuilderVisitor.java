@@ -210,9 +210,8 @@ public class SourceModelBuilderVisitor implements ResolvedCompilationUnitVisitor
                 var listenerMethod = new MessageListenerMethod(method);
                 var messageListener = new MessageListener.Builder()
                         .withContainer(container)
-                        .withMethodDeclaration(listenerMethod)
-                        .withRunnerClass(listenerMethod.runner().map(ResolvedTypeName::qualifiedName))
                         .withSource(compilationUnit.sourceFile())
+                        .withMethodDeclaration(listenerMethod)
                         .build();
                 modelBuilder.addMessageListener(messageListener);
 

@@ -1,8 +1,12 @@
 package poussecafe.source.generation;
 
+import java.util.Collection;
+import java.util.Optional;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
 import poussecafe.source.generation.tools.MethodDeclarationEditor;
 import poussecafe.source.generation.tools.TypeDeclarationEditor;
+import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Cardinality;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.SourceModel;
 
@@ -15,9 +19,32 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
         return typeEditor.method(messageListener.methodName()).get(0);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void setReturnType(MethodDeclarationEditor methodEditor) {
+        var identifierTypeName = NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier().toString();
+        var identifierSimpleType = ast.newSimpleType(identifierTypeName);
+        if(messageListener.returnTypeCardinality().isEmpty()
+                || messageListener.returnTypeCardinality().orElseThrow() == Cardinality.SINGLE) {
+            methodEditor.setReturnType(identifierSimpleType);
+        } else if(messageListener.returnTypeCardinality().orElse(null) == Cardinality.OPTIONAL) {
+            compilationUnitEditor.addImport(Optional.class);
+            var optionalType = ast.newParameterizedType(Optional.class);
+            optionalType.typeArguments().add(identifierSimpleType);
+            methodEditor.setReturnType(optionalType);
+        } else if(messageListener.returnTypeCardinality().orElse(null) == Cardinality.SEVERAL) {
+            compilationUnitEditor.addImport(Collection.class);
+            var collectionType = ast.newParameterizedType(Collection.class);
+            collectionType.typeArguments().add(identifierSimpleType);
+            methodEditor.setReturnType(collectionType);
+        }
+    }
+
+    private Aggregate aggregate;
+
     @Override
     protected void setBody(MethodDeclarationEditor methodEditor) {
-        methodEditor.setEmptyBodyWithComment("TODO: delete aggregate(s)");
+        methodEditor.setEmptyBodyWithComment("TODO: return identifier(s) of aggregates to delete");
     }
 
     public static class Builder {
@@ -29,6 +56,7 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
             requireNonNull(editor.model);
             requireNonNull(editor.messageListener);
             requireNonNull(editor.typeEditor);
+            requireNonNull(editor.aggregate);
 
             editor.ast = editor.compilationUnitEditor.ast();
 
@@ -52,6 +80,11 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
 
         public Builder typeEditor(TypeDeclarationEditor typeEditor) {
             editor.typeEditor = typeEditor;
+            return this;
+        }
+
+        public Builder aggregate(Aggregate aggregate) {
+            editor.aggregate = aggregate;
             return this;
         }
     }

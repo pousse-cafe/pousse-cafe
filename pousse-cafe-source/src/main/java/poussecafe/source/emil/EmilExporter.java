@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import poussecafe.source.generation.NamingConventions;
+import poussecafe.source.model.Cardinality;
 import poussecafe.source.model.Hooks;
 import poussecafe.source.model.Message;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.MessageType;
 import poussecafe.source.model.ProducedEvent;
-import poussecafe.source.model.ProductionType;
 import poussecafe.source.model.SourceModel;
 
 import static java.util.Objects.requireNonNull;
@@ -200,13 +200,19 @@ public class EmilExporter {
         var factoryIdentifier = listener.container().containerIdentifier();
         builder.appendFactoryIdentifier(factoryIdentifier);
         builder.appendInlineNote(listener.methodName());
-        ProductionType productionType = listener.productionType().orElseThrow();
-        if(productionType == ProductionType.OPTIONAL) {
-            builder.appendOptionalOperator();
-        } else if(productionType == ProductionType.SEVERAL) {
-            builder.appendSeveralOperator();
-        }
+        appendCardinality(listener);
         builder.appendNewLine();
+    }
+
+    private void appendCardinality(MessageListener listener) {
+        var cardinality = listener.returnTypeCardinality();
+        if(cardinality.isPresent()) {
+            if(cardinality.get() == Cardinality.OPTIONAL) {
+                builder.appendOptionalOperator();
+            } else if(cardinality.get() == Cardinality.SEVERAL) {
+                builder.appendSeveralOperator();
+            }
+        }
     }
 
     private SourceModel model;
@@ -248,6 +254,7 @@ public class EmilExporter {
         var repositoryIdentifier = listener.container().containerIdentifier();
         builder.appendRepositoryIdentifier(repositoryIdentifier);
         builder.appendInlineNote(listener.methodName());
+        appendCardinality(listener);
         builder.appendNewLine();
     }
 

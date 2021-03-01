@@ -55,7 +55,7 @@ aggregateRootConsumption :
     ;
 
 repositoryConsumption :
-    'Re' '{' ( simpleRepositoryName=NAME | qualifiedRepositoryName=qualifiedName ) '}' '[' listenerName=NAME ']'
+    'Re' '{' ( simpleRepositoryName=NAME | qualifiedRepositoryName=qualifiedName ) '}' '[' listenerName=NAME ']' ( optional='#' | serveral='+' )?
         ( aggregateRoot '[' 'onDelete' ']' ':' eventProductions )?
     ;
 

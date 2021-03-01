@@ -69,11 +69,11 @@ public class MessageListener implements Serializable {
 
     private String consumesFromExternal;
 
-    public Optional<ProductionType> productionType() {
-        return Optional.ofNullable(productionType);
+    public Optional<Cardinality> returnTypeCardinality() {
+        return Optional.ofNullable(returnTypeCardinality);
     }
 
-    private ProductionType productionType;
+    private Cardinality returnTypeCardinality;
 
     public boolean isLinkedToAggregate() {
         return container().aggregateName().isPresent();
@@ -104,7 +104,7 @@ public class MessageListener implements Serializable {
             requireNonNull(messageListener.source);
 
             if(messageListener.container.type().isFactory()
-                    && messageListener.productionType == null) {
+                    && messageListener.returnTypeCardinality == null) {
                 throw new IllegalStateException("Production type must be present with factory listeners");
             }
 
@@ -141,20 +141,20 @@ public class MessageListener implements Serializable {
             Optional<ResolvedType> returnType = method.returnType();
             if(returnType.isPresent()
                     && !returnType.get().isPrimitive()) {
-                messageListener.productionType = productionType(returnType.get());
+                messageListener.returnTypeCardinality = returnTypeCardinality(returnType.get());
             }
 
             return this;
         }
 
-        private ProductionType productionType(ResolvedType returnType) {
+        private Cardinality returnTypeCardinality(ResolvedType returnType) {
             ResolvedTypeName typeName = returnType.genericTypeName();
             if(typeName.instanceOf(Collection.class.getCanonicalName())) {
-                return ProductionType.SEVERAL;
+                return Cardinality.SEVERAL;
             } else if(typeName.instanceOf(Optional.class.getCanonicalName())) {
-                return ProductionType.OPTIONAL;
+                return Cardinality.OPTIONAL;
             } else {
-                return ProductionType.SINGLE;
+                return Cardinality.SINGLE;
             }
         }
 
@@ -168,8 +168,8 @@ public class MessageListener implements Serializable {
             return this;
         }
 
-        public Builder withProductionType(Optional<ProductionType> productionType) {
-            messageListener.productionType = productionType.orElse(null);
+        public Builder withReturnTypeCardinality(Optional<Cardinality> productionType) {
+            messageListener.returnTypeCardinality = productionType.orElse(null);
             return this;
         }
 
@@ -229,7 +229,7 @@ public class MessageListener implements Serializable {
                 .append(methodName, other.methodName)
                 .append(processNames, other.processNames)
                 .append(producedEvents, other.producedEvents)
-                .append(productionType, other.productionType)
+                .append(returnTypeCardinality, other.returnTypeCardinality)
                 .append(runnerClass, other.runnerClass)
                 .append(source, other.source)
                 .build());
@@ -244,7 +244,7 @@ public class MessageListener implements Serializable {
                 .append(methodName)
                 .append(processNames)
                 .append(producedEvents)
-                .append(productionType)
+                .append(returnTypeCardinality)
                 .append(runnerClass)
                 .append(source)
                 .build();

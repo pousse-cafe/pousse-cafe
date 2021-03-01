@@ -51,7 +51,7 @@ public class RepositoryMessageListenerFactory {
     public MessageListener buildMessageListener(MessageListenerDefinition definition) {
         Method method = definition.method();
         AggregateRepository repository = environment.repository(definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
-        Class<?> entityClass = repository.entityClass();
+        Class<?> aggregateRootClass = repository.entityClass();
         MethodInvoker invoker = new MethodInvoker.Builder()
                 .method(method)
                 .target(repository)
@@ -65,15 +65,27 @@ public class RepositoryMessageListenerFactory {
         }
         return definition.messageListenerBuilder()
                 .type(MessageListenerType.REPOSITORY)
-                .consumer(buildRepositoryMessageConsumer(entityClass, invoker, definition.shortId()))
+                .consumer(buildRepositoryMessageConsumer(repository, invoker, definition))
                 .collisionSpace(collisionSpace)
-                .aggregateRootClass(Optional.of(repository.entityClass()))
+                .aggregateRootClass(Optional.of(aggregateRootClass))
                 .build();
     }
 
     private Environment environment;
 
-    private MessageConsumer buildRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker, String listenerId) {
+    private MessageConsumer buildRepositoryMessageConsumer(
+            AggregateRepository repository,
+            MethodInvoker invoker,
+            MessageListenerDefinition definition) {
+
+        if(definition.method().getReturnType() == void.class) {
+            return buildLegacyRepositoryMessageConsumer(repository.entityClass(), invoker, definition.shortId());
+        } else {
+            return buildIdProducingMessageConsumer(repository, definition, invoker);
+        }
+    }
+
+    private MessageConsumer buildLegacyRepositoryMessageConsumer(Class<?> entityClass, MethodInvoker invoker, String listenerId) {
         return state -> {
             TransactionRunner transactionRunner = transactionRunnerLocator.locateTransactionRunner(entityClass);
             transactionRunner.runInTransaction(() -> invokeInSpan(invoker, state));
@@ -94,4 +106,42 @@ public class RepositoryMessageListenerFactory {
     }
 
     private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
+
+    private MessageConsumer buildIdProducingMessageConsumer(
+            AggregateRepository repository,
+            MessageListenerDefinition definition,
+            MethodInvoker invoker) {
+        var method = definition.method();
+        var returnType = method.getReturnType();
+        var entityClass = repository.entityClass();
+        var aggregateServices = environment.aggregateServicesOf(entityClass).orElseThrow();
+
+        if(Iterable.class.isAssignableFrom(returnType)) {
+            return deleteSeveralAggregates(definition, invoker, aggregateServices);
+        } else {
+            return deleteOneOrNoneAggregate(definition, invoker, aggregateServices);
+        }
+    }
+
+    private MessageConsumer deleteOneOrNoneAggregate(MessageListenerDefinition definition, MethodInvoker invoker, AggregateServices aggregateServices) {
+        return new DeleteOneOrNoneAggregateMessageConsumer.Builder()
+                .listenerId(definition.shortId())
+                .transactionRunnerLocator(transactionRunnerLocator)
+                .invoker(invoker)
+                .aggregateServices(aggregateServices)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .expectedEvents(definition.expectedEvents())
+                .build();
+    }
+
+    private MessageConsumer deleteSeveralAggregates(MessageListenerDefinition definition, MethodInvoker invoker, AggregateServices aggregateServices) {
+        return new DeleteSeveralAggregatesMessageConsumer.Builder()
+                .listenerId(definition.shortId())
+                .transactionRunnerLocator(transactionRunnerLocator)
+                .invoker(invoker)
+                .aggregateServices(aggregateServices)
+                .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                .expectedEvents(definition.expectedEvents())
+                .build();
+    }
 }

@@ -16,7 +16,7 @@ public class Aggregate2Repository extends AggregateRepository<Aggregate2Id, Aggr
 
     @MessageListener(processes = Process1.class)
     @ProducesEvent(Event6.class)
-    public void process1Listener3(Command2 command) {
-        // TODO: delete aggregate(s)
+    public Aggregate2Id process1Listener3(Command2 command) {
+        // TODO: return identifier(s) of aggregates to delete
     }
 }

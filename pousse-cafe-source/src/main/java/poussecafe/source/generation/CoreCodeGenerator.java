@@ -395,6 +395,7 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
                 .model(model)
                 .messageListener(listener)
                 .typeEditor(typeEditor)
+                .aggregate(aggregate)
                 .build();
         editor.edit();
     }

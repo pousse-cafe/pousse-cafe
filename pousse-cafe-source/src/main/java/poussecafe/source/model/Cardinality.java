@@ -1,6 +1,6 @@
 package poussecafe.source.model;
 
-public enum ProductionType {
+public enum Cardinality {
     SINGLE,
     OPTIONAL,
     SEVERAL

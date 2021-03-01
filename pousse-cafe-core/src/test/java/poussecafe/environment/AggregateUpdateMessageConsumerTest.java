@@ -3,8 +3,6 @@ package poussecafe.environment;
 import java.util.Optional;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import poussecafe.apm.ApmSpan;
-import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
@@ -87,11 +85,7 @@ public class AggregateUpdateMessageConsumerTest {
         AggregateFactory factory = mock(AggregateFactory.class);
         AggregateServices aggregateServices = new AggregateServices(Aggregate.class, repository, factory);
 
-        applicationPerformanceMonitoring = mock(ApplicationPerformanceMonitoring.class);
-        ApmSpan currentSpan = mock(ApmSpan.class);
-        when(applicationPerformanceMonitoring.currentSpan()).thenReturn(currentSpan);
-        newSpan = mock(ApmSpan.class);
-        when(currentSpan.startSpan()).thenReturn(newSpan);
+        applicationPerformanceMonitoringMocker = new ApplicationPerformanceMonitoringMocker();
 
         runner = mock(AggregateMessageListenerRunner.class);
         when(runner.targetAggregates(any())).thenReturn(new TargetAggregates.Builder<>()
@@ -105,7 +99,7 @@ public class AggregateUpdateMessageConsumerTest {
             consumer = new AggregateUpdateMessageConsumer.Builder()
                     .listenerId("listenerId")
                     .aggregateServices(aggregateServices)
-                    .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
+                    .applicationPerformanceMonitoring(applicationPerformanceMonitoringMocker.mock())
                     .method(aggregateRoot.getClass().getDeclaredMethod(methodName, Message.class))
                     .runner(runner)
                     .transactionRunnerLocator(transactionRunnerLocator)
@@ -123,9 +117,7 @@ public class AggregateUpdateMessageConsumerTest {
 
     private MessageListenersGroup messageListenersGroup;
 
-    private ApplicationPerformanceMonitoring applicationPerformanceMonitoring;
-
-    private ApmSpan newSpan;
+    private ApplicationPerformanceMonitoringMocker applicationPerformanceMonitoringMocker;
 
     private AggregateMessageListenerRunner runner;
 
@@ -181,7 +173,7 @@ public class AggregateUpdateMessageConsumerTest {
     }
 
     private void thenNewSpanEnded() {
-        verify(newSpan).end();
+        applicationPerformanceMonitoringMocker.verifySpanEnded();
     }
 
     @Test

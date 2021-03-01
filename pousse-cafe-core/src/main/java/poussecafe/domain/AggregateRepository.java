@@ -139,7 +139,15 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
         considerMessageSending(entity, messageCollection);
     }
 
+    /**
+     * @deprecated use {@link #deleteById(Object)} instead
+     */
+    @Deprecated(since = "0.28", forRemoval = true)
     public void delete(K id) {
+        deleteById(id);
+    }
+
+    public void deleteById(K id) {
         ApmSpan span = applicationPerformanceMonitoring.currentSpan().startSpan();
         span.setName("deleteByKey(" + entityClass.getSimpleName() + ")");
         try {
@@ -155,6 +163,7 @@ public abstract class AggregateRepository<K, A extends AggregateRoot<K, D>, D ex
 
     private void deleteInSpan(A entity) {
         entity.onDelete();
+        entity.validateIssuedMessages();
         MessageCollection messageCollection = entity.messageCollection();
         dataAccess.deleteData(entity.attributes().identifier().value());
         considerMessageSending(entity, messageCollection);

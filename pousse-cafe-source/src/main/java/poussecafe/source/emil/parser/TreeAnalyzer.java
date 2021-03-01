@@ -31,6 +31,7 @@ import poussecafe.source.emil.parser.EmilParser.RepositoryConsumptionContext;
 import poussecafe.source.emil.parser.EmilParser.SingleMessageConsumptionContext;
 import poussecafe.source.generation.NamingConventions;
 import poussecafe.source.model.AggregateContainer;
+import poussecafe.source.model.Cardinality;
 import poussecafe.source.model.Command;
 import poussecafe.source.model.DomainEvent;
 import poussecafe.source.model.Message;
@@ -39,7 +40,6 @@ import poussecafe.source.model.MessageListenerContainer;
 import poussecafe.source.model.MessageListenerContainerType;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
-import poussecafe.source.model.ProductionType;
 import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.SourceModelBuilder;
 import poussecafe.source.model.StandaloneAggregateFactory;
@@ -184,11 +184,11 @@ public class TreeAnalyzer {
         }
 
         if(factoryListener.optional != null) {
-            builder.withProductionType(Optional.of(ProductionType.OPTIONAL));
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.OPTIONAL));
         } else if(factoryListener.serveral != null) {
-            builder.withProductionType(Optional.of(ProductionType.SEVERAL));
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.SEVERAL));
         } else {
-            builder.withProductionType(Optional.of(ProductionType.SINGLE));
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.SINGLE));
         }
 
         if(factoryConsumption.aggregateRoot() != null
@@ -410,6 +410,14 @@ public class TreeAnalyzer {
         builder.withSource(source(typeName));
         if(processName != null) {
             builder.withProcessName(processName);
+        }
+
+        if(repositoryConsumption.optional != null) {
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.OPTIONAL));
+        } else if(repositoryConsumption.serveral != null) {
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.SEVERAL));
+        } else {
+            builder.withReturnTypeCardinality(Optional.of(Cardinality.SINGLE));
         }
 
         if(repositoryConsumption.aggregateRoot() != null
