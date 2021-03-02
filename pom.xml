@@ -222,7 +222,6 @@
     <modules>
         <module>pousse-cafe-core</module>
         <module>pousse-cafe-test</module>
-        <module>pousse-cafe-doc</module>
         <module>pousse-cafe-jackson</module>
         <module>pousse-cafe-attribute</module>
         <module>pousse-cafe-base</module>

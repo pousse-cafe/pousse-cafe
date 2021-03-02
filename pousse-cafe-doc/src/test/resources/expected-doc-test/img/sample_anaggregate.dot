@@ -1,7 +1,0 @@
-graph {
-splines=spline;
-overlap=false;
-"AnAggregate" -- "MyEntity" [style=solid];
-"MyEntity"[shape=box];
-"AnAggregate"[shape=box,style=bold];
-}

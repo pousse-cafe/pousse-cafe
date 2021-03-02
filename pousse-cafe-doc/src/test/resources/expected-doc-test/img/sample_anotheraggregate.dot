@@ -1,5 +1,0 @@
-graph {
-splines=spline;
-overlap=false;
-"AnotherAggregate"[shape=box,style=bold];
-}
