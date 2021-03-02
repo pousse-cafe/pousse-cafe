@@ -228,6 +228,5 @@
         <module>pousse-cafe-base</module>
         <module>pousse-cafe-injector</module>
         <module>pousse-cafe-test-mockito</module>
-        <module>pousse-cafe-source</module>
     </modules>
 </project>

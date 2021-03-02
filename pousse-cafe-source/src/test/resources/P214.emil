@@ -1,9 +1,0 @@
-process P214
-
-E3! -> F{A2.Factory}[newA2]#
-    @A2.Root[onAdd]:
-        :E1! -> F{A1.Factory}[newA1]
-            @A1.Root[onAdd]:
-                :E2! -> .
-                :.
-        :.
