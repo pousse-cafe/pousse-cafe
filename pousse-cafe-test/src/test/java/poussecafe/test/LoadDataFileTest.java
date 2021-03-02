@@ -9,6 +9,7 @@ import poussecafe.test.domain.chain1.Chain1ElementRepository;
 
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("deprecation")
 public class LoadDataFileTest extends PousseCafeTest {
 
     @Test

@@ -2,6 +2,7 @@ package poussecafe.messaging.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Test;
 import poussecafe.runtime.Runtime.Builder;
 import poussecafe.test.PousseCafeTest;
@@ -22,6 +23,7 @@ import poussecafe.test.domain.chain3.Chain3ElementRepository;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertTrue;
 
+@Ignore // Disabled by default because test takes too long in CI environment
 public class WaitOnInternalQueueWorksWithLongChainsTest extends PousseCafeTest {
 
     @Override
