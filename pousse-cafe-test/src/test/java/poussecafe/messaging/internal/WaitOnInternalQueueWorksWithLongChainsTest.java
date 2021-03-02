@@ -22,7 +22,7 @@ import poussecafe.test.domain.chain3.Chain3ElementRepository;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertTrue;
 
-public class WaitOnInternalQueueWorksWithLongChains extends PousseCafeTest {
+public class WaitOnInternalQueueWorksWithLongChainsTest extends PousseCafeTest {
 
     @Override
     protected Builder runtimeBuilder() {

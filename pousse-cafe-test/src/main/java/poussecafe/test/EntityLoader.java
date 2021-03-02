@@ -17,6 +17,10 @@ public class EntityLoader {
         dataAccess.addData(dataImplementation);
     }
 
+    public void loadEntity(EntityAttributes dataImplementation) {
+        dataAccess.addData(dataImplementation);
+    }
+
     private EntityImplementation entityImplementation;
 
     private PousseCafeTestObjectMapper objectMapper = new PousseCafeTestObjectMapper();

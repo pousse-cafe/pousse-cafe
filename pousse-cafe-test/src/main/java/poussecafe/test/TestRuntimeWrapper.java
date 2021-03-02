@@ -134,6 +134,26 @@ public class TestRuntimeWrapper {
         entities.forEachRemaining(loader::loadEntity);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    void loadEntity(Class entityClass, List<EntityAttributes> data) {
+        logger.info("Loading data for entity {}", entityClass);
+        Optional<EntityImplementation> optionalEntityImplementation =
+                runtime.environment().entityImplementation(entityClass);
+        if(optionalEntityImplementation.isEmpty()) {
+            throw new PousseCafeException("No entity implementation found for " + entityClass);
+        }
+
+        var entityImplementation = optionalEntityImplementation.get();
+        if(entityImplementation.getStorage() != InternalStorage.instance()) {
+            throw new PousseCafeException("Unsupported test storage");
+        }
+
+        AggregateServices services = runtime.environment().aggregateServicesOf(entityImplementation.getEntityClass())
+                .orElseThrow();
+        InternalDataAccess dataAccess = (InternalDataAccess) services.repository().dataAccess();
+        data.forEach(dataAccess::addData);
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private PousseCafeTestObjectMapper objectMapper = new PousseCafeTestObjectMapper();

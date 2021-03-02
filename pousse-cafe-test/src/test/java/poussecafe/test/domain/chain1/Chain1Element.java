@@ -2,6 +2,7 @@ package poussecafe.test.domain.chain1;
 
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
+import poussecafe.discovery.ProducesEvent;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.messaging.internal.ChainElementAttributes;
 import poussecafe.messaging.internal.ChainElementTouch;
@@ -13,6 +14,7 @@ import poussecafe.messaging.internal.ChainElementTouch;
 public class Chain1Element extends AggregateRoot<Chain1ElementId, Chain1Element.Attributes> {
 
     @MessageListener(runner = Chain1ElementTouchRunner.class)
+    @ProducesEvent(value = ChainElementTouchable.class, required = false)
     public void touch(ChainElementTouchable event) {
         touch.touch();
     }

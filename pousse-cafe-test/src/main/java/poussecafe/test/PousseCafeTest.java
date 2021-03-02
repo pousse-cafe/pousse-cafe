@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
@@ -93,6 +94,10 @@ public abstract class PousseCafeTest {
         wrapper.issue(events);
     }
 
+    /**
+     * @deprecated use {@link #given(DataSet)} instead (loaded JSON file has to be converted into a DataSet instance).
+     */
+    @Deprecated(since = "0.28")
     public void loadDataFile(String path) {
         wrapper.loadDataFile(path);
     }
@@ -128,6 +133,10 @@ public abstract class PousseCafeTest {
                     .build());
     }
 
+    /**
+     * @deprecated use {@link #given(DataSet)} instead (loaded JSON file has to be converted into a DataSet instance).
+     */
+    @Deprecated(since = "0.28")
     public void given(String resourceName) {
         loadDataFile("/" + resourceName + ".json");
     }
@@ -170,6 +179,13 @@ public abstract class PousseCafeTest {
             throw new IllegalStateException(consumed.size() + " messages were captured instead of a single one");
         } else {
             return consumed.get(0);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void given(DataSet dataSet) {
+        for(Entry<Class, List<EntityAttributes>> data : dataSet.data().entrySet()) {
+            wrapper.loadEntity(data.getKey(), data.getValue());
         }
     }
 }
