@@ -76,7 +76,6 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
         }
         addAggregateId(aggregate);
         addAggregateRoot(aggregate);
-        addAggregateDataAccess(aggregate);
         addAggregateFactory(aggregate);
         addAggregateRepository(aggregate);
         addAttributesDefaultImplementation(aggregate);
@@ -184,16 +183,6 @@ public class CoreCodeGenerator extends AbstractCodeGenerator {
             this.name = name;
             this.insertionMode = insertionMode;
         }
-    }
-
-    private void addAggregateDataAccess(Aggregate aggregate) {
-        var typeName = NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage());
-        var compilationUnitEditor = compilationUnitEditor(typeName);
-        var aggregateRootEditor = new AggregateDataAccessEditor.Builder()
-                .compilationUnitEditor(compilationUnitEditor)
-                .aggregate(aggregate)
-                .build();
-        aggregateRootEditor.edit();
     }
 
     private void addAggregateFactory(Aggregate aggregate) {

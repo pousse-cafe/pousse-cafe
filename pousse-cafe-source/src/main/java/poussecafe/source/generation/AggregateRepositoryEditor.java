@@ -3,6 +3,7 @@ package poussecafe.source.generation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import poussecafe.domain.AggregateRepository;
+import poussecafe.domain.EntityDataAccess;
 import poussecafe.source.analysis.Visibility;
 import poussecafe.source.generation.tools.AstWrapper;
 import poussecafe.source.generation.tools.CompilationUnitEditor;
@@ -32,7 +33,8 @@ public class AggregateRepositoryEditor {
             var repositoryType = repositoryType();
             typeEditor.setSuperclass(repositoryType);
 
-            editDataAccessMethod(typeEditor.method(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
+            addDataAccessMethod(typeEditor.method(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0));
+            addDataAccess();
 
             compilationUnitEditor.flush();
         }
@@ -60,22 +62,19 @@ public class AggregateRepositoryEditor {
         return ast.newSimpleType(NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
     }
 
-    private void editDataAccessMethod(MethodDeclarationEditor editor) {
+    private void addDataAccessMethod(MethodDeclarationEditor editor) {
         if(editor.isNewNode()) {
             editor.modifiers().markerAnnotation(Override.class);
             editor.modifiers().setVisibility(Visibility.PUBLIC);
 
-            var returnType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
-            returnType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+            var returnType = dataAccessType();
             editor.setReturnType(returnType);
 
             var body = ast.ast().newBlock();
 
             var returnStatement = ast.ast().newReturnStatement();
             var castedDataAccess = ast.ast().newCastExpression();
-            var parametrizedDataAccessType = ast.newParameterizedType(
-                    NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
-            parametrizedDataAccessType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+            var parametrizedDataAccessType = dataAccessType();
             castedDataAccess.setType(parametrizedDataAccessType);
             var dataAccessInvocation = ast.ast().newSuperMethodInvocation();
             dataAccessInvocation.setName(ast.ast().newSimpleName("dataAccess"));
@@ -85,6 +84,37 @@ public class AggregateRepositoryEditor {
 
             editor.setBody(body);
         }
+    }
+
+    private ParameterizedType dataAccessType() {
+        var returnType = ast.newParameterizedType(NamingConventions.innerDataAccessTypeName());
+        returnType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+        return returnType;
+    }
+
+    private void addDataAccess() {
+        compilationUnitEditor.addImport(EntityDataAccess.class.getCanonicalName());
+
+        var typeName = NamingConventions.innerDataAccessTypeName();
+        var dataAccessEditor = typeEditor.newTypeDeclarationLast(typeName);
+        dataAccessEditor.modifiers().setVisibility(Visibility.PUBLIC);
+        dataAccessEditor.modifiers().setStatic(true);
+        dataAccessEditor.setInterface(true);
+        dataAccessEditor.setName(typeName);
+        dataAccessEditor.setTypeParameter(0, ast.newExtendingTypeParameter("D",
+                NamingConventions.aggregateAttributesQualifiedTypeName(aggregate)));
+
+        var entityDataAccessType = entityDataAccessType();
+        dataAccessEditor.addSuperinterface(entityDataAccessType);
+    }
+
+    private ParameterizedType entityDataAccessType() {
+        var parametrizedType = ast.newParameterizedType(EntityDataAccess.class);
+        var aggregateIdentifierType = ast.newSimpleType(
+                NamingConventions.aggregateIdentifierTypeName(aggregate).getIdentifier());
+        parametrizedType.typeArguments().add(aggregateIdentifierType);
+        parametrizedType.typeArguments().add(ast.newSimpleType("D"));
+        return parametrizedType;
     }
 
     public static class Builder {

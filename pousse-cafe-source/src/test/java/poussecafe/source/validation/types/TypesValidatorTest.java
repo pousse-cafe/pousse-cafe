@@ -11,42 +11,15 @@ import poussecafe.source.validation.types.adapters.MyAggregateInternalDataAccess
 public class TypesValidatorTest extends ValidatorTest {
 
     @Test
-    public void warnNoDataAccessDefinition() {
-        givenValidator();
-        givenAggregate();
-        whenValidating();
-        thenAtLeast(this::noDataAccessDefinitionWarning);
-    }
-
-    private void givenAggregate() {
-        includeClass(MyAggregate.class);
-    }
-
-    private boolean noDataAccessDefinitionWarning(ValidationMessage message) {
-        return message.type() == ValidationMessageType.WARNING
-                && message.location().source().id().endsWith("/MyAggregate.java")
-                && message.message().contains("Data access definition missing");
-    }
-
-    @Test
-    public void noMessageWithDataAccessDefinition() {
-        givenValidator();
-        givenAggregate();
-        givenDataAccessDefinition();
-        whenValidating();
-        thenNone(this::noDataAccessDefinitionWarning);
-    }
-
-    private void givenDataAccessDefinition() {
-        includeClass(MyAggregateDataAccess.class);
-    }
-
-    @Test
     public void warnNoAttributesImplementation() {
         givenValidator();
         givenAggregate();
         whenValidating();
         thenAtLeast(this::noAttributesImplementationWarning);
+    }
+
+    private void givenAggregate() {
+        includeClass(MyAggregate.class);
     }
 
     private boolean noAttributesImplementationWarning(ValidationMessage message) {

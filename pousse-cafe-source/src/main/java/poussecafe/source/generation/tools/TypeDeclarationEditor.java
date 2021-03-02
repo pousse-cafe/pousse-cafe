@@ -91,6 +91,12 @@ public class TypeDeclarationEditor {
         return editNewType(typeName, newTypeDeclaration);
     }
 
+    public InnerTypeDeclarationEditor newTypeDeclarationLast(String typeName) {
+        var newTypeDeclaration = rewrite.ast().newTypeDeclaration();
+        rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertLast(newTypeDeclaration, null);
+        return editNewType(typeName, newTypeDeclaration);
+    }
+
     public TypeDeclarationEditor setInterface(boolean isInterface) {
         rewrite.set(TypeDeclaration.INTERFACE_PROPERTY, isInterface);
         return this;
@@ -164,7 +170,7 @@ public class TypeDeclarationEditor {
         return newMethod;
     }
 
-    public MethodDeclarationEditor insertNewMethodBefore(AbstractTypeDeclaration referenceNode) {
+    public MethodDeclarationEditor insertNewMethodBefore(ASTNode referenceNode) {
         MethodDeclaration newMethod = rewrite.ast().newMethodDeclaration();
         rewrite.listRewrite(TypeDeclaration.BODY_DECLARATIONS_PROPERTY).insertBefore(newMethod, referenceNode, null);
         return editMethod(newMethod, true);

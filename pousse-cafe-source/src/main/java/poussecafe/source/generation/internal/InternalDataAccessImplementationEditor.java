@@ -19,7 +19,7 @@ public class InternalDataAccessImplementationEditor {
 
         compilationUnitEditor.addImport(DataAccessImplementation.class);
         compilationUnitEditor.addImport(NamingConventions.aggregateRootTypeName(aggregate));
-        compilationUnitEditor.addImport(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()));
+        compilationUnitEditor.addImport(NamingConventions.aggregateDataAccessTypeName(aggregate));
         compilationUnitEditor.addImport(NamingConventions.aggregateIdentifierTypeName(aggregate));
         compilationUnitEditor.addImport(InternalDataAccess.class);
         compilationUnitEditor.addImport(InternalStorage.class);
@@ -44,7 +44,7 @@ public class InternalDataAccessImplementationEditor {
         superclassType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage()).getIdentifier()));
         typeEditor.setSuperclass(superclassType);
 
-        var superinterfaceType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate.aggregatePackage()).getIdentifier());
+        var superinterfaceType = ast.newParameterizedType(NamingConventions.aggregateDataAccessTypeName(aggregate).getIdentifier());
         superinterfaceType.typeArguments().add(ast.newSimpleType(NamingConventions.aggregateAttributesImplementationTypeName(aggregate.aggregatePackage()).getIdentifier()));
         typeEditor.addSuperinterface(superinterfaceType);
 

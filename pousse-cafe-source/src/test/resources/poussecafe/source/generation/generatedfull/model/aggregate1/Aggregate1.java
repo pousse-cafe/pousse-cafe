@@ -9,6 +9,7 @@ import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.domain.EntityDataAccess;
 import poussecafe.source.generation.generatedfull.commands.Command1;
 import poussecafe.source.generation.generatedfull.commands.Command3;
 import poussecafe.source.generation.generatedfull.commands.Command4;
@@ -69,8 +70,11 @@ public class Aggregate1 {
     public static class Repository extends AggregateRepository<Aggregate1Id, Root, Root.Attributes> {
 
         @Override
-        public Aggregate1DataAccess<Root.Attributes> dataAccess() {
-            return (Aggregate1DataAccess<Root.Attributes>) super.dataAccess();
+        public DataAccess<Root.Attributes> dataAccess() {
+            return (DataAccess<Root.Attributes>) super.dataAccess();
+        }
+
+        public static interface DataAccess<D extends Root.Attributes> extends EntityDataAccess<Aggregate1Id, D> {
         }
     }
 

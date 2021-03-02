@@ -4,18 +4,19 @@ import java.util.List;
 import poussecafe.discovery.DataAccessImplementation;
 import poussecafe.storage.internal.InternalDataAccess;
 import poussecafe.storage.internal.InternalStorage;
-import poussecafe.testmodule2.SimpleAggregate.SimpleAggregateRoot;
+import poussecafe.testmodule2.SimpleAggregate.Repository;
+import poussecafe.testmodule2.SimpleAggregate.Root;
 
 import static java.util.stream.Collectors.toList;
 
 @DataAccessImplementation(
-    aggregateRoot = SimpleAggregateRoot.class,
+    aggregateRoot = Root.class,
     dataImplementation = SimpleAggregateData.class,
     storageName = InternalStorage.NAME
 )
 public class InternalSimpleAggregateDataAccess
 extends InternalDataAccess<SimpleAggregateId, SimpleAggregateData>
-implements SimpleAggregateDataAccess<SimpleAggregateData> {
+implements Repository.DataAccess<SimpleAggregateData> {
 
     @Override
     public List<SimpleAggregateData> findByData(String data) {

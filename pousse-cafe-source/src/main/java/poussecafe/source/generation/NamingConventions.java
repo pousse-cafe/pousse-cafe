@@ -74,8 +74,18 @@ public class NamingConventions {
         return nameWithoutSuffix(repositoryName, REPOSITORY_NAME_SUFFIX);
     }
 
-    public static ClassName aggregateDataAccessTypeName(AggregatePackage aggregate) {
-        return new ClassName(aggregate.packageName(), aggregate.aggregateName() + DATA_ACCESS_SUFFIX);
+    public static ClassName aggregateDataAccessTypeName(Aggregate aggregate) {
+        if(aggregate.innerRepository()) {
+            return aggregateContainerTypeName(aggregate)
+                    .withLastSegment(innerRepositoryClassName())
+                    .withLastSegment(innerDataAccessTypeName());
+        } else {
+            return aggregateRepositoryTypeName(aggregate).withLastSegment(innerDataAccessTypeName());
+        }
+    }
+
+    public static String innerDataAccessTypeName() {
+        return DATA_ACCESS_SUFFIX;
     }
 
     private static final String DATA_ACCESS_SUFFIX = "DataAccess";

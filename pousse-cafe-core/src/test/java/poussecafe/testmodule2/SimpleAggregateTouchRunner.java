@@ -1,13 +1,13 @@
 package poussecafe.testmodule2;
 
 import poussecafe.listeners.UpdateOrCreateOneRunner;
-import poussecafe.testmodule2.SimpleAggregate.SimpleAggregateRoot;
+import poussecafe.testmodule2.SimpleAggregate.Root;
 
 public class SimpleAggregateTouchRunner
-extends UpdateOrCreateOneRunner<TestDomainEvent3, SimpleAggregateId, SimpleAggregateRoot> {
+extends UpdateOrCreateOneRunner<TestDomainEvent3, SimpleAggregateId, Root> {
 
     public SimpleAggregateTouchRunner() {
-        super(SimpleAggregateRoot.class);
+        super(Root.class);
     }
 
     @Override

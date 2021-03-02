@@ -34,15 +34,6 @@ public class TypesValidator extends SubValidator {
     }
 
     private void validateAggregateTypes(SourceLine sourceLine, AggregatePackage aggregatePackage) {
-        var dataAccessClassName = NamingConventions.aggregateDataAccessTypeName(aggregatePackage);
-        if(!model.hasClass(dataAccessClassName)) {
-            messages.add(new ValidationMessage.Builder()
-                    .location(sourceLine)
-                    .type(ValidationMessageType.WARNING)
-                    .message("Data access definition missing, misplaced or not following naming convention")
-                    .build());
-        }
-
         var attributesImplementationClassName =
                 NamingConventions.aggregateAttributesImplementationTypeName(aggregatePackage);
         if(!model.hasClass(attributesImplementationClassName)) {

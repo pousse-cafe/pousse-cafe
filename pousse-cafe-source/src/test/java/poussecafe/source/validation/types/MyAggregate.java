@@ -5,6 +5,7 @@ import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.domain.EntityDataAccess;
 
 @Aggregate
 public class MyAggregate {
@@ -22,5 +23,8 @@ public class MyAggregate {
 
     public static class Repository extends AggregateRepository<String, Root, Root.Attributes> {
 
+        public static interface DataAccess<D extends MyAggregate.Root.Attributes> extends EntityDataAccess<String, D> {
+
+        }
     }
 }

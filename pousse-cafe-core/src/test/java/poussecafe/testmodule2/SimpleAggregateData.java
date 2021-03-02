@@ -3,10 +3,10 @@ package poussecafe.testmodule2;
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
 import poussecafe.attribute.AttributeBuilder;
-import poussecafe.testmodule2.SimpleAggregate.SimpleAggregateRoot;
+import poussecafe.testmodule2.SimpleAggregate.Root;
 
 @SuppressWarnings("serial")
-public class SimpleAggregateData implements SimpleAggregateRoot.Attributes, Serializable {
+public class SimpleAggregateData implements Root.Attributes, Serializable {
 
     @Override
     public Attribute<SimpleAggregateId> identifier() {

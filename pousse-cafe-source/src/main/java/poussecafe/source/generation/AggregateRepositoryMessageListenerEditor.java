@@ -16,7 +16,10 @@ public class AggregateRepositoryMessageListenerEditor extends AggregateMessageLi
 
     @Override
     protected MethodDeclarationEditor insertNewListener(TypeDeclarationEditor typeEditor) {
-        return typeEditor.method(messageListener.methodName()).get(0);
+        MethodDeclarationEditor methodEditor;
+        var attributesType = typeEditor.findMethods(NamingConventions.REPOSITORY_DATA_ACCESS_METHOD_NAME).get(0);
+        methodEditor = typeEditor.insertNewMethodBefore(attributesType);
+        return methodEditor;
     }
 
     @SuppressWarnings("unchecked")
