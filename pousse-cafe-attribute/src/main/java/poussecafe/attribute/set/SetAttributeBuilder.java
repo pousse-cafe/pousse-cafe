@@ -3,6 +3,7 @@ package poussecafe.attribute.set;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.attribute.adapters.AutoAdaptingDataAdapter;
 import poussecafe.attribute.adapters.DataAdapter;
@@ -48,7 +49,7 @@ public class SetAttributeBuilder<T> {
         Complete<T> withSet(Set<U> storageList);
     }
 
-    public <U> ExpectingSet<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {
+    public <U extends AutoAdapter<T>> ExpectingSet<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {
         return usingItemDataAdapter(new AutoAdaptingDataAdapter<>(elementClass, dataAdapterClass));
     }
 

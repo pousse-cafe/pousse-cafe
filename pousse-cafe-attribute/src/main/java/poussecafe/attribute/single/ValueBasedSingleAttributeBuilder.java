@@ -2,6 +2,7 @@ package poussecafe.attribute.single;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
 import poussecafe.attribute.single.SingleAttributeBuilder.ExpectingAdaptedReader;
@@ -27,7 +28,7 @@ implements ExpectingReaderOrAdapter<T> {
     }
 
     @Override
-    public <U> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass) {
+    public <U extends AutoAdapter<T>> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass) {
         Objects.requireNonNull(autoAdapterClass);
         return new DataAdapterBasedSingleAttributeBuilder<>(DataAdapters.auto(valueClass, autoAdapterClass));
     }

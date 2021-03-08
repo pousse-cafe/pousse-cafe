@@ -3,6 +3,7 @@ package poussecafe.attribute.list;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.attribute.ListAttribute;
 import poussecafe.attribute.adapters.AutoAdaptingDataAdapter;
 import poussecafe.attribute.adapters.DataAdapter;
@@ -48,7 +49,7 @@ public class ListAttributeBuilder<T> {
         Complete<T> withList(List<U> storageList);
     }
 
-    public <U> ExpectingList<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {
+    public <U extends AutoAdapter<T>> ExpectingList<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {
         return usingItemDataAdapter(new AutoAdaptingDataAdapter<>(elementClass, dataAdapterClass));
     }
 

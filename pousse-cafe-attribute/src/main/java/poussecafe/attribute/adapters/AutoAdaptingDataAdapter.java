@@ -2,9 +2,10 @@ package poussecafe.attribute.adapters;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.exception.PousseCafeException;
 
-public class AutoAdaptingDataAdapter<U, T> implements DataAdapter<U, T> {
+public class AutoAdaptingDataAdapter<U extends AutoAdapter<T>, T> implements DataAdapter<U, T> {
 
     public AutoAdaptingDataAdapter(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
         this.propertyTypeClass = propertyTypeClass;
@@ -21,10 +22,6 @@ public class AutoAdaptingDataAdapter<U, T> implements DataAdapter<U, T> {
         if(!Modifier.isStatic(setAdapter.getModifiers())) {
             throw new PousseCafeException("adapt(" + propertyTypeClass.getSimpleName() + ") is not static");
         }
-        Method getAdapter = getAdapter();
-        if(getAdapter.getReturnType() != propertyTypeClass) {
-            throw new PousseCafeException("adapt() does not return " + propertyTypeClass.getSimpleName());
-        }
     }
 
     private Method setAdapter() {
@@ -35,19 +32,10 @@ public class AutoAdaptingDataAdapter<U, T> implements DataAdapter<U, T> {
         }
     }
 
-    private Method getAdapter() {
-        try {
-            return dataAdapterClass.getMethod("adapt");
-        } catch (Exception e) {
-            throw new PousseCafeException("Missing adapt()", e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public T adaptGet(U u) {
         try {
-            return (T) getAdapter().invoke(u);
+            return u.adapt();
         } catch (Exception e) {
             throw new PousseCafeException("Unable to adapt data while getting", e);
         }

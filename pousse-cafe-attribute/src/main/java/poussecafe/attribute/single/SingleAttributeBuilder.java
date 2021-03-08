@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.attribute.adapters.DataAdapter;
 
 public class SingleAttributeBuilder<T> {
@@ -16,7 +17,7 @@ public class SingleAttributeBuilder<T> {
 
         ExpectingWriter<T> read(Supplier<T> writer);
 
-        <U> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass);
+        <U extends AutoAdapter<T>> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass);
 
         <U> ExpectingReadAdapter<U, T> storedAs(Class<U> storedType);
 

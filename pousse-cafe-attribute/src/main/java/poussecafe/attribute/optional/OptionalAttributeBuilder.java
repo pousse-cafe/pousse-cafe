@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.adapters.DataAdapter;
 import poussecafe.attribute.adapters.DataAdapters;
@@ -67,7 +68,7 @@ public class OptionalAttributeBuilder<T> {
         ExpectingWriterAfterAdapter<U, T> read(Supplier<U> getter);
     }
 
-    public <U> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass) {
+    public <U extends AutoAdapter<T>> ExpectingAdaptedReader<U, T> usingAutoAdapter(Class<U> autoAdapterClass) {
         Objects.requireNonNull(autoAdapterClass);
         return usingDataAdapter(DataAdapters.auto(propertyTypeClass, autoAdapterClass));
     }

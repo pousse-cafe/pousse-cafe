@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 import poussecafe.attribute.AttributeBuilder;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.util.StringId;
 
@@ -82,7 +83,7 @@ public class DataAdapters {
         };
     }
 
-    public static <U, T> DataAdapter<U, T> auto(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
+    public static <U extends AutoAdapter<T>, T> DataAdapter<U, T> auto(Class<T> propertyTypeClass, Class<U> dataAdapterClass) {
         return new AutoAdaptingDataAdapter<>(propertyTypeClass, dataAdapterClass);
     }
 
