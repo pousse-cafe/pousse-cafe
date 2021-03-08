@@ -1,5 +1,6 @@
 package poussecafe.attribute.set;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -41,7 +42,13 @@ implements ExpectingReadAdapters<U, T>, ExpectingWriteAdapters<U, T>, ExpectingS
         return this;
     }
 
-    private Set<U> set;
+    private Collection<U> set;
+
+    @Override
+    public Complete<T> withCollection(Collection<U> storageCollection) {
+        set = storageCollection;
+        return this;
+    }
 
     @Override
     public SetAttribute<T> build() {

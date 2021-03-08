@@ -1,5 +1,6 @@
 package poussecafe.attribute.set;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -46,7 +47,9 @@ public class SetAttributeBuilder<T> {
 
     public static interface ExpectingSet<U, T> {
 
-        Complete<T> withSet(Set<U> storageList);
+        Complete<T> withSet(Set<U> storageSet);
+
+        Complete<T> withCollection(Collection<U> storageCollection);
     }
 
     public <U extends AutoAdapter<T>> ExpectingSet<U, T> usingItemAutoAdapter(Class<U> dataAdapterClass) {

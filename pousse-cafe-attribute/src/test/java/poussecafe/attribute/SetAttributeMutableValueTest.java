@@ -1,7 +1,9 @@
 package poussecafe.attribute;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.Test;
 import poussecafe.attribute.adapters.DataAdapters;
@@ -15,16 +17,16 @@ public class SetAttributeMutableValueTest {
 
     @Test
     public void editUpdatesSet() {
-        givenInitialStorage();
+        givenInitialSetStorage();
         givenSetAttribute();
         whenEditing();
         thenValueIs(valueAfterEdition());
-        thenStorageIs(storageAfterEdition());
+        thenSetStorageIs(storageAfterEdition());
         thenGetExpected(valueAfterEdition());
         thenContainsExpectedItems(valueAfterEdition());
     }
 
-    private void givenInitialStorage() {
+    private void givenInitialSetStorage() {
         storage = new HashSet<>();
         storage.add("1");
         storage.add("2");
@@ -63,7 +65,7 @@ public class SetAttributeMutableValueTest {
         return map;
     }
 
-    private void thenStorageIs(Set<String> expected) {
+    private void thenSetStorageIs(Set<String> expected) {
         assertThat(storage.size(), is(expected.size()));
         assertTrue(storage.containsAll(expected));
     }
@@ -86,4 +88,31 @@ public class SetAttributeMutableValueTest {
     private void thenContainsExpectedItems(Set<BigDecimal> expected) {
         assertTrue(attribute.value().equals(expected));
     }
+
+    @Test
+    public void editUpdatesCollection() {
+        givenInitialCollectionStorage();
+        givenSetAttributeWithCollection();
+        whenEditing();
+        thenValueIs(valueAfterEdition());
+        thenGetExpected(valueAfterEdition());
+        thenContainsExpectedItems(valueAfterEdition());
+    }
+
+    private void givenInitialCollectionStorage() {
+        listStorage = new ArrayList<>();
+        listStorage.add("1");
+        listStorage.add("2");
+        listStorage.add("3");
+        listStorage.add("4");
+    }
+
+    private void givenSetAttributeWithCollection() {
+        attribute = AttributeBuilder.set(BigDecimal.class)
+                .usingItemDataAdapter(DataAdapters.stringBigDecimal())
+                .withCollection(listStorage)
+                .build();
+    }
+
+    private List<String> listStorage;
 }

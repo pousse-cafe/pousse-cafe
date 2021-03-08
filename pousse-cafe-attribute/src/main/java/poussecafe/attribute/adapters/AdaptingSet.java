@@ -1,5 +1,6 @@
 package poussecafe.attribute.adapters;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import poussecafe.attribute.set.EditableSet;
@@ -32,6 +33,11 @@ implements EditableSet<T> {
         }
 
         public Builder<U, T> mutableSet(Set<U> mutableSet) {
+            set.mutableCollection(mutableSet);
+            return this;
+        }
+
+        public Builder<U, T> mutableCollection(Collection<U> mutableSet) {
             set.mutableCollection(mutableSet);
             return this;
         }
