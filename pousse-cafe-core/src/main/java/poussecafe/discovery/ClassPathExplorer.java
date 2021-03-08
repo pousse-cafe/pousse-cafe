@@ -23,7 +23,7 @@ import poussecafe.environment.MessageListenerDefinition;
 import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.Messaging;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.runtime.Command;
 import poussecafe.storage.Storage;
 
@@ -100,8 +100,8 @@ class ClassPathExplorer {
                 .collect(toList());
     }
 
-    public List<Class<? extends DomainProcess>> discoverDomainProcesses(Class<? extends Module> module) {
-        return getSubTypesOf(DomainProcess.class)
+    public List<Class<? extends ExplicitDomainProcess>> discoverDomainProcesses(Class<? extends Module> module) {
+        return getSubTypesOf(ExplicitDomainProcess.class)
                 .filter(processClass -> isInModule(processClass, module))
                 .collect(toList());
     }
@@ -210,7 +210,7 @@ class ClassPathExplorer {
 
     public Set<MessageListenerDefinition> discoverListeners(Class<? extends Module> module) {
         Set<Class<?>> listenersContainers = new HashSet<>();
-        getSubTypesOf(DomainProcess.class)
+        getSubTypesOf(ExplicitDomainProcess.class)
                 .filter(aggregateClass -> isInModule(aggregateClass, module))
                 .forEach(listenersContainers::add);
         getSubTypesOf(AggregateRoot.class)

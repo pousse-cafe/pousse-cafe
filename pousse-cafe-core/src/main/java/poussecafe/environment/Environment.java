@@ -16,7 +16,7 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
 import poussecafe.messaging.Messaging;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.processing.ListenersSet;
 import poussecafe.runtime.MessageValidator;
 import poussecafe.runtime.NoOpMessageValidator;
@@ -189,18 +189,18 @@ public class Environment {
 
     private Map<Class<?>, Object> serviceInstances = new HashMap<>();
 
-    void registerDomainProcessInstance(DomainProcess domainProcessInstance) {
+    void registerDomainProcessInstance(ExplicitDomainProcess domainProcessInstance) {
         processInstances.put(domainProcessInstance.getClass(), domainProcessInstance);
     }
 
-    private Map<Class<?>, DomainProcess> processInstances = new HashMap<>();
+    private Map<Class<?>, ExplicitDomainProcess> processInstances = new HashMap<>();
 
     public Optional<AggregateServices> aggregateServicesOf(Class<?> aggregateRootClass) {
         return Optional.ofNullable(entityServicesMap.get(aggregateRootClass));
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends DomainProcess> Optional<T> domainProcess(Class<T> processClass) {
+    public <T extends ExplicitDomainProcess> Optional<T> domainProcess(Class<T> processClass) {
         return Optional.ofNullable(processInstances.get(processClass)).map(instance -> (T) instance);
     }
 
@@ -208,7 +208,7 @@ public class Environment {
         return unmodifiableCollection(entityServicesMap.values());
     }
 
-    public Collection<DomainProcess> domainProcesses() {
+    public Collection<ExplicitDomainProcess> domainProcesses() {
         return unmodifiableCollection(processInstances.values());
     }
 

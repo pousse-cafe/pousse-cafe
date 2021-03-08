@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.apm.ApplicationPerformanceMonitoring;
 
-public abstract class DomainProcess extends TransactionAwareService {
+public abstract class ExplicitDomainProcess extends TransactionAwareService {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 

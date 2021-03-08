@@ -15,7 +15,7 @@ import poussecafe.exception.PousseCafeException;
 import poussecafe.injector.Injector;
 import poussecafe.messaging.Message;
 import poussecafe.messaging.MessageImplementation;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.runtime.TransactionRunnerLocator;
 import poussecafe.util.ReflectionUtils;
 
@@ -78,7 +78,7 @@ public class EnvironmentBuilder {
 
     private Set<Class<? extends Message>> definedMessages = new HashSet<>();
 
-    private Set<Class<? extends DomainProcess>> definedDomainProcesses = new HashSet<>();
+    private Set<Class<? extends ExplicitDomainProcess>> definedDomainProcesses = new HashSet<>();
 
     private Set<Class<? extends Service>> definedServices = new HashSet<>();
 
@@ -315,7 +315,7 @@ public class EnvironmentBuilder {
 
     private void registerDomainProcesses() {
         for (Class<?> processClass : definedDomainProcesses) {
-            DomainProcess process = (DomainProcess) ReflectionUtils.newInstance(processClass);
+            ExplicitDomainProcess process = (ExplicitDomainProcess) ReflectionUtils.newInstance(processClass);
             injector.registerInjectableService(process);
             environment.registerDomainProcessInstance(process);
         }

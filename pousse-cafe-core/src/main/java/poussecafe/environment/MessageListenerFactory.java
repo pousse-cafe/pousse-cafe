@@ -5,7 +5,7 @@ import poussecafe.apm.ApplicationPerformanceMonitoring;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
 import poussecafe.domain.AggregateRoot;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.runtime.TransactionRunnerLocator;
 
 public class MessageListenerFactory {
@@ -62,7 +62,7 @@ public class MessageListenerFactory {
 
     public MessageListener build(MessageListenerDefinition definition) {
         Class<?> declaringClass = definition.method().getDeclaringClass();
-        if(DomainProcess.class.isAssignableFrom(definition.method().getDeclaringClass())) {
+        if(ExplicitDomainProcess.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return domainProcessMessageListenerFactory.buildMessageListener(definition);
         } else if(AggregateFactory.class.isAssignableFrom(definition.method().getDeclaringClass())) {
             return factoryMessageListenerFactory.buildMessageListener(definition);

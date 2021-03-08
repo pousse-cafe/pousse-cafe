@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import poussecafe.domain.Service;
 import poussecafe.messaging.Message;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
 import static java.util.Collections.unmodifiableSet;
 
@@ -25,12 +25,12 @@ public class BundleDefinition {
             return this;
         }
 
-        public Builder withDomainProcesses(Collection<Class<? extends DomainProcess>> processes) {
+        public Builder withDomainProcesses(Collection<Class<? extends ExplicitDomainProcess>> processes) {
             definition.processes.addAll(processes);
             return this;
         }
 
-        public Builder withDomainProcess(Class<? extends DomainProcess> domainClass) {
+        public Builder withDomainProcess(Class<? extends ExplicitDomainProcess> domainClass) {
             definition.processes.add(domainClass);
             return this;
         }
@@ -75,9 +75,9 @@ public class BundleDefinition {
         return unmodifiableSet(definitions);
     }
 
-    private Set<Class<? extends DomainProcess>> processes = new HashSet<>();
+    private Set<Class<? extends ExplicitDomainProcess>> processes = new HashSet<>();
 
-    public Set<Class<? extends DomainProcess>> definedDomainProcesses() {
+    public Set<Class<? extends ExplicitDomainProcess>> definedDomainProcesses() {
         return unmodifiableSet(processes);
     }
 

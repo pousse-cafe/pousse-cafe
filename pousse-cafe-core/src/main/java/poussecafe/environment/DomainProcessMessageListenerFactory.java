@@ -2,7 +2,7 @@ package poussecafe.environment;
 
 import java.lang.reflect.Method;
 import poussecafe.exception.PousseCafeException;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.util.MethodInvoker;
 
 public class DomainProcessMessageListenerFactory {
@@ -14,7 +14,7 @@ public class DomainProcessMessageListenerFactory {
     public MessageListener buildMessageListener(MessageListenerDefinition definition) {
         Method method = definition.method();
         @SuppressWarnings("unchecked")
-        DomainProcess target = environment.domainProcess((Class<? extends DomainProcess>) definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
+        ExplicitDomainProcess target = environment.domainProcess((Class<? extends ExplicitDomainProcess>) definition.method().getDeclaringClass()).orElseThrow(PousseCafeException::new);
         MethodInvoker invoker = new MethodInvoker.Builder()
                 .method(method)
                 .target(target)

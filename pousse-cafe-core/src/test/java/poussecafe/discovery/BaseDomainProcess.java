@@ -1,8 +1,8 @@
 package poussecafe.discovery;
 
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public abstract class BaseDomainProcess extends DomainProcess {
+public abstract class BaseDomainProcess extends ExplicitDomainProcess {
 
     @MessageListener
     public void handle(Event1 event) {

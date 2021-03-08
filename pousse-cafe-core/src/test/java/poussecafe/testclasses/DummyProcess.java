@@ -1,10 +1,10 @@
 package poussecafe.testclasses;
 
 import poussecafe.discovery.MessageListener;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 import poussecafe.testmodule.TestDomainEvent;
 
-public class DummyProcess extends DomainProcess {
+public class DummyProcess extends ExplicitDomainProcess {
 
     @MessageListener
     public void domainEventListenerWithDefaultId(TestDomainEvent event) {
