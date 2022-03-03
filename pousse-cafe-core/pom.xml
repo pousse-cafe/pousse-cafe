@@ -25,11 +25,6 @@
       <artifactId>reflections</artifactId>
       <version>0.9.11</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons.lang.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.pousse-cafe-framework</groupId>
