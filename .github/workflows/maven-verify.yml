@@ -1,4 +1,4 @@
-name: Publish snapshot to the Sonatype OSSRH
+name: Verify
 
 on:
   push:
