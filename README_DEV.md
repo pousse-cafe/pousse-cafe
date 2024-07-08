@@ -10,7 +10,7 @@
 
 ## Snapshot release
 
-Deployment is automatically handled by Travis (see .travis.yml for details).
+Run "Publish snapshot to the Sonatype OSSRH" Github Action.
 
 ## Other releases
 
