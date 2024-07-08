@@ -1,11 +1,6 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
 name: Publish snapshot to the Sonatype OSSRH
 
-on:
-  push:
-    branches: [ master ]
+on: workflow_dispatch
 
 jobs:
   publish-snapshot:
