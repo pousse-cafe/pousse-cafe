@@ -21,8 +21,10 @@ import poussecafe.messaging.MessagingConnection;
 import poussecafe.processing.MessageBroker;
 import poussecafe.processing.MessageConsumptionConfiguration;
 import poussecafe.processing.MessageConsumptionContext;
-import poussecafe.processing.MessageProcessingThreadPool;
+import poussecafe.processing.ThreadPoolProcessor;
+import poussecafe.processing.Processor;
 import poussecafe.processing.ReceivedMessage;
+import poussecafe.processing.SynchronousProcessor;
 import poussecafe.storage.Storage;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -104,8 +106,20 @@ public class Runtime {
             return this;
         }
 
+        /**
+         * @param processingThreads The number of threads in the message processing pool.
+         * @return this
+         * 
+         * @deprecated processingMode should be used instead
+         */
+        @Deprecated(since = "0.30", forRemoval = true)
         public Builder processingThreads(int processingThreads) {
-            runtime.processingThreads = processingThreads;
+            runtime.processingMode = ProcessingMode.threadPool(processingThreads);
+            return this;
+        }
+
+        public Builder processingMode(ProcessingMode processingMode) {
+            runtime.processingMode = processingMode;
             return this;
         }
 
@@ -191,7 +205,7 @@ public class Runtime {
 
     private MessageBroker messageBroker;
 
-    private MessageProcessingThreadPool messageProcessingThreadPool;
+    private Processor processor;
 
     private MessageSenderLocator messageSenderLocator;
 
@@ -207,21 +221,20 @@ public class Runtime {
         }
         started = true;
         configureMessageProcessing();
-        messageProcessingThreadPool.start();
+        processor.start();
         openConnections();
     }
 
     private boolean started;
 
     private void configureMessageProcessing() {
-        messageProcessingThreadPool = newMessageProcessingThreadPool();
-        logger.info("Created {} processing threads...", messageProcessingThreadPool.size());
+        processor = newProcessor();
         createMessageBroker();
     }
 
     private void createMessageBroker() {
         messageBroker = new MessageBroker.Builder()
-                .messageProcessingThreadsPool(messageProcessingThreadPool)
+                .messageProcessingThreadsPool(processor)
                 .messageConsumptionContext(new MessageConsumptionContext.Builder()
                         .applicationPerformanceMonitoring(applicationPerformanceMonitoring)
                         .messageConsumptionHandler(messageConsumptionHandler)
@@ -231,14 +244,20 @@ public class Runtime {
                 .build();
     }
 
-    private MessageProcessingThreadPool newMessageProcessingThreadPool() {
-        return new MessageProcessingThreadPool.Builder()
-                .poolSize(processingThreads)
-                .messageConsumptionConfiguration(messageConsumptionConfiguration)
-                .build();
+    private Processor newProcessor() {
+        if(processingMode.isSynchronous()) {
+            logger.info("Using runtime thread for processing...");
+            return new SynchronousProcessor(messageConsumptionConfiguration);
+        } else {
+            logger.info("Creating pool with {} processing threads...", processingMode.processingThreads());
+            return new ThreadPoolProcessor.Builder()
+                    .poolSize(processingMode.processingThreads())
+                    .messageConsumptionConfiguration(messageConsumptionConfiguration)
+                    .build();
+        }
     }
 
-    private int processingThreads = 1;
+    private ProcessingMode processingMode = ProcessingMode.threadPool(1);
 
     private MessageConsumptionConfiguration messageConsumptionConfiguration = new MessageConsumptionConfiguration.Builder()
             .backOffCeiling(10)
@@ -275,7 +294,7 @@ public class Runtime {
         }
         started = false;
         closeConnections();
-        messageProcessingThreadPool.stop();
+        processor.stop();
     }
 
     private void closeConnections() {
@@ -345,6 +364,6 @@ public class Runtime {
     }
 
     boolean hasThreadPool() {
-        return messageProcessingThreadPool != null;
+        return processor != null;
     }
 }

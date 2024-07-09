@@ -1,13 +1,13 @@
 package poussecafe.messaging;
 
-import poussecafe.messaging.internal.InternalMessaging;
 import poussecafe.messaging.internal.SerializingMessageAdapter;
+import poussecafe.messaging.sync.SynchronousMessaging;
 
-public class InternalMessageReceiverTest extends MessagingTest {
+public class SynchronousMessagingTest extends MessagingTest {
 
     @Override
     protected Messaging messaging() {
-        return InternalMessaging.instance();
+        return SynchronousMessaging.instance();
     }
 
     @Override

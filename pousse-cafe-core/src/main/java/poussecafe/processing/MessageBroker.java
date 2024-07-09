@@ -1,14 +1,11 @@
 package poussecafe.processing;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.environment.MessageListener;
-import poussecafe.processing.MessageToProcess.Callback;
 import poussecafe.runtime.OriginalAndMarshaledMessage;
 
 public class MessageBroker {
@@ -17,8 +14,8 @@ public class MessageBroker {
 
         private MessageBroker broker = new MessageBroker();
 
-        public Builder messageProcessingThreadsPool(MessageProcessingThreadPool messageProcessingThreadsPool) {
-            broker.messageProcessingThreadsPool = messageProcessingThreadsPool;
+        public Builder messageProcessingThreadsPool(Processor messageProcessingThreadsPool) {
+            broker.processor = messageProcessingThreadsPool;
             return this;
         }
 
@@ -33,12 +30,9 @@ public class MessageBroker {
         }
 
         public MessageBroker build() {
-            Objects.requireNonNull(broker.messageProcessingThreadsPool);
+            Objects.requireNonNull(broker.processor);
             Objects.requireNonNull(broker.messageConsumptionContext);
             Objects.requireNonNull(broker.listenersSet);
-
-            broker.processingThreadSelector =
-                    new DefaultProcessingThreadSelector(broker.messageProcessingThreadsPool.size());
 
             return broker;
         }
@@ -48,7 +42,7 @@ public class MessageBroker {
 
     }
 
-    private MessageProcessingThreadPool messageProcessingThreadsPool;
+    private Processor processor;
 
     private MessageConsumptionContext messageConsumptionContext;
 
@@ -61,24 +55,7 @@ public class MessageBroker {
             logger.debug("No groups built for message {}, acking...", receivedMessage.message().original());
             receivedMessage.ack();
         } else {
-            var receivedMessageProcessingState = new ReceivedMessageProcessingState.Builder()
-                    .receivedMessage(receivedMessage)
-                    .firstId(nextReceivedMessageId)
-                    .sequenceLength(groups.size())
-                    .build();
-
-            for(MessageListenersGroup group : groups) {
-                var receivedMessageId = nextReceivedMessageId++;
-                inProgressProcessingStates.put(receivedMessageId, receivedMessageProcessingState);
-                MessageToProcess messageToProcess = new MessageToProcess.Builder()
-                        .receivedMessageId(receivedMessageId)
-                        .messageListenerGroup(group)
-                        .callback(callback)
-                        .build();
-
-                int threadId = processingThreadSelector.selectFor(group);
-                messageProcessingThreadsPool.submit(threadId, messageToProcess);
-            }
+            processor.submit(receivedMessage, groups);
         }
     }
 
@@ -105,36 +82,5 @@ public class MessageBroker {
         }
     }
 
-    private long nextReceivedMessageId = 0;
-
-    private MessageBrokerCallback callback = new MessageBrokerCallback();
-
-    private ProcessingThreadSelector processingThreadSelector;
-
-    private synchronized void signalProcessed(int threadId, MessageToProcess processedMessage) { // NOSONAR - synchronized
-        long receivedMessageId = processedMessage.receivedMessageId();
-        var processingProgress = inProgressProcessingStates.remove(receivedMessageId);
-        if(processingProgress == null) {
-            throw new IllegalArgumentException("No processing state available");
-        } else {
-            processingThreadSelector.unselect(threadId, processedMessage.messageListenerGroup());
-            processingProgress.ackReceivedMessageId(processedMessage.receivedMessageId());
-            if(processingProgress.isCompleted()) {
-                logger.debug("Processing of message {} completed, acking...", receivedMessageId);
-                processingProgress.receivedMessage().ack();
-            }
-        }
-    }
-
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private Map<Long, ReceivedMessageProcessingState> inProgressProcessingStates = new HashMap<>();
-
-    private class MessageBrokerCallback implements Callback {
-
-        @Override
-        public void signalProcessed(int threadId, MessageToProcess processedMessage) {
-            MessageBroker.this.signalProcessed(threadId, processedMessage);
-        }
-    }
 }
