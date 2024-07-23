@@ -24,6 +24,12 @@
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
       <version>0.10.2</version>
+      <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -78,9 +84,18 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <useSystemClassLoader>false</useSystemClassLoader>
+          <argLine>-javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.8</version>
+        <version>0.8.1</version>
         <configuration>
           <excludes>
             <exclude>**/EntryLogType.class</exclude>
