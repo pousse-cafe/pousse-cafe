@@ -10,14 +10,26 @@ import static java.util.stream.Collectors.joining;
 
 public abstract class AggregateRoot<K, D extends EntityAttributes<K>> extends Entity<K, D> {
 
+    /**
+     * @deprecated Move logic to Factory or method called by the Factory.
+     */
+    @Deprecated(forRemoval = true, since = "0.30")
     public void onAdd() {
 
     }
 
+    /**
+     * @deprecated Move logic to an explicit method called by all message listeners.
+     */
+    @Deprecated(forRemoval = true, since = "0.30")
     public void onUpdate() {
 
     }
 
+    /**
+     * @deprecated Move logic to Repository or method called by the Repository on deletion.
+     */
+    @Deprecated(forRemoval = true, since = "0.30")
     public void onDelete() {
 
     }
